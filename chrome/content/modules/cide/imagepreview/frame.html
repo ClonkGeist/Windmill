@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Image Preview Module</title>
+<link rel="stylesheet" type="text/css" href="chrome://windmill/skin/icomoon.css"></link>
+<link rel="stylesheet" type="text/css" href="chrome://windmill/skin/default_module.css"></link>
+<link rel="stylesheet" type="text/css" href="chrome://windmill/content/modules/cide/imagepreview/style.css"></link>
+</head>
+<body onload="window.readyState = true">
+<div id="toolbar">
+	<!--<div class="icon-measure icon-16"></div>-->
+	<div id="slice-display"></div>
+	<div style="flex: 1"></div>
+	<div id="grid-button-wrapper">
+		<div id="grid-buttons">
+			<div id="expand-grid-options">
+				<div class="icon-arrow-down"></div>
+			</div>
+			<div id="show-grid" class="icon-grid icon-16"></div>
+		</div>
+		<div id="grid-options">
+			<div id="hide-grid-options" class="icon-x"></div>
+			<div id="grid-sizes">
+				<div id="grid-x" class="number-input">
+					<input id="-x" class="grid-input" size="0" maxlength="5" value="16px" />
+					<div class="number-input-arrow-container">
+						<div id="grid-increment-x" class="arrow">
+							<div class="icon-arrow-up arrow-icons"></div>
+						</div>
+						<div id="grid-decrement-x" class="arrow">
+							<div class="icon-arrow-down arrow-icons"></div>
+						</div>
+					</div>
+				</div>
+				<div id="grid-y" class="number-input">
+					<input id="-y" class="grid-input" size="0" maxlength="5" value="20px" />
+					<div class="number-input-arrow-container">
+						<div id="grid-increment-y" class="arrow">
+							<div class="icon-arrow-up arrow-icons"></div>
+						</div>
+						<div id="grid-decrement-y" class="arrow">
+							<div class="icon-arrow-down arrow-icons"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div style="text-align: center">
+				<div id="snap-to-grid">$snap$</div>
+			</div>
+		</div>
+		
+	</div> <!-- end grid section -->
+	<div id="background-selection">
+		<span style="-moz-user-select: none; cursor: default;">$define_background$</span>
+		<div id="bg-light" class="icon-bg-filled icon-16 bg-selected"></div>
+		<div id="bg-dark" class="icon-bg-filled icon-16"></div>
+		<div id="bg-transparent" class="icon-transparent icon-16"></div>
+	</div>
+</div>
+<div id="preview-body">
+	<div id="wrapper-sizer">
+		<div id="wrapper">
+		</div>
+	</div>
+</div>
+
+<script src="chrome://windmill/content/js/default_module.js" type="text/javascript" charset="utf-8"></script>
+<script src="chrome://windmill/content/modules/cide/imagepreview/js/imagepreview.js" type="text/javascript" charset="utf-8"></script>
+</body>
+</html>

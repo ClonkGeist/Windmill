@@ -1,0 +1,151 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://windmill/content/modules/cide/explorer/explorer.css" type="text/css"?>
+<?xml-stylesheet type="text/css" href="chrome://windmill/skin/icomoon.css"?>
+<?xml-stylesheet href="chrome://windmill/skin/explorer.css" type="text/css"?>
+<?xml-stylesheet href="chrome://windmill/skin/default_module.css" type="text/css"?>
+
+<window id="main" title="Explorer" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:html="http://www.w3.org/1999/xhtml">
+
+	<script type="application/javascript" src="chrome://windmill/content/js/default_module.js"/>
+	<script type="application/javascript" src="chrome://windmill/content/js/libs/tree.js"/>
+	<script type="application/javascript" src="chrome://windmill/content/modules/cide/explorer/js/explorer.js"/>
+	<script type="application/javascript" src="chrome://windmill/content/js/libs/explorer.js"/>
+	<script type="application/javascript" src="chrome://windmill/content/modules/cide/explorer/js/git.js"/>
+	
+	<windmilldialog id="dlg_workenvironment" style="display: none">
+		<hbox class="dlg_infobox error" id="dex_dlg_workenv_errorbox">
+			<description></description>
+		</hbox>
+		<hbox>
+			<description>$DlgNewWorkEnvironmentDesc$</description>
+		</hbox>
+		<hbox>
+			<label value="$DlgLblType$:" control="dex_dlg_workenv_type" flex="1" />
+			<menulist id="dex_dlg_workenv_type" flex="1">
+				<menupopup>
+					<menuitem label="$DlgWETypeClonkDir$" id="dex_dlg_workenv_type_clonkdir" value="1" />
+					<menuitem label="$DlgWETypeWorkspace$" id="dex_dlg_workenv_type_workspace" value="2" />
+					<menuitem label="$DlgWETypeRepository$" id="dex_dlg_workenv_type_repository" value="3" />
+				</menupopup>
+			</menulist>
+		</hbox>
+		<vbox class="dex_dlg_workenv_content" data-settingsgroup="dex_dlg_workenv_type_clonkdir">
+			<hbox>
+				<label value="$DlgWETypeClonkDir$:" style="font-weight: bold"/>
+			</hbox>
+			<hbox class="dlg_infobox">
+				<description>$DlgWETypeClonkDirDesc$</description>
+			</hbox>
+			<hbox>
+				<description flex="1" id="dex_dlg_workenv_ocpath" class="view-directory-path">$DlgWEPathEmpty$</description>
+				<button id="dex_dlg_workenv_ocpath_button" label="$DlgWEBrowse$" />
+			</hbox>
+			<hbox>
+				<checkbox label="$DlgWEExplodeClonkDir$" id="dex_dlg_workenv_explodecdir" />
+			</hbox>
+		</vbox>
+		<vbox class="dex_dlg_workenv_content" data-settingsgroup="dex_dlg_workenv_type_workspace">
+			<hbox>
+				<label value="$DlgWETypeWorkspace$:" style="font-weight: bold"/>
+			</hbox>
+			<hbox class="dlg_infobox">
+				<description>$DlgWETypeWorkspaceDesc$</description>
+			</hbox>
+			<hbox>
+				<label value="$DlgLblName$:" control="dex_dlg_workenv_name" flex="1" />
+				<textbox id="dex_dlg_workenv_name" placeholder="$DlgInputWorkEnvName$" flex="1" />
+			</hbox>
+			<vbox id="dex_dlg_workenv_clonkdirset">
+				<hbox>
+					<label value="$DlgWESourceClonkDir$" flex="1" control="dex_dlg_workenv_source_clonkdir" />
+					<menulist id="dex_dlg_workenv_source_clonkdir" flex="1">
+						<menupopup>
+						</menupopup>
+					</menulist>
+				</hbox>
+				<hbox>
+					<checkbox label="$DlgWECreateFullCopy$" id="dex_dlg_workenv_fullcopy" flex="1"/>
+				</hbox>
+				<vbox id="dex_dlg_workenv_filelist" class="dlg-checklistbox" style="max-height: 120px;"></vbox>
+				<hbox id="dex_dlg_workenv_filelist_ctrls">
+					<checkbox label="$DlgWESelectAll$" id="dex_dlg_workenv_select_all" flex="1"/>
+					<checkbox label="$DlgWESelectAllOC$" id="dex_dlg_workenv_select_ocfiles" flex="1"/>
+					<checkbox label="$DlgWEShowOnlyOC$" id="dex_dlg_workenv_showonlyocfiles" flex="1"/>
+				</hbox>
+			</vbox>
+		</vbox>
+		<vbox class="dex_dlg_workenv_content" data-settingsgroup="dex_dlg_workenv_type_repository">
+			<hbox>
+				<label value="$DlgWETypeRepository$:" style="font-weight: bold"/>
+			</hbox>
+			<hbox class="dlg_infobox">
+				<description>$DlgWETypeRepositoryDesc$</description>
+			</hbox>
+			<hbox>
+				<label value="$DlgWERepositoryCloneURL$:" flex="1" />
+				<textbox id="dex_dlg_workenv_cloneurl" placeholder="$DlgInputCloneURL$" />
+			</hbox>
+			<hbox>
+				<label value="$DlgLblName$:" flex="1" />
+				<textbox id="dex_dlg_workenv_destname" placeholder="$DlgInputWorkEnvName$" />
+			</hbox>
+			<hbox>
+				<label value="$DlgWERepositoryUserConfig$:" style="font-weight: bold"/>
+			</hbox>
+			<hbox>
+				<label value="$DlgWERepositoryUserName$:" flex="1"/>
+				<textbox id="dex_dlg_workenv_cfgusername" placeholder="$DlgInputUserName$" />
+			</hbox>
+			<hbox>
+				<label value="$DlgWERepositoryEmail$:" flex="1"/>
+				<textbox id="dex_dlg_workenv_cfgemail" placeholder="$DlgInputEmail$" />
+			</hbox>		
+			<hbox>
+				<label value="$DlgWERepositoryUserInfo$:" style="font-weight: bold"/>
+			</hbox>
+			<hbox>
+				<label value="$DlgWERepositoryUserName$:" flex="1"/>
+				<textbox id="dex_dlg_workenv_username" placeholder="$DlgInputUserName$" />
+			</hbox>
+			<hbox>
+				<label value="$DlgWERepositoryPassword$:" flex="1"/>
+				<textbox id="dex_dlg_workenv_password" placeholder="$DlgInputPassword$" type="password" />
+			</hbox>
+		</vbox>
+		<vbox>
+			<checkbox label="Debug" id="dex_dlg_workenv_debug" class="devmode-elm" />
+			<checkbox label="No file operations" id="dex_dlg_workenv_nooperations" class="devmode-elm" />
+		</vbox>
+	</windmilldialog>
+	<windmilldialog id="dlg_workenvsettings" style="display: none">
+		<description>$DlgWESettingsDesc$</description>
+		<hbox flex="1" data-settingsgroup="dex_dlg_workenv_type_clonkdir">
+			<checkbox label="$DlgWEExplodeClonkDir$" id="dex_dlg_workenvsettings_explodecdir" flex="1" />
+		</hbox>
+		<hbox flex="1" data-settingsgroup="dex_dlg_workenv_type_workspace">
+			<checkbox label="$DlgWESyncAddedFiles$" id="dex_dlg_workenvsettings_sync_addedfiles" flex="1" />
+		</hbox>
+	</windmilldialog>
+	
+	<hbox class="toolbar">
+		<box class="nav-image icon-clonkpath icon-24" height="24" width="24" id="showClonkDirs"></box>
+		<box class="nav-image icon-workspace icon-24" height="24" width="24" id="showWorkspaces"></box>
+		<spacer flex="1" />
+		<vbox class="toolbar-option" id="importWorkEnvironment">$WEToolbarImport$</vbox>
+		<vbox class="toolbar-option" id="newWorkEnvironment">$WEToolbarNew$</vbox>
+	</hbox>
+	<vbox class="searchbox">
+		<textbox id="searchinput" class="hidden"/>
+	</vbox>
+	<vbox flex="1">
+		<box flex="1">
+			<vbox id="filecontainer" flex="1">
+				<html:ul id="maintree" flex="1">
+					
+				</html:ul>
+			</vbox>
+			<!-- build explorer here -->
+		</box>
+	</vbox>
+</window>

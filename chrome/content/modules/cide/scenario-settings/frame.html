@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Scenariosettings</title>
+<link rel="stylesheet" type="text/css" href="chrome://windmill/skin/icomoon.css"></link>
+<link rel="stylesheet" type="text/css" href="chrome://windmill/skin/default_module.css"></link>
+<link rel="stylesheet" type="text/css" href="chrome://windmill/content/modules/cide/scenario-settings/scenario-settings.css"></link>
+
+</head>
+<body onload="window.readyState = true">
+
+	<div id="wrapper">
+		
+		<!-- pseudo web components end -->
+		<div class="definition-selection-wrapper draft">
+			<div class="definition-selection-header"></div>
+			<div class="definition-selection-list">
+			</div>
+			<div class="definition-selection-controls">
+				<!--<div class="definition-selection-inc definition-selection-btn">+</div>
+				<div class="definition-selection-dec definition-selection-btn">-</div>-->
+				<div class="definition-selection-new definition-selection-btn">$AddDefinitionToList$</div>
+			</div>
+		</div>
+		
+		<div class="sp-checkinput draft">
+			<label class="sp-checkinput-label"></label>
+			<div class="sp-checkinput-check"></div>
+			<input class="sp-checkinput-text" type="text" />
+		</div>
+		<!-- pseudo web components end -->
+
+		<div class="scenario-settings draft">
+			<div class="loadingPage">
+				<div class="loadingPage-caption"><p>$LoadingInit$</p>
+					 <!-- Mit toller Windmuehlen-Animation? (Also nicht der Text...) -->
+				</div>
+				<div class="loadingPage-subCaption">$LoadingInitSub$</div>
+			</div>
+		
+			<div style="width: 70px;"></div>
+			<div class="navigation">
+				<div class="navigation-option active nav-page-general icon-world"></div>
+				<div class="navigation-option nav-page-objects icon-objects"></div>
+				<div class="navigation-option nav-page-landscape icon-landscape"></div>
+				<div class="navigation-option nav-page-environment icon-environment"></div>
+				<div class="navigation-option nav-page-code icon-brackets"></div>
+				<div class="navigation-spacer"></div>
+				<div class="navigation-option nav-reload icon-reload"></div>
+				<div class="navigation-option nav-save"><span class="icon-24 icon-save"></span></div>
+			</div>
+			<div class="settings-page-container">
+				<div class="settings-page page-general">
+					<div class="sp-head">$GeneralCaption$</div>
+					
+					<section>
+						<div class="flex-wrapper">
+							<div class="flex-item">
+								$Icon$: <select class="sp-g-selecticon" data-scenario-sect="Head" data-scenario-key="Icon"></select>
+							</div>
+							<div class="sp-number-input flex-item">
+								<label for="i_0">$MaxPlayers$:</label>
+								<input id="i_0" type="number" class="sp-g-maxplayers" min="1" max="12" data-defaultvalue="4"  data-scenario-sect="Head" data-scenario-key="MaxPlayer" />
+								<div class="input-spinners" data-input-id="i_0"></div>
+							</div>
+							<div class="flex-item">
+								$FoW$: <input type="checkbox" class="sp-g-enablefow" data-scenario-sect="Game" data-scenario-key="FoWEnabled" />
+							</div>
+						</div>
+					</section>
+					<section>
+					<div class="flex-wrapper">
+						<div class="flex-item">
+							<div class="defsel sp-g-goals" data-scenario-sect="Game" data-scenario-key="Goals" data-category="C4D_Goal">$DHGoals$</div>
+						</div>
+						<div class="flex-item">
+							<div class="defsel sp-g-rules" data-scenario-sect="Game" data-scenario-key="Rules" data-category="C4D_Rule">$DHRules$</div>
+						</div>
+					</div>
+					</section>
+				</div>
+				<div class="settings-page page-objects">
+					<div class="sp-head">$ObjectsCaption$</div>
+					<!--<section>
+						<div class="sp-o-playerselection sp-radiogroup">
+							<div class="sp-radiobutton active players-all" data-group="sp-o-playersel">$PlayersAll$</div>
+							<div class="sp-radiobutton players-1" data-group="sp-o-playersel">$Player$ 1</div>
+							<div class="sp-radiobutton players-2" data-group="sp-o-playersel">$Player$ 2</div>
+							<div class="sp-radiobutton players-3" data-group="sp-o-playersel">$Player$ 3</div>
+							<div class="sp-radiobutton players-4" data-group="sp-o-playersel">$Player$ 4</div>
+						</div>
+					</section>-->
+					<section>
+						<div class="sp-number-input flex-item">
+							<label for="i_1">$Wealth$:</label>
+							<input id="i_1" type="number" class="sp-o-wealth" min="0" max="1000" data-defaultvalue="250" data-scenario-sect="PlayerX" data-scenario-key="Wealth" />
+							<div class="input-spinners" data-input-id="i_1"></div>
+						</div>
+					</section>
+					<section>
+						<div class="sp-o-groupwrapper">
+							<div class="sp-o-group1 sp-o-group">
+								<div class="flex-wrapper">
+									<div class="flex-item">
+										<div class="defsel sp-o-crew" data-category="C4D_Living" data-scenario-sect="PlayerX" data-scenario-key="Crew">$DHCrew$</div>
+									</div>
+									<div class="flex-item">
+										<div class="defsel sp-o-buildings" data-category="C4D_Structure" data-scenario-sect="PlayerX" data-scenario-key="Buildings">$DHBuildings$</div>
+									</div>
+								</div>
+								<div class="flex-wrapper">
+									<div class="flex-item">
+										<div class="defsel sp-o-vehicles" data-category="C4D_Vehicle" data-scenario-sect="PlayerX" data-scenario-key="Vehicles" data-defflags="DFLAG_Vehicles">$DHVehicles$</div>
+									</div>
+									<div class="flex-item">
+										<div class="defsel sp-o-material" data-category="C4D_Vehicle|C4D_Living|C4D_Object" data-scenario-sect="PlayerX" data-scenario-key="Material">$DHMaterial$</div>
+									</div>
+								</div>
+							</div>
+							
+							<div class="sp-o-group2 sp-o-group inactive">
+								<div class="flex-wrapper">
+									<div class="flex-item">
+										<div class="defsel sp-o-knowledge" data-category="C4D_Vehicle|C4D_Living|C4D_Object|C4D_Structure" data-scenario-sect="PlayerX" data-scenario-key="Knowledge">$DHKnowledge$</div>
+									</div>
+									<div class="flex-item">
+										<div class="defsel sp-o-magic" data-category="C4D_Magic" data-scenario-sect="PlayerX" data-scenario-key="Magic">$DHMagic$</div>
+									</div>
+								</div>
+								<div class="flex-wrapper">
+									<div class="flex-item">
+										<div class="defsel sp-o-baseprocution" data-category="C4D_Vehicle|C4D_Living|C4D_Object" data-scenario-sect="PlayerX" data-scenario-key="BaseProduction">$DHBaseProduction$</div>
+									</div>
+									<div class="flex-item">
+										<div class="defsel sp-o-basematerial" data-category="C4D_Vehicle|C4D_Living|C4D_Object" data-scenario-sect="PlayerX" data-scenario-key="BaseMaterial">$DHBaseMaterial$</div>
+									</div>
+								</div>
+							</div>
+						
+							<div class="sp-o-switchpage">&gt;</div>
+						</div>
+					</section>
+				</div>
+				<div class="settings-page page-landscape">
+					<div class="sp-head">$LandscapeCaption$</div>
+					
+					<div class="sp-l-wrapper">
+						<div class="sp-l-sidebar">
+							<div class="sp-settingsgroup">
+								<div class="sp-settingsgroup-header">
+									<div class="sp-settingsgroup-caption">$SGHMapData$</div>
+									<div class="sp-settingsgroup-collapse">▼</div>
+								</div>
+								<div class="sp-settingsgroup-body">
+									$MapWidth$:
+									<input type="range" class="sp-l-mapwidth" min="300" max="2000" data-defaultmin="300" data-defaultmax="2000" data-scenario-sect="Landscape" data-scenario-key="MapWidth"/>
+									$MapHeight$:
+									<input type="range" class="sp-l-mapheight" min="300" max="2000" data-defaultmin="400" data-defaultmax="2000" data-scenario-sect="Landscape" data-scenario-key="MapHeight"/>
+									$MapZoom$:
+									<input type="range" class="sp-l-mapzoom" min="1" max="15" data-scenario-sect="Landscape" data-scenario-key="MapZoom"/>
+									<label>$NoScan$:<input type="checkbox" class="sp-l-noscan" data-scenario-sect="Landscape" data-scenario-key="NoScan" /></label><br/>
+									<label>$MapPlayerExtend$:<input type="checkbox" class="sp-l-mapplayerextend" data-scenario-sect="Landscape" data-scenario-key="MaxPlayerExtend" /></label><br/>
+									$Sky$: <select class="sp-l-selectsky" data-scenario-sect="Landscape" data-scenario-key="Sky"></select></br>
+									$SkyFade$: <!--ColorPicker--></br>
+								</div>
+							</div>
+							
+							<div class="sp-settingsgroup">
+								<div class="sp-settingsgroup-header">
+									<div class="sp-settingsgroup-caption">$SGHMapGenerator$</div>
+									<div class="sp-settingsgroup-collapse">▼</div>
+								</div>
+								<div class="sp-settingsgroup-body">
+									$Amplitude$:
+									<input type="range" class="sp-l-amplitude" min="0" max="100" data-scenario-sect="Landscape" data-scenario-key="Amplitude" />
+									$Phase$:
+									<input type="range" class="sp-l-phase" min="0" max="100" data-scenario-sect="Landscape" data-scenario-key="Phase" />
+									$Period$:
+									<input type="range" class="sp-l-period" min="0" max="100" data-scenario-sect="Landscape" data-scenario-key="Period" />
+									$Random$:
+									<input type="range" class="sp-l-random" min="0" max="100" data-scenario-sect="Landscape" data-scenario-key="Random" />
+									$LiquidLevel$:
+									<input type="range" class="sp-l-liquidlevel" min="0" max="100" data-scenario-sect="Landscape" data-scenario-key="LiquidLevel" />
+								</div>
+							</div>
+							
+							<div class="sp-settingsgroup">
+								<div class="sp-settingsgroup-header">
+									<div class="sp-settingsgroup-caption">$SGHOpenBorders$</div>
+									<div class="sp-settingsgroup-collapse">▼</div>
+								</div>
+								<div class="sp-settingsgroup-body">
+									<label>$TopOpen$: <input class="sp-l-topopen" type="checkbox" data-scenario-sect="Landscape" data-scenario-key="TopOpen" /></label><br/>
+									<label>$BottomOpen$: <input class="sp-l-bottomopen" type="checkbox" data-scenario-sect="Landscape" data-scenario-key="BottomOpen" /></label><br/>
+									<label>$AutoScanSide$: <input class="sp-l-autoscanside" type="checkbox" data-scenario-sect="Landscape" data-scenario-key="AutoScanSide" /></label><br/>
+									<div class="checkinput" data-class="sp-l-leftopen" data-scenario-sect="Landscape" data-scenario-key="LeftOpen">$LeftOpen$:</div><br/>
+									<div class="checkinput" data-class="sp-l-rightopen" data-scenario-sect="Landscape" data-scenario-key="RightOpen">$RightOpen$:</div><br/>
+								</div>
+							</div>
+							
+							
+						</div>
+						<div class="sp-l-preview">
+							&lt;Hier kommt noch spaeter ein zentriertes canvas rein fuer den Mapgenerator (Falls ich den ueberhaupt hinkriegen koennte... Ist aber evtl. erst 1.5er-Material)&gt;
+						</div>
+					</div>
+				</div>
+				<div class="settings-page page-environment">
+					<div class="sp-head">$EnvironmentCaption$</div>
+					
+					<div class="flex-wrapper">
+						<div class="flex-item">
+							<div class="defsel sp-e-vegetation" data-category="C4D_Object" data-scenario-sect="Landscape" data-scenario-key="Vegetation" data-defflags="DFLAG_Vegetation">$DHVegetation$</div>
+						</div>
+						<div class="flex-item">
+							<div class="defsel sp-e-inearth" data-category="C4D_Object" data-scenario-sect="Landscape" data-scenario-key="InEarth">$DHInEarth$</div>
+						</div>							
+					</div>
+					<div class="flex-wrapper">
+						<div class="flex-item">
+							$VegetationLevel$: <input type="range" class="sp-e-vegetationlevel" min="0" max="100" data-scenario-sect="Landscape" data-scenario-key="VegetationLevel" />
+						</div>
+						<div class="flex-item">
+							$InEarthLevel$: <input type="range" class="sp-e-inearthlevel" min="0" max="100" data-scenario-sect="Landscape" data-scenario-key="InEarthLevel" />
+						</div>
+					</div>
+					<div class="flex-wrapper">
+						<div class="flex-item">
+							<div class="defsel sp-e-animals" data-category="C4D_Living" data-scenario-sect="Animals" data-scenario-key="Animals" data-defflags="DFLAG_Animals">$DHAnimals$</div>
+						</div>
+						<div class="flex-item">
+							<div class="defsel sp-e-nest" data-category="C4D_Object" data-scenario-sect="Animals" data-scenario-key="Nest">$DHNest$</div>
+						</div>
+					</div>
+					<div class="flex-wrapper">
+						<div class="flex-item">
+							<div class="sp-settingsgroup">
+								<div class="sp-settingsgroup-header">
+									<div class="sp-settingsgroup-caption">$WeatherCaption$</div>
+								</div>
+								<div class="sp-settingsgroup-body">
+									$Climate$:
+									<input type="range" class="sp-e-climate" min="0" max="100" data-scenario-sect="Weather" data-scenario-key="Climate" /><br/>
+									$StartSeason$:
+									<input type="range" class="sp-e-startseason" min="0" max="100" data-scenario-sect="Weather" data-scenario-key="StartSeason" /><br/>
+									$YearSpeed$:
+									<input type="range" class="sp-e-yearspeed" min="0" max="100" data-scenario-sect="Weather" data-scenario-key="YearSpeed" /><br/>
+									$Wind$:
+									<input type="range" class="sp-e-wind" min="-100" max="100" data-scenario-sect="Weather" data-scenario-key="Wind" /><br/>
+									$Gravity$:
+									<input type="range" class="sp-e-gravity" min="10" max="200" data-defaultvalue="100" data-scenario-sect="Weather" data-scenario-key="Gravity" /><br/>
+								</div>
+							</div>
+						</div>
+						<div class="flex-item">
+							<div class="defsel sp-e-environment" data-category="C4D_Environment" data-scenario-sect="Landscape" data-scenario-key="Environment">$DHEnvironment$</div>
+						</div>
+					</div>
+				</div>
+				<div class="settings-page page-code">
+					&lt;Hier wuerde spaeter das Editor Modul reingeladen werden und die Scenario.txt geoeffnet werden&gt;
+				</div>
+			</div>
+			<div class="deflist-adding-overlay" style="display: none">
+					<div class="deflist-ao-header">
+						<div class="deflist-ao-header-caption">&lt;Title&gt;</div>
+						<div class="deflist-ao-header-close"><span class="icon-16 icon-x"></span></div>
+					</div>
+					<div class="deflist-ao-body">
+						<div class="deflist-ao-listwrapper deflist-current">
+							<div class="deflist-ao-list-header"><div class="deflist-ao-listheader-caption">$AOCurrent$</div></div>
+							<div class="deflist-ao-search"><input class="deflist-ao-searchinput"></div>
+							<div class="deflist-ao-list-content"></div>
+						</div>
+						<div class="deflist-ao-listwrapper deflist-defsel">
+							<div class="deflist-ao-list-header"><div class="deflist-ao-listheader-caption">$AOSelection$</div></div>
+							<div class="deflist-ao-search"><input class="deflist-ao-searchinput"></div>
+							<div class="deflist-ao-list-content"></div>	
+						</div>
+					</div>
+				</div>
+			</div>
+		
+		<div id="editorframe">
+
+		</div>
+	</div>
+	
+	<script src="chrome://windmill/content/js/default_module.js" type="text/javascript" charset="utf-8"></script>
+	<script src="chrome://windmill/content/modules/cide/scenario-settings/js/scenario-settings.js" type="text/javascript" charset="utf-8"></script>
+</body>
+</html>

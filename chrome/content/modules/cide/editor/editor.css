@@ -1,0 +1,290 @@
+
+.main-editor {
+	display: none;
+	position: absolute !important;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+}
+
+.main-editor.visible {
+	display: block;
+}
+
+#editor-container {
+	-moz-box-flex: 1;
+	flex: 1;
+	possition: relative;
+}
+
+#searchBar > * {
+	display: inline-block;
+}
+
+#searchBar .icon-16 {
+	margin: 0 3px;
+}
+
+#toolbar .icon-16:hover,
+#searchBar .icon-16:hover {
+	color: rgb(130, 130, 130);
+}
+
+#search-upwards,
+#search-downwards,
+.search-close-button {
+	font-size: 12px;
+	cursor: default;
+	margin: 0 3px;
+}
+
+#search-upwards:hover,
+#search-downwards:hover,
+.search-close-button:hover {
+	color: grey;
+}
+
+#toolbar,
+#searchBar {
+	background-color: rgb(240, 240, 240);
+	padding-left: 1em;
+	font-family: "Segoe UI", Verdana, sans-serif;
+	color: rgb(160, 160, 160);
+	-moz-appearance: none;
+	border-bottom: 1px solid gainsboro;
+}
+
+#toolbar > * {
+	margin-right: 5px;
+}
+
+#wrapper	{
+	position: absolute;
+	bottom: 0;
+	top: 0;
+	left: 0;
+	right: 0;
+	overflow: hidden;
+	
+	display: flex;
+	flex-direction: column;
+}
+
+#search-wrapper {
+	position: relative;
+}
+
+#searchBar {
+	position: absolute;
+	float: left;
+	height: 0px;
+	overflow: hidden;
+	transition: height 0.3s;
+	left: 0;
+	z-index: 15;
+	padding-left: 5px;
+	
+	box-sizing: border-box;
+}
+
+#searchBar.visible {
+	height: 1.6em;
+}
+
+#replace-wrapper {
+	display: inline-block;
+	border: 1px solid rgb(220, 220, 220);
+	
+	box-sizing: border-box;
+}
+
+#replace-wrapper input {
+	border: none;
+	margin: 0;
+	
+}
+
+#replace-wrapper * {
+	display: inline-block;
+}
+
+#replace-wrapper.enabled,
+#searchBar .icon-16.enabled {
+	color: steelblue;
+}
+
+#replace-with {
+	display: none;
+}
+
+#replace-wrapper.enabled #replace-with {
+	display: inline-block;
+}
+
+/* snippet */
+
+.snp-wrapper {
+	min-height: 400px;
+	min-width: 500px;
+	display: flex;
+	flex: 1;
+}
+
+.snp-wrapper.snp-edit-mode .snp-select-frame,
+.snp-editor-frame{
+	display: none;
+}
+
+.snp-wrapper.snp-edit-mode .snp-editor-frame,
+.snp-select-frame{
+	display: flex;
+}
+
+.snp-container {
+	height: 400px;
+	width: 500px;
+	display: flex;
+	flex: 1;
+}
+
+.snp-item {
+	display: flex;
+	cursor: pointer;
+}
+
+.snp-select-frame {
+	flex: 1;
+	display: flex;
+}
+
+.snp-select {
+	flex: 1;
+	overflow-y: auto;
+}
+
+.snp-desc {
+	flex: 1;
+	color: grey;
+	padding: 0.5em;
+}
+
+.snp-item:hover .snp-desc,
+.snp-edit:hover {
+	color: rgb(40, 40, 40);
+}
+
+
+.snp-item:hover .snp-edit,
+.snp-edit {
+	display: none;
+}
+
+.snp-edit,
+.snp-save,
+.snp-delete,
+.snp-arrow {	
+	min-width: 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+	cursor: pointer;
+	padding: 4px;
+}
+
+.snp-item:hover .snp-edit{
+	display: inherit;
+}
+
+.snp-wrapper .icon-16 {
+	color: rgb(180, 180, 180);
+}
+
+.snp-wrapper .icon-16:hover {
+	color: grey;
+}
+
+.snp-editor-h {
+	display: flex;
+	margin-bottom: 1em;
+}
+
+.snp-editor-desc {
+	padding: initial 5px;
+}
+
+.snp-editor-desc,
+.snp-editor-input  {
+	border: 1px solid gainsboro;
+	transition: border-color 0.3s;
+	background-color: inherit;
+	flex: 1;
+}
+
+.snp-editor-desc:hover,
+.snp-editor-desc:focus,
+.snp-editor-input:hover,
+.snp-editor-input:focus {
+	border: 1px solid steelblue;
+}
+
+.snp-editor-input {
+	resize: none;
+}
+
+.snp-editor-frame,
+.snp-select-frame {
+	flex-direction: column;
+	flex: 1;
+}
+
+.snp-button-wrapper {
+	display: flex;
+	justify-content: center;
+}
+
+.snp-fieldset-input {
+	position: absolute;
+	opacity: 0;
+	z-index: -1;
+}
+
+/* paramlist style */
+
+#paramList {
+	position: absolute;
+	
+	margin-right: 40px;
+	
+	background-color: whitesmoke;
+	border: 1px solid gainsboro;
+	color: rgb(40, 40, 40);
+	z-index: 15;
+	padding: 3px;
+	
+	font-family: "Segoe UI", Verdana, sans-serif;
+	font-size: 0.7em;
+	pointer-events: none;
+}
+
+.param-rtype,
+.param-ptype {
+	font-family: monospace;
+	color: steelblue;
+	font-size: 1.2em;
+}
+
+.param-pname {
+	margin-left: 0.3em;
+}
+
+.param-pfocussed {
+	font-weight: bold;
+	background-color: #F4FF8E;
+}
+
+.param-pwrapper {
+	white-space: nowrap;
+}
+
+
+/* 		space	*/

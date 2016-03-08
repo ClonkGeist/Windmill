@@ -1,0 +1,109 @@
+html, body {
+	height: 100%;
+	width: 100%;
+	margin: 0;
+	color: rgb(80, 80, 80);
+}
+
+body {
+	display: flex;
+	align-items: center;
+	background-color: rgb(245, 245, 245);
+	font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+}
+
+#progressmeter {
+	position: absolute;
+	height: 3px;
+	background-color: rgb(180, 180, 180);
+	top: 0;
+	left: 0;
+	right: 0;
+	transition: height 0.3s;
+}
+
+#progressmeter:hover {
+	height: 10px;
+}
+
+#progressneedle {
+	background-color: rgb(219, 70, 49);
+	height: 100%;
+	width: 0%;
+}
+
+
+#interface {
+	flex: 1;
+	display: flex;
+	padding: 3px 5px 0 5px;
+	align-items: center;
+}
+
+.time-display {
+}
+
+#button-wrapper {
+	display: flex;
+	justify-content: center;
+	flex: 1;
+}
+
+.button {
+	color: rgb(160, 160, 160);
+	margin: 5px;
+}
+
+.button:hover {
+	color: rgb(80, 80, 80);
+}
+
+#button-play.pause:before {
+	content: "\e619";
+}
+
+#volume-overlay {
+	position: absolute;
+	top: 0;
+	right: 0;
+	left: 0;
+	bottom: 0;
+	
+	display: none;
+	background-color: rgb(245, 245, 245);
+	align-items: center;
+	padding: 0 3px;
+	border-top: 1px solid rgb(180, 180, 180);
+}
+
+#volume-overlay.visible {
+	display: flex;
+}
+
+#close-volume-overlay {
+	border-left: 1px solid rgb(180, 180, 180);
+	padding: 0 3px;
+}
+
+#currentvolume-wrapper {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	padding: 0 5px;
+}
+
+#currentvolume {
+	height: 5px;
+	background-color: rgb(219, 70, 49);
+}
+
+#currentvolume-filler {
+	flex: 1;
+	height: 5px;
+	background-color: rgb(180, 180, 180);
+}
+
+#button-volume.muted:before,
+#toggle-volume.muted:before {
+	content: "\ea2a";
+}

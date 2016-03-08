@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Audioplayer Module</title>
+<style type="text/css" media="screen">
+</style>
+<link rel="stylesheet" type="text/css" href="chrome://windmill/skin/icomoon.css"></link>
+<link rel="stylesheet" type="text/css" href="chrome://windmill/skin/default_module.css"></link>
+<link rel="stylesheet" type="text/css" href="chrome://windmill/content/modules/cide/audioplayer/audioplayer.css"></link>
+</head>
+<body onload="window.readyState = true">
+	<script src="chrome://windmill/content/js/default_module.js" type="text/javascript" charset="utf-8"></script>
+	<script src="chrome://windmill/content/modules/cide/audioplayer/js/audioplayer.js" type="text/javascript" charset="utf-8"></script>
+	
+	<div id="interface">
+		<div id="timecurrent">00:00</div>
+		
+		<div id="button-wrapper">
+			<div id="button-volume" class="button icon-16 icon-volume-high volumn-btn"></div>
+			<div id="button-play-wrapper">
+				<div id="button-play" class="button icon-16 icon-play"></div>
+			</div>
+			<div id="button-loop" class="button icon-16 icon-spinner11"></div>
+		</div>
+		
+		<div id="timeend">99:99</div>
+	</div>
+	
+	<div id="progressmeter">
+		<div id="progressneedle"></div>
+	</div>
+	
+	<div id="volume-overlay">
+		<div id="toggle-volume" class="icon-16 icon-volume-high button volumn-btn"></div>
+		<div id="currentvolume-wrapper">
+			<div id="currentvolume"></div>
+			<div id="currentvolume-filler"></div>
+		</div>
+		<div id="close-volume-overlay" class="icon-16 icon-x button"></div>
+	</div>
+</body>
+</html>

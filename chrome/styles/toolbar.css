@@ -1,0 +1,220 @@
+#toolbar {
+	-moz-appearance: none;
+	margin: 0;
+	padding: 0;
+	border: none;
+}
+
+#toolbar button *,
+#toolbar button {
+	background-color: inherit;
+}
+
+#toolbar > * {
+	display: inline-block;
+}
+
+#toolbar button,
+.ui-button {
+	-moz-appearance: none;
+	border: 1px solid transparent;
+	padding: 0;
+	min-width: 0;
+	display: inline-block;
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+#toolbar button:active *{
+	-moz-appearance: none;
+}
+
+#toolbar button:hover,
+.ui-button:hover {
+	/*background-color: rgba(0, 0, 0, 0.05);*/
+}
+
+#toolbar button[checked=true],
+#toolbar button:active,
+.ui-button:active,
+.ui-checkbox.checked {
+	background-color: rgb(235, 235, 235);
+	border: 1px solid gainsboro;
+	-moz-appearance: none;
+	padding: initial;
+}
+
+#toolbar .active {
+	background-color: rgb(235, 235, 235);
+}
+
+.tool-image,
+.ui-image {
+	-moz-appearance: none;
+	width: 24px;
+	height: 24px;
+	padding: 0;
+	cursor: pointer;
+	border: 1px solid transparent;
+}
+
+.tool-image * {
+	-moz-appearance: none;
+	margin: 0;
+}
+
+.ui-image-popup {
+	-moz-appearance: none;
+	padding: 0;
+	width: 24px;
+	border: 1px solid gainsboro;
+	box-shadow: none;
+}
+
+.menuitem-iconic {
+	padding: 2px;
+}
+
+.menuitem-iconic * {
+	margin: 0;
+	padding: 0;
+}
+
+.ui-image-popup menuitem:hover,
+.ui-dropdown-list > *:hover {
+	background-color: gainsboro !important;
+}
+
+.ui-image-popup menuitem,
+.ui-dropdown-list > *{
+	background-color: rgb(240, 240, 240) !important;
+	background-position: center !important;
+}
+
+
+.ui-image.xul > * {
+	padding: 0;
+}
+
+.ui-dropdown-cont {
+	display: inline-block;
+}
+
+.ui-dropdown-list {
+	position: absolute;
+	z-index: 20;
+	-moz-window-shadow: none;
+}
+
+.ui-dropdown-list > * {
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.ui-dropdown-list,
+.ui-dropdown-list *,
+.ui-dropdown-list button {
+	-moz-user-focus: ignore !important;
+}
+
+.ui-checkbox.ui-custom-checkbox {
+	background-color: white;
+	border: 1px solid gainsboro;
+	width: 14px;
+	height: 14px;
+	display: inline-block;
+	vertical-align: middle;
+	margin: 0 5px;
+	cursor: pointer;
+}
+
+.ui-custom-checkbox.checked {
+	background-color: grey;
+}
+
+button:focus,
+button:focus *,
+toolbarbutton:focus, 
+toolbarbutton:focus  *{
+	outline: none !important;
+}
+
+.panel {
+	position: fixed;
+	top: 0;
+	left: 0;
+	background-color: whitesmoke;
+	z-index: 20;
+	font-family: "Segoe UI", Verdana, sans-serif;
+	display: flex;
+	flex-direction: column;
+	border: 1px solid gainsboro;
+	background-color: none !important;
+}
+
+.panel-header {
+	background-color: rgb(240, 240, 240);
+	color: rgb(80, 80, 80);
+	font-size: 1em;
+	padding: 0.3em 0.5em;
+	cursor: default;
+	-moz-user-select: none;
+	display: flex;
+	border-bottom: 1px solid gainsboro;
+}
+
+.panel-header:active {
+	cursor: move;
+}
+
+.panel-close-button {
+	margin-left: 10px;
+}
+
+.panel-frame-button-wrapper {
+	align-self: flex-end;
+}
+
+.panel-frame-button {
+
+	cursor: pointer;
+	color: rgb(180, 180, 180);
+	font-size: 16px;
+	vertical-align: middle;
+}
+
+.panel-frame-button:hover {
+	color: rgb(125, 125, 125);
+}
+
+.panel-size-button,
+.panel-size-button {
+	display: none;
+	min-width: 16px;
+	cursor: pointer;
+}
+
+.panel-size-button.visible,
+.panel-size-button.visible {
+	display: initial;
+}
+
+.panel-body {
+	padding: 0.5em;
+	flex: 1;
+	display: flex;
+}
+
+
+/*
+input.ui-checkbox {
+	-moz-appearance: none;
+	background-color: white;
+	border: grey 1px solid;
+	opacity: 0;
+}
+
+input.ui-checkbox * {
+	outline: none;
+	border: none;
+}*/

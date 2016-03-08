@@ -1,0 +1,86 @@
+window {
+	background-color: rgb(250, 250, 250);
+	font-family: "Segoe UI", Verdana, sans-serif;
+	overflow-y: scroll;
+}
+
+.btn-reload {
+	margin-right: 3px;
+}
+
+.icon-16 {
+	cursor: pointer;
+	color: grey;
+}
+
+.icon-16:hover {
+	color: rgb(80, 80, 80);
+}
+
+row.header {
+	background-color: gainsboro;
+	border-bottom: 1px solid grey;
+}
+
+row > * {
+	border-left: 1px dotted grey;
+	padding-left: 5px;
+}
+
+row.removedModule {
+	background-color: red;
+}
+
+row.newModule {
+	background-color: green;
+}
+
+row.configSection {
+	background-color: lightgrey;
+}
+
+row.configChanged {
+	background-color: moccasin;
+}
+
+.cfg-val {
+	min-width: 20px;
+}
+
+.cfg-val:hover {
+	cursor: pointer;
+	color: royalblue;
+}
+
+#lblbtn-save:hover {
+	cursor: pointer;
+	color: royalblue;
+}
+
+grid {
+	-moz-user-focus: normal;
+	background-color: white;
+}
+
+#wrapper {
+	overflow-y: scroll;
+}
+
+/* dom inspector */
+
+#dom-container {
+	font-family: monospace;
+	padding: 1.5em;
+	-moz-user-select: text;
+}
+
+#dom-container * {
+	-moz-user-select: text !important;
+}
+
+.inspect-line:hover {
+	background-color: rgba(0, 165, 207, 0.15);
+	-moz-user-select: text;
+}
+
+/*	need some space	*/

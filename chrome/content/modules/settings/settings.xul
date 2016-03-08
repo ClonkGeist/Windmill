@@ -1,0 +1,217 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://windmill/content/modules/settings/settings.css" type="text/css"?>
+<?xml-stylesheet href="chrome://windmill/skin/icomoon.css" type="text/css"?>
+<?xml-stylesheet href="chrome://windmill/skin/default_module.css" type="text/css"?>
+
+<window id="main" title="Settings" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+	<script type="application/javascript" src="chrome://windmill/content/js/default_module.js"/>
+	<script type="application/javascript" src="chrome://windmill/content/modules/settings/js/settings.js"/>
+	
+
+	<hbox id="settings" flex="1">
+		<vbox id="settings-nav" flex="1">
+			<!-- preference sections -->
+			<!--<button class=" navigation" label="General" oncommand="togglePage('settings-page-general', 'settings-pages', this)" />-->
+			<button class="active navigation" label="$General$" oncommand="togglePage('settings-page-general', 'settings-pages', this)" />
+			<button class="navigation" label="Open Clonk" oncommand="togglePage('settings-page-oc', 'settings-pages', this)" />
+			<button class="navigation" label="$Modules$" oncommand="togglePage('settings-page-modules', 'settings-pages', this)" />
+			<button class="navigation" label="$KeyBindings$" oncommand="togglePage('settings-page-keybindings', 'settings-pages', this);" />
+			<button class="navigation" label="$ExternalApplications$" oncommand="togglePage('settings-page-extapp', 'settings-pages', this);" />
+			<button class="navigation" label="$Save$" oncommand="saveSettings();"  />
+			<spacer flex="1" />
+		</vbox>
+		
+		<vbox flex="4">
+			<hbox id="restartBar">
+				<hbox id="restartBarDesc">$ChangesNeedRestart$</hbox>
+				<spacer flex="1"/>
+				<hbox id="restartBarButton"></hbox>
+			</hbox>
+			<deck selectedIndex="0" flex="1" id="settings-deck">
+			<!--<stack>
+				<vbox id="settings-page-general" class="settings-page" style="background-color: yellow" top="0" bottom="0">
+					<caption class="big" label="General" />
+				</vbox>
+			</stack>-->
+			
+			<!-- SUBPAGE: General -->
+			
+			<stack>
+				<vbox id="settings-page-general" class="settings-page" top="0" bottom="0">
+					<caption class="big" label="General" />
+					<grid>
+						<columns>
+							<column flex="1"/>
+							<column flex="1"/>
+						</columns>
+						<rows>
+							<row>
+								<label value="$selectlang$"/>
+								<menulist oncommand="onLanguageSelected(this);">
+									<menupopup id="languageselection">
+										
+									</menupopup>
+								</menulist>
+							</row>
+						</rows>
+					</grid>
+					
+					<caption label="$WorkspaceDirectory$" />
+					<hbox>
+						<description flex="1" id="workspace-dir" class="view-directory-path">$pathempty$</description>
+						<button label="$browse$" oncommand="openPathDialog('workspace-dir')"/>
+					</hbox>
+				</vbox>
+			</stack>
+			
+			<!-- SUBPAGE: Open Clonk -->
+			
+			<stack>
+				<vbox id="settings-page-oc" class="settings-page" top="0" bottom="0">
+					<caption class="big" label="Open Clonk" />
+					
+					<description flex="1">
+						&lt;Hier kommt spaeter eine Main-Clonkdir-Auswahl hin etc. Bis dahin muss hierfuer allerdings der CIDE-Explorer verwendet werden.&gt;
+					</description>
+					<!--
+					<caption label="$OCDir$" />
+					<hbox>
+						<description flex="1" id="oc-path" class="view-directory-path">$pathempty$</description>
+						<button label="$browse$" oncommand="openPathDialog('oc-path')"/>
+					</hbox>
+					-->
+				</vbox>
+			</stack>
+			
+			<!-- SUBPAGE: Modules -->
+			
+			<stack>
+				<vbox id="settings-page-modules" class="settings-page" top="0" bottom="0">
+					<caption class="big" label="$modules$" />
+					<caption class="big" label="$cide$" />
+					<caption label="$acetheme$" class="toggle-contents" onclick="toggleContents(this)"/>
+					<vbox>
+						<!-- ace theme selection -->
+						<hbox>
+							<listbox id="editor-theme-list" flex="1">
+							</listbox>
+						</hbox>
+						<hbox>
+							<button label="$applytheme$" oncommand="setAceTheme()" />
+						</hbox>
+						<!-- font size of explorer -->
+						<!--
+						<hbox>
+							<label value="Explorer Font Size" control="explorer-font-size"/>
+							<textbox id="explorer-font-size" type="number" />px
+						</hbox>-->
+					</vbox>
+					<caption label="Programs" class="toggle-contents" onclick="toggleContents(this)"/>
+					<vbox>
+						<grid>
+							<columns>
+								<column flex="1"/>
+								<column flex="5"/>
+								<column flex="1"/>
+								<column flex="1"/>
+							</columns>
+							<rows>
+								<row id="row-Script" class="extprogram">
+									<label value="$scriptfile$"/>
+									<description class="view-directory-path">$pathempty$</description>
+									<button label="$browse$" oncommand="openProgramDialog(this)"/>
+									<label value="[x]"/>
+								</row>
+								<row id="row-Text" class="extprogram">
+									<label value="$textfile$"/>
+									<description class="view-directory-path">$pathempty$</description>
+									<button label="$browse$" oncommand="openProgramDialog(this)"/>
+									<label value="[x]"/>
+								</row>
+								<row id="row-GraphicsPNG" class="extprogram">
+									<label value="$graphicspng$"/>
+									<description class="view-directory-path">$pathempty$</description>
+									<button label="$browse$" oncommand="openProgramDialog(this)"/>
+									<label value="[x]"/>
+								</row>
+								<row id="row-GraphicsBMP" class="extprogram">
+									<label value="$graphicsbmp$"/>
+									<description class="view-directory-path">$pathempty$</description>
+									<button label="$browse$" oncommand="openProgramDialog(this)"/>
+									<label value="[x]"/>
+								</row>
+								<row id="row-Audio" class="extprogram">
+									<label value="$audiofile$"/>
+									<description class="view-directory-path">$pathempty$</description>
+									<button label="$browse$" oncommand="openProgramDialog(this)"/>
+									<label value="[x]"/>
+								</row>
+							</rows>
+						</grid>	
+					</vbox>
+					<caption label="Explorer" class="toggle-contents" onclick="toggleContents(this)"/>
+					<vbox>
+						<checkbox label="$CopyOnDragDrop$" id="explorer-copy-on-drag-drop" class="autoinit" flex="1" default-cfgsect="Explorer" default-cfgkey="CopyOnDragDrop"/>
+					</vbox>
+					<caption label="Scenario Settings" class="toggle-contents" onclick="toggleContents(this)"/>
+					<vbox>
+						<checkbox label="$AlwaysUseScenarioSettings$" id="scenariosettings-always-use" class="autoinit" flex="1" default-cfgsect="ScenarioSettings" default-cfgkey="AlwaysUseScenarioSettings"/>
+					</vbox>
+				</vbox>
+				</stack>
+				
+				<!-- SUBPAGE: Key Bindings -->
+				
+				<stack>
+					<vbox id="settings-page-keybindings" class="settings-page" top="0" bottom="0">
+						<caption class="big" label="$pkbCaption$"/>
+						
+						<listbox id="pkb-keybindings-list">
+							<listhead>
+								<listhead label="$pkbListDescription$"/>
+								<listhead label="$pkbListAssignedKey$" width="140px"/>
+							</listhead>
+							<listcols>
+								<listcol flex="1"/>
+								<listcol width="140px"/>
+							</listcols>
+							
+							<listitem class="pkb-list-subheader draft" disabled="true">
+								<listcell class="pkb-list-sh-caption"></listcell>
+							</listitem>
+							<listitem class="pkb-list-entry draft">
+								<listcell class="pkb-list-entry-desc"></listcell>
+								<listcell class="pkb-list-entry-keys"></listcell>
+							</listitem>
+						</listbox>
+					</vbox>
+				</stack>
+				
+				<!-- SUBPAGE: External Applications -->
+			
+				<stack>
+					<vbox id="settings-page-extapp" class="settings-page" top="0" bottom="0">
+						<caption class="big" label="$ExternalApplications$" />
+						
+						<vbox id="application_list">
+							<hbox class="applist_item draft">
+								<box style="-moz-box-align:center"><image class="applist_img"/></box>
+								<vbox flex="1">
+									<label class="applist_title" value="TITLE"/>
+									<description class="applist_desc">DESCRIPTION</description>
+									<label class="applist_path" value="C:/EXAMPLE/PATH"/>
+								</vbox>
+								<vbox class="applist_status"></vbox>
+								<vbox class="applist_controls">
+									<box class="applist_browse nav-image icon-update icon-32" height="32" width="32"></box>
+								</vbox>
+							</hbox>
+						</vbox>
+					</vbox>
+				</stack>
+			</deck>
+		</vbox>
+	</hbox>
+</window>

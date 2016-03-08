@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>BMP Editor Module</title>
+<link rel="stylesheet" type="text/css" href="chrome://windmill/skin/icomoon.css"></link>
+<link rel="stylesheet" type="text/css" href="chrome://windmill/skin/default_module.css"></link>
+<link rel="stylesheet" type="text/css" href="chrome://windmill/content/modules/cide/bmpeditor/style.css"></link>
+</head>
+<body onload="window.readyState = true">
+	<!-- toolbar -->
+	<div id="toolbar">
+		<div id="md_default" class="toolbarbutton group1 icon-cursor"></div>
+		<div id="md_point" class="toolbarbutton group1 icon-pencil active"></div>
+		<div id="md_line" class="toolbarbutton group1 icon-draw-line"></div>
+		<div id="md_rect" class="toolbarbutton group1 icon-fill-rect"></div>
+		<div id="md_circle" class="toolbarbutton group1 icon-fill-circle"></div>
+		<div id="md_fill" class="toolbarbutton group1 icon-paint-bucket"></div>
+		<div id="md_selrect" class="toolbarbutton group1 icon-select-rect"></div>
+		<div id="md_selcircle" class="toolbarbutton group1 icon-select-circle"></div>
+		<div id="md_selpoly" class="toolbarbutton group1 icon-select-poly"></div>
+		<div id="md_getclr" class="toolbarbutton group1 icon-eyedropper"></div>
+		<div class="toolbarsplitter"></div>
+		<div id="mds_filled" class="toolbarbutton toolsettings active">$fill$</div>
+		<div id="mds_thickness" class="toolbarbutton toolsettings">
+			<input type="text" id="mds_thickness_nr" value="3" maxlength="3"/>px
+			<input type="range" id="mds_thickness_range" min="1" max="100" value="3"/>
+		</div>
+		<div id="mds_linethickness" class="toolbarbutton toolsettings">
+			<input type="text" id="mds_linethickness_nr" value="3" maxlength="3"/>px
+			<input type="range" id="mds_linethickness_range" min="1" max="100" value="3"/>
+		</div>
+		<div class="toolbarsplitter"></div>
+		<div id="infotoolbar">
+			<div id="info-coordinates"></div>
+			<div id="info-size"></div>
+			<div id="info-zoom"></div>
+		</div>
+	</div>
+	
+	<!-- color/material matching wizard -->
+	<div class="color-matching-wizard draft">
+		<div class="cmw-title">$ColorMatchingWizard$</div>
+		<div class="cmw-description">
+			$ColorMatchingWizardDesc$<br/><br/>
+			$ColorMatchingWizardDesc2$
+		</div>
+		<div class="cmw-matching">
+			<div class="cmw-color">
+				<div class="cmw-desc">$SelectedColor$:</div>
+				<!--<div class="cmw-selectedclr materialclr-preview"></div>-->
+				<div class="cmw-selectcolor-palette-container">
+					<div class="cmw-selectcolor-palette-fastselect cmw-containerbutton">$FastSelection$</div>
+				</div>
+			</div>
+			<div class="cmw-material">
+				<div class="cmw-desc">$SelectMaterial$:</div>
+				<div class="cmw-material-selection">
+					<div class="cmw-material-selection-header">
+						<div class="cmw-material-selection-switchbg cmw-containerbutton">$ToggleBackgroundMode$</div>
+					</div>
+					<div class="cmw-material-selection-option draft">
+						<div class="cmw-material-selection-option-name"></div>
+						<div class="cmw-material-selection-option-matchedclr"></div>
+					</div>
+				</div>
+				<!--<select class="cmw-material-selection"></select>-->
+			</div>
+		</div>
+		<div class="cmw-preview">
+			<div class="cmw-mat-only">
+				<div class="cmw-desc">$PreviewMatOnly$:</div>
+				<div class="cmw-preview-switchbg"></div>
+			</div>
+			<div class="cmw-map-full"><div class="cmw-desc">$PreviewFullMap$</div></div>
+		</div>
+		<div class="cmw-controls">
+			<div class="cmw-filler"></div>
+			<div class="cmw-button cmw-importpalette">$CMWImportPalette$</div>
+			<div class="cmw-button cmw-finish">$CMWFinish$</div>
+		</div>
+	</div>
+	
+	<!-- sick palette -->
+	<div id="material-toolbar">
+		<div id="material-h" class="toolbar-header">$MaterialPalette$ <div id="material-collapse" class="toolbar-collapse">▼</div></div>
+		<div id="material-b" class="toolbar-body">
+			<div id="current-material">
+				<div id="current-material-clr" class="materialclr-preview"></div>
+				<div id="current-material-name"><input type="text"/></div>
+			</div>
+			<canvas id="material-palette" tabindex="0"></canvas>
+			<div id="material-button-wrapper">
+				<button id="switch-material-mode">$underground$</button>
+			</div>
+		</div>
+	</div>
+	
+	<div id="side-palette">
+		<div id="spalette-h" class="toolbar-header">$SidePalette$ <div id="spalette-collapse" class="toolbar-collapse">▼</div></div>
+		<div id="spalette-b" class="toolbar-body">
+			<div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div>
+			<div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div>
+			<div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div>
+			<div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div>
+		</div>
+	</div>
+	
+	<!-- Suggestionbox -->
+	<div id="material-suggestion-box" class="suggestion-box">
+		<div class="suggestion-box-entry draft">
+			<div class="suggestion-box-matchedclr"></div>
+			<div class="suggestion-box-name"></div>
+		</div>
+	</div>
+
+	<!-- ruler -->
+	<canvas id="ruler-left" class="ruler"></canvas>
+	<canvas id="ruler-top" class="ruler"></canvas>
+	
+	<div id="ruler-left-display" class="rulerdisplay"></div><div id="ruler-top-display" class="rulerdisplay"></div>
+
+	<canvas class="working-canvas" id="previewlayer" style="z-index: 1 !important; display: block; " tabindex="0"></canvas>
+	<canvas class="working-canvas" id="movinglayer" style="z-index: 2 !important; pointer-events: none;" tabindex="0"></canvas>
+
+
+<script src="chrome://windmill/content/js/default_module.js" type="text/javascript" charset="utf-8"></script>
+<script src="chrome://windmill/content/modules/cide/bmpeditor/js/drawingmethods.js" type="text/javascript" charset="utf-8"></script>
+<script src="chrome://windmill/content/modules/cide/bmpeditor/js/bmpeditor.js" type="text/javascript" charset="utf-8"></script>
+</body>
+</html>

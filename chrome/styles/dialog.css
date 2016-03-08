@@ -1,0 +1,137 @@
+/* dialog */
+
+#wdialogmodal {
+	pointer-events: none;
+	background-color: black;
+	transition: opacity 0.5s;
+	opacity: 0;
+}
+
+#wdialogmodal.visible {
+	pointer-events: auto;
+	opacity: 0.3;
+}
+
+#wdialogmodal.visible .main-wdialog-wrapper {
+	box-shadow: none;
+}
+
+.main-wdialog {	-moz-user-focus: normal; pointer-events: none; }
+
+.main-wdialog-wrapper {
+	background-color: #fff;
+	min-height: 60px;
+	min-width: 100px;
+	color: rgb(60, 60, 60);
+	box-shadow: 0 0 15px 0 rgb(180, 180, 180);
+	pointer-events: initial;
+}
+
+description {
+	word-wrap: break-word;
+}
+
+.main-wdialog-title {
+	padding: 2px 5px;
+}
+
+.main-wdialog-head {
+	border-bottom: 1px solid rgb(220, 220, 220);
+	background-color: rgb(245, 245, 245);
+	min-height: 30px;
+	color: rgb(100, 100, 100);
+	padding: 0.5em 1em;
+	cursor: default;
+}
+
+.main-wdialog-content {
+	padding: 5px 1em;
+	font-size: 10pt;
+}
+
+.main-wdialog-footer {
+	padding: 5px 5px;
+}
+
+.main-wdialog-button {
+	background-color: gainsboro;
+	cursor: pointer;
+	color: grey;
+}
+
+.main-wdialog-button:hover {
+	background-color: rgb(215, 215, 215);
+}
+
+.main-wdialog-wrapper  textbox {
+	margin-left: 0;
+	margin-right: 0;
+	border: 1px solid rgb(200, 200, 200);
+}
+
+.dlg_infobox {
+	padding: 5px;
+	border: 1px solid gainsboro;
+	font-size: 9pt;
+	text-align: justify;
+	margin: 5px 0px;
+}
+
+.dlg_infobox.error {
+	background-color: #FFB2B2;
+}
+
+/* Checklist */
+
+.dlg-checklistbox { 
+	min-height: 10px; 
+	max-height: 180px; 
+	overflow: auto; 
+	border: 1px solid rgb(235, 235, 235);
+	color: rgb(60, 60, 60);
+	-moz-box-pack: center;
+}
+
+@font-face {
+	font-family: 'icomoon';
+	src:url('chrome://windmill/skin/icomoon.ttf?-icmbrc') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+.dlg-checklistitem { 
+	overflow: hidden;
+	cursor: default;
+	padding-left: 5px;
+	background-color: white;
+	color: rgb(120, 120, 120);
+	padding-left: 14px;
+}
+
+.dlg-checklistitem:before {
+	outline: 1px solid gainsboro;
+	display: inline-block;
+	overflow: visible;
+	font-family: 'icomoon';
+	font-size: 14px;
+	margin-right: 14px;
+	content: "\00a0 \00a0";
+}
+
+.dlg-checklistitem.selected:before {
+	content: "\e608";
+}
+
+.dlg-checklistitem:hover { 
+	background-color: rgba(0, 165, 207, 0.15);
+	outline: 1px solid rgba(0, 165, 207, 0.3);
+	outline-offset: -1px;
+}
+
+.dlg-checklistitem.selected { 
+	color: steelblue;
+}
+
+.dlg-checklistitem.hidden {
+	display: none;
+}

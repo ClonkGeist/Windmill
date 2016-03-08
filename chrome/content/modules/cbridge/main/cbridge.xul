@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://windmill/content/modules/cbridge/main/cbridge.css" type="text/css"?>
+<?xml-stylesheet href="chrome://windmill/skin/default_module.css" type="text/css"?>
+
+<window id="main" title="cIDE" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+	<script type="application/javascript" src="chrome://windmill/content/js/default_module.js"/>
+	<script type="application/javascript" src="chrome://windmill/content/js/libs/deck.js"/>
+	<script type="application/javascript" src="chrome://windmill/content/modules/cbridge/main/js/cbridge.js"/>
+	
+	<hbox flex="1" id="modules-wrapper">
+		
+	</hbox>
+</window>

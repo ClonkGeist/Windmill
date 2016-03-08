@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://windmill/skin/icomoon.css" type="text/css"?>
+<?xml-stylesheet href="chrome://windmill/content/modules/cide/main/cide.css" type="text/css"?>
+<?xml-stylesheet href="chrome://windmill/skin/default_module.css" type="text/css"?>
+
+<window id="main" title="cIDE" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+	
+	<hbox flex="1">
+		<vbox id="cide-explorer" style="min-width: 150px; width: 200px" persist="width">
+			<!-- insert explorer here -->
+			
+			<box id="audioplayer">
+			</box>
+		</vbox>
+		<splitter />
+		
+		<!-- module frame -->
+		<box id="cide-modules" flex="5">
+			<vbox id="box-maindeck" class="deck-visible deckbox" flex="1">
+				<vbox>
+					<toolbox flex="1" orient="horizontal" align="center">
+						<toolbar id="modules-nav-maindeck" class="modules-nav" flex="1">
+							<!-- insert nav button here -->
+						</toolbar>
+					</toolbox>
+					<hbox class="deck-nav-scrollbar deckbtn-scrollhide" flex="1">
+						<box class="deck-nav-scrollingspace-l deck-nav-scrollelement"></box>
+						<box class="deck-nav-scroller deck-nav-scrollelement" id="maindeck-scroller"></box>
+						<box class="deck-nav-scrollingspace-r deck-nav-scrollelement" flex="1"></box>
+					</hbox>
+				</vbox>
+				<box id="modules-wrapper-maindeck" class="modules-wrapper" flex="1">
+					<!-- insert modules -->
+				</box>
+			</vbox>
+			<vbox id="box-sidedeck" class="deckbox" flex="1">
+				<vbox>
+					<toolbox flex="1" orient="horizontal" align="center">
+						<toolbar id="modules-nav-sidedeck" class="modules-nav" flex="1">
+							<!-- insert nav button here -->
+						</toolbar>
+					</toolbox>
+					<hbox class="deck-nav-scrollbar deckbtn-scrollhide" flex="1">
+						<box class="deck-nav-scrollingspace-l deck-nav-scrollelement"></box>
+						<box class="deck-nav-scroller deck-nav-scrollelement" id="sidedeck-scroller"></box>
+						<box class="deck-nav-scrollingspace-r deck-nav-scrollelement" flex="1"></box>
+					</hbox>
+				</vbox>
+				<box id="modules-wrapper-sidedeck" class="modules-wrapper" flex="1">
+					<!-- insert modules -->
+				</box>
+			</vbox>
+		</box>
+	</hbox>
+	
+	<script type="application/javascript" src="chrome://windmill/content/js/default_module.js"/>
+	<script type="application/javascript" src="chrome://windmill/content/js/libs/deck.js"/>
+	<script type="application/javascript" src="chrome://windmill/content/modules/cide/main/js/cide.js"/>
+</window>

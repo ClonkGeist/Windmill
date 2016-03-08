@@ -1,0 +1,79 @@
+body
+{
+	background-color: rgb(250, 250, 250);
+	font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+	color: rgb(40, 40, 40);
+}
+
+#wrapper {
+	position: absolute;
+	top: 0; left: 0; right: 0; bottom: 0;
+	
+	padding: 30px 50px;
+	display: flex;
+}
+
+.wizardpage {
+	flex: 1;
+	overflow: hidden;
+	display: none;
+	flex-direction: column;
+	
+	opacity: 1;
+}
+
+.wizardpage.active { display: flex; }
+
+.wizardpage.centered {
+	justify-content: center;
+	align-items: center;
+}
+
+.landingCaption {
+	font-size: 62pt;
+}
+.landingSubCaption {
+	font-size: 12pt;
+	text-align: center;
+}
+
+.button {
+	background-color: #aaa;
+	width: 180px;
+	height: 26px;
+	text-align: center;
+	cursor: pointer;
+}
+
+.filepath-container {
+	display: flex;
+	flex-direction: row !important;
+	flex-wrap: no-wrap;
+	height: 2em;
+}
+.filepath-show {
+	background-color: #aaa;
+	padding: 2px 5px;
+	text-decoration: italic;
+	flex: 1;
+}
+.filepath-button {
+	padding: 2px 5px;
+	width: 50px;
+	background-color: #999;
+	cursor: pointer;
+}
+
+.spacer { flex: 1; }
+
+.windmill {
+	animation-name: windmill;
+	animation-duration: 2s;
+	animation-timing-function: linear;
+	animation-iteration-count: infinite;
+}
+
+@keyframes windmill {
+    0%  { transform: rotate(0deg);}
+  100%  { transform: rotate(360deg);}
+}

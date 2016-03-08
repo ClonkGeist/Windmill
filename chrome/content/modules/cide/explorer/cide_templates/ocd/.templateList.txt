@@ -1,0 +1,1 @@
+DefCore.txt|Graphics.png|Script.c|StringTblDE.txt|StringTblUS.txt

@@ -1,0 +1,237 @@
+window
+{
+	background-color: rgb(250, 250, 250);
+	font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+}
+
+caption
+{
+	margin: 0.7em 0;
+	background-color: inherit;
+	font-size: 1em;
+	color: rgb(80, 80, 80);
+}
+
+caption.big
+{
+	font-size: 1.5em;
+	border-bottom: 1px solid gainsboro;
+	margin: 1em 0;
+}
+
+/*		preferences		*/
+
+#settings-deck > box,
+#settings-deck > hbox,
+#settings-deck > vbox
+{
+	background-color: white;
+}
+
+button.navigation
+{
+	-moz-appearance: none;
+	border: none;
+	
+	border-right: 1px solid gainsboro;
+	margin: 0;
+	text-align: left;
+	padding: 0.5em 1.5em;
+	padding: 0.5em 0;
+	
+	color: rgb(45,45,45);
+	outline: none !important;
+	
+	background-color: rgb(250, 250, 250);
+	transition: background-color 0.3s;
+	cursor: pointer;
+}
+
+button.navigation:hover
+{
+	background-color: rgb(245, 245, 245);
+}
+
+button *,
+button:focus *
+{
+	border: 0;
+}
+
+#settings-deck button,
+listbox
+{
+	-moz-appearance: none;
+	border: 1px solid rgb(215, 215, 215);
+	transition: border 0.3s;
+}
+
+#settings-deck button > *
+{
+	background-color: inherit;
+}
+
+#settings-deck button
+{
+	background-color: rgb(250, 250, 250);
+}
+
+#settings-deck button:hover ,
+#settings-deck button:focus,
+#listbox:focus
+{
+	border: 1px solid #54B7FF;
+}
+
+/*-- Restartbar --*/
+
+#restartBar {
+	height: 0px;
+	overflow: hidden;
+	transition: height 0.6s;
+	padding-left: 20px;
+}
+
+#restartBar.active {
+	height: 40px;
+	line-height: 40px;
+}
+
+#restartBarButton {
+	width: 60px;
+	background-color: red;
+}
+
+#restartBarButton:hover {
+	background-color: gainsboro;
+}
+
+/*-- Listbox --*/
+
+.draft { display: none; }
+
+listbox
+{
+	padding: 0;
+}
+
+listbox * {
+	-moz-appearance: none;
+	background-color: none;
+}
+
+listitem
+{
+	transition: background-color 0.3s;
+	margin: 0;
+	padding-left: 5px;
+	color: rgb(40, 40, 40);
+	-moz-appearance: none;
+}
+
+listitem * {
+	-moz-appearance: none;
+	background: none;
+}
+
+listitem:hover
+{
+	border: 1px solid rgba(84, 183, 255, 0.5);
+	background-color: rgba(84, 183, 255, 0.15);
+}
+
+listitem[selected],
+listitem[current],
+listitem[checked],
+listitem:focus
+{
+	-moz-appearance: none;
+	border: 1px solid rgb(84, 183, 255);
+	background-color: rgb(176, 214, 253);
+}
+
+.pkb-list-subheader {
+	pointer-events: none;
+	background-color: none;
+	font-size: 0.8em;
+	margin-top: 7px;
+	color: rgb(80, 80, 80);
+}
+
+.view-directory-path
+{
+	font-style: italic;
+	background-color: rgb(250, 250, 250);
+	border: gainsboro;
+	padding-left: 1em;
+	padding-right: 1em;
+	-moz-user-select: text;
+	transition: background-color 0.3s;
+}
+
+.view-directory-path.deniedAccess {
+	background-color: #FFB2B2;
+}
+
+.view-directory-path.deniedAccess:before {
+	content: '<!>  ';
+}
+
+/* nav and page style */
+
+#settings-nav spacer
+{
+	border-right: 1px solid gainsboro;
+}
+
+#settings-nav .active
+{
+	font-weight: bold;
+}
+
+.settings-page
+{
+	padding: 2em 3em;
+	overflow-y: auto;
+	background-color: white;
+}
+
+.settings-page > *:first-child
+{
+	margin-top: 0;
+}
+
+/* external applications */
+
+#application_list {
+	-moz-user-select: none;
+	cursor: default;
+}
+
+.applist_img {
+	width: 64px;
+	height: 64px;
+	margin-right: 18px;
+}
+
+.applist_title {
+	font-weight: bold;
+	font-size: 1.6em;
+}
+
+.applist_path {
+	font-style: italic;
+}
+
+.applist_controls > .nav-image {
+	color: black;
+}
+
+.applist_controls > .nav-image:hover {
+	color: #999;
+}
+
+
+
+
+/*	need some space	*/

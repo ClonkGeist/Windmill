@@ -1,0 +1,13 @@
+{"Fx*EffectsCalls": "func Fx[anchor]Start(object target, proplist effect, int temporary, any var1, any var2, any var3, any var4) {
+    if(temporary)
+        return;
+}
+
+func Fx[anchor]Timer(object target, proplist effect, int time) {
+    
+}
+
+func Fx[anchor]Stop(object target, proplist effect, int reason, bool temporary) {
+    if(temporary)
+        return;
+}"}

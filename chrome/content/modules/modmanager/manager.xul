@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://windmill/content/modules/modmanager/manager.css" type="text/css"?>
+<?xml-stylesheet href="chrome://windmill/skin/default_module.css" type="text/css"?>
+<?xml-stylesheet href="chrome://windmill/skin/icomoon.css" type="text/css"?>
+
+<window id="main" title="ModuleManager" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:html="http://www.w3.org/1999/xhtml">
+
+	<script type="application/javascript" src="chrome://windmill/content/js/default_module.js"/>
+	<script type="application/javascript" src="chrome://windmill/content/js/libs/deck.js"/>
+	<script type="application/javascript" src="chrome://windmill/content/modules/modmanager/js/manager.js"/>
+	
+	<hbox>
+		<button label="Modules" onclick="$('#switch-overview').attr('selectedIndex', 0);" /> |
+		<button label="Config" onclick="$('#switch-overview').attr('selectedIndex', 1);" /> |
+		<button label="DOM Viewer" onclick="$('#switch-overview').attr('selectedIndex', 2);" />
+	</hbox>
+
+	<hbox flex="1" id="wrapper">
+		<deck id="switch-overview" flex="1">
+			<vbox flex="1">
+				<hbox>
+					<label value="Module Overview:" />
+				</hbox>
+				<hbox flex="1">
+					<grid flex="1">
+						<columns>
+							<column flex="1" />
+							<column flex="1" />
+							<column flex="4" />
+						</columns>
+						
+						<rows id="module-overview">
+							<row class="header">
+								<label value="Name" />
+								<label value="ModuleID" />
+								<label value="Options" />
+							</row>
+							<row class="content">
+							</row>
+						</rows>
+					</grid>
+				</hbox>
+			</vbox>
+			<vbox flex="1">
+				<hbox>
+					<label value="Config Overview:" /><spacer flex="1" /><label value="Save Config" id="lblbtn-save" />
+				</hbox>
+				<hbox flex="1">
+					<grid flex="1">
+						<columns>
+							<column flex="1" />
+							<column flex="1" />
+							<column flex="4" />
+						</columns>
+						
+						<rows id="config-overview">
+							<row class="header">
+								<label value="Section" />
+								<label value="Key" />
+								<label value="Value" />
+							</row>
+							<row class="content">
+							</row>
+						</rows>
+					</grid>
+				</hbox>
+			</vbox>
+			<vbox flex="1">
+				<vbox flex="1" id="dom-container">
+					<hbox>
+						<label value="DOM Structure:" />
+					</hbox>
+				</vbox>
+			</vbox>
+		</deck>
+	</hbox>
+</window>

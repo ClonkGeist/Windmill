@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Configuration Wizard</title>
+<link rel="stylesheet" type="text/css" href="chrome://windmill/skin/icomoon.css"></link>
+<link rel="stylesheet" type="text/css" href="chrome://windmill/skin/default_module.css"></link>
+<link rel="stylesheet" type="text/css" href="chrome://windmill/content/modules/configurationwizard/cfgwizard.css"></link>
+
+</head>
+<body onload="window.readyState = true">
+
+	<div id="wrapper">
+		<!-- Landing Page / Language Selection -->
+		<div class="wizardpage centered active" id="page-langsel">
+			<div class="landingCaption">Windmill</div>
+			<div style="width: 300px; text-align: center; font-size: 12pt; padding-top: 80px;">Select from the following list the language, you want to use Windmill in:
+				
+			</div>
+			<div style="padding-top: 30px;">
+				<select id="language-selector">
+					<option class="langopt">English - US</option>
+					<option class="langopt">Deutsch - DE</option>
+				</select>
+			</div>
+			<div style="flex: 1"></div>
+			<div class="button" onclick="showPage('page-cmc')">Next > </div>
+			<div class="button" id="resetcfgvar">Reset Cfg Var</div>
+		</div>
+		
+		<div class="wizardpage" id="page-cmc">
+			<h3>Quick 'n Dirty CMC Page</h3>
+			<p>Alles wichtige steht irgendwo im Forum. Hier den Pfad zum OpenClonk-Verzeichnis auswaehlen:</p>
+			<div class="filepath-container" id="OCPath" data-filetype="directory">
+				<div class="filepath-show"></div>
+				<div class="filepath-button">Browse</div>
+			</div>
+			<p>Hier ein Verzeichnis auswaehlen, welches als Rootverzeichnis fuer Workspaces genutzt wird.</p>
+			<div class="filepath-container" id="WSPath" data-filetype="directory">
+				<div class="filepath-show"></div>
+				<div class="filepath-button">Browse</div>
+			</div>
+			<p>Optional: Hier die git.exe bzw. git auswaehlen. (Genaueres s. Forum)</p>
+			<div class="filepath-container" id="GitPath" data-filetype="executable">
+				<div class="filepath-show"></div>
+				<div class="filepath-button">Browse</div>
+			</div>
+			<div class="spacer"></div>
+			<div class="button" id="finishconfig">Fertigstellen</div>
+		</div>
+		
+		<!-- Welcoming Page -->
+		<div class="wizardpage" id="page-welcome">
+			<!-- Kurze Erklaerung was Windmill ist (1 oder 2 Saetze, nichts explizites), Wichtig: Erklaerung dass es sich um eine BETA handelt
+				 Feedback und Bugeintraege => Hinweisen -->
+		</div>
+		<!-- Open Clonk Folder & Explorer Settings -->
+		<div class="wizardpage" id="page-explorer">
+			<!-- Hier wird der OpenClonk Ordner ausgewaehlt, der Workpath ausgewaehlt und ggf. ein Workspace erstellt,
+				 und es werden verschiedene Optionen zur Verfuegung gestellt: Workspace immer komplett entpackt, Workspace und
+				 Hauptverzeichnis automatisch synchronisieren etc. -->
+		</div>
+		<!-- Additional Files -->
+		<div class="wizardpage" id="page-additionalfiles">
+			<!-- Hier kommen die zusaetzlichen Dateien hin, die ggf. manuell installiert werden muessen. (Aufgrund von Lizenzproblemen z.B.) 
+				 Dabei werden die noetigen Links gestellt und evtl. auch ein Step-by-step guide mit Tabs am unteren Rand. Es wird auch angezeigt,
+				 welche Module ohne diese Programme nicht oder nur eingeschraenkt funktionieren wuerden. (Bspw fuer OgreXMLConverter: ✖ Meshviewer) -->
+		</div>
+		<!-- Tour? -->
+		<div class="wizardpage" id="page-tour">
+			<!-- Tour durch die einzelnen Windmill-Features hindurch anbieten? -->
+		</div>
+		<!-- Finish -->
+		<div class="wizardpage" id="page-finish">
+			<!-- Konfiguration abschliessen, den Rest in main.js aufrufen, alles Fenstergroesse und so richtig stellen etc. -->
+		</div>
+	</div>
+	
+	<script src="chrome://windmill/content/js/default_module.js" type="text/javascript" charset="utf-8"></script>
+	<script src="chrome://windmill/content/modules/configurationwizard/js/cfgwizard.js" type="text/javascript" charset="utf-8"></script>
+</body>
+</html>

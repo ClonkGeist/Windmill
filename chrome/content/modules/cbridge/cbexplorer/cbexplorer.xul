@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://windmill/content/modules/cbridge/cbexplorer/cbexplorer.css" type="text/css"?>
+<?xml-stylesheet href="chrome://windmill/skin/explorer.css" type="text/css"?>
+<?xml-stylesheet href="chrome://windmill/skin/icomoon.css" type="text/css"?>
+<?xml-stylesheet href="chrome://windmill/skin/default_module.css" type="text/css"?>
+
+<window id="main" title="Explorer" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:html="http://www.w3.org/1999/xhtml">
+
+	<script type="application/javascript" src="chrome://windmill/content/js/default_module.js"/>
+	<script type="application/javascript" src="chrome://windmill/content/js/libs/tree.js"/>
+	<script type="application/javascript" src="chrome://windmill/content/modules/cbridge/cbexplorer/js/cbexplorer.js"/>
+	<script type="application/javascript" src="chrome://windmill/content/js/libs/explorer.js"/>
+	<!--<hbox>
+			<vbox flex="1" class="labelbtn selectgamemode" id="select-nwgame">$Networkgame$</vbox>
+			<vbox flex="1" class="labelbtn selectgamemode" id="select-spgame">$Singleplayer$</vbox>
+		</hbox>-->
+	<hbox flex="1">
+		<box flex="1">
+			<vbox id="filecontainer" context="clipmenu" flex="1">
+				<html:ul id="maintree">
+					
+				</html:ul>
+			</vbox>
+			<!-- build explorer here -->
+		</box>
+		
+		<box flex="5" id="wrapper1" style="-moz-box-orient: horizontal">
+			<vbox flex="10" id="preview">
+				<vbox><image id="previewimage"></image></vbox>
+				<vbox flex="1" style="max-width: 300px">
+					<div xmlns="http://www.w3.org/1999/xhtml" id="previewdesc">
+						
+					</div>
+				</vbox>
+			</vbox>
+			<vbox flex="6" id="hostsettings" class="singleplayer">
+				<hbox id="game-mode-selection">
+					<box flex="1" id="select-spgame" class="selectgamemode">$Singleplayer$</box>
+					<box flex="1" id="select-nwgame" class="selectgamemode">$Networkgame$</box>
+				</hbox>
+				<vbox class="networkgame-ctrl">
+					<vbox class="mainheadline">
+						<html:h2>$hostsettings$</html:h2>
+					</vbox>
+					<vbox id="password-container" class="hostset-container">
+						<hbox flex="1"><caption flex="1">$password$</caption></hbox>
+						<hbox style="padding-bottom: 5px;">
+							<grid flex="1" style="padding-left: 4px">
+								<columns>
+									<column flex="1"/>
+									<column flex="1"/>
+								</columns>
+								
+								<rows>
+									<row>
+										<label value="$password$" style="font-size: 1.5em" />
+										<label value="$deactivated$" id="set-pwact" class="labelbtn" />
+									</row>
+								</rows>
+							</grid>
+						</hbox>
+						<hbox flex="1">
+							<textbox id="set-pw" placeholder="Wipf" flex="1" class="deactivated" maxlength="1023" />
+							<!-- Warum auch immer das Passwort 4x so groß wie ein Kommentar sein kann lol -->
+						</hbox>
+					</vbox>
+					<vbox id="comment-container" class="hostset-container">
+						<hbox flex="1"><caption flex="1">$comment$</caption></hbox>
+						<hbox flex="1"><textbox flex="1" multiline="true" placeholder="$entercomment$" id="set-comment" maxlength="255" /></hbox>
+						<hbox flex="1" id="comment-counter"></hbox>
+					</vbox>
+				</vbox>
+				<spacer flex="1" />
+				<vbox id="general-container">
+					<hbox id="set-gleague" class="networkgame-ctrl">
+						<box class="icon-32 icon-trophy"></box>
+						<label value="$league$" />
+					</hbox>
+					<hbox id="set-ginternet" class="networkgame-ctrl">
+						<box class="icon-32 icon-world"></box>
+						<label value="$internet$" />
+					</hbox>
+					<hbox id="set-grtj" class="networkgame-ctrl">
+						<box class="icon-32 icon-runtimejoin"></box>
+						<label value="$rtj$" />
+					</hbox>
+					<hbox id="set-grecord" >
+						<box  class="icon-32 icon-cam"></box>
+						<label value="$record$" />
+					</hbox>
+					<hbox id="set-geditor">
+						<box class="icon-32 icon-editor-frame"></box>
+						<label value="$editor$" />
+					</hbox>
+				</vbox>
+				<spacer style="border-left: 3px solid rgb(180, 180, 180)" height="10" />
+				<hbox pack="asdasd">
+					<spacer style="border-top: 3px solid rgb(180, 180, 180)" flex="1" />
+					<box><label value="$startgame$" id="btn-startgame" class="labelbtn" /></box>
+					<spacer flex="1" />
+				</hbox>
+			</vbox>
+		</box>
+	</hbox>
+</window>

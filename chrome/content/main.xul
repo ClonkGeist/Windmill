@@ -1,0 +1,323 @@
+<?xml version="1.0"?>
+
+
+<?xml-stylesheet type="text/css" href="chrome://windmill/skin/main.css"?>
+<?xml-stylesheet type="text/css" href="chrome://windmill/skin/icomoon.css"?>
+<?xml-stylesheet type="text/css" href="chrome://windmill/skin/dialog.css"?>
+<?xml-stylesheet type="text/css" href="chrome://windmill/skin/contextmenu.css"?>
+<?xml-stylesheet type="text/css" href="chrome://windmill/skin/default_module.css"?>
+<?xml-stylesheet type="text/css" href="chrome://windmill/skin/colorpicker.css"?>
+
+<window 
+	id="main"
+	chromemargin="0, 0, 0, 0"
+	persist="screenX screenY width height sizemode class"
+	title="Windmill"
+	hidechrome="true"
+	orient="horizontal"
+	width="1000" 
+	height="750"
+	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+	xmlns:html="http://www.w3.org/1999/xhtml">
+
+<!-- window size datablock -->
+<box id="window-l" data-value="" persist="data-value"></box>
+<box id="window-t" data-value="" persist="data-value"></box>
+<box id="window-w" data-value="" persist="data-value"></box>
+<box id="window-h" data-value="" persist="data-value"></box>
+
+<!-- Notification draft -->
+<hbox class="notification-item draft" flex="1">
+	<vbox class="notification-head" style="border: 1px solid green">
+		
+	</vbox>
+	<vbox class="notification-icon">
+		
+	</vbox>
+	<vbox class="notification-content" flex="1">
+		<caption class="notification-title notification-default"></caption>
+		<vbox class="notification-desc notification-default" flex="1">
+		</vbox>
+	</vbox>
+</hbox>
+
+<vbox>
+	<resizer dir="topleft" height="2"></resizer>
+	<resizer dir="left" height="2" flex="1" />
+	<resizer dir="bottomleft" height="2" />
+</vbox>
+<vbox flex="1">
+<resizer dir="top" width="2"/>
+<!-- res save mode content - disabled by default -->
+<vbox flex="1" id="showgames-wrapper">
+	<hbox class="window-buttons-container header-ctrl" pack="end">
+		<box class="window-button icon-minimize" onclick="window.minimize();"/>
+		<box class="maximize-window window-button icon-maximize" onclick="maximizeWindow();"/>
+		<box class="restore-window window-button icon-restore" onclick="restoreWindow();"/>
+		<box class="window-button icon-x" onclick="window.close()"/>
+	</hbox>
+	<vbox flex="1" id="showgames-container"></vbox>
+</vbox>
+<!-- end of res save mode content -->
+<stack flex="1" id="mainstack" class="windmill-lockmodule-wrapper" width="1000" height="1000">
+	<vbox flex="1" id="cfgwizwrapper"></vbox>
+	<!-- page -->
+	<vbox flex="1" id="wrapper">
+		<stack id="titlestack">
+			<box id="header" class="header-ctrl">
+				<description id="window-title" value="Windmill" style="pointer-events: none;" flex="1" />
+				<!-- the classico of three buttons-->
+			</box>
+			<vbox style="pointer-events: none;">
+				<hbox class="window-buttons-container" pack="end">
+					<box class="window-button icon-minimize" onclick="window.minimize()"/>
+					<box class="maximize-window window-button icon-maximize" onclick="maximizeWindow()"/>
+					<box class="restore-window window-button icon-restore" onclick="restoreWindow()"/>
+					<box class="window-button icon-x" onclick="window.close()"/>
+				</hbox>
+				<hbox>
+					<toolbox flex="1">
+						<toolbar id="modules-nav" align="start">
+							<!-- buttons for main modules will be inserted here -->
+							<spacer id="cide-spacer" />
+							<hbox id="cide-toolbar" align="start"></hbox>
+							<spacer flex="1"/>
+							<hbox id="inner-navigation" align="start"></hbox>
+							<spacer />
+							<hbox>
+								<label value="" id="nav-playername" />
+								<box class="nav-image icon-players icon-32" height="32" width="32" id="showPlayerSelect"></box>
+								<spacer />
+							</hbox>
+							<box class="nav-image icon-heartbeat icon-32 devmode-elm" height="32" width="32" id="showModManager"></box>
+							<box class="nav-image icon-update icon-32" height="32" width="32" id="showUpdate"></box>
+							<box class="nav-image icon-resource_saviour icon-32" height="32" width="32" id="showResSaveMode"></box>
+							<box class="nav-image icon-multisource icon-32" height="32" width="32" id="showClonkDirs"></box>
+							<box class="nav-image icon-console icon-32 devmode-elm" height="32" width="32" id="showLog"></box> <!-- DEVMODE -->
+							<box class="nav-image icon-reload-2 icon-32 devmode-elm" height="32" width="32" id="restartWindmill"></box> <!-- DEVMODE -->
+							<box class="nav-image icon-gear icon-32" height="32" width="32" id="showSettings"></box>
+						</toolbar>
+					</toolbox>
+				</hbox>
+			</vbox>
+			<vbox top="0" bottom="0" left="20" pack="center"  style="pointer-events: none;">
+				<box class="overallmode icon-the-mill icon-32" height="32" width="32" id="switchMode"></box>
+			</vbox>
+		</stack>
+		<stack flex="1">
+			<box id="modules-wrapper" flex="1">
+			</box>
+			<hbox id="sidebar-wrapper" top="0" bottom="0" right="0">
+				<vbox id="playerselect" class="sidebar invisible" flex="1">
+					<!-- Spielerauswahl -->
+					<vbox id="page-playerselection" class="plr-page" flex="1">
+						<hbox class="ps-h">
+							<caption>$Playerselect$</caption>
+							<spacer flex="1" />
+							<box class="icon-32 icon-add-player ps-h-icon" onclick="initNewPlayer();"></box>
+						</hbox>
+						<vbox flex="1">
+							<!-- Player selection list -->
+							<vbox id="ps-playerlist" flex="1">
+								<hbox class="ps-playerlistitem draft">
+									<vbox class="box-psbigicon">
+										<box>
+											<image width="64" height="64" class="img-psbigicon" align="center"
+												src="chrome://windmill/content/img/icon-hgopt-record.png" />
+										</box>
+									</vbox>
+									<vbox flex="1">
+										<hbox><label class="lbl-psplayername" value="" flex="1"/></hbox>
+										<spacer flex="1" />
+										<hbox class="ps-iconlist">					
+											<spacer flex="1" />
+											<box class="icon-24 icon-gear ps-edit-player"></box>
+											<box class="icon-24 icon-trashbin ps-remove-player"></box>
+										</hbox>
+									</vbox>
+								</hbox>
+							</vbox>
+							<!-- Detaillierte Spielervorschau -->
+							<vbox class="ps-b" id="ps-playerdetails">
+								<hbox><caption id="ps-pdname"></caption></hbox>
+								<hbox><label value="$PDScore$"/><spacer flex="1"/><label id="ps-pdscore" value="" /></hbox>
+								<hbox><label value="$PDRounds$"/><spacer flex="1"/><label id="ps-pdrounds" value="" /></hbox>
+								<hbox><label value="$PDPlayingTime$"/><spacer flex="1"/><label id="ps-pdtime" value="" /></hbox>
+								 <!-- Comment überarbeiten: Sollte auch mehrzeilig angezeigt werden. Alternativ: Rausschmeißen-->
+								<hbox><label value="$PDComment$"/><spacer flex="1"/><label id="ps-pdcomment" value="" /></hbox>
+								
+								<hbox></hbox>
+								<hbox class="lastround"><caption id="ps-pdlastround">$PDLastRound$</caption></hbox>
+								<hbox class="lastround"><label value="$PD_LRTitle$"/><spacer flex="1"/><label id="ps-pdlr-title" value="" /></hbox>
+								<hbox class="lastround"><label value="$PD_LRDate$"/><spacer flex="1"/><label id="ps-pdlr-date" value="" /></hbox>
+								<hbox class="lastround"><label value="$PD_LRDuration$"/><spacer flex="1"/><label id="ps-pdlr-duration" value="" /></hbox>
+								<hbox class="lastround"><label value="$PD_LRScore$"/><spacer flex="1"/><label id="ps-pdlr-score" value="" /></hbox>
+							</vbox>
+						</vbox>
+					</vbox>
+					
+					<!-- Spieler erstellen -->
+					
+					<vbox id="page-addplayer" class="plr-page" flex="1">
+						<hbox class="ps-h">
+							<box class="icon-32 icon-backwards ps-h-icon" onclick="switchPlrPage('page-playerselection');"></box>
+							<caption id="ap-player-caption">$AddPlayer$</caption>
+							<spacer flex="1" />
+							<box class="icon-32 icon-checked ps-h-icon" onclick="addNewPlayer()"></box>
+						</hbox>
+						<vbox class="ps-b">
+							<hbox>
+								<textbox flex="1" id="ap-plrname" emptytext="$enterplrname$" maxlength="64" data-default="$NewPlayerName$" />
+							</hbox>
+							<hbox>
+								<textbox flex="1" id="ap-plrcomment" emptytext="$enterplrcomment$" maxlength="255" multiline="true" data-default="$NewPlayerComment$"/>
+							</hbox>
+							
+							<!-- Farbwahl -->
+							<hbox align="center">
+								<box>
+									<html:canvas id="cnv-apbigicon" />
+								</box>
+								<spacer flex="1"/>
+								<vbox>
+									<label value="$pickcolor$"/>
+									<vbox id="ap-clrpckr" height="100" width="80"></vbox>
+								</vbox>
+							</hbox>
+						
+							<hbox>
+								<label value="$pickstyle$"/><spacer flex="1"/>
+								<box>
+									<image width="64" height="64" id="img-apclonkstyle" src="chrome://windmill/content/img/icon-hgopt-editor.png" />
+								</box>
+							</hbox>
+							
+							<hbox>
+								<label value="$pickcontrol$"/><spacer flex="1"/>
+								<label value="$ctrl_keyboard$" id="ap-setcontrol" />
+							</hbox>
+						</vbox>
+					</vbox>
+				</vbox>
+				
+				<!-- Clonk Directory Selection -->
+				
+				<vbox id="clonkdirselection" class="sidebar invisible">
+					<vbox id="page-clonkdirselection" class="cds-page" flex="1">
+						<hbox class="ps-h cds-h">
+							<caption>$ClonkDirSelection$</caption>
+						</hbox>
+						<vbox class="ps-b cds-b">
+							<vbox id="cds-clonkdirlist" flex="1">
+								<hbox class="cds-listitem draft">
+									<vbox class="box-psbigicon">
+										<box>
+											<image width="64" height="64" class="img-pstype" align="center"
+												src="chrome://windmill/content/img/icon-hgopt-record.png" />
+										</box>
+									</vbox>
+									<vbox flex="1">
+										<hbox><label class="cds-lbl-directory" value="" flex="1"/></hbox>
+										<hbox><label class="cds-lbl-type" value="" flex="1"/></hbox>
+										<spacer flex="1" />
+										<hbox class="ps-iconlist">					
+											<spacer flex="1" />
+											<box class="icon-24 icon-gear cds-edit-tags"></box>
+											<box class="icon-24 icon-trashbin cds-remove-dir"></box>
+										</hbox>
+									</vbox>
+								</hbox>
+							</vbox>
+						</vbox>
+					</vbox>
+				</vbox>
+
+				<!-- Log -->
+
+				<vbox id="developerlog" class="sidebar invisible">
+					<vbox id="page-log" class="cds-page" flex="1">
+						<hbox class="ps-h cds-h">
+							<caption>Log</caption>
+							<spacer flex="1" />
+							<box class="icon-32 icon-eye ps-h-icon" onclick="toggleHiddenLogEntries();"></box>
+							<box class="icon-32 icon-clear-log ps-h-icon" onclick="clearLog();"></box>
+						</hbox>
+						<vbox class="ps-b cds-b" flex="1">
+							<vbox id="log-entrylist" flex="1">
+								<hbox class="log-listitem draft">
+									<vbox class="log-listitem-type"></vbox>
+									<description class="log-listitem-content" flex="1"></description>
+								</hbox>
+							</vbox>
+						</vbox>
+					</vbox>
+				</vbox>
+			</hbox>
+			
+			<box top="-10" left="50">
+				<image class="overallmode togglemode-img activated invisible" id="toggle-cbridge" src="chrome://windmill/content/img/mode-code.png"/>
+			</box>
+			<box top="-10" left="90">
+				<image class="overallmode togglemode-img activated invisible" id="toggle-cide" src="chrome://windmill/content/img/mode-play.png"/>
+			</box>
+		</stack>
+	</vbox>
+	
+	
+	
+	<!-- Dialogs -->
+	<box id="wdialogmodal"></box>
+	<vbox class="main-wdialog draft" align="center" tabindex="1">
+		<spacer flex="1" />
+		<vbox class="main-wdialog-wrapper">
+			<hbox class="main-wdialog-head">
+				<vbox class="main-wdialog-title"></vbox>
+				<spacer flex="1"/>
+				<vbox class="main-wdialog-controls"></vbox>
+			</hbox>
+			<vbox class="main-wdialog-content" flex="1">
+				
+			</vbox>
+			<hbox class="main-wdialog-footer">
+				<hbox class="main-wdialog-btnleft"></hbox>
+				<spacer flex="1"/>
+				<hbox class="main-wdialog-btnright"></hbox>
+			</hbox>
+		</vbox>
+		<spacer flex="1" />
+	</vbox>
+	<!-- dialog end -->
+</stack>
+<resizer dir="bottom" width="2"/>
+</vbox>
+<vbox>
+	<resizer dir="topright" height="2" width="2"/>
+	<resizer dir="right" height="2" flex="1" />
+	<resizer dir="bottomright" height="2" width="2" />
+</vbox>
+
+	<script type="application/javascript" src="chrome://windmill/content/js/main/import.js"/>
+	<script type="application/javascript" src="chrome://windmill/content/js/external/js-inflate.js"/>
+	<script type="application/javascript" src="chrome://windmill/content/js/libs/c4group.js"/>
+	<script type="application/javascript" src="chrome://windmill/content/js/libs/color.js"/>
+	<script type="application/javascript" src="chrome://windmill/content/js/external/jquery-2.1.1.min.js"/>
+	<script type="application/javascript" src="chrome://windmill/content/js/external/jquery.mousewheel.min.js" charset="utf-8"></script>
+	<script type="application/javascript" src="chrome://windmill/content/js/functionalities/workpaths.js"/>
+	<script type="application/javascript" src="chrome://windmill/content/js/functionalities/external_applications.js"/>
+	<script type="application/javascript" src="chrome://windmill/content/js/functionalities/custom-jquery.js"/>
+	<script type="application/javascript" src="chrome://windmill/content/js/functionalities/modules.js"/>
+	<script type="application/javascript" src="chrome://windmill/content/js/functionalities/notifications.js"/>
+	<script type="application/javascript" src="chrome://windmill/content/js/functionalities/keybindings.js"/>
+	<script type="application/javascript" src="chrome://windmill/content/js/libs/contextmenu.js"/>
+	<script type="application/javascript" src="chrome://windmill/content/js/default_module.js"/>
+	<script type="application/javascript" src="chrome://windmill/content/js/functionalities/dialog.js"/>
+	<script type="application/javascript" src="chrome://windmill/content/js/functionalities/config.js"/>
+	<script type="application/javascript" src="chrome://windmill/content/js/functionalities/language.js"/>
+	<script type="application/javascript" src="chrome://windmill/content/js/main/main.js"/>
+	<script type="application/javascript" src="chrome://windmill/content/js/libs/deck.js"/>
+	
+	<script type="application/javascript" src="chrome://windmill/content/js/libs/colorpicker.js"/>
+	<script type="application/javascript" src="chrome://windmill/content/js/main/player.js"/>
+	
+	<box id="force-redraw-window-element" style="display: none"></box>
+</window>
