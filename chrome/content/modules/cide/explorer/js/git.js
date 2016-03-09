@@ -53,15 +53,10 @@ function gitContextMenu() {
 		
 		"seperator",
 		
-		["$CtxGit_Checkout$", 0, function() {
-			EventInfo("Not supported");
-		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitCheckout" }],
+		["$CtxGit_Checkout$", 0, openGitCheckoutDialog, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitCheckout" }],
 		["$CtxGit_Merge$", 0, function() {
 			EventInfo("Not supported");
-		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitMerge" }],
-		["$CtxGit_CreateBranch$", 0, function() {
-			EventInfo("Not supported");
-		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitCreateBranch" }],
+		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitMerge" }]
 	], MODULE_LPRE, { allowIcons: true });
 }
 
@@ -93,6 +88,55 @@ function openGitAddDialog() {
 	});
 	
 	dlg.show();
+}
+
+function openGitCheckoutDialog() {
+	var path = getFullPathForSelection(), current_branch;
+	var dlg = new WDialog("$DlgGitCheckout$", MODULE_LPRE, { btnright: [{ preset: "accept",
+			onclick: function(e, btn, _self) {
+				var branchname = $(_self.element).find("#git-checkoutlist").val();
+				if(!branchname || branchname == current_branch)
+					return e.stopImmediatePropagation();
+
+				var msg = "Branch created";
+				if($(_self.element).find('menuitem[label="'+branchname+'"]')[0]) {
+					var args = ["-C", path, "checkout", branchname];
+					msg = "Switched to " + branchname;
+				}
+				else
+					var args = ["-C", path, "checkout", "-b", branchname];
+				getAppByID("git").create(args, 0x3);
+				EventInfo(msg);
+			}
+		}, "cancel"]});
+	
+	dlg.setContent(`<description>$DlgGitCheckoutDesc$</description>
+					<hbox>
+						<label value="Current branch:" flex="1"/>
+						<label id="git-currentBranch" value="Loading..." flex="1"/>
+					</hbox>
+					<menulist editable="true" id="git-checkoutlist"><menupopup></menupopup></menulist>`);
+	dlg.show();
+
+	getAppByID("git").create(["-C", path, "branch"], 0x1, 0, function(data) {
+		if(!data || !data.length || data.search(/\w/) == -1) {
+			$(dlg.element).find("#git-checkoutlist").insertBefore("<description>$UnknownError$</description>");
+			return;
+		}
+		var lines = data.split("\n");
+		for(var i = 0; i < lines.length; i++)
+			if(lines[i].length) {
+				if(lines[i][0] == "*") {
+					current_branch = lines[i].substr(2);
+					continue;
+				}
+
+				$('<menuitem label="'+lines[i].substr(2)+'"></menuitem>').appendTo($(dlg.element).find("#git-checkoutlist > menupopup"));
+			}
+
+		$(dlg.element).find("#git-checkoutlist")[0].selectedIndex = 0;
+		$(dlg.element).find("#git-currentBranch").val(current_branch);
+	});
 }
 
 function openGitCommitDialog() {
