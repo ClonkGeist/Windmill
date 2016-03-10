@@ -119,6 +119,7 @@ class _WDialog extends WindmillObject {
 	show() {
 		//Kopie erstellen
 		var clone = $(".main-wdialog.draft").clone(true);
+		clone.attr("data-usemodal", this.options.modal);
 		clone.removeClass("draft");
 		this.element = clone.get(0);
 		
@@ -243,15 +244,14 @@ class _WDialog extends WindmillObject {
 		if(!this.element)
 			return;
 		
-		if($("#wdialogmodal").hasClass("visible")) {
+		$(this.element).remove();
+		this.element = undefined;
+		
+		if($("#wdialogmodal").hasClass("visible") && !$('.main-wdialog[data-usemodal="true"]')[0]) {
 			$("#wdialogmodal").removeClass("visible");
 			if(this.options.cancelOnModal)
 				$("#wdialogmodal").unbind("click"); 
 		}
-		
-		$(this.element).remove();
-		this.element = undefined;
-		
 		return true;
 	}
 }
