@@ -5,7 +5,7 @@ function gitContextMenu() {
 		["$CtxGit_Commit$", 0, openGitCommitDialog, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitCommit" }],
 		["$CtxGit_Pull$", 0, function() {
 			getAppByID("git").create(["-C", getFullPathForSelection(), "pull"], 0x1, function() {
-				EventInfo("Pulling Complete");
+				EventInfo("$EI_PullingComplete$");
 			}, function(data) {
 				log(">> " + data);
 			});
@@ -15,7 +15,7 @@ function gitContextMenu() {
 		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitFetch" }],
 		["$CtxGit_Push$", 0, function() {
 			getAppByID("git").create(["-C", getFullPathForSelection(), "push"], 0x1, function() {
-				EventInfo("Pushing Complete");
+				EventInfo("$EI_PushingComplete$");
 			}, function(data) {
 				log(">> " + data);
 			});
@@ -38,7 +38,7 @@ function gitContextMenu() {
 			var entry = getCurrentTreeSelection();
 			getAppByID("git").create(["-C", _sc.workpath(getFullPathForSelection()), "rm", getTreeObjPath(entry).substr(1)], 0x3, function() {
 				removeTreeEntry(entry);
-				EventInfo("Removed");
+				EventInfo("$EI_Removed$");
 			});
 		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitRemove" }],
 		["$CtxGit_Move$", 0, openGitMoveDialog, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitMove" }],
@@ -49,7 +49,7 @@ function gitContextMenu() {
 		["$CtxGit_Merge$", 0, function() {
 			EventInfo("Not supported");
 		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitMerge" }]
-	], MODULE_LPRE, { allowIcons: true });
+	], MODULE_LPRE, { allowIcons: true, fnCheckVisibility: gitHideContextItems });
 }
 
 function openGitAddDialog() {
@@ -90,10 +90,10 @@ function openGitCheckoutDialog() {
 				if(!branchname || branchname == current_branch)
 					return e.stopImmediatePropagation();
 
-				var msg = "Branch created";
+				var msg = "$EI_BranchCreated$";
 				if($(_self.element).find('menuitem[label="'+branchname+'"]')[0]) {
 					var args = ["-C", path, "checkout", branchname];
-					msg = "Switched to " + branchname;
+					msg = sprintf(Locale("$SwitchToBranch$"), branchname);
 				}
 				else
 					var args = ["-C", path, "checkout", "-b", branchname];
@@ -104,8 +104,8 @@ function openGitCheckoutDialog() {
 	
 	dlg.setContent(`<description>$DlgGitCheckoutDesc$</description>
 					<hbox>
-						<label value="Current branch:" flex="1"/>
-						<label id="git-currentBranch" value="Loading..." flex="1"/>
+						<label value="$DlgGitCurrentBranch$:" flex="1"/>
+						<label id="git-currentBranch" value="$loading$" flex="1"/>
 					</hbox>
 					<menulist editable="true" id="git-checkoutlist"><menupopup></menupopup></menulist>`);
 	dlg.show();
@@ -132,21 +132,20 @@ function openGitCheckoutDialog() {
 }
 
 function openGitCommitDialog() {
-	var path = _sc.workpath(getCurrentTreeSelection());
-	var dlg = new WDialog("$DlgGitCommit$", MODULE_LPRE, { btnright: [{ preset: "accept", title: "Commit",
+	var path = getFullPathForSelection();
+	var dlg = new WDialog("$DlgGitCommit$", MODULE_LPRE, { btnright: [{ preset: "accept", title: "$DlgGitCommitBtn$",
 			onclick: function(e, btn, _self) {
 				writeFile(_sc.file(_sc.profd+"/windmilltmpcommit.txt"), $(_self.element).find("#git_commitmsg").val(), true);
 				var args = ["-C", path, "commit", "-F", _sc.profd+"/windmilltmpcommit.txt"];
 				getAppByID("git").create(args, 0x1, function() {
-					EventInfo("Committed");
+					EventInfo("$EI_Commited$");
 				}, function(data) {
 					log("DATA: " + data);
 				});
 			}
 		}, "cancel"]});
 	
-	dlg.setContent(`<description>$GitCommitDesc$</description>
-	<textbox multiline="true" id="git_commitmsg" flex="1" rows="10"></textbox>
+	dlg.setContent(`<textbox multiline="true" id="git_commitmsg" flex="1" rows="10" placeholder="$DlgGitCommitMsg$"></textbox>
 	<vbox style="border: 1px solid grey; background: white;">
 		Staged files etc...
 	</vbox>`);
@@ -160,12 +159,12 @@ function openGitMoveDialog() {
 			onclick: function(e, btn, _self) {
 				var args = ["-C", path, "mv", relpath, $(_self.element).find("#git_movename").val()];
 				getAppByID("git").create(args, 0x3);
-				EventInfo("Moved");
+				EventInfo("$EI_Moved$");
 			}
 		}, "cancel"]});
 	
 	var wsname = path.split("/")[path.split("/").length-1];
-	dlg.setContent('<description>$GitMoveDesc$</description><hbox><hbox>'+wsname
+	dlg.setContent('<description>$DlgGitMoveDesc$</description><hbox><hbox>'+wsname
 				  +'/</hbox><textbox flex="1" id="git_movename" value="'+relpath+'"></textbox></hbox>');
 	
 	dlg.show();
@@ -177,15 +176,14 @@ function openGitRevertDialog() {
 			onclick: function(e, btn, _self) {
 				var args = ["-C", path, "revert", $(_self.element).find("#git-browsecommits").val()];
 				getAppByID("git").create(args, 0x3);
-				EventInfo("Reverted");
+				EventInfo("$EI_Reverted$");
 			}
 		}, "cancel"]});
 	
-	dlg.setContent(`<description>$DlgGitRevertDesc$</description>
-					<hbox>
-						<label value="Revert commits:" flex="1"/>
+	dlg.setContent(`<hbox>
+						<label value="$DlgGitRevertCommits$:" flex="1"/>
 						<textbox id="git-revert-commits" flex="1"/>
-						<button id="git-browsecommits" label="Browse Commits"></button>
+						<button id="git-browsecommits" label="$DlgGitBrowseCommits$"></button>
 					</hbox>`);
 	dlg.show();
 	
@@ -207,9 +205,8 @@ function openGitCommitLogDialog(path, callback) {
 			}
 		}, "cancel"]});
 	
-	dlg.setContent(`<description>$DlgGitCommitLogDesc$</description>
-					<vbox id="git-commitlog" class="dlg-listbox" flex="1" data-multiselect="true">
-						<hbox class="dlg-list-head"><vbox flex="1">Commit</vbox><vbox flex="5">Message</vbox></hbox>
+	dlg.setContent(`<vbox id="git-commitlog" class="dlg-listbox" flex="1" data-multiselect="true">
+						<hbox class="dlg-list-head"><vbox flex="1">$DlgCommitLogHeadCommitID$</vbox><vbox flex="5">$DlgCommitLogHeadCommitMsg$</vbox></hbox>
 					</vbox>`);
 	dlg.show();
 
@@ -236,6 +233,17 @@ function openGitCommitLogDialog(path, callback) {
 	});
 }
 
+/*-- Sichtbarkeit --*/
 
+function gitHideContextItems(by_obj, identifier) {
+	var workenv = $(by_obj).hasClass("workenvironment");
+	switch(identifier) {
+		case "ctxGitRevert":
+			return workenv?0:2;
+		case "ctxGitRemove":
+		case "ctxGitMove":
+			return workenv?2:0;
+	}
+}
 
 

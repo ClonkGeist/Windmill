@@ -197,16 +197,17 @@ class _WDialog extends WindmillObject {
 		$(this.element).find(".dlg-checklistitem").unbind("click").click(clickfn);
 		$(this.element).find(".dlg-checklistbox").off("DOMSubtreeModified").on("DOMSubtreeModified", function() {
 			var height = parseInt($(this).css("max-height"));
-			var elmheight = $(this).find(".dlg-checklistitem:not(.hidden)").length * $(this).find(".dlg-checklistitem:not(.hidden)").height()+4;
+			var elmheight = $(this).find(".dlg-checklistitem:not(.hidden)").length * $(this).find(".dlg-checklistitem:not(.hidden)").height()+2;
 			if(elmheight < height)
 				height = elmheight;
 
+			height += parseInt($(this).css("padding-top")) + parseInt($(this).css("padding-bottom"));
 			$(this).css("height", height);
 			$(this).find(".dlg-checklistitem").unbind("click").click(clickfn);
 		});
 
 		//Listbox
-		var clickfn = function() {
+		var clickfn2 = function() {
 			if($(this).hasClass("disabled"))
 				return;
 
@@ -217,7 +218,7 @@ class _WDialog extends WindmillObject {
 				$(this).addClass('selected');
 			}
 		}
-		$(this.element).find(".dlg-list-item").unbind("click").click(clickfn);
+		$(this.element).find(".dlg-list-item").unbind("click").click(clickfn2);
 		$(this.element).find(".dlg-listbox").off("DOMSubtreeModified").on("DOMSubtreeModified", function() {
 			var height = parseInt($(this).css("max-height"));
 			var elmheight = $(this).find(".dlg-list-item:not(.hidden)").length * $(this).find(".dlg-list-item:not(.hidden)").height()+4;
@@ -225,7 +226,7 @@ class _WDialog extends WindmillObject {
 				height = elmheight;
 
 			$(this).css("height", height);
-			$(this).find(".dlg-list-item").unbind("click").click(clickfn);
+			$(this).find(".dlg-list-item").unbind("click").click(clickfn2);
 		});
 		
 		//Infobox: Error

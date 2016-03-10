@@ -1,5 +1,5 @@
 var treeContextMenu = new ContextMenu(0, 0, MODULE_LPRE, { fnCheckVisibility: treeHideContextItems });
-var workenvContextMenu = new ContextMenu(0, 0, MODULE_LPRE);
+var workenvContextMenu = new ContextMenu(0, 0, MODULE_LPRE, { fnCheckVisibility: workenvHideContextItems });
 
 function initializeDirectory() {
 	var workenvs = getWorkEnvironments();
@@ -718,6 +718,10 @@ function initializeContextMenu() {
 		removeTreeEntry($(getCurrentTreeSelection()));
 	}, 0);
 	workenvContextMenu.addSeperator();
+	
+	//Git
+	workenvContextMenu.addEntry("$ctxgit$", 0, 0, gitContextMenu(), { identifier: "ctxGit"});
+	workenvContextMenu.addSeperator();
 
 	var lbl = "$ctxopeninfilemanager$";
 	if(OS_TARGET == "WINNT")
@@ -996,6 +1000,19 @@ function getOCStartArguments(path) {
 }
 
 /*-- Kontextmenü --*/
+
+function workenvHideContextItems(by_obj, identifier) {
+	if(identifier == "ctxGit") {
+		var workenv =  getWorkEnvironmentByPath(_sc.workpath(by_obj));
+		if(!workenv)
+			return 2;
+		if(!workenv.repository)
+			return 2;
+
+		if(!getAppByID("git").isAvailable())
+			return 1;
+	}
+}
 
 function treeHideContextItems(by_obj, identifier) {
 	//Rückgabewert:

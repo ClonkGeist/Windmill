@@ -214,12 +214,17 @@ class _ContextMenu {
 
 			this.body = $("<vbox class='ctx-wrapper'></vbox>")[0];
 			$(this.element).append(this.body);
+			var last_element_seperator = false;
 			
 			for(var entry in this.entries) { // Menü füllen
-				if(this.entries[entry].seperator)
-					$(this.body).append('<hbox class="ctx-menuseperator"></hbox>');
+				if(this.entries[entry].seperator) {
+					if(!last_element_seperator)
+						$(this.body).append('<hbox class="ctx-menuseperator"></hbox>');
+				}
 				else if(this.entries[entry])
 					this.entries[entry].addEntryToObject(this.body, obj_by);
+				if(this.entries[entry].seperator || this.entries[entry].visible)
+					last_element_seperator = this.entries[entry].seperator;
 			}
 			
 			var pscr = _sc.screenmgr().screenForRect(screenX, screenY, 1, 1);
@@ -250,12 +255,17 @@ class _ContextMenu {
 			$(this.element).appendTo($("body"));
 			$(this.element).css("left", x+"px").css("top", y+"px");
 			$(this.element).css("position", "absolute");
+			var last_element_seperator = false;
 
 			for(var entry in this.entries) { // Menü füllen
-				if(this.entries[entry].seperator)
-					$(this.element).append('<hr class="ctx-menuseperator"></hr>');
+				if(this.entries[entry].seperator) {
+					if(!last_element_seperator)
+						$(this.element).append('<hr class="ctx-menuseperator"></hr>');
+				}
 				else if(this.entries[entry])
 					this.entries[entry].addEntryToObject(this.element, obj_by);
+				if(this.entries[entry].seperator || this.entries[entry].visible)
+					last_element_seperator = this.entries[entry].seperator;
 			}
 		}
 
