@@ -25,7 +25,7 @@ class _WDialog extends WindmillObject {
 		return $(this.element).find(".main-wdialog-footer");
 	}
 	
-	//Buttons hinzufügen
+	//Buttons hinzufEen
 	setBtnLeft(btns) {
 		this.options.btnleft = btns;
 	
@@ -74,7 +74,7 @@ class _WDialog extends WindmillObject {
 					break;
 			}
 			
-			//Presets übernehmen
+			//Presets Eernehmen
 			if(typeof btnobj == "string") {
 				btnobj = temp;
 				temp = 0;
@@ -110,7 +110,7 @@ class _WDialog extends WindmillObject {
 		if(btnobj.onclick)
 			btn.on("command", (e) => { try { btnobj.onclick(e, e.target, this); } catch(err) { log(err, true); log(err.stack, true); this.hide(); } });
 		
-		//Butonn hinzufügen
+		//Butonn hinzufEen
 		btn.appendTo(elm);
 		return btn;
 	}
@@ -122,7 +122,7 @@ class _WDialog extends WindmillObject {
 		clone.removeClass("draft");
 		this.element = clone.get(0);
 		
-		//CSS-Einstellungen übernehmen
+		//CSS-Einstellungen Eernehmen
 		if(this.options.css)
 			clone.find(".main-wdialog-wrapper").css(this.options.css);
 
@@ -139,7 +139,7 @@ class _WDialog extends WindmillObject {
 			clone.find(".main-wdialog-head").find("spacer").remove();
 		}
 		else {
-			//Inhalt setzen und Buttons hinzufügen
+			//Inhalt setzen und Buttons hinzufEen
 			clone.find(".main-wdialog-content").html(Locale(this.options.content, this.langpre));
 			if(this.options.footer) {
 				clone.find(".main-wdialog-footer").html(Locale(this.options.footer, this.langpre));
@@ -187,12 +187,13 @@ class _WDialog extends WindmillObject {
 	
 	updatePseudoElements() {
 		//Checklistbox
-		$(this.element).find(".dlg-checklistitem").unbind("click").click(function() {
+		var clickfn = function() {
 			if($(this).hasClass("disabled"))
 				return;
 
 			$(this).toggleClass('selected');
-		});
+		}
+		$(this.element).find(".dlg-checklistitem").unbind("click").click(clickfn);
 		$(this.element).find(".dlg-checklistbox").off("DOMSubtreeModified").on("DOMSubtreeModified", function() {
 			var height = parseInt($(this).css("max-height"));
 			var elmheight = $(this).find(".dlg-checklistitem:not(.hidden)").length * $(this).find(".dlg-checklistitem:not(.hidden)").height()+4;
@@ -200,13 +201,33 @@ class _WDialog extends WindmillObject {
 				height = elmheight;
 
 			$(this).css("height", height);
-			$(this).find(".dlg-checklistitem").unbind("click").click(function() {
-				if($(this).hasClass("disabled"))
-					return;
-
-				$(this).toggleClass('selected');
-			});
+			$(this).find(".dlg-checklistitem").unbind("click").click(clickfn);
 		});
+
+		//Listbox
+		var clickfn = function() {
+			if($(this).hasClass("disabled"))
+				return;
+
+			if($(this).parents(".dlg-listbox").attr("data-multiselect"))
+				$(this).toggleClass("selected");
+			else {
+				$(this).siblings(".selected").removeClass("selected");
+				$(this).addClass('selected');
+			}
+		}
+		$(this.element).find(".dlg-list-item").unbind("click").click(clickfn);
+		$(this.element).find(".dlg-listbox").off("DOMSubtreeModified").on("DOMSubtreeModified", function() {
+			var height = parseInt($(this).css("max-height"));
+			var elmheight = $(this).find(".dlg-list-item:not(.hidden)").length * $(this).find(".dlg-list-item:not(.hidden)").height()+4;
+			if(elmheight < height)
+				height = elmheight;
+
+			$(this).css("height", height);
+			$(this).find(".dlg-list-item").unbind("click").click(clickfn);
+		});
+		
+		//Infobox: Error
 		$(this.element).find(".dlg_infobox.error").hide();
 		
 		var observer = new MutationObserver(function(mutations) {

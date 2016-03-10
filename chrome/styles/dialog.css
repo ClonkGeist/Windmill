@@ -135,3 +135,16 @@ description {
 .dlg-checklistitem.hidden {
 	display: none;
 }
+
+/* Listbox */
+
+.dlg-list-head, .dlg-list-item { padding: 4px 6px; }
+.dlg-list-head { background: #DDD; }
+.dlg-list-item.hidden { display: none; }
+
+.dlg-list-item.selected, .dlg-list-item:hover {
+	background-color: rgba(0, 165, 207, 0.15);
+	outline: 1px solid rgba(0, 165, 207, 0.3);
+	outline-offset: -1px;
+}
+

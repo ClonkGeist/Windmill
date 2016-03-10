@@ -2,12 +2,6 @@
 
 function gitContextMenu() {
 	return new ContextMenu(0, [
-		["$CtxGit_LaunchShell$", 0, function() {
-			
-		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitLaunchShell" }],
-		
-		"seperator",
-		
 		["$CtxGit_Commit$", 0, openGitCommitDialog, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitCommit" }],
 		["$CtxGit_Pull$", 0, function() {
 			getAppByID("git").create(["-C", getFullPathForSelection(), "pull"], 0x1, function() {
@@ -26,7 +20,8 @@ function gitContextMenu() {
 				log(">> " + data);
 			});
 		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitPush" }],
-		
+		["$CtxGit_Revert$", 0, openGitRevertDialog, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitRevert" }],
+
 		"seperator",
 		
 		["$CtxGit_Diff$", 0, function() {
@@ -46,9 +41,6 @@ function gitContextMenu() {
 				EventInfo("Removed");
 			});
 		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitRemove" }],
-		["$CtxGit_Revert$", 0, function() {
-			EventInfo("Not supported");
-		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitRevert" }],
 		["$CtxGit_Move$", 0, openGitMoveDialog, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitMove" }],
 		
 		"seperator",
@@ -166,7 +158,7 @@ function openGitMoveDialog() {
 	var path = _sc.workpath(getCurrentTreeSelection()), relpath = getFullPathForSelection().replace(path+"/", "");
 	var dlg = new WDialog("$DlgGitMove$", MODULE_LPRE, { btnright: [{ preset: "accept",
 			onclick: function(e, btn, _self) {
-				var args = ["-C", path, "mv",relpath , $(_self.element).find("#git_movename").val()];
+				var args = ["-C", path, "mv", relpath, $(_self.element).find("#git_movename").val()];
 				getAppByID("git").create(args, 0x3);
 				EventInfo("Moved");
 			}
@@ -177,6 +169,71 @@ function openGitMoveDialog() {
 				  +'/</hbox><textbox flex="1" id="git_movename" value="'+relpath+'"></textbox></hbox>');
 	
 	dlg.show();
+}
+
+function openGitRevertDialog() {
+	var path = getFullPathForSelection();
+	var dlg = new WDialog("$DlgGitRevert$", MODULE_LPRE, { btnright: [{ preset: "accept",
+			onclick: function(e, btn, _self) {
+				var args = ["-C", path, "revert", $(_self.element).find("#git-browsecommits").val()];
+				getAppByID("git").create(args, 0x3);
+				EventInfo("Reverted");
+			}
+		}, "cancel"]});
+	
+	dlg.setContent(`<description>$DlgGitRevertDesc$</description>
+					<hbox>
+						<label value="Revert commits:" flex="1"/>
+						<textbox id="git-revert-commits" flex="1"/>
+						<button id="git-browsecommits" label="Browse Commits"></button>
+					</hbox>`);
+	dlg.show();
+	
+	$(dlg.element).find("#git-browsecommits").click(function() {
+		openGitCommitLogDialog(path, function(commits) {
+			$(dlg.element).find("#git-revert-commits").val(commits);
+		});
+	});
+}
+
+function openGitCommitLogDialog(path, callback) {
+	var dlg = new WDialog("$DlgGitCommitLog$", MODULE_LPRE, { css: { width: "800px" },
+			btnright: [{ preset: "accept", onclick: function(e, btn, _self) {
+				var commits = $(_self.element).find(".dlg-list-item.selected");
+				for(var i = 0, str = ""; i < commits.length; i++)
+					str += $(commits[i]).find(".git-commitid").text() + (i!=commits.length-1?" ":"");
+
+				callback(str, _self);
+			}
+		}, "cancel"]});
+	
+	dlg.setContent(`<description>$DlgGitCommitLogDesc$</description>
+					<vbox id="git-commitlog" class="dlg-listbox" flex="1" data-multiselect="true">
+						<hbox class="dlg-list-head"><vbox flex="1">Commit</vbox><vbox flex="5">Message</vbox></hbox>
+					</vbox>`);
+	dlg.show();
+
+	getAppByID("git").create(["-C", path, "log", "--oneline"], 0x1, 0, function(data) {
+		if(!data || !data.length || data.search(/\w/) == -1) {
+			$(dlg.element).find("#git-checkoutlist").insertBefore("<description>$UnknownError$</description>");
+			return;
+		}
+		var lines = data.split("\n");
+		for(var i = 0; i < lines.length; i++)
+			if(lines[i].length) {
+				var commitid = lines[i].substr(0, 7);
+				var commitmsg = lines[i].substr(8);
+				if(lines[i][0] == "*") {
+					current_branch = lines[i].substr(2);
+					continue;
+				}
+
+				$(`<hbox class="dlg-list-item"><vbox flex="1" class="git-commitid">${commitid}</vbox><vbox flex="5">${commitmsg}</vbox></hbox>`)
+					.appendTo($(dlg.element).find("#git-commitlog"));
+			}
+
+		dlg.updatePseudoElements();
+	});
 }
 
 
