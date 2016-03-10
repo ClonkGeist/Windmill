@@ -236,6 +236,9 @@ class _ContextMenu {
 			else if(!menuitem) {
 				this.direction = DIR_Right;
 			}
+			
+			if(screenY+$(this.element).outerHeight() > schgt.value)
+				screenY -= $(this.element).outerHeight()-((schgt.value)-screenY);
 
 			if(screenX||screenY)
 				this.element.moveTo(screenX, screenY);
