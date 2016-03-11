@@ -69,7 +69,10 @@ description {
 	border: 1px solid rgb(200, 200, 200);
 }
 
-.dlg_infobox {
+
+/* y no use consistent seperators */
+.dlg_infobox,
+.dlg-infobox {
 	padding: 5px;
 	border: 1px solid gainsboro;
 	font-size: 9pt;
@@ -77,8 +80,10 @@ description {
 	margin: 5px 0px;
 }
 
+.dlg-infobox.error,
 .dlg_infobox.error {
 	background-color: #FFB2B2;
+	border-color: #CCB1B1;
 }
 
 /* Checklist */

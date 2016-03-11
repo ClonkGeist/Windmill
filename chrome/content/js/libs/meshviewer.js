@@ -2,11 +2,9 @@
 	TODO: to use less memory
 	
 	limit matrix skinning palette to 4v3 matrices
-	make shader with a maximum of 2 weights per vertex (or even 1?)
 */
 
 const PATH_TEMP = _sc.chpath + "/content/modules/cide/meshviewer/temp";
-const PATH_OGRE_CONVERTER = _sc.chpath + "/content/modules/cide/meshviewer/OgreXMLConverter.exe";
 
 var _mv = new Meshviewer();
 
@@ -808,7 +806,10 @@ function Meshviewer() {
 				var zoom = _scene.zoomLevel*_scene.zoomLevel;
 				zoom *= this._d;
 				
-				mat4.scale(m ,m, [zoom * _session.viewportCorrectionX, zoom * _session.viewportCorrectionY, -zoom]);
+				mat4.scale(m ,m, [
+					 -zoom * _session.viewportCorrectionX, 
+					 zoom * _session.viewportCorrectionY,
+					-zoom]);
 				mat4.multiply(m, m, t)
 				
 				var ortho = mat4.create();
@@ -1035,19 +1036,11 @@ function Meshviewer() {
 				this.fpath = file.path;
 				var origDirPath = file.path.slice(0, -file.leafName.length - 1);
 				
-				var newFilePath = PATH_TEMP + "/" + file.leafName + ".xml";
+				var targetFilePath = PATH_TEMP + "/" + file.leafName + ".xml";
 				
-				if(_ref.silentLaunch) {
-					var args = [PATH_OGRE_CONVERTER, file.path, newFilePath];
-					
-					doSilentLaunch(
-						[PATH_OGRE_CONVERTER, file.path, newFilePath],
-						function(process, sResult) { _session.createMesh(_scene, newFilePath, origDirPath); }
-					);
-				}
-				else
-					_sc.process(_sc.file(PATH_OGRE_CONVERTER)).runAsync([file.path, newFilePath], 2, 
-						function(process, sResult) { _session.createMesh(_scene, newFilePath, origDirPath);});
+				runXmlParser(file.path, targetFilePath, function() {
+					_session.createMesh(_scene, targetFilePath, origDirPath);
+				});
 			}
 			
 			this.s_Cond = {};
@@ -1698,28 +1691,11 @@ function Meshviewer() {
 				
 				// if file there
 				if(file.exists()) {
-					var fpath = file.path;
 					
 					var newFilePath = PATH_TEMP + "/" + file.leafName + ".xml"
-					
-					if(_ref.silentLaunch) {
-						var args = [PATH_OGRE_CONVERTER, file.path, newFilePath];
-						
-						doSilentLaunch(
-							[PATH_OGRE_CONVERTER, file.path, newFilePath],
-							function(process, sResult) {
-								var file = _sc.file(newFilePath);
-								targetScene.setSkeleton(parseSkeletonXml(newFilePath));
-							}
-						);
-					}
-					else
-						_sc.process(_sc.file(PATH_OGRE_CONVERTER)).runAsync([file.path, newFilePath], 2, 
-							function(process, sResult) {
-								var file = _sc.file(newFilePath);
-								targetScene.setSkeleton(parseSkeletonXml(newFilePath));
-							}
-						);
+					runXmlParser(file.path, newFilePath, function() {
+						targetScene.setSkeleton(parseSkeletonXml(newFilePath));
+					});
 				}
 				else {
 					// TODO: Serious error logging for debugging and finding errors more easily
@@ -2072,6 +2048,22 @@ function MV_Skeleton() {
 			return this.tracks;
 		}
 	}
+}
+
+function runXmlParser(filePath, targetFilePath, fnOnFinish) {
+	var name = "OgreXMLConverter";
+	if(OS_TARGET == "WINNT")
+		name = "OgreXMLConverter.exe";
+
+	var converter = _sc.file(_sc.chpath + "/content/modules/cide/meshviewer/" + name);
+
+	if(!converter.exists() || !converter.isExecutable())
+		return warn("$err_group_not_found$");
+
+	var process = _ws.pr(converter);
+	process.create([filePath, targetFilePath], 0x00000001, function(data) {
+		log(data);
+	}, fnOnFinish);
 }
 
 var RENDER_REPORT_PRINTED = false;
