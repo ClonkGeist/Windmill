@@ -28,6 +28,21 @@ function createWorkEnvironmentEntry(workenv, first) {
 	$(getTreeObjById(id)).attr("workpath", path);
 	if(first)
 		treeExpand(getTreeCntById(id), true);
+	
+	if(workenv.repository) {
+		getAppByID("git").create(["-C", path, "branch"], 0x1, 0, function(data) {
+			if(!data || !data.length || data.search(/\w/) == -1)
+				return;
+
+			var lines = data.split("\n");
+			for(var i = 0; i < lines.length; i++)
+				if(lines[i].length)
+					if(lines[i][0] == "*") {
+						$(getTreeObjById(id)).attr("data-special", " ("+lines[i].substr(2)+")");
+						return;
+					}
+		});
+	}
 
 	return id;
 }

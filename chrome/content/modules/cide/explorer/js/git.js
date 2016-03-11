@@ -26,10 +26,7 @@ function gitContextMenu() {
 		["$CtxGit_Diff$", 0, function() {
 			EventInfo("Not supported");
 		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitDiff" }],
-		/*["$CtxGit_Show$", 0, function() {
-			
-		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitShow" }],*/
-		
+
 		"seperator",
 		
 		["$CtxGit_Add$", 0, openGitAddDialog, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitAdd" }],
@@ -41,7 +38,10 @@ function gitContextMenu() {
 			});
 		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitRemove" }],
 		["$CtxGit_Move$", 0, openGitMoveDialog, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitMove" }],
-		
+		["$CtxGit_Ignore$", 0, function() {
+			
+		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitIgnore" }],
+
 		"seperator",
 		
 		["$CtxGit_Checkout$", 0, openGitCheckoutDialog, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitCheckout" }],
@@ -81,7 +81,7 @@ function openGitAddDialog() {
 	dlg.show();
 }
 
-function openGitCheckoutDialog() {
+function openGitCheckoutDialog(by_obj) {
 	var path = getFullPathForSelection(), current_branch;
 	var dlg = new WDialog("$DlgGitCheckout$", MODULE_LPRE, { btnright: [{ preset: "accept",
 			onclick: function(e, btn, _self) {
@@ -97,10 +97,11 @@ function openGitCheckoutDialog() {
 				else
 					var args = ["-C", path, "checkout", "-b", branchname];
 				getAppByID("git").create(args, 0x3);
+				$(by_obj).attr("data-special", " ("+branchname+")");
 				EventInfo(msg);
 			}
 		}, "cancel"]});
-	
+
 	dlg.setContent(`<description>$DlgGitCheckoutDesc$</description>
 					<hbox>
 						<label value="$DlgGitCurrentBranch$:" flex="1"/>
@@ -327,10 +328,6 @@ function openGitFetchRemoteDialog() {
 	});
 }
 
-function openGitFetchDialog() {
-	
-}
-
 function openGitCommitLogDialog(path, callback) {
 	var dlg = new WDialog("$DlgGitCommitLog$", MODULE_LPRE, { css: { width: "800px" },
 			btnright: [{ preset: "accept", onclick: function(e, btn, _self) {
@@ -357,10 +354,6 @@ function openGitCommitLogDialog(path, callback) {
 			if(lines[i].length) {
 				var commitid = lines[i].substr(0, 7);
 				var commitmsg = lines[i].substr(8);
-				if(lines[i][0] == "*") {
-					current_branch = lines[i].substr(2);
-					continue;
-				}
 
 				$(`<hbox class="dlg-list-item"><vbox flex="1" class="git-commitid">${commitid}</vbox><vbox flex="5">${commitmsg}</vbox></hbox>`)
 					.appendTo($(dlg.element).find("#git-commitlog"));
@@ -377,10 +370,10 @@ function gitHideContextItems(by_obj, identifier) {
 	switch(identifier) {
 		case "ctxGitRevert":
 		case "ctxGitRemote":
-		case "ctxGitFetch":
 			return workenv?0:2;
 		case "ctxGitRemove":
 		case "ctxGitMove":
+		case "ctxGitIgnore":
 			return workenv?2:0;
 	}
 }
