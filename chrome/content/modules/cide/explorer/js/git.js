@@ -65,12 +65,11 @@ function openGitAddDialog() {
 	
 	dlg.setContent('<vbox class="dlg-checklistbox" id="git-addfiles">$LoadingUnversionedFiles$</vbox>');
 
-	getAppByID("git").create(["-C", path, "ls-files", "--other"], 0x1, 0, function(data) {
+	getAppByID("git").create(["-C", path, "ls-files", "--other", "--exclude=.windmillheader"], 0x1, function() {
+		if(!$(dlg.element).find("#git-addfiles .dlg-checklistitem")[0])
+			$(dlg.element).find("#git-addfiles").html(Locale('$NoUnversionedFilesFound$<hbox class="dlg-checklistitem" style="visibility: hidden; width: 1px;"></hbox>'));
+	}, function(data) {
 		$(dlg.element).find("#git-addfiles").empty();
-		if(!data || !data.length || data.search(/\w/) == -1) {
-			$(dlg.element).find("#git-addfiles").html("$NoUnversionedFilesFound$");
-			return;
-		}
 		var lines = data.split("\n");
 		for(var i = 0; i < lines.length; i++)
 			if(lines[i].length)
