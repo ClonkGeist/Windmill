@@ -442,8 +442,9 @@ caption {
 /*-- Developer Log --*/
 
 
-#developerlog { width: 800px; }
+#developerlog, #gitlog { width: 800px; }
 #developerlog .ps-h {background-color: #333;}
+#gitlog .ps-h {background-color: rgb(241, 72, 33);}
 
 #log-entrylist { overflow-y: scroll; }
 #log-entrylist.show-hidden-logs > .log-listitem.hidden { display: -moz-box; }

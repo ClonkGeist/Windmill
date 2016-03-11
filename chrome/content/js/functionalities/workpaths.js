@@ -64,7 +64,7 @@ class WorkEnvironment {
 					else //TODO: ExitValue-Verarbeitung
 						options.rejected();
 				}, function(data) {
-					log(data);
+					logToGitConsole(data);
 				});
 				return;
 			}

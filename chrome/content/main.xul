@@ -93,6 +93,7 @@
 							<box class="nav-image icon-update icon-32" height="32" width="32" id="showUpdate"></box>
 							<box class="nav-image icon-resource_saviour icon-32" height="32" width="32" id="showResSaveMode"></box>
 							<box class="nav-image icon-multisource icon-32" height="32" width="32" id="showClonkDirs"></box>
+							<box class="nav-image icon-git icon-32" height="32" width="32" id="showGitLog"></box>
 							<box class="nav-image icon-console icon-32 devmode-elm" height="32" width="32" id="showLog"></box> <!-- DEVMODE -->
 							<box class="nav-image icon-reload-2 icon-32 devmode-elm" height="32" width="32" id="restartWindmill"></box> <!-- DEVMODE -->
 							<box class="nav-image icon-gear icon-32" height="32" width="32" id="showSettings"></box>
@@ -231,6 +232,26 @@
 						</vbox>
 					</vbox>
 				</vbox>
+				
+				<!-- Gitlog -->
+
+				<vbox id="gitlog" class="sidebar invisible">
+					<vbox id="page-gitlog" class="cds-page" flex="1">
+						<hbox class="ps-h cds-h">
+							<caption>Git Log</caption>
+							<spacer flex="1" />
+							<box class="icon-32 icon-clear-log ps-h-icon" onclick="clearLog('gitlog');"></box>
+						</hbox>
+						<vbox class="ps-b cds-b" flex="1">
+							<vbox id="gitlog-entrylist" flex="1">
+								<hbox class="log-listitem draft">
+									<vbox class="log-listitem-type"></vbox>
+									<description class="log-listitem-content" flex="1"></description>
+								</hbox>
+							</vbox>
+						</vbox>
+					</vbox>
+				</vbox>
 
 				<!-- Log -->
 
@@ -240,7 +261,7 @@
 							<caption>Log</caption>
 							<spacer flex="1" />
 							<box class="icon-32 icon-eye ps-h-icon" onclick="toggleHiddenLogEntries();"></box>
-							<box class="icon-32 icon-clear-log ps-h-icon" onclick="clearLog();"></box>
+							<box class="icon-32 icon-clear-log ps-h-icon" onclick="clearLog('log');"></box>
 						</hbox>
 						<vbox class="ps-b cds-b" flex="1">
 							<vbox id="log-entrylist" flex="1">

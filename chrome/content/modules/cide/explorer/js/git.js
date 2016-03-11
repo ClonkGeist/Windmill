@@ -7,25 +7,24 @@ function gitContextMenu() {
 			getAppByID("git").create(["-C", getFullPathForSelection(), "pull"], 0x1, function() {
 				EventInfo("$EI_PullingComplete$");
 			}, function(data) {
-				log(">> " + data);
+				logToGitConsole(data);
 			});
 		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitPull" }],
 		["$CtxGit_Push$", 0, function() {
 			getAppByID("git").create(["-C", getFullPathForSelection(), "push"], 0x1, function() {
 				EventInfo("$EI_PushingComplete$");
 			}, function(data) {
-				log(">> " + data);
+				logToGitConsole(data);
 			});
 		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitPush" }],
 		["$CtxGit_Revert$", 0, openGitRevertDialog, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitRevert" }],
-
 		["$CtxGit_FetchRemote$", 0, openGitFetchRemoteDialog, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitRemote" }],
 		
 		"seperator",
 		
-		["$CtxGit_Diff$", 0, function() {
-			EventInfo("Not supported");
-		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitDiff" }],
+		/*["$CtxGit_Diff$", 0, function() {
+			
+		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitDiff" }],*/
 
 		"seperator",
 		
@@ -35,12 +34,11 @@ function gitContextMenu() {
 			getAppByID("git").create(["-C", _sc.workpath(getFullPathForSelection()), "rm", getTreeObjPath(entry).substr(1)], 0x3, function() {
 				removeTreeEntry(entry);
 				EventInfo("$EI_Removed$");
+			}, function(data) {
+				logToGitConsole(data);
 			});
 		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitRemove" }],
 		["$CtxGit_Move$", 0, openGitMoveDialog, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitMove" }],
-		["$CtxGit_Ignore$", 0, function() {
-			
-		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitIgnore" }],
 
 		"seperator",
 		
@@ -59,7 +57,9 @@ function openGitAddDialog() {
 				$(_self.element).find(".dlg-checklistitem.selected").each(function() {
 					args.push($(this).text());
 				});
-				getAppByID("git").create(args, 0x3);
+				getAppByID("git").create(args, 0x3, 0, function(data) {
+					logToGitConsole(data);
+				});
 			}
 		}, "cancel"]});
 	
@@ -96,7 +96,9 @@ function openGitCheckoutDialog(by_obj) {
 				}
 				else
 					var args = ["-C", path, "checkout", "-b", branchname];
-				getAppByID("git").create(args, 0x3);
+				getAppByID("git").create(args, 0x3, 0, function(data) {
+					logToGitConsole(data);
+				});
 				$(by_obj).attr("data-special", " ("+branchname+")");
 				EventInfo(msg);
 			}
@@ -140,6 +142,7 @@ function openGitCommitDialog() {
 				getAppByID("git").create(args, 0x1, function() {
 					EventInfo("$EI_Commited$");
 				}, function(data) {
+					logToGitConsole(data);
 					log("DATA: " + data);
 				});
 			}
@@ -158,7 +161,9 @@ function openGitMoveDialog() {
 	var dlg = new WDialog("$DlgGitMove$", MODULE_LPRE, { btnright: [{ preset: "accept",
 			onclick: function(e, btn, _self) {
 				var args = ["-C", path, "mv", relpath, $(_self.element).find("#git_movename").val()];
-				getAppByID("git").create(args, 0x3);
+				getAppByID("git").create(args, 0x3, 0, function(data) {
+					logToGitConsole(data);
+				});
 				EventInfo("$EI_Moved$");
 			}
 		}, "cancel"]});
@@ -174,8 +179,10 @@ function openGitRevertDialog() {
 	var path = getFullPathForSelection();
 	var dlg = new WDialog("$DlgGitRevert$", MODULE_LPRE, { btnright: [{ preset: "accept",
 			onclick: function(e, btn, _self) {
-				var args = ["-C", path, "revert", $(_self.element).find("#git-browsecommits").val()];
-				getAppByID("git").create(args, 0x3);
+				var args = ["-C", path, "revert", $(_self.element).find("#git-revert-commits").val()];
+				getAppByID("git").create(args, 0x3, 0, function(data) {
+					logToGitConsole(data);
+				});
 				EventInfo("$EI_Reverted$");
 			}
 		}, "cancel"]});
@@ -243,6 +250,8 @@ function openGitFetchRemoteDialog() {
 
 				getAppByID("git").create(args, 0x1, function() {
 					EventInfo(msg);
+				}, function(data) {
+					logToGitConsole(data);
 				});
 			}
 		}, "cancel"]});
