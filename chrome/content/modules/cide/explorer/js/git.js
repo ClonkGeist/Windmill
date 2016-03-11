@@ -10,9 +10,6 @@ function gitContextMenu() {
 				log(">> " + data);
 			});
 		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitPull" }],
-		["$CtxGit_Fetch$", 0, function() {
-			EventInfo("Not supported");
-		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitFetch" }],
 		["$CtxGit_Push$", 0, function() {
 			getAppByID("git").create(["-C", getFullPathForSelection(), "push"], 0x1, function() {
 				EventInfo("$EI_PushingComplete$");
@@ -22,15 +19,14 @@ function gitContextMenu() {
 		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitPush" }],
 		["$CtxGit_Revert$", 0, openGitRevertDialog, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitRevert" }],
 
+		["$CtxGit_FetchRemote$", 0, openGitFetchRemoteDialog, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitRemote" }],
+		
 		"seperator",
 		
 		["$CtxGit_Diff$", 0, function() {
 			EventInfo("Not supported");
 		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitDiff" }],
-		/*["$CtxGit_Show$", 0, function() {
-			
-		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitShow" }],*/
-		
+
 		"seperator",
 		
 		["$CtxGit_Add$", 0, openGitAddDialog, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitAdd" }],
@@ -42,7 +38,10 @@ function gitContextMenu() {
 			});
 		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitRemove" }],
 		["$CtxGit_Move$", 0, openGitMoveDialog, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitMove" }],
-		
+		["$CtxGit_Ignore$", 0, function() {
+			
+		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitIgnore" }],
+
 		"seperator",
 		
 		["$CtxGit_Checkout$", 0, openGitCheckoutDialog, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitCheckout" }],
@@ -82,7 +81,7 @@ function openGitAddDialog() {
 	dlg.show();
 }
 
-function openGitCheckoutDialog() {
+function openGitCheckoutDialog(by_obj) {
 	var path = getFullPathForSelection(), current_branch;
 	var dlg = new WDialog("$DlgGitCheckout$", MODULE_LPRE, { btnright: [{ preset: "accept",
 			onclick: function(e, btn, _self) {
@@ -98,10 +97,11 @@ function openGitCheckoutDialog() {
 				else
 					var args = ["-C", path, "checkout", "-b", branchname];
 				getAppByID("git").create(args, 0x3);
+				$(by_obj).attr("data-special", " ("+branchname+")");
 				EventInfo(msg);
 			}
 		}, "cancel"]});
-	
+
 	dlg.setContent(`<description>$DlgGitCheckoutDesc$</description>
 					<hbox>
 						<label value="$DlgGitCurrentBranch$:" flex="1"/>
@@ -194,6 +194,140 @@ function openGitRevertDialog() {
 	});
 }
 
+function openGitFetchRemoteDialog() {
+	var path = getFullPathForSelection();
+	var dlg = new WDialog("$DlgGitFetchRemote$", MODULE_LPRE, { btnright: [{ preset: "accept",
+			onclick: function(e, btn, _self) {
+				var option = $(_self.element).find("radiogroup > :selected"), args, msg = "", 
+					selected_remote = $(_self.element).find("#git-remotelist").val();
+				switch(option.attr("id")) {
+					case "git-fetch":
+						args = ["fetch", selected_remote];
+						msg = "$EI_Fetched$";
+						break;
+					
+					case "git-remote-add":
+						var name = $(_self.element).find("#git-remote-shortname").val();
+						var url = $(_self.element).find("#git-remote-url").val();
+						//TODO: Eingaben auf Validitaet ueberpruefen
+						if(!name || !url) {
+							warn("No name/url.");
+							return e.stopImmediatePropagation();
+						}
+
+						args = ["remote", "add", name, url];
+						msg = "$EI_RemoteAdded$";
+						break;
+
+					case "git-remote-rename":
+						var newname = $(_self.element).find("#git-remote-newname").val();
+						if(!newname) {
+							warn("No new name.");
+							return e.stopImmediatePropagation();
+						}
+
+						args = ["remote", "rename", selected_remote, newname];
+						msg = "$EI_RemoteRenamed$";
+						break;
+
+					case "git-remote-push":
+						args = ["remote", "push", selected_remote, $(_self.element).find("#git-branchlist").val()];
+						msg = "$EI_RemotePushed$";
+						break;
+
+					case "git-remote-remove":
+						args = ["remote", "remove", selected_remote];
+						msg = "$EI_RemoteRemoved$";
+						break;
+				}
+
+				getAppByID("git").create(args, 0x1, function() {
+					EventInfo(msg);
+				});
+			}
+		}, "cancel"]});
+	
+	dlg.setContent(`<radiogroup>
+						<radio id="git-fetch" label="$DlgGitFetch$" selected="true"/>
+						<radio id="git-remote-add" label="$DlgGitRemoteAdd$"/>
+						<radio id="git-remote-rename" label="$DlgGitRemoteRename$"/>
+						<radio id="git-remote-push" label="$DlgGitRemotePush$"/>
+						<radio id="git-remote-remove" label="$DlgGitRemoteRemove$"/>
+					</radiogroup>
+					<menulist id="git-remotelist" style="display: none"><menupopup></menupopup></menulist>
+					<vbox id="git-remote-add-box" class="git-groupbox">
+						<hbox>
+							<label value="$DlgGitRemoteShortname$:" flex="1"/>
+							<textbox id="git-remote-shortname" flex="1"/>
+						</hbox>
+						<hbox>
+							<label value="$DlgGitRemoteURL$:" flex="1"/>
+							<textbox id="git-remote-url" flex="1"/>
+						</hbox>
+					</vbox>
+					<hbox id="git-remote-rename-box" class="git-groupbox">
+						<label value="$DlgGitRemoteRenameTo$:" flex="1"/>
+						<textbox id="git-remote-newname" flex="1"/>
+					</hbox>
+					<hbox id="git-remote-push-box" class="git-groupbox">
+						<label value="$DlgGitRemoteBranch$:" flex="1"/>
+						<menulist id="git-branchlist" flex="1"><menupopup></menupopup></menulist>
+					</hbox>`);
+	dlg.show();
+	
+	$(dlg.element).find("radiogroup > radio").on("command", function() {
+		$(dlg.element).find(".git-groupbox").css("display", "none");
+		$(dlg.element).find("#git-remotelist").css("display", "");
+		$(dlg.element).find("#"+this.id+"-box").css("display", "");
+	});
+	$(dlg.element).find("#git-remote-add").on("command", function() {
+		$(dlg.element).find("#git-remotelist").css("display", "none");
+	});
+	$(dlg.element).find("#git-fetch").trigger("command");
+
+	getAppByID("git").create(["-C", path, "remote", "-v"], 0x1, 0, function(data) {
+		if(!data || !data.length || data.search(/\w/) == -1) {
+			$(dlg.element).find("#git-remotelist").insertBefore("<description>$UnknownError$</description>");
+			return;
+		}
+		var lines = data.split("\n");
+		for(var i = 0; i < lines.length; i++)
+			if(lines[i].length) {
+				var id = lines[i].match(/^(.+?)\W/)[1], url = lines[i].match(/\W(.+)\W/)[1];
+				if(url.search(/https:\/\/.+?:.+@/) != -1)
+					url = url.replace(/(https:\/\/.+?:)(.+?)@/, function(a, b, c) { return b+"********@"});
+
+				if($(dlg.element).find('#git-remotelist > menupopup > menuitem[data-id="'+id+'"]')[0])
+					continue;
+
+				$(`<menuitem label="${id} (${url})" data-id="${id}"></menuitem>`).appendTo($(dlg.element).find("#git-remotelist > menupopup"));
+			}
+
+		if(!$(dlg.element).find("#git-remotelist > menupopup > menuitem").length) {
+			$(dlg.element).find("#git-remote-rename,#git-remote-push,#git-remote-remove,$git-fetch").prop("disabled", "true");
+			$(dlg.element).find("$git-remote-add").trigger("command");
+		}
+		$(dlg.element).find("#git-remotelist")[0].selectedIndex = 0;
+	});
+	getAppByID("git").create(["-C", path, "branch"], 0x1, 0, function(data) {
+		if(!data || !data.length || data.search(/\w/) == -1) {
+			$(dlg.element).find("#git-branchlist").insertBefore("<description>$UnknownError$</description>");
+			return;
+		}
+		var lines = data.split("\n"), index = 0;
+		for(var i = 0, j = 0; i < lines.length; i++)
+			if(lines[i].length) {
+				if(lines[i][0] == "*")
+					index = j;
+
+				$('<menuitem label="'+lines[i].substr(2)+'"></menuitem>').appendTo($(dlg.element).find("#git-branchlist > menupopup"));
+				j++;
+			}
+
+		$(dlg.element).find("#git-branchlist")[0].selectedIndex = index;
+	});
+}
+
 function openGitCommitLogDialog(path, callback) {
 	var dlg = new WDialog("$DlgGitCommitLog$", MODULE_LPRE, { css: { width: "800px" },
 			btnright: [{ preset: "accept", onclick: function(e, btn, _self) {
@@ -220,10 +354,6 @@ function openGitCommitLogDialog(path, callback) {
 			if(lines[i].length) {
 				var commitid = lines[i].substr(0, 7);
 				var commitmsg = lines[i].substr(8);
-				if(lines[i][0] == "*") {
-					current_branch = lines[i].substr(2);
-					continue;
-				}
 
 				$(`<hbox class="dlg-list-item"><vbox flex="1" class="git-commitid">${commitid}</vbox><vbox flex="5">${commitmsg}</vbox></hbox>`)
 					.appendTo($(dlg.element).find("#git-commitlog"));
@@ -239,9 +369,11 @@ function gitHideContextItems(by_obj, identifier) {
 	var workenv = $(by_obj).hasClass("workenvironment");
 	switch(identifier) {
 		case "ctxGitRevert":
+		case "ctxGitRemote":
 			return workenv?0:2;
 		case "ctxGitRemove":
 		case "ctxGitMove":
+		case "ctxGitIgnore":
 			return workenv?2:0;
 	}
 }

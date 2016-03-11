@@ -30,6 +30,11 @@ li.treeelm:hover {
 	outline-offset: -1px;
 }
 
+li.treeelm::after {
+	content: attr(data-special);
+	color: #070;
+}
+
 li.tree-selected,
 li.tree-selected:focus,
 li.tree-selected:hover {
