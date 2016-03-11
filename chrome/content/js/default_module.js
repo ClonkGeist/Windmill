@@ -557,15 +557,6 @@ function removeSubFrames() {
 	}
 }
 
-function doSilentLaunch(args, fnOnFinish) {
-	var sl = _sc.file(_sc.chpath + "/content/js/functionalities/silent_launch.vbs");
-
-	if(!sl.exists())
-		return;
-
-	_sc.process(sl).runAsync(args, args.length, fnOnFinish);
-}
-
 var tooltipTimeout, tooltipEl;
 
 function tooltip(targetEl, desc, lang, duration) {
