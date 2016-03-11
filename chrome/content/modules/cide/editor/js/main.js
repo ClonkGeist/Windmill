@@ -1,29 +1,7 @@
 var defaultTheme = getConfigData("CIDE", "EditorTheme") || "chrome";
 
-// set the toolbar up
-hook("load", function() {
-	var el = $("#tool-save").mousedown(function(e) {
-		e.preventDefault();
-		saveDocument(-1);
-	}).get(0);
-	tooltip(el, Locale("$save_label$"), "html");
-	
-	
-	el = $("#tool-search").mousedown(function(e) {
-		e.preventDefault();
-	}).get(0);
-	
-	tooltip(el, Locale("$search_label$"), "html");
-	
-	el = $("#tool-snippet").click(window["showSnippetPanel"]).get(0);
-	tooltip(el, Locale("$add_snipped_desc$"), "html");
-
-});
-
-function createCideToolbar() {}
-
 /**
-			Editor management
+		Editor management
 */
 
 var editors = {},
@@ -36,28 +14,19 @@ function addScript(text, highlightMode, id, path, fShow) {
 
 	if(!ace)
 		return err("Could not initialize Scripteditor Module because ace is unavailable.");
-
+	
 	$("#editor-container").append("<div stlye=\"display: none\" id=\"editor-"+id+"\" class=\"main-editor\">"+text+"</div>");
 	
 	editors[id] = ace.edit("editor-"+id);
 	
 	var _e = editors[id];
 	
+	remapKeybindings(_e);
+	
 	_e.setTheme("ace/theme/" + defaultTheme);
 	
 	if(highlightMode)
 		editors[id].getSession().setMode("ace/mode/" + highlightMode);
-	
-	_e.commands.addCommand({
-		name: "showKeyboardShortcuts",
-		bindKey: {win: "Ctrl-Alt-h", mac: "Command-Alt-h"},
-		exec: function(editor) {
-			ace.config.loadModule("ace/ext/keybinding_menu", function(module) {
-				module.init(editor);
-				editor.showKeyboardShortcuts()
-			})
-		}
-	});
 	
 	// remove local completer
 	var langTools = ace.require("ace/ext/language_tools");
@@ -100,65 +69,23 @@ function addScript(text, highlightMode, id, path, fShow) {
 		initEditorContextMenu(x, y, id, fClickOntoSelection);
 	});
 	
-	// commands
-	_e.commands.addCommand({
-		name: 'ShiftFieldsets',
-		bindKey: {win: 'Tab',  mac: 'Tab'},
-		exec: function(editor) {
-			if(!editor.snptMode)
-				return false;
-			
-			editor.snptMode.findNext();
-			// remove if end reached
-			if(!editor.snptMode.hasOpen())
-				editor.snptMode = null;
-		},
-		readOnly: false
-	});
-	
-	var s = addEditorDataSet(id);
-	
-	s.filePath = path;
-	
-	editors[id].dataSet = s;
+	_e.__id = id;
+	_e.__scope = highlightMode;
+	_e.__filePath = path;
 	
 	if(fShow || !$(".visible").length)
 		showDeckItem(id);
 }
 
-function addEditorDataSet(editorId) {
-	var id = editorData.length;
-	editorData[id] = {
-		id: editorId,
-		activeSearch: false,
-		"searchProps": {
-			needle: "",
-			wrap: false,
-			caseSensitive: false,
-			backwards: false,
-			wholeWord: false,
-		},
-	};
-	
-	return editorData[id];
-}
-
-function clearDataSet(id) {
-	editors[id].dataSet = false;
-}
-
-function getDataSet(id) {
-	return editors[id].dataSet;
-}
 
 function getEditorFilePath(id) {
-	return editors[id].dataSet.filePath;
+	return editors[id].__filePath;
 }
 
 function fileLoaded(path) {
 	for(var id in editors)
 		if(editors[id])
-			if(editors[id].dataSet.filePath == path)
+			if(editors[id].__filePath == path)
 				return id;
 	
 	return -1;
@@ -167,7 +94,7 @@ function fileLoaded(path) {
 function saveFileByPath(path) {
 	for(var id in editors)
 		if(editors[id])
-			if(editors[id].dataSet.filePath == path)
+			if(editors[id].__filePath == path)
 				return saveDocument(id);
 	
 	return -1;
@@ -183,11 +110,6 @@ function showDeckItem(id) {
 	a_E.focus();
 	
 	hideParamlist();
-	
-	updateSearchProps();
-	
-	if(a_E.dataSet.activeSearch)
-		$('#searchBar').addClass("visible");
 		
 	frameUpdateWindmillTitle();	
 }
@@ -199,10 +121,7 @@ function frameWindowTitle() {
 
 function removeDeckItem(id) {
 	$("#editor-" + id).remove();
-	
-	// remove dataset
-	clearDataSet(id);
-	
+		
 	if(activeId == id)
 		activeId = undefined;
 	
@@ -237,65 +156,6 @@ function setDocumentValue(id, text) {
 	return editors[id].getSession().getDocument().setValue(text);
 }
 
-// ------------ Search
-
-function triggerReplaceInput() {
-	$("#replace-wrapper").toggleClass("enabled");
-}
-
-function searchNext() {
-	editors[activeId].findNext();
-}
-
-function searchPrevious() {
-	editors[activeId].findPrevious();
-}
-
-function openSearchDialog() {
-	$('#searchBar').addClass("visible");
-	$("#search-needle").focus();
-	
-	a_E.dataSet.activeSearch = true;
-}
-
-function closeSearchDialog() {
-	$("#searchBar").removeClass("visible");
-	
-	a_E.dataSet.activeSearch = false;
-}
-
-function toggleSearchProp(propName, elButton) {
-	$(elButton).toggleClass("enabled");
-	getDataSet(activeId).searchProps[propName] = $(elButton).hasClass("enabled");
-}
-
-function updateSearchProps(id) {
-	var v = getDataSet(id || activeId).searchProps;
-	
-	if(v.backwards != $("#search-backwards").hasClass("enabled"))
-		$("#search-backwards").toggleClass("enabled");
-	
-	if(v.wholeWord != $("#search-wholeWorld").hasClass("enabled"))
-		$("#search-wholeWorld").toggleClass("enabled");
-	
-	if(v.caseSensitive != $("#search-csense").hasClass("enabled"))
-		$("#search-csense").toggleClass("enabled");
-	
-	if(v.wrap != $("#search-wrap").hasClass("enabled"))
-		$("#search-wrap").toggleClass("enabled");
-	
-	$("#search-needle").val(v.needle);
-}
-
-function doSearch(needle) {
-	var props = getDataSet(activeId).searchProps;
-	props.regExp = needle instanceof RegExp;
-	
-	a_E.find(needle, props);
-}
-
-//----------------- TabData
-
 function getTabData(tabid) {
 	var e = editors[tabid], es = e.getSession();
 	var data = {
@@ -318,23 +178,110 @@ function dropTabData(data, tabid) {
 	return true;
 }
 
+/* !Feature:: {
+		insert snippet,
+		copy,
+		paste,
+		cut-out,
+		...
+	}
+	*/
 function initEditorContextMenu(x, y, editorId, fOnSelectionClicked) {
 	
 }
 
-function getUnsavedFiles() {
-	//Soll einen Array mit Objekten in folgendem Format zurueckgeben:
-	// { filepath: canvasArray[id].f.path, index: id, module: window }
-	//So ein Objekt fuer jede Datei.
 
-	//Aus Testgruenden mach ich hier einfach irgendwas hin.
+// !Review:: functionality
+function getUnsavedFiles() {
+	
 	var files = [];
 	for(var id in editors)
 		if(editors[id])
-			if(!editors[id].getSession().getUndoManager().isClean()) //Check ob ungespeicherte Aenderungen vorhanden sind
-				files.push({ filepath: editors[id].dataSet.filePath, index: id, module: window });
-	err(files);
+			if(!editors[id].getSession().getUndoManager().isClean())
+				files.push({ filepath: editors[id].__filePath, index: id, module: window });
+	
 	return files;
 }
+
+function createCideToolbar(startup) {
+	addCideToolbarButton("icon-save", function() { saveDocument(-1); });
+	addCideToolbarButton("icon-search", function() {  a_E.execCommand("search"); });
+	addCideToolbarButton("icon-snippet", function() { showSnippetDialog(a_E.__scope); });
+	
+	return true;
+}
+
+
+function remapKeybindings(editor) {
+	var commandsToRemove = [
+		"selectall",
+		"showSettingsMenu",
+		"centerselection",
+		"gotoline",
+		"undo",
+		"redo",
+		"find"
+	];
+	
+	
+	var list = editor.commands.byName,
+		newList = {};
+	
+	for(var i = 0; i < commandsToRemove.length; i++)
+		newList[commandsToRemove[i]] = list[commandsToRemove[i]];
+	
+	editor.commands.removeCommands(newList);
+	
+	for(var i = 0; i < commandsToRemove.length; i++)
+		delete newList[commandsToRemove[i]].bindKey;
+		
+	editor.commands.addCommand(newList)
+}
+
+hook("load", function() {
+	
+	bindKeyToObj(new KeyBinding("Save", "Ctrl-S", function() { saveDocument(-1); }));
+	bindKeyToObj(new KeyBinding("OpenSnippetDialog", "Ctrl-Alt-S", function() { showSnippetDialog(a_E.__scope); }));
+	bindKeyToObj(new KeyBinding("Select All", "Ctrl-A", function() { a_E.selectAll(); }));
+	bindKeyToObj(new KeyBinding("Undo", "Ctrl-Z", function() { a_E.undo(); }));
+	bindKeyToObj(new KeyBinding("Redo", "Ctrl-Y", function() { a_E.redo(); }));
+	bindKeyToObj(new KeyBinding("RemoveRight", "Delete", function() { a_E.remove("right"); }));
+	bindKeyToObj(new KeyBinding("RemoveLeft", "Backspace", function() { a_E.remove("left"); }));
+	bindKeyToObj(new KeyBinding("Find", "Ctrl-F", function() { 
+		config.loadModule("ace/ext/searchbox", function(e) {
+			e.Search(a_E)
+		});
+		
+		var kb = editor.searchBox.$searchBarKb;
+		var command = kb.commands["Ctrl-f|Command-f|Ctrl-H|Command-Option-F"];
+		
+		if(command) {
+			command.bindKey = ""
+            kb.addCommand(command)
+		}
+	}));
+	bindKeyToObj(new KeyBinding("Replace", "Ctrl-H", function() { config.loadModule("ace/ext/searchbox", function(e) {e.Search(a_E, true); }); }));
+	
+	bindKeyToObj(new KeyBinding("GoToLine", "Ctrl-L", function() {
+		var dlg = new WDialog("$DlgGoToLine$", MODULE_LPRE, { modal: true, css: { "width": "400px" }, btnright: ["cancel"]});
+		
+		dlg.setContent("<textbox id=\"dlg-gotoline-input\" />");
+		dlg.show();
+		
+		$(dlg.element).find("#dlg-gotoline-input").keypress(function(e) {
+			if(e.which == 13) {
+				var line = parseInt($(this).val());
+				if (!isNaN(line)) {
+					a_E.gotoLine(line);
+				}
+				
+				dlg.hide();
+				dlg = null;
+			}
+		});
+		
+	}));
+});
+
 
 // space
