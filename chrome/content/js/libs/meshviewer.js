@@ -4,8 +4,6 @@
 	limit matrix skinning palette to 4v3 matrices
 */
 
-const PATH_TEMP = _sc.chpath + "/content/modules/cide/meshviewer/temp";
-
 var _mv = new Meshviewer();
 
 function RGBToClr(r, g, b) {
@@ -227,8 +225,11 @@ function Meshviewer() {
 	this.FSHADER = 1;
 	this.VSHADER = 2;
 	
-	// TODO: Check if silentLauncher shall be used or not(Windows only I guess)
-	this.silentLaunch = false;
+	// secure existing tmp folder
+	var f = _sc.file(_sc.profd+"/tmp");
+	
+	if(!f.exists() || !f.isDirectory())
+		f.create(Ci.nsIFile.DIRECTORY_TYPE, 0o777);
 	
 	var ZOOM_FACTOR = 0.1;
 	
@@ -1036,7 +1037,8 @@ function Meshviewer() {
 				this.fpath = file.path;
 				var origDirPath = file.path.slice(0, -file.leafName.length - 1);
 				
-				var targetFilePath = PATH_TEMP + "/" + file.leafName + ".xml";
+				var targetFilePath = _sc.profd+"/tmp/meshviewer" + tmpFileIndex + ".xml";
+				tmpFileIndex++;
 				
 				runXmlParser(file.path, targetFilePath, function() {
 					_session.createMesh(_scene, targetFilePath, origDirPath);
@@ -1692,7 +1694,8 @@ function Meshviewer() {
 				// if file there
 				if(file.exists()) {
 					
-					var newFilePath = PATH_TEMP + "/" + file.leafName + ".xml"
+					var newFilePath = _sc.profd+"/tmp/meshviewer" + tmpFileIndex + ".xml";
+					tmpFileIndex++;
 					runXmlParser(file.path, newFilePath, function() {
 						targetScene.setSkeleton(parseSkeletonXml(newFilePath));
 					});
@@ -2049,6 +2052,8 @@ function MV_Skeleton() {
 		}
 	}
 }
+
+var tmpFileIndex = 0;
 
 function runXmlParser(filePath, targetFilePath, fnOnFinish) {
 	var name = "OgreXMLConverter";
