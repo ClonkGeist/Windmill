@@ -64,7 +64,7 @@ class WorkEnvironment {
 					else //TODO: ExitValue-Verarbeitung
 						options.rejected();
 				}, function(data) {
-					log(data);
+					logToGitConsole(data);
 				});
 				return;
 			}
@@ -224,7 +224,11 @@ class WorkEnvironment {
 	get alwaysexplode() { return this.header.Workspace.AlwaysExplode; }
 	set unloaded(val) { this.header.Workspace.Unloaded = val; }
 	get unloaded() { return this.header.Workspace.Unloaded; }
-	set repository(val) { this.header.Workspace.Repository = val; }
+	set repository(val) { 
+		this.header.Workspace.Repository = val;
+		if(val)
+			this.header.Repository = {};
+	}
 	get repository() { return this.header.Workspace.Repository; }
 	set linkedTo(val) { 
 		this.header.Workspace.LinkedTo = val;
@@ -249,7 +253,7 @@ class WorkEnvironment {
 
 		return url;
 	}
-	set cloneulr(url) { this.header.Repository.CloneURL = url; }
+	set cloneurl(url) { this.header.Repository.CloneURL = url; }
 }
 
 var WORKENV_List = [], WORKENV_Current;

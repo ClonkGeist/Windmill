@@ -398,10 +398,13 @@ $(window).load(function() {
 
 		var rv = fp.show();
 		if(rv == Ci.nsIFilePicker.returnOK) {
-			var header = new _sc.file(fp.file.path+"/.windmillheader");
+			var header = new _sc.file(fp.file.path+"/.windmillheader"), gitdir;
 			if(!header.exists()) {
-				warn("$err_is_no_workspace$");
-				return $(this).trigger("command");
+				gitdir = new _sc.file(fp.file.path+"/.git");
+				if(!gitdir.exists() || !_sc.file(gitdir.path+"/config")) {
+					warn("$err_is_no_workspace$");
+					return $(this).trigger("command");
+				}
 			}
 
 			if(_sc.workpath(fp.file))
@@ -410,6 +413,25 @@ $(window).load(function() {
 			var createEnvironment = function() {
 				var env = createWorkEnvironment(formatPath(getConfigData("CIDE", "WorkspaceParentDirectory"))+"/"+fp.file.leafName, _mainwindow.WORKENV_TYPE_Workspace, true);
 				env.unloaded = false;
+				if(gitdir) {
+					env.repository = true;
+					var config = new _sc.file(gitdir.path+"/config");
+					var configtext = readFile(config);
+					for(var lines = configtext.split("\n"), i = 0, origin = false; i < lines.length; i++) {
+						if(/\[remote.+?"origin"\]/.test(lines[i]))
+							origin = true;
+						else if(/\[remote.+?\]/.test(lines[i]))
+							origin = false;
+						else if(origin && /url =.+/.test(lines[i])) {
+							//TODO: ggf. Benutzername/Passwort reineditieren
+							env.cloneurl = lines[i].match(/url\W+=\W+(.+)/)[1];
+							break;
+						}
+					}
+
+					if(!env.cloneurl)
+						return warn("$DlgErrWENoCloneURL$");
+				}
 				env.saveHeader();
 				createWorkEnvironmentEntry(env);
 			}

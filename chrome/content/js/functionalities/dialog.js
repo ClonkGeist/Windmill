@@ -208,7 +208,7 @@ class _WDialog extends WindmillObject {
 
 		//Listbox
 		var clickfn2 = function() {
-			if($(this).hasClass("disabled"))
+			if($(this).hasClass("disabled") || $(this).parent().attr("data-noselect"))
 				return;
 
 			if($(this).parents(".dlg-listbox").attr("data-multiselect"))

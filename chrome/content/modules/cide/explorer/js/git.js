@@ -2,52 +2,48 @@
 
 function gitContextMenu() {
 	return new ContextMenu(0, [
-		["$CtxGit_Commit$", 0, openGitCommitDialog, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitCommit" }],
+		["$CtxGit_Commit$", 0, openGitCommitDialog, 0, { iconsrc: "chrome://windmill/content/img/git/icon-git-commit.png", identifier: "ctxGitCommit" }],
 		["$CtxGit_Pull$", 0, function() {
 			getAppByID("git").create(["-C", getFullPathForSelection(), "pull"], 0x1, function() {
 				EventInfo("$EI_PullingComplete$");
 			}, function(data) {
-				log(">> " + data);
+				logToGitConsole(data);
 			});
-		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitPull" }],
+		}, 0, { iconsrc: "chrome://windmill/content/img/git/icon-git-pull.png", identifier: "ctxGitPull" }],
 		["$CtxGit_Push$", 0, function() {
 			getAppByID("git").create(["-C", getFullPathForSelection(), "push"], 0x1, function() {
 				EventInfo("$EI_PushingComplete$");
 			}, function(data) {
-				log(">> " + data);
+				logToGitConsole(data);
 			});
-		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitPush" }],
-		["$CtxGit_Revert$", 0, openGitRevertDialog, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitRevert" }],
-
-		["$CtxGit_FetchRemote$", 0, openGitFetchRemoteDialog, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitRemote" }],
+		}, 0, { iconsrc: "chrome://windmill/content/img/git/icon-git-push.png", identifier: "ctxGitPush" }],
+		["$CtxGit_Revert$", 0, openGitRevertDialog, 0, { iconsrc: "chrome://windmill/content/img/git/icon-git-revert.png", identifier: "ctxGitRevert" }],
+		["$CtxGit_FetchRemote$", 0, openGitFetchRemoteDialog, 0, { iconsrc: "chrome://windmill/content/img/git/icon-git-fetchremote.png", identifier: "ctxGitRemote" }],
 		
 		"seperator",
 		
-		["$CtxGit_Diff$", 0, function() {
-			EventInfo("Not supported");
-		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitDiff" }],
+		/*["$CtxGit_Diff$", 0, function() {
+			
+		}, 0, { iconsrc: "chrome://windmill/content/img/git/icon-git-diff.png", identifier: "ctxGitDiff" }],*/
 
 		"seperator",
 		
-		["$CtxGit_Add$", 0, openGitAddDialog, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitAdd" }],
+		["$CtxGit_Add$", 0, openGitAddDialog, 0, { iconsrc: "chrome://windmill/content/img/git/icon-git-add.png", identifier: "ctxGitAdd" }],
 		["$CtxGit_Remove$", 0, function() {
 			var entry = getCurrentTreeSelection();
 			getAppByID("git").create(["-C", _sc.workpath(getFullPathForSelection()), "rm", getTreeObjPath(entry).substr(1)], 0x3, function() {
 				removeTreeEntry(entry);
 				EventInfo("$EI_Removed$");
+			}, function(data) {
+				logToGitConsole(data);
 			});
-		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitRemove" }],
-		["$CtxGit_Move$", 0, openGitMoveDialog, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitMove" }],
-		["$CtxGit_Ignore$", 0, function() {
-			
-		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitIgnore" }],
+		}, 0, { iconsrc: "chrome://windmill/content/img/git/icon-git-remove.png", identifier: "ctxGitRemove" }],
+		["$CtxGit_Move$", 0, openGitMoveDialog, 0, { iconsrc: "chrome://windmill/content/img/git/icon-git-move.png", identifier: "ctxGitMove" }],
 
 		"seperator",
 		
-		["$CtxGit_Checkout$", 0, openGitCheckoutDialog, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitCheckout" }],
-		["$CtxGit_Merge$", 0, function() {
-			EventInfo("Not supported");
-		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitMerge" }]
+		["$CtxGit_Checkout$", 0, openGitCheckoutDialog, 0, { iconsrc: "chrome://windmill/content/img/git/icon-git-checkout.png", identifier: "ctxGitCheckout" }],
+		["$CtxGit_Merge$", 0, openGitMergeDialog, 0, { iconsrc: "chrome://windmill/content/img/git/icon-git-merge.png", identifier: "ctxGitMerge" }]
 	], MODULE_LPRE, { allowIcons: true, fnCheckVisibility: gitHideContextItems });
 }
 
@@ -59,18 +55,19 @@ function openGitAddDialog() {
 				$(_self.element).find(".dlg-checklistitem.selected").each(function() {
 					args.push($(this).text());
 				});
-				getAppByID("git").create(args, 0x3);
+				getAppByID("git").create(args, 0x3, 0, function(data) {
+					logToGitConsole(data);
+				});
 			}
 		}, "cancel"]});
 	
 	dlg.setContent('<vbox class="dlg-checklistbox" id="git-addfiles">$LoadingUnversionedFiles$</vbox>');
 
-	getAppByID("git").create(["-C", path, "ls-files", "--other"], 0x1, 0, function(data) {
+	getAppByID("git").create(["-C", path, "ls-files", "--other", "--exclude=.windmillheader"], 0x1, function() {
+		if(!$(dlg.element).find("#git-addfiles .dlg-checklistitem")[0])
+			$(dlg.element).find("#git-addfiles").html(Locale('$NoUnversionedFilesFound$<hbox class="dlg-checklistitem" style="visibility: hidden; width: 1px;"></hbox>'));
+	}, function(data) {
 		$(dlg.element).find("#git-addfiles").empty();
-		if(!data || !data.length || data.search(/\w/) == -1) {
-			$(dlg.element).find("#git-addfiles").html("$NoUnversionedFilesFound$");
-			return;
-		}
 		var lines = data.split("\n");
 		for(var i = 0; i < lines.length; i++)
 			if(lines[i].length)
@@ -79,6 +76,56 @@ function openGitAddDialog() {
 	});
 	
 	dlg.show();
+}
+
+function openGitMergeDialog() {
+	var path = getFullPathForSelection(), current_branch;
+	var dlg = new WDialog("$DlgGitMerge$", MODULE_LPRE, { btnright: [{ preset: "accept",
+			onclick: function(e, btn, _self) {
+				var branchname = $(_self.element).find("#git-branchlist :selected").attr("label");
+				if(!branchname || branchname == current_branch)
+					return e.stopImmediatePropagation();
+
+				getAppByID("git").create(["-C", path, "merge", branchname], 0x1, function() {
+					EventInfo("$EI_MergeCompleted$");
+				}, function(data) {
+					logToGitConsole(data);
+				});
+			}
+		}, "cancel"]});
+
+	dlg.setContent(`<description>$DlgGitMergeDesc$</description>
+					<hbox>
+						<label value="$DlgGitCurrentBranch$:" flex="1"/>
+						<label id="git-currentBranch" value="$loading$" flex="1"/>
+					</hbox>
+					<menulist id="git-branchlist"><menupopup></menupopup></menulist>`);
+	dlg.show();
+
+	getAppByID("git").create(["-C", path, "branch"], 0x1, function() {
+			if(!$(dlg.element).find("#git-branchlist > menupopup > menuitem").length) {
+				$(dlg.element).find("#git-branchlist").insertBefore("<description>$NoBranchesFound$</description>");
+				return;
+			}
+		}, function(data) {
+		if(!data || !data.length || data.search(/\w/) == -1) {
+			$(dlg.element).find("#git-branchlist").insertBefore("<description>$NoBranchesFound$</description>");
+			return;
+		}
+		var lines = data.split("\n");
+		for(var i = 0; i < lines.length; i++)
+			if(lines[i].length) {
+				if(lines[i][0] == "*") {
+					current_branch = lines[i].substr(2);
+					continue;
+				}
+
+				$('<menuitem label="'+lines[i].substr(2)+'"></menuitem>').appendTo($(dlg.element).find("#git-branchlist > menupopup"));
+			}
+
+		$(dlg.element).find("#git-branchlist")[0].selectedIndex = 0;
+		$(dlg.element).find("#git-currentBranch").val(current_branch);
+	});
 }
 
 function openGitCheckoutDialog(by_obj) {
@@ -96,7 +143,9 @@ function openGitCheckoutDialog(by_obj) {
 				}
 				else
 					var args = ["-C", path, "checkout", "-b", branchname];
-				getAppByID("git").create(args, 0x3);
+				getAppByID("git").create(args, 0x3, 0, function(data) {
+					logToGitConsole(data);
+				});
 				$(by_obj).attr("data-special", " ("+branchname+")");
 				EventInfo(msg);
 			}
@@ -135,22 +184,56 @@ function openGitCommitDialog() {
 	var path = getFullPathForSelection();
 	var dlg = new WDialog("$DlgGitCommit$", MODULE_LPRE, { btnright: [{ preset: "accept", title: "$DlgGitCommitBtn$",
 			onclick: function(e, btn, _self) {
+				if(!$(_self.element).find("#git-files .dlg-list-item").length || !$(_self.element).find("#git_commitmsg").val())
+					return e.stopImmediatePropagation();
 				writeFile(_sc.file(_sc.profd+"/windmilltmpcommit.txt"), $(_self.element).find("#git_commitmsg").val(), true);
 				var args = ["-C", path, "commit", "-F", _sc.profd+"/windmilltmpcommit.txt"];
 				getAppByID("git").create(args, 0x1, function() {
 					EventInfo("$EI_Commited$");
 				}, function(data) {
-					log("DATA: " + data);
+					logToGitConsole(data);
 				});
 			}
 		}, "cancel"]});
 	
-	dlg.setContent(`<textbox multiline="true" id="git_commitmsg" flex="1" rows="10" placeholder="$DlgGitCommitMsg$"></textbox>
-	<vbox style="border: 1px solid grey; background: white;">
-		Staged files etc...
+	dlg.setContent(`<textbox multiline="true" id="git_commitmsg" flex="1" rows="8" placeholder="$DlgGitCommitMsg$"></textbox>
+	<vbox class="dlg-listbox" id="git-files" data-noselect="true">
+		<hbox class="dlg-list-head">Files:</hbox>
 	</vbox>`);
-	
+
 	dlg.show();
+
+	getAppByID("git").create(["-C", path, "status", "--short"], 0x1, function() {
+		if(!$(dlg.element).find("#git-files .dlg-list-item").length)
+			$(dlg.element).find("#git-files").append(Locale('<hbox>$NoChangesFound$</hbox>'));
+	}, function(data) {
+		if(!data || !data.length || data.search(/\w/) == -1) {
+			$(dlg.element).find("#git-files").insertBefore("<description>$UnknownError$</description>");
+			return;
+		}
+		var lines = data.split("\n"), index = 0;
+		for(var i = 0; i < lines.length; i++)
+			if(lines[i].length && lines[i].substr(3) != ".windmillheader") {
+				var icons = "", iconfn = (chr, clr) => {
+					var iconclasses = {
+						M: "icon-git-modified",
+						A: "icon-git-added",
+						D: "icon-git-deleted",
+						R: "icon-git-renamed",
+						C: "icon-git-copied",
+						U: "icon-git-updatedUnmerged",
+						"?": "icon-git-untracked"
+					};
+					if(iconclasses[chr])
+						return '<box class="dlg-list-icon '+iconclasses[chr]+'" style="color: '+clr+'"></box>';
+					return "";
+				}
+				icons += iconfn(lines[i][0], "green") + iconfn(lines[i][1], "red");
+
+				$('<hbox class="dlg-list-item"><hbox style="width: 32px;">'+icons+'</hbox>'+lines[i].substr(3)+'</hbox>')
+					.appendTo($(dlg.element).find("#git-files"));
+			}
+	});
 }
 
 function openGitMoveDialog() {
@@ -158,7 +241,9 @@ function openGitMoveDialog() {
 	var dlg = new WDialog("$DlgGitMove$", MODULE_LPRE, { btnright: [{ preset: "accept",
 			onclick: function(e, btn, _self) {
 				var args = ["-C", path, "mv", relpath, $(_self.element).find("#git_movename").val()];
-				getAppByID("git").create(args, 0x3);
+				getAppByID("git").create(args, 0x3, 0, function(data) {
+					logToGitConsole(data);
+				});
 				EventInfo("$EI_Moved$");
 			}
 		}, "cancel"]});
@@ -174,8 +259,10 @@ function openGitRevertDialog() {
 	var path = getFullPathForSelection();
 	var dlg = new WDialog("$DlgGitRevert$", MODULE_LPRE, { btnright: [{ preset: "accept",
 			onclick: function(e, btn, _self) {
-				var args = ["-C", path, "revert", $(_self.element).find("#git-browsecommits").val()];
-				getAppByID("git").create(args, 0x3);
+				var args = ["-C", path, "revert", $(_self.element).find("#git-revert-commits").val()];
+				getAppByID("git").create(args, 0x3, 0, function(data) {
+					logToGitConsole(data);
+				});
 				EventInfo("$EI_Reverted$");
 			}
 		}, "cancel"]});
@@ -243,6 +330,8 @@ function openGitFetchRemoteDialog() {
 
 				getAppByID("git").create(args, 0x1, function() {
 					EventInfo(msg);
+				}, function(data) {
+					logToGitConsole(data);
 				});
 			}
 		}, "cancel"]});
@@ -370,6 +459,7 @@ function gitHideContextItems(by_obj, identifier) {
 	switch(identifier) {
 		case "ctxGitRevert":
 		case "ctxGitRemote":
+		case "ctxGitMerge":
 			return workenv?0:2;
 		case "ctxGitRemove":
 		case "ctxGitMove":

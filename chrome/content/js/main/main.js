@@ -195,9 +195,15 @@ hook("load", function() {
 	$("#showClonkDirs").click(function() {
 		$("#clonkdirselection").toggleClass("invisible");
 	});
-	//Clonk Directory Selection
+	//Log
 	$("#showLog").click(function() {
+		$("#gitlog").addClass("invisible");
 		$("#developerlog").toggleClass("invisible");
+	});
+	//Git Log
+	$("#showGitLog").click(function() {
+		$("#developerlog").addClass("invisible");
+		$("#gitlog").toggleClass("invisible");
 	});
 	
 	//Neustart
@@ -222,7 +228,7 @@ function toggleHiddenLogEntries() {
 		$("#log-entrylist").removeClass("show-hidden-logs");
 }
 
-function clearLog() { $("#log-entrylist").children(".log-listitem:not(.draft)").remove(); }
+function clearLog(listid) { $("#"+listid+"-entrylist").children(".log-listitem:not(.draft)").remove(); }
 
 function restartWindmill() {
 	window.location.reload();

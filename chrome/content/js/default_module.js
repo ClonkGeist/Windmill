@@ -5,7 +5,7 @@
 //Hilfsfunktion zum loggen
 function log(str, hidden, type) {
 	if(getConfigData("Global", "DevMode")) {
-		var clone = _mainwindow.$(".log-listitem.draft").clone();
+		var clone = _mainwindow.$("#developerlog .log-listitem.draft").clone();
 		clone.removeClass("draft");
 		clone.appendTo(_mainwindow.$("#log-entrylist"));
 
@@ -34,6 +34,16 @@ function log(str, hidden, type) {
 
 	dump(str + "\n");
 	return;
+}
+
+function logToGitConsole(data) {
+	var lines = data.split("\n");
+	for(var i = 0; i < lines.length; i++) {
+		var clone = _mainwindow.$("#gitlog .log-listitem.draft").clone();
+		clone.removeClass("draft");
+		clone.appendTo(_mainwindow.$("#gitlog-entrylist"));
+		clone.find(".log-listitem-content").text(lines[i]+"\n");
+	}
 }
 
 /* hook api */
