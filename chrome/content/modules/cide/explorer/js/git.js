@@ -2,33 +2,33 @@
 
 function gitContextMenu() {
 	return new ContextMenu(0, [
-		["$CtxGit_Commit$", 0, openGitCommitDialog, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitCommit" }],
+		["$CtxGit_Commit$", 0, openGitCommitDialog, 0, { iconsrc: "chrome://windmill/content/img/git/icon-git-commit.png", identifier: "ctxGitCommit" }],
 		["$CtxGit_Pull$", 0, function() {
 			getAppByID("git").create(["-C", getFullPathForSelection(), "pull"], 0x1, function() {
 				EventInfo("$EI_PullingComplete$");
 			}, function(data) {
 				logToGitConsole(data);
 			});
-		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitPull" }],
+		}, 0, { iconsrc: "chrome://windmill/content/img/git/icon-git-pull.png", identifier: "ctxGitPull" }],
 		["$CtxGit_Push$", 0, function() {
 			getAppByID("git").create(["-C", getFullPathForSelection(), "push"], 0x1, function() {
 				EventInfo("$EI_PushingComplete$");
 			}, function(data) {
 				logToGitConsole(data);
 			});
-		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitPush" }],
-		["$CtxGit_Revert$", 0, openGitRevertDialog, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitRevert" }],
-		["$CtxGit_FetchRemote$", 0, openGitFetchRemoteDialog, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitRemote" }],
+		}, 0, { iconsrc: "chrome://windmill/content/img/git/icon-git-push.png", identifier: "ctxGitPush" }],
+		["$CtxGit_Revert$", 0, openGitRevertDialog, 0, { iconsrc: "chrome://windmill/content/img/git/icon-git-revert.png", identifier: "ctxGitRevert" }],
+		["$CtxGit_FetchRemote$", 0, openGitFetchRemoteDialog, 0, { iconsrc: "chrome://windmill/content/img/git/icon-git-fetchremote.png", identifier: "ctxGitRemote" }],
 		
 		"seperator",
 		
 		/*["$CtxGit_Diff$", 0, function() {
 			
-		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitDiff" }],*/
+		}, 0, { iconsrc: "chrome://windmill/content/img/git/icon-git-diff.png", identifier: "ctxGitDiff" }],*/
 
 		"seperator",
 		
-		["$CtxGit_Add$", 0, openGitAddDialog, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitAdd" }],
+		["$CtxGit_Add$", 0, openGitAddDialog, 0, { iconsrc: "chrome://windmill/content/img/git/icon-git-add.png", identifier: "ctxGitAdd" }],
 		["$CtxGit_Remove$", 0, function() {
 			var entry = getCurrentTreeSelection();
 			getAppByID("git").create(["-C", _sc.workpath(getFullPathForSelection()), "rm", getTreeObjPath(entry).substr(1)], 0x3, function() {
@@ -37,13 +37,13 @@ function gitContextMenu() {
 			}, function(data) {
 				logToGitConsole(data);
 			});
-		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitRemove" }],
-		["$CtxGit_Move$", 0, openGitMoveDialog, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitMove" }],
+		}, 0, { iconsrc: "chrome://windmill/content/img/git/icon-git-remove.png", identifier: "ctxGitRemove" }],
+		["$CtxGit_Move$", 0, openGitMoveDialog, 0, { iconsrc: "chrome://windmill/content/img/git/icon-git-move.png", identifier: "ctxGitMove" }],
 
 		"seperator",
 		
-		["$CtxGit_Checkout$", 0, openGitCheckoutDialog, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitCheckout" }],
-		["$CtxGit_Merge$", 0, openGitMergeDialog, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitMerge" }]
+		["$CtxGit_Checkout$", 0, openGitCheckoutDialog, 0, { iconsrc: "chrome://windmill/content/img/git/icon-git-checkout.png", identifier: "ctxGitCheckout" }],
+		["$CtxGit_Merge$", 0, openGitMergeDialog, 0, { iconsrc: "chrome://windmill/content/img/git/icon-git-merge.png", identifier: "ctxGitMerge" }]
 	], MODULE_LPRE, { allowIcons: true, fnCheckVisibility: gitHideContextItems });
 }
 
