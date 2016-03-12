@@ -84,6 +84,7 @@ description {
 .dlg_infobox.error {
 	background-color: #FFB2B2;
 	border-color: #CCB1B1;
+	-moz-user-select: text;
 }
 
 /* Checklist */

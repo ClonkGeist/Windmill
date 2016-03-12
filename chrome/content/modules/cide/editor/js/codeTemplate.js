@@ -30,7 +30,9 @@ hook("load", function() {
 			
 			let list = snippets[scope];
 			
-			snippetManager.files[scope] = m;
+			// snippetManager.files[scope] = m;
+			
+			m.snippets = snippetManager.parseSnippetFile(m.snippetText);
 			if(!m.snippets)
 					m.snippets = [];
 				

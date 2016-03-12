@@ -248,7 +248,7 @@ hook("load", function() {
 	bindKeyToObj(new KeyBinding("RemoveRight", "Delete", function() { a_E.remove("right"); }));
 	bindKeyToObj(new KeyBinding("RemoveLeft", "Backspace", function() { a_E.remove("left"); }));
 	bindKeyToObj(new KeyBinding("Find", "Ctrl-F", function() { 
-		config.loadModule("ace/ext/searchbox", function(e) {
+		require("ace/config").loadModule("ace/ext/searchbox", function(e) {
 			e.Search(a_E)
 		});
 		
@@ -260,7 +260,9 @@ hook("load", function() {
             kb.addCommand(command)
 		}
 	}));
-	bindKeyToObj(new KeyBinding("Replace", "Ctrl-H", function() { config.loadModule("ace/ext/searchbox", function(e) {e.Search(a_E, true); }); }));
+	bindKeyToObj(new KeyBinding("Replace", "Ctrl-H", function() { require("ace/config").loadModule("ace/ext/searchbox", function(e) {
+			e.Search(a_E, true); }); 
+	}));
 	
 	bindKeyToObj(new KeyBinding("GoToLine", "Ctrl-L", function() {
 		var dlg = new WDialog("$DlgGoToLine$", MODULE_LPRE, { modal: true, css: { "width": "400px" }, btnright: ["cancel"]});
