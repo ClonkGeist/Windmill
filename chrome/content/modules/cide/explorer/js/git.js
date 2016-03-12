@@ -147,12 +147,44 @@ function openGitCommitDialog() {
 			}
 		}, "cancel"]});
 	
-	dlg.setContent(`<textbox multiline="true" id="git_commitmsg" flex="1" rows="10" placeholder="$DlgGitCommitMsg$"></textbox>
-	<vbox style="border: 1px solid grey; background: white;">
-		Staged files etc...
+	dlg.setContent(`<textbox multiline="true" id="git_commitmsg" flex="1" rows="8" placeholder="$DlgGitCommitMsg$"></textbox>
+	<vbox class="dlg-listbox" id="git-files" data-noselect="true">
+		<hbox class="dlg-list-head">Files:</hbox>
 	</vbox>`);
-	
+
 	dlg.show();
+
+	getAppByID("git").create(["-C", path, "status", "--short"], 0x1, function() {
+		if(!$(dlg.element).find("#git-files .dlg-list-item").length)
+			$(dlg.element).find("#git-files").append(Locale('<hbox>$NoChangesFound$</hbox>'));
+	}, function(data) {
+		if(!data || !data.length || data.search(/\w/) == -1) {
+			$(dlg.element).find("#git-files").insertBefore("<description>$UnknownError$</description>");
+			return;
+		}
+		var lines = data.split("\n"), index = 0;
+		for(var i = 0; i < lines.length; i++)
+			if(lines[i].length && lines[i].substr(3) != ".windmillheader") {
+				var icons = "", iconfn = (chr, clr) => {
+					var iconclasses = {
+						M: "icon-git-modified",
+						A: "icon-git-added",
+						D: "icon-git-deleted",
+						R: "icon-git-renamed",
+						C: "icon-git-copied",
+						U: "icon-git-updatedUnmerged",
+						"?": "icon-git-untracked"
+					};
+					if(iconclasses[chr])
+						return '<box class="dlg-list-icon '+iconclasses[chr]+'" style="color: '+clr+'"></box>';
+					return "";
+				}
+				icons += iconfn(lines[i][0], "green") + iconfn(lines[i][1], "red");
+
+				$('<hbox class="dlg-list-item"><hbox style="width: 32px;">'+icons+'</hbox>'+lines[i].substr(3)+'</hbox>')
+					.appendTo($(dlg.element).find("#git-files"));
+			}
+	});
 }
 
 function openGitMoveDialog() {

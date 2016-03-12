@@ -275,4 +275,24 @@
 .icon-world:before {
     content: "\e61e";
 }
-
+.icon-git-modified:before {
+	content: "M";
+}
+.icon-git-added:before {
+	content: "A";
+}
+.icon-git-deleted:before {
+	content: "D";
+}
+.icon-git-renamed:before {
+	content: "R";
+}
+.icon-git-copied:before {
+	content: "C";
+}
+.icon-git-updatedUnmerged:before {
+	content: "U";
+}
+.icon-git-untracked:before {
+	content: "?";
+}
