@@ -43,9 +43,7 @@ function gitContextMenu() {
 		"seperator",
 		
 		["$CtxGit_Checkout$", 0, openGitCheckoutDialog, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitCheckout" }],
-		["$CtxGit_Merge$", 0, function() {
-			EventInfo("Not supported");
-		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitMerge" }]
+		["$CtxGit_Merge$", 0, openGitMergeDialog, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png", identifier: "ctxGitMerge" }]
 	], MODULE_LPRE, { allowIcons: true, fnCheckVisibility: gitHideContextItems });
 }
 
@@ -78,6 +76,56 @@ function openGitAddDialog() {
 	});
 	
 	dlg.show();
+}
+
+function openGitMergeDialog() {
+	var path = getFullPathForSelection(), current_branch;
+	var dlg = new WDialog("$DlgGitMerge$", MODULE_LPRE, { btnright: [{ preset: "accept",
+			onclick: function(e, btn, _self) {
+				var branchname = $(_self.element).find("#git-branchlist :selected").attr("label");
+				if(!branchname || branchname == current_branch)
+					return e.stopImmediatePropagation();
+
+				getAppByID("git").create(["-C", path, "merge", branchname], 0x1, function() {
+					EventInfo("$EI_MergeCompleted$");
+				}, function(data) {
+					logToGitConsole(data);
+				});
+			}
+		}, "cancel"]});
+
+	dlg.setContent(`<description>$DlgGitMergeDesc$</description>
+					<hbox>
+						<label value="$DlgGitCurrentBranch$:" flex="1"/>
+						<label id="git-currentBranch" value="$loading$" flex="1"/>
+					</hbox>
+					<menulist id="git-branchlist"><menupopup></menupopup></menulist>`);
+	dlg.show();
+
+	getAppByID("git").create(["-C", path, "branch"], 0x1, function() {
+			if(!$(dlg.element).find("#git-branchlist > menupopup > menuitem").length) {
+				$(dlg.element).find("#git-branchlist").insertBefore("<description>$NoBranchesFound$</description>");
+				return;
+			}
+		}, function(data) {
+		if(!data || !data.length || data.search(/\w/) == -1) {
+			$(dlg.element).find("#git-branchlist").insertBefore("<description>$NoBranchesFound$</description>");
+			return;
+		}
+		var lines = data.split("\n");
+		for(var i = 0; i < lines.length; i++)
+			if(lines[i].length) {
+				if(lines[i][0] == "*") {
+					current_branch = lines[i].substr(2);
+					continue;
+				}
+
+				$('<menuitem label="'+lines[i].substr(2)+'"></menuitem>').appendTo($(dlg.element).find("#git-branchlist > menupopup"));
+			}
+
+		$(dlg.element).find("#git-branchlist")[0].selectedIndex = 0;
+		$(dlg.element).find("#git-currentBranch").val(current_branch);
+	});
 }
 
 function openGitCheckoutDialog(by_obj) {
@@ -411,6 +459,7 @@ function gitHideContextItems(by_obj, identifier) {
 	switch(identifier) {
 		case "ctxGitRevert":
 		case "ctxGitRemote":
+		case "ctxGitMerge":
 			return workenv?0:2;
 		case "ctxGitRemove":
 		case "ctxGitMove":
