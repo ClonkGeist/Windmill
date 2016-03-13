@@ -108,10 +108,12 @@
 		<stack flex="1">
 			<box id="modules-wrapper" flex="1">
 			</box>
-			<!--<hbox id="start-errorlog" flex="1" top="0" bottom="0" style="background-color: #333">
+			<vbox id="startup-loading" flex="1" top="0" bottom="0">
+			</vbox>
+			<hbox id="startup-errorlog" flex="1" top="0" bottom="0" style="background-color: #333; display: none">
 				<vbox flex="1" style="margin: 50px; background: white; overflow-y: scroll;" class="log-listitem-content">
 				</vbox>
-			</hbox>-->
+			</hbox>
 			<hbox id="sidebar-wrapper" top="0" bottom="0" right="0">
 				<vbox id="playerselect" class="sidebar invisible" flex="1">
 					<!-- Spielerauswahl -->

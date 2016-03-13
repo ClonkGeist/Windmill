@@ -36,6 +36,7 @@ var togglemode_timeout_id;
 
 hook("load", function() {
 	Task.spawn(function*() {
+		$("#startup-loading").text("Loading Config");
 		//Config initialisieren
 		initializeConfig();
 
@@ -44,12 +45,16 @@ hook("load", function() {
 		//Config speichern
 		yield saveConfig(); //Configdatei speichern (falls noch nicht existiert)
 		//Sprachpakete einlesen
+		$("#startup-loading").text("Loading Languagefiles");
 		yield initializeLanguage();
 		//Keybindings einlesen
+		$("#startup-loading").text("Loading Keybindings");
 		yield loadKeyBindings();
 		//Informationen zu externen Anwendungen einlesen
+		$("#startup-loading").text("Loading External Application Definitions");
 		try { yield loadExternalApplicationDefs(_sc.chpath + "/content"); } catch(e) {}
 		//Modulinformationen einlesen
+		$("#startup-loading").text("Loading Module Information");
 		try { yield loadModules(_sc.chpath + "/content/modules"); } catch(e) {}
 
 		//Bei erstem Start anders verhalten
@@ -57,9 +62,11 @@ hook("load", function() {
 			return -1;
 
 		//Weitere Arbeitsumgebungen laden
+		$("#startup-loading").text("Loading Work Environments");
 		loadtask = loadWorkEnvironment();
 		yield loadtask;
 	}).then(function(result) {
+		$("#startup-loading").fadeOut(500);
 		//Configuration Wizard ggf. starten
 		if(result == -1) {
 			$("#wrapper").css("display", "none");
@@ -190,6 +197,14 @@ hook("load", function() {
 		$("#log-entrylist").on("DOMSubtreeModified", function() {
 			$("#log-entrylist").scrollTop($("#log-entrylist")[0].scrollHeight);
 		});
+	}, function(reason) {
+		$("#startup-loading").remove();
+		$("#startup-errorlog > vbox").append(`
+An error occurred while loading the application:
+************************************************
+${reason}
+------------------------------------------------
+${reason.stack}`).parent().css("display", "");
 	});
 	
 	hook("onWorkenvCreated", function(env) {

@@ -482,4 +482,18 @@ caption {
 
 .flashOnLog.error { color: #ff4e4e !important; }
 
+/*-- Ladebildschirm --*/
+
+#startup-loading {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	
+	font-size: 2.5em;
+	color: white;
+}
+
+
+
 /*	need some space	*/
