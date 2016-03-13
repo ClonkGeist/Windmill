@@ -5,18 +5,16 @@
 function hook() {};
 
 var Cc = Components.classes, Ci = Components.interfaces, Cm = Components.manager, Cu = Components.utils, CByID = Components.classesByID;
-
-Cu.import("resource://gre/modules/osfile.jsm");
+var {TextDecoder, TextEncoder, OS} = Cu.import("resource://gre/modules/osfile.jsm", {});
+Cu.import("resource://gre/modules/Task.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 const { require } = Cu.import("resource://gre/modules/commonjs/toolkit/require.js", {});
 
 var _inheritableObjects = [];
 
-//Zum vererben diverser Objekte (Funktionen, Klassen, Objekte wie _sc etc.)
+//Zum vererben diverser Objekte (Funktionen, Klassen, Objekte wie _sc etc.) -- Die Variablennamen sollen angegeben werden!
 function registerInheritableObject(obj) { _inheritableObjects.push(obj); }
-
-//
 
 var OS_TARGET = Cc["@mozilla.org/xre/app-info;1"].getService(Components.interfaces.nsIXULRuntime).OS;
 

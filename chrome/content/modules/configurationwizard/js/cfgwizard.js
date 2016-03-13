@@ -10,9 +10,7 @@ $(window).ready(function() {
 	$(".filepath-button").click(function() {
 		var fp = _sc.filepicker();
 		var mode = Ci.nsIFilePicker.modeGetFolder;
-		log(">> " + $(this).parent().attr("data-filetype"));
 		if($(this).parent().attr("data-filetype") == "executable") {
-			log("yo executable");
 			mode = Ci.nsIFilePicker.modeOpen;
 			fp.appendFilters(Ci.nsIFilePicker.filterApps);
 		}

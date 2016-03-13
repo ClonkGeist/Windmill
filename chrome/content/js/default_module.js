@@ -2,6 +2,9 @@
 
 /* Module-Include */
 
+var {TextDecoder, TextEncoder, OS} = Components.utils.import("resource://gre/modules/osfile.jsm", {});
+Components.utils.import("resource://gre/modules/Task.jsm");
+
 //Hilfsfunktion zum loggen
 function log(str, hidden, type) {
 	if(getConfigData("Global", "DevMode")) {
@@ -187,17 +190,13 @@ if(top != window) {
 	if(parent.inheritFuncs)
 		inheritedFuncs = inheritedFuncs.concat(parent.inheritFuncs());
 	//Bald nur auf _inheritableObjects umsteigen.
-	if(_inheritableObjects) {
-		(function() {
-			for(var i = 0; i < _inheritableObjects.length; i++)
-				window[_inheritableObjects[i]] = parent[_inheritableObjects[i]];
-		}());
-	}
+	if(_inheritableObjects)
+		for(let i = 0; i < _inheritableObjects.length; i++)
+			window[_inheritableObjects[i]] = parent[_inheritableObjects[i]];
 
-	(function() {
-		for(var i = 0; i < inheritedFuncs.length; i++)
+	if(inheritedFuncs)
+		for(let i = 0; i < inheritedFuncs.length; i++)
 			window[inheritedFuncs[i]] = parent[inheritedFuncs[i]];
-	}());
 	
 	//Components* durchleiten
 	//var Components = top.Components;
