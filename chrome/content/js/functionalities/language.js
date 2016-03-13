@@ -21,14 +21,15 @@ function initializeLanguage() {
 
 function readLanguageInfo(path) {
 	return Task.spawn(function*() {
-		let text = yield OS.File.read(path, {encoding: "utf-8"}).then(function(){}, function(reason) {
-			alert("The Language file does not exist");
+		let text = yield OS.File.read(path, {encoding: "utf-8"}).then(null,  function(reason) {
+			if(reason == OS.File.Error)
+				alert("The Language file does not exist");
 		});
 		let lang = {}, langcontent = parseINI2(text), elm;
-		while(elm = langcontent.next().value) {
+		while(elm = langcontent.next().value)
 			if(typeof elm != "string")
 				lang[elm.key] = elm.val;
-		}
+
 		return lang;
 	});
 }

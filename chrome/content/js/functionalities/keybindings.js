@@ -7,7 +7,7 @@ var customKeyBindings = [];
 
 function loadKeyBindings() {
 	return OS.File.read(_sc.profd+"/keybinding.ini", {encoding: "utf-8"}).then(function(text) {
-		kbini = parseINI2(text), elm;
+		let kbini = parseINI2(text), elm;
 		while(elm = kbini.next().value) {
 			if(typeof elm != "string")
 				customKeyBindings[elm.key] = elm.val;

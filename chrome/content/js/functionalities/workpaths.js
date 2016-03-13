@@ -302,11 +302,9 @@ function loadWorkEnvironment(id) {
 		}
 	}).then(null, function(reason) {
 		iterator.close();
-		if(!reason != StopIteration)
+		if(reason != StopIteration)
 			throw reason;
 	});
-
-	return true;
 }
 
 function saveWorkEnvironment(id) {

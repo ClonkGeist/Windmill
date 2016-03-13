@@ -22,8 +22,10 @@ function formatPath(path) {
 	if(!path)
 		return path;
 
-	if(OS_TARGET == "WINNT")
+	if(OS_TARGET == "WINNT") {
 		path = path.replace(/\\/g, "/");
+		path = path.replace(/(^[A-Z]:\/)\//i, "$1");
+	}
 	
 	return path;
 }

@@ -7,8 +7,9 @@
 var application_data = [];
 
 function loadExternalApplicationDefs(path) {
-	return Task.spawn(function*() {
-		let iterator = new OS.File.DirectoryIterator(path);
+	var iterator;
+	let task = Task.spawn(function*() {
+		iterator = new OS.File.DirectoryIterator(path);
 		while(true) {
 			let entry = yield iterator.next();
 			if(entry.isDir) //Unterverzeichnisse untersuchen
@@ -18,11 +19,13 @@ function loadExternalApplicationDefs(path) {
 				registerNewApplication(extapp);
 			}
 		}
-	}).then(null, function(reason) {
+	});
+	task.then(null, function(reason) {
 		iterator.close();
 		if(!reason != StopIteration)
 			throw reason;
 	});
+	return task;
 }
 
 function registerNewApplication(application_obj) {

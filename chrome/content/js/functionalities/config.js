@@ -219,7 +219,7 @@ function loadConfig() {
 		CONFIG_FIRSTSTART = true;
 		return;
 	});
-	return true;
+	return promise;
 }
 
 function saveConfig(special) {

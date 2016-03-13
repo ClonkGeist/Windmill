@@ -438,13 +438,13 @@ function* parseINI2(value) {
 			continue;
 
 		for(var key in value[sect])
-			yield { sect, key, val: value[sect] };
+			yield { sect, key, val: value[sect][key] };
 	}
 }	
 
 function parseINIArray(text) {
 	var lines = text.split("\n");
-	var data = [[]], current_section = 0;
+	var data = [], current_section = 0;
 	for(var i = 0; i < lines.length; i++) {
 		var line = lines[i];
 		if(line.search(/[^=\[]+#/) == 0)

@@ -21,7 +21,7 @@ function initializeModules() {
 
 	cide = createModule("cide", $(mainDeck.element));
 	cideID = mainDeck.add(getModule(cide, true), 0);
-	
+
 	modmanager = createModule("modmanager", $(mainDeck.element));
 	modmanagerID = mainDeck.add(getModule(modmanager, true), 0, false, false, true);
 	
@@ -40,28 +40,17 @@ hook("load", function() {
 		initializeConfig();
 
 		//Config einlesen
-		let loadtask = loadConfig();
-		yield loadtask;
-
+		yield loadConfig();
 		//Config speichern
-		loadtask = saveConfig(); //Configdatei speichern (falls nicht existiert)
-		yield loadtask;
-
+		yield saveConfig(); //Configdatei speichern (falls noch nicht existiert)
 		//Sprachpakete einlesen
-		loadtask = initializeLanguage();
-		yield loadtask;
-
+		yield initializeLanguage();
 		//Keybindings einlesen
-		loadtask = loadKeyBindings();
-		yield loadtask;
-
+		yield loadKeyBindings();
 		//Informationen zu externen Anwendungen einlesen
-		loadtask = loadExternalApplicationDefs(_sc.chpath + "/content");
-		yield loadtask;
-
+		try { yield loadExternalApplicationDefs(_sc.chpath + "/content"); } catch(e) {}
 		//Modulinformationen einlesen
-		loadtask = loadModules(_sc.chpath + "/content/modules");
-		yield loadtask;
+		try { yield loadModules(_sc.chpath + "/content/modules"); } catch(e) {}
 
 		//Bei erstem Start anders verhalten
 		if(CONFIG_FIRSTSTART || getConfigData("Global", "FirstStartDevTest") == true)
@@ -201,7 +190,7 @@ hook("load", function() {
 		$("#log-entrylist").on("DOMSubtreeModified", function() {
 			$("#log-entrylist").scrollTop($("#log-entrylist")[0].scrollHeight);
 		});
-	})
+	});
 	
 	hook("onWorkenvCreated", function(env) {
 		if(!env)

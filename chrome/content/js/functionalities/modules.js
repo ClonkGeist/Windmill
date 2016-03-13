@@ -16,29 +16,34 @@ class _module {
 }
 
 function loadModules(path) {
-	return Task.spawn(function*() {
-		let iterator = new OS.File.DirectoryIterator(path);
+	var iterator;
+	let task = Task.spawn(function*() {
+		iterator = new OS.File.DirectoryIterator(path);
 		while(true) {
 			let entry = yield iterator.next();
-			if(entry.isDir) //Unterverzeichnisse untersuchen
-				yield loadModules(entry.path);
-			else if(entry.name == "module.ini") //Modulinformationen einlesen
-				yield readModuleInfo(entry.path);
+			try {
+				if(entry.isDir) //Unterverzeichnisse untersuchen
+					yield loadModules(entry.path);
+				else if(entry.name == "module.ini") //Modulinformationen einlesen
+					yield readModuleInfo(entry.path);
+			} catch(e) {}
 		}
-	}).then(null, function(reason) {
+	});
+	task.then(null, function(reason) {
 		iterator.close();
 		if(!reason != StopIteration)
 			throw reason;
 	});
+	return task;
 }
 
 function readModuleInfo(path) {
 	var module = new _module();
 	return OS.File.read(path, {encoding: "utf-8"}).then(function(text) {
-		moduleini = parseINI2(text), elm;
+		let moduleini = parseINI2(text), elm;
 		while(elm = moduleini.next().value) {
 			if(typeof elm != "string") {
-				if(elm.sect == "Module")
+				if(elm.sect == "Module") 
 					module[elm.key.toLowerCase()] = elm.val;
 				else if(elm.sect == "Custom")
 					module[elm.key.toLowerCase()] = elm.val;
@@ -46,14 +51,8 @@ function readModuleInfo(path) {
 		}
 
 		//Modulpfad und relativer Pfad speichern
-		if(OS_TARGET == "WINNT") {
-			module.path = path.replace(/\\[^\\]+$/, ""); 
-			module.relpath = module.path.replace(RegExp((_sc.chpath.replace(/\//, "\\")+"\\content\\").replace(/\\/g, "\\\\")), "");
-		}
-		else {
-			module.path = path.replace(/\/[^\/]+$/, "");
-			module.relpath = module.path.replace(RegExp((_sc.chpath+"/content/").replace(/\\/g, "\\\\")), "");
-		}
+		module.path = formatPath(path);
+		module.relpath = module.path.replace(RegExp(formatPath(_sc.chpath+"/content/")), "").replace(/\/module.ini/, "");
 
 		MODULE_DEF_LIST[module.name] = module;
 	});
