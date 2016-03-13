@@ -35,16 +35,174 @@ function initializeModules() {
 var togglemode_timeout_id;
 
 hook("load", function() {
-	//Bei erstem Start anders verhalten
-	if(CONFIG_FIRSTSTART || getConfigData("Global", "FirstStartDevTest") == true) {
-		$("#wrapper").css("display", "none");
-		
-		window.outerWidth = 800;
-		window.outerHeight = 600;
-		createModule("configwizard", $("#cfgwizwrapper").get(0));
-		return;
-	}
+	Task.spawn(function*() {
+		//Config initialisieren
+		initializeConfig();
 
+		//Config einlesen
+		let loadtask = loadConfig();
+		yield loadtask;
+
+		//Config speichern
+		loadtask = saveConfig(); //Configdatei speichern (falls nicht existiert)
+		yield loadtask;
+
+		//Sprachpakete einlesen
+		loadtask = initializeLanguage();
+		yield loadtask;
+
+		//Keybindings einlesen
+		loadtask = loadKeyBindings();
+		yield loadtask;
+
+		//Informationen zu externen Anwendungen einlesen
+		loadtask = loadExternalApplicationDefs(_sc.chpath + "/content");
+		yield loadtask;
+
+		//Modulinformationen einlesen
+		loadtask = loadModules(_sc.chpath + "/content/modules");
+		yield loadtask;
+
+		//Bei erstem Start anders verhalten
+		if(CONFIG_FIRSTSTART || getConfigData("Global", "FirstStartDevTest") == true)
+			return -1;
+
+		//Weitere Arbeitsumgebungen laden
+		loadtask = loadWorkEnvironment();
+		yield loadtask;
+	}).then(function(result) {
+		//Configuration Wizard ggf. starten
+		if(result == -1) {
+			$("#wrapper").css("display", "none");
+			
+			window.outerWidth = 800;
+			window.outerHeight = 600;
+			createModule("configwizard", $("#cfgwizwrapper")[0]);
+			return;
+		}
+
+		//Navigation
+		navigation = new Navigation($("#inner-navigation"));
+		initializeModules();
+
+		mainDeck.hook("showItem", function(deck, itemId) {
+			if(itemId != cideID) {
+				$(document).attr("title", "Windmill");
+				hideCideToolbar();
+			}
+			else
+				showCideToolbar();
+		});
+
+		//Switcher zwischen cIDE/cBridge
+		$("#switchMode").click(function() {
+			if(!$(".togglemode-img").hasClass("invisible"))
+				return;
+
+			if(mainDeck.selectedId != mainDeck.getModuleId("settings") && mainDeck.selectedId != mainDeck.getModuleId("modmanager")) {
+				if($(this).hasClass("cBridge")) {
+					$(this).removeClass("cBridge");
+					navigation.hideGroups();
+				}
+				else {
+					$(this).addClass("cBridge");
+					navigation.showGroup("cbridge");
+				}
+			}
+
+			togglePage(mainDeck.id, $(this).hasClass("cBridge")?mainDeck.getModuleId("cbridge"):mainDeck.getModuleId("cide"));
+		});
+		
+		//cIDE/cBridge-Deaktivier Box
+		var mouseholdID = 0;
+		$(".togglemode-img").mouseenter(function() {
+			clearTimeout(togglemode_timeout_id);
+		}).mouseleave(function() { 
+			togglemode_timeout_id = setTimeout(function() {
+				$(".togglemode-img").addClass("invisible"); 
+				$("#switchMode").removeClass("selected"); 
+			}, 150);
+		});
+		$("#switchMode").mousedown(function() {
+			mouseholdID = setTimeout(function() {
+				$("#switchMode").addClass("selected");
+				$(".togglemode-img").removeClass("invisible");
+			}, 600);
+		}).bind("mouseup mouseleave", function() {
+			clearTimeout(mouseholdID);
+		});
+		
+		$("#toggle-cide").click(function() {
+			$(this).toggleClass("activated");
+			//todo: cide deaktivieren
+		});
+		$("#toggle-cbridge").click(function() {
+			$(this).toggleClass("activated");
+			//todo: cbridge deaktivieren
+		});
+		
+		//Einstellungen
+		$("#showSettings").click(function() {
+			if(mainDeck.selectedId == mainDeck.getModuleId("settings")) {
+				togglePage(mainDeck.id, mainDeck.previd);
+				return;
+			}
+		
+			togglePage(mainDeck.id, mainDeck.getModuleId("settings"));
+		});
+		//Modulemanager
+		$("#showModManager").click(function() {
+			if(mainDeck.selectedId == mainDeck.getModuleId("modmanager")) {
+				togglePage(mainDeck.id, mainDeck.previd);
+				return;
+			}
+		
+			togglePage(mainDeck.id, mainDeck.getModuleId("modmanager"));
+		});
+		//Ressourcensparender Modus
+		$("#showResSaveMode").click(function() {
+			var dlg = new WDialog("$DlgTitleResSaveMode$", "", { modal: true, css: { "width": "450px" }, btnright: [{ preset: "accept",
+					onclick: function(e, btn, _self) {
+						activateResSaveMode();
+					}
+				}, "cancel"]});
+			dlg.setContent("<description>$DlgResSaveFileWarning$</description>");
+			dlg.show();
+		});
+		
+		//Playerselection
+		$("#showPlayerSelect").click(function() {
+			$("#playerselect").toggleClass("invisible");
+			switchPlrPage("page-playerselection");
+		});
+		//Clonk Directory Selection
+		$("#showClonkDirs").click(function() {
+			$("#clonkdirselection").toggleClass("invisible");
+		});
+		//Log
+		$("#showLog").click(function() {
+			$("#gitlog").addClass("invisible");
+			$("#developerlog").toggleClass("invisible");
+		});
+		//Git Log
+		$("#showGitLog").click(function() {
+			$("#developerlog").addClass("invisible");
+			$("#gitlog").toggleClass("invisible");
+		});
+		
+		//Neustart
+		$("#restartWindmill").click(function() { restartWindmill(); });
+		
+		if(!getConfigData("Global", "DevMode"))
+			$(".devmode-elm").css("display", "none");
+
+		if(getConfigData("Global", "ShowHiddenLogs"))
+			$("#log-entrylist").addClass("show-hidden-logs");
+		$("#log-entrylist").on("DOMSubtreeModified", function() {
+			$("#log-entrylist").scrollTop($("#log-entrylist")[0].scrollHeight);
+		});
+	})
+	
 	hook("onWorkenvCreated", function(env) {
 		if(!env)
 			return;
@@ -90,132 +248,6 @@ hook("load", function() {
 	});
 	hook("onWorkenvUnloaded", function(env) {
 		$("#page-clonkdirselection").find('.cds-listitem[data-path="'+env.path+'"]').remove();
-	});
-	
-	//Weitere Arbeitsumgebungen laden
-	loadWorkEnvironment();
-	
-	//Navigation
-	navigation = new Navigation($("#inner-navigation"));
-	log(navigation);
-
-	initializeModules();
-	
-	mainDeck.hook("showItem", function(deck, itemId) {
-		if(itemId != cideID) {
-			$(document).attr("title", "Windmill");
-			hideCideToolbar();
-		}
-		else
-			showCideToolbar();
-	});
-
-	//Switcher zwischen cIDE/cBridge
-	$("#switchMode").click(function() {
-		if(!$(".togglemode-img").hasClass("invisible"))
-			return;
-
-		if(mainDeck.selectedId != mainDeck.getModuleId("settings") && mainDeck.selectedId != mainDeck.getModuleId("modmanager")) {
-			if($(this).hasClass("cBridge")) {
-				$(this).removeClass("cBridge");
-				navigation.hideGroups();
-			}
-			else {
-				$(this).addClass("cBridge");
-				navigation.showGroup("cbridge");
-			}
-		}
-
-		togglePage(mainDeck.id, $(this).hasClass("cBridge")?mainDeck.getModuleId("cbridge"):mainDeck.getModuleId("cide"));
-	});
-	
-	//cIDE/cBridge-Deaktivier Box
-	var mouseholdID = 0;
-	$(".togglemode-img").mouseenter(function() {
-		clearTimeout(togglemode_timeout_id);
-	}).mouseleave(function() { 
-		togglemode_timeout_id = setTimeout(function() {
-			$(".togglemode-img").addClass("invisible"); 
-			$("#switchMode").removeClass("selected"); 
-		}, 150);
-	});
-	$("#switchMode").mousedown(function() {
-		mouseholdID = setTimeout(function() {
-			$("#switchMode").addClass("selected");
-			$(".togglemode-img").removeClass("invisible");
-		}, 600);
-	}).bind("mouseup mouseleave", function() {
-		clearTimeout(mouseholdID);
-	});
-	
-	$("#toggle-cide").click(function() {
-		$(this).toggleClass("activated");
-		//todo: cide deaktivieren
-	});
-	$("#toggle-cbridge").click(function() {
-		$(this).toggleClass("activated");
-		//todo: cbridge deaktivieren
-	});
-	
-	//Einstellungen
-	$("#showSettings").click(function() {
-		if(mainDeck.selectedId == mainDeck.getModuleId("settings")) {
-			togglePage(mainDeck.id, mainDeck.previd);
-			return;
-		}
-	
-		togglePage(mainDeck.id, mainDeck.getModuleId("settings"));
-	});
-	//Modulemanager
-	$("#showModManager").click(function() {
-		if(mainDeck.selectedId == mainDeck.getModuleId("modmanager")) {
-			togglePage(mainDeck.id, mainDeck.previd);
-			return;
-		}
-	
-		togglePage(mainDeck.id, mainDeck.getModuleId("modmanager"));
-	});
-	//Ressourcensparender Modus
-	$("#showResSaveMode").click(function() {
-		var dlg = new WDialog("$DlgTitleResSaveMode$", "", { modal: true, css: { "width": "450px" }, btnright: [{ preset: "accept",
-				onclick: function(e, btn, _self) {
-					activateResSaveMode();
-				}
-			}, "cancel"]});
-		dlg.setContent("<description>$DlgResSaveFileWarning$</description>");
-		dlg.show();
-	});
-	
-	//Playerselection
-	$("#showPlayerSelect").click(function() {
-		$("#playerselect").toggleClass("invisible");
-		switchPlrPage("page-playerselection");
-	});
-	//Clonk Directory Selection
-	$("#showClonkDirs").click(function() {
-		$("#clonkdirselection").toggleClass("invisible");
-	});
-	//Log
-	$("#showLog").click(function() {
-		$("#gitlog").addClass("invisible");
-		$("#developerlog").toggleClass("invisible");
-	});
-	//Git Log
-	$("#showGitLog").click(function() {
-		$("#developerlog").addClass("invisible");
-		$("#gitlog").toggleClass("invisible");
-	});
-	
-	//Neustart
-	$("#restartWindmill").click(function() { restartWindmill(); });
-	
-	if(!getConfigData("Global", "DevMode"))
-		$(".devmode-elm").css("display", "none");
-
-	if(getConfigData("Global", "ShowHiddenLogs"))
-		$("#log-entrylist").addClass("show-hidden-logs");
-	$("#log-entrylist").on("DOMSubtreeModified", function() {
-		$("#log-entrylist").scrollTop($("#log-entrylist")[0].scrollHeight);
 	});
 });
 

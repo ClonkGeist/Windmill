@@ -427,6 +427,21 @@ function parseCssStyle(el) {
 	return str;
 }
 
+function* parseINI2(value) {
+	if(typeof value == "string")
+		value = parseINIArray(value);
+	
+	for(var sect in value) {
+		if(value[sect])
+			yield sect;
+		else
+			continue;
+
+		for(var key in value[sect])
+			yield { sect, key, val: value[sect] };
+	}
+}	
+
 function parseINIArray(text) {
 	var lines = text.split("\n");
 	var data = [[]], current_section = 0;

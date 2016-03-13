@@ -92,10 +92,6 @@ class ConfigEntry extends WindmillObject {
 
 var MODULE_LIST = [], MODULE_DEF_LIST = [], CONFIG = [], CONFIG_BACKUP = [], CONFIG_FIRSTSTART = false;
 
-initializeConfig(); //Standardwerte
-loadConfig(); //Configdatei laden
-saveConfig(); //Configdatei speichern (falls nicht existiert)
-
 var clonkpath_id = 0;
 function setClonkPath(val = 0) {
 	if(typeof val == "string") {
@@ -203,43 +199,26 @@ function initializeConfig() {
 }
 
 function loadConfig() {
-	var f = _sc.file(_sc.profd+"/config.ini");
-	
-	//Existiert die Datei?
-	if(!f.exists() || !f.isFile()) {
+	let path = _sc.profd+"/config.ini";
+	let promise = OS.File.read(path, {encoding: "utf-8"});
+	promise.then(function(text) {
+		let cfgini = parseINI2(text), elm;
+		while(elm = cfgini.next().value) {
+			if(typeof elm == "string") {
+				if(!CONFIG[elm])
+					CONFIG[elm] = [];
+			}
+			else
+				setConfigData(elm.sect, elm.key, elm.val).apply();
+		}
+
+		if(CONFIG["Global"]["Version"].defaultvalue != CONFIG["Global"]["Version"].value)
+			configVersionUpdate(CONFIG["Global"]["Version"].value);
+	}, function(reason) {
 		//In den ersten Start-Modus setzen
 		CONFIG_FIRSTSTART = true;
 		return;
-	}
-
-	var parser = _sc.inifact().createINIParser(f);
-	var sections = parser.getSections();
-	
-	//Sections + Keys laden und in CONFIG speichern
-	while(sections && sections.hasMore()) {
-		var sect = sections.getNext();
-
-		if(!CONFIG[sect])
-			CONFIG[sect] = [];
-		
-		var keys = parser.getKeys(sect);
-		
-		while(keys && keys.hasMore()) {
-			var key = keys.getNext();
-			var value =  parser.getString(sect, key);
-
-			if(value.toLowerCase() == "false")
-				value = false;
-			else if(value.toLowerCase() == "true")
-				value = true;
-			
-			setConfigData(sect, key, value, true);
-		}
-	}
-
-	if(CONFIG["Global"]["Version"].defaultvalue != CONFIG["Global"]["Version"].value)
-		configVersionUpdate(CONFIG["Global"]["Version"].value);
-
+	});
 	return true;
 }
 
@@ -280,9 +259,6 @@ function saveConfig(special) {
 						filtered = false;
 				}
 
-			/*if(filtered && CONFIG[sect].hasOwnProperty(key))
-				text += key+"="+CONFIG_BACKUP[sect][key]+"\r\n";
-			else */
 			if(CONFIG[sect].hasOwnProperty(key) && CONFIG[sect][key]) {
 				if(!filtered)
 					CONFIG[sect][key].apply();
@@ -292,26 +268,10 @@ function saveConfig(special) {
 			}
 		}
 	}
-	
-	var f = _sc.file(_sc.profd+"/config.ini");
-	
-	if(!f.exists())
-		f.create(f.NORMAL_FILE_TYPE, 0o777);
-	
-	//File-/Converterstream
-	var fstr = _sc.ofstream(f, _scc.PR_WRONLY|_scc.PR_TRUNCATE, 0x200);
-	var cstr = _sc.costream();
-	
-	cstr.init(fstr, "utf-8", text.length, Ci.nsIConverterInputStream.DEFAULT_REPLACEMENT_CHARACTER);
-	cstr.writeString(text);
-	
-	cstr.close();
-	fstr.close();
-	
+
 	if(getModuleByName("modmanager") && name != "modmanager" && getModuleByName("modmanager").contentWindow.onConfigSave)
 		getModuleByName("modmanager").contentWindow.onConfigSave();
-	
-	return true;
+	return OS.File.writeAtomic(_sc.profd+"/config.ini", text, { encoding: "utf-8" });
 }
 
 function getConfigData(sect, key, cfgobject) {

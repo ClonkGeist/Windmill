@@ -28,6 +28,12 @@ function formatPath(path) {
 	return path;
 }
 
+//Hilfsfunktion zum loggen
+function log(str) {
+	dump(str + "\n");
+}
+
+
 try {
 	var {devtools} = Cu.import("resource://gre/modules/devtools/Loader.jsm", {});
 	let { DebuggerServer } = require("devtools/server/main");

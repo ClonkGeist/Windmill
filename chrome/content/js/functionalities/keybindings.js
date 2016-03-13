@@ -5,37 +5,16 @@
 
 var customKeyBindings = [];
 
-loadKeyBindings();
-
 function loadKeyBindings() {
-	var f = _sc.file(_sc.profd+"/keybinding.ini");
-	
-	//Existiert die Datei?
-	if(!f.exists() || !f.isFile())
-		return;
-
-	var parser = _sc.inifact().createINIParser(f);
-	var sections = parser.getSections();
-	
-	//Sections + Keys laden und in CONFIG speichern
-	while(sections && sections.hasMore()) {
-		var sect = sections.getNext();
-		
-		if(sect != "KeyBindings")
-			return;
-
-		var keys = parser.getKeys(sect);
-		
-		while(keys && keys.hasMore())
-		{
-			var key = keys.getNext();
-			var value =  parser.getString(sect, key);
-			
-			customKeyBindings[key] = value;
+	return OS.File.read(_sc.profd+"/keybinding.ini", {encoding: "utf-8"}).then(function(text) {
+		kbini = parseINI2(text), elm;
+		while(elm = kbini.next().value) {
+			if(typeof elm != "string")
+				customKeyBindings[elm.key] = elm.val;
+			else if(elm != "KeyBindings")
+				return;
 		}
-	}
-	
-	return true;
+	});
 }
 
 function saveKeyBindings() {

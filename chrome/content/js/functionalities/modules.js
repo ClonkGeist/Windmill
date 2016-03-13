@@ -1,15 +1,6 @@
 
 var MODULE_LIST = [], MODULE_DEF_LIST = [];
 
-$(window).ready(function() {
-	loadModules(_sc.chpath + "/content/modules");
-});
-
-//Hilfsfunktion zum loggen
-function log(str) {
-	dump(str + "\n");
-}
-
 //Modulobjekt
 class _module {
 	constructor() {
@@ -25,53 +16,47 @@ class _module {
 }
 
 function loadModules(path) {
-	//modules-Ordner
-	var f = _sc.file(path);
-	if(!f.exists() || !f.isDirectory())
-		return;
-	
-	//Verzeichnisse einzelnd untersuchen
-	var entries = f.directoryEntries;
-	while(entries.hasMoreElements()) {
-		var entry = entries.getNext().QueryInterface(Ci.nsIFile);
-		if(entry.isDirectory()) //Unterverzeichnisse untersuchen
-			loadModules(entry.path);
-		else if(entry.leafName == "module.ini") //Modulinformationen auslesen
-			readModuleInfo(entry.path);
-	}
+	return Task.spawn(function*() {
+		let iterator = new OS.File.DirectoryIterator(path);
+		while(true) {
+			let entry = yield iterator.next();
+			if(entry.isDir) //Unterverzeichnisse untersuchen
+				yield loadModules(entry.path);
+			else if(entry.name == "module.ini") //Modulinformationen einlesen
+				yield readModuleInfo(entry.path);
+		}
+	}).then(null, function(reason) {
+		iterator.close();
+		if(!reason != StopIteration)
+			throw reason;
+	});
 }
 
 function readModuleInfo(path) {
 	var module = new _module();
-	var f = _sc.file(path);
-	var parser = _sc.inifact().createINIParser(f);
-	//Module-Keys
-	var keys = parser.getKeys("Module");
-	while(keys && keys.hasMore()) {
-		var key = keys.getNext();
-		module[key.toLowerCase()] = parser.getString("Module", key);
-	}
-	
-	//Custom-Keys
-	keys = parser.getKeys("Custom");
-	while(keys && keys.hasMore()) {
-		var key = keys.getNext();
-		module.custom[key.toLowerCase()] = parser.getString("Custom", key);
-	}
-	
-	//Modulpfad und relativer Pfad speichern
-	if(OS_TARGET == "WINNT") {
-		module.path = path.replace(/\\[^\\]+$/, ""); 
-		module.relpath = module.path.replace(RegExp((_sc.chpath.replace(/\//, "\\")+"\\content\\").replace(/\\/g, "\\\\")), "");
-	}
-	else {
-		module.path = path.replace(/\/[^\/]+$/, "");
-		module.relpath = module.path.replace(RegExp((_sc.chpath+"/content/").replace(/\\/g, "\\\\")), "");
-	}
+	return OS.File.read(path, {encoding: "utf-8"}).then(function(text) {
+		moduleini = parseINI2(text), elm;
+		while(elm = moduleini.next().value) {
+			if(typeof elm != "string") {
+				if(elm.sect == "Module")
+					module[elm.key.toLowerCase()] = elm.val;
+				else if(elm.sect == "Custom")
+					module[elm.key.toLowerCase()] = elm.val;
+			}
+		}
 
-	MODULE_DEF_LIST[module.name] = module;
-	
-	return module;
+		//Modulpfad und relativer Pfad speichern
+		if(OS_TARGET == "WINNT") {
+			module.path = path.replace(/\\[^\\]+$/, ""); 
+			module.relpath = module.path.replace(RegExp((_sc.chpath.replace(/\//, "\\")+"\\content\\").replace(/\\/g, "\\\\")), "");
+		}
+		else {
+			module.path = path.replace(/\/[^\/]+$/, "");
+			module.relpath = module.path.replace(RegExp((_sc.chpath+"/content/").replace(/\\/g, "\\\\")), "");
+		}
+
+		MODULE_DEF_LIST[module.name] = module;
+	});
 }
 
 var MODULE_CNT = 0;

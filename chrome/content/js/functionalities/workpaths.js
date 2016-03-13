@@ -258,52 +258,55 @@ class WorkEnvironment {
 
 var WORKENV_List = [], WORKENV_Current;
 
-function loadWorkEnvironment(id) { 
-	if(id === undefined) {
-		if(OS_TARGET == "WINNT")
-			createWorkEnvironment(formatPath(_sc.env.get("APPDATA")+"/OpenClonk"), WORKENV_TYPE_Workspace, 0,
-			{readOnly: true, unloaded: false, rejectDeletion: true, alternativeTitle: "$WEUserData$", identifier: "UserData"});
+function loadWorkEnvironment(id) {
+	if(OS_TARGET == "WINNT")
+		createWorkEnvironment(formatPath(_sc.env.get("APPDATA")+"/OpenClonk"), WORKENV_TYPE_Workspace, 0,
+		{readOnly: true, unloaded: false, rejectDeletion: true, alternativeTitle: "$WEUserData$", identifier: "UserData"});
 
-		//Clonkverzeichnisse laden und ggf. leere Eintraege loeschen
-		var clonkdirs = JSON.parse(getConfigData("Global", "ClonkDirectories")), temp = [];
-		if(clonkdirs) {
-			for(var i = 0; i < clonkdirs.length; i++) {
-				if(clonkdirs[i]) {
-					createWorkEnvironment(clonkdirs[i], WORKENV_TYPE_ClonkPath);
-					temp.push(clonkdirs[i]);
-				}
-				else if(i < clonkpath_id)
-					clonkpath_id--;
+	//Clonkverzeichnisse laden und ggf. leere Eintraege loeschen
+	var clonkdirs = JSON.parse(getConfigData("Global", "ClonkDirectories")), temp = [];
+	if(clonkdirs) {
+		for(var i = 0; i < clonkdirs.length; i++) {
+			if(clonkdirs[i]) {
+				createWorkEnvironment(clonkdirs[i], WORKENV_TYPE_ClonkPath);
+				temp.push(clonkdirs[i]);
 			}
-
-			setConfigData("Global", "ClonkDirectories", temp, true);
+			else if(i < clonkpath_id)
+				clonkpath_id--;
 		}
 
-		var wsdir = getConfigData("CIDE", "WorkspaceParentDirectory");
-		if(!wsdir)
-			return;
+		setConfigData("Global", "ClonkDirectories", temp, true);
+	}
 
-		var dir = new _sc.file(wsdir);
-		if(!dir.exists())
-			return;
-		
-		log("Loading Workspace from " + wsdir.path);
-		var entries = dir.directoryEntries;
-		while(entries.hasMoreElements()) {
-			var entry = entries.getNext().QueryInterface(Ci.nsIFile);
-			log("Loading Workspace: " + entry.leafName);
-			if(!entry.isDirectory())
+	var wsdir = getConfigData("CIDE", "WorkspaceParentDirectory");
+	if(!wsdir)
+		return;
+
+	return Task.spawn(function*() {
+		let iterator = new OS.File.DirectoryIterator(wsdir);
+		log("Loading Workspace from " + wsdir);
+		while(true) {
+			let entry = yield iterator.next();
+			if(!entry.isDir) //Unterverzeichnisse untersuchen
 				continue;
-
-			var header = new _sc.file(entry.path+"/.windmillheader");
-			if(!header.exists() || header.isDirectory())
+			
+			try {
+				let header = yield OS.File.stat(entry.path+"/.windmillheader");
+			} catch(e) {
+				continue;
+			}
+			if(!header.isDir)
 				continue;
 
 			createWorkEnvironment(entry.path, WORKENV_TYPE_Workspace);
 		}
-		
-		return true;
-	}
+	}).then(null, function(reason) {
+		iterator.close();
+		if(!reason != StopIteration)
+			throw reason;
+	});
+
+	return true;
 }
 
 function saveWorkEnvironment(id) {

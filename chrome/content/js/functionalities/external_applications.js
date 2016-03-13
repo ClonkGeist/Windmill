@@ -6,23 +6,23 @@
 
 var application_data = [];
 
-$(window).ready(function() {
-	loadExternalApplicationDefs(_sc.chpath + "/content");
-});
-
 function loadExternalApplicationDefs(path) {
-	var dir = _sc.file(path);
-	if(!dir.exists() || !dir.isDirectory())
-		return;
-
-	var entries = dir.directoryEntries;
-	while(entries.hasMoreElements()) {
-		var entry = entries.getNext().QueryInterface(Ci.nsIFile);
-		if(entry.isDirectory()) //Unterverzeichnisse untersuchen
-			loadExternalApplicationDefs(entry.path);
-		else if(entry.leafName.search(/^appdef_.+\.json$/i) != -1) //Applikationdefinition einlesen
-			registerNewApplication(readFile(entry));
-	}
+	return Task.spawn(function*() {
+		let iterator = new OS.File.DirectoryIterator(path);
+		while(true) {
+			let entry = yield iterator.next();
+			if(entry.isDir) //Unterverzeichnisse untersuchen
+				yield loadExternalApplicationDefs(entry.path);
+			else if(entry.name.search(/^appdef_.+\.json$/i) != -1) {//Applikationdefinition einlesen
+				let extapp = yield OS.File.read(entry.path, {encoding: "utf-8"});
+				registerNewApplication(extapp);
+			}
+		}
+	}).then(null, function(reason) {
+		iterator.close();
+		if(!reason != StopIteration)
+			throw reason;
+	});
 }
 
 function registerNewApplication(application_obj) {
