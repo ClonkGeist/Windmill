@@ -31,22 +31,7 @@ function saveKeyBindings() {
 		text += key+"="+customKeyBindings[key]+"\r\n";
 	}
 	
-	var f = _sc.file(_sc.profd+"/keybinding.ini");
-	
-	if(!f.exists())
-		f.create(f.NORMAL_FILE_TYPE, 0o777);
-	
-	//File-/Converterstream
-	var fstr = _sc.ofstream(f, _scc.PR_WRONLY|_scc.PR_TRUNCATE, 0x200);
-	var cstr = _sc.costream();
-	
-	cstr.init(fstr, "utf-8", text.length, Ci.nsIConverterInputStream.DEFAULT_REPLACEMENT_CHARACTER);
-	cstr.writeString(text);
-	
-	cstr.close();
-	fstr.close();
-
-	return true;
+	return OS.File.writeAtomic(_sc.profd+"/keybinding.ini", text, {encoding: "utf-8"});
 }
 
 /*-- Keycode Maps (Javascript Keycodes) --*/

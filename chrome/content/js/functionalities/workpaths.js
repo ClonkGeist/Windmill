@@ -40,79 +40,100 @@ class WorkEnvironment {
 			return;
 
 		if(this.type == WORKENV_TYPE_Workspace) {
-			var workenv = _sc.file(this.path);
-			if(!workenv.exists())
-				workenv.create(Ci.nsIFile.DIRECTORY_TYPE, 0o777);
+			let _this = this;
+			return Task.spawn(function*() {
+				yield OS.File.makeDir(_this.path);
+				if(options.repository) {
+					_this.header.Workspace.Repository = options.repository;
+					_this.header.Repository = {CloneURL: options.cloneurl};
+					_this.userinfo = options.userinfo;
+					var git = getAppByID("git");
+					lockModule("$MDMSGRepositoryCloning$", true);
+					git.create(["clone", _this.cloneurl, _this.path], 0x1, (exitCode) => { 
+						if(!exitCode) {
+							if(options.success)
+								options.success(_this);
 
-			if(options.repository) {
-				this.header.Workspace.Repository = options.repository;
-				this.header.Repository = {CloneURL: options.cloneurl};
-				this.userinfo = options.userinfo;
-				var git = getAppByID("git");
-				lockModule("$MDMSGRepositoryCloning$", true);
-				git.create(["clone", this.cloneurl, this.path], 0x1, (exitCode) => { 
-					if(!exitCode) {
-						if(options.success)
-							options.success(this);
+							unlockModule();
+							git.create(["config", "-f", _this.path+"/.git/config", "user.name", options.userconfig.username], 0x2);
+							git.create(["config", "-f", _this.path+"/.git/config", "user.email", options.userconfig.email], 0x2);
 
-						unlockModule();
-						git.create(["config", "-f", this.path+"/.git/config", "user.name", options.userconfig.username], 0x2);
-						git.create(["config", "-f", this.path+"/.git/config", "user.email", options.userconfig.email], 0x2);
-
-						this.saveHeader();
-					}
-					else //TODO: ExitValue-Verarbeitung
-						options.rejected();
-				}, function(data) {
-					logToGitConsole(data);
-				});
-				return;
-			}
-
-			var copyData = (i, options) => {
-				try {
-					if(i >= filelist.length) {
-						if(options.success)
-							options.success(this);
-
-						unlockModule();
-						this.header.Workspace.FullCopy = !!options.fullcopy;
-						this.saveHeader();
-						return true;
-					}
-
-					var source = options.sourcedir;
+							_this.saveHeader();
+						}
+						else //TODO: ExitValue-Verarbeitung
+							options.rejected();
+					}, function(data) {
+						logToGitConsole(data);
+					});
+					return;
+				}
+				else {
+					let source = options.sourcedir;
 					if(!source)
 						source = _sc.clonkpath();
-					this.header.Workspace.SourceDir = source;
-					var f = _sc.file(source+"/"+filelist[i]);
-					if(!f.exists()) {
-						if(options.debug)
-							log("File " + f.leafName + " (" + i + ") does not exist");
-						return copyData(i+1, options);
+					_this.header.Workspace.SourceDir = source;
+					
+					let deepCopy = function(path, i) {
+						return Task.spawn(function*() {
+							let iterator = new OS.File.DirectoryIterator(path);
+							while(true) {
+								let entry;
+								try { entry = yield iterator.next(); } catch(e) { break; }
+								let dest = _this.path+formatPath(entry.path).replace(formatPath(source), "");
+								
+								if(!options.noLock && getModuleByName("cide").contentWindow)
+									getModuleByName("cide").contentWindow
+									.lockModule("<hbox class='modal-big'>Creating Workspace: &lt;" + _this._path.split("/").pop() +
+											   "&gt;</hbox><hbox>Copying " + filelist[i] + "</hbox>"+
+											   "<hbox style='font-size: 0.6em'>"+formatPath(entry.path)+"</hbox>");
+								
+								if(entry.isDir) {
+									yield OS.File.makeDir(dest);
+									yield deepCopy(entry.path, i);
+								}
+								else
+									yield OS.File.copy(entry.path, dest);
+							}
+							iterator.close();
+						});
+					}
+					for(let i = 0; i < filelist.length; i++) {
+						let src = source+"/"+filelist[i], dest = formatPath(_this.path+"/"+filelist[i]);
+						let stat = yield OS.File.stat(src);
+						if(!options.noLock && getModuleByName("cide").contentWindow)
+							getModuleByName("cide").contentWindow
+							.lockModule("<hbox class='modal-big'>Creating Workspace: &lt;" + _this._path.split("/").pop() +
+									   "&gt;</hbox><hbox>Copying " + filelist[i] + "</hbox>"+
+									    "<hbox style='font-size: 0.6em'>"+dest+"</hbox>");
+						if(stat.isDir) {
+							try { yield OS.File.makeDir(dest); } catch(e) { log(e); }
+							try { yield deepCopy(src, i); } catch(e) {
+								if(options.debug) {
+									log("An error occured while trying to copy " + filelist[i]);
+									log(e);
+								}
+							}
+						}
+						else {
+							try { yield OS.File.copy(src, dest); }
+							catch(e) {
+								if(options.debug) {
+									log("An error occured while trying to copy " + filelist[i]);
+									log(e);
+								}
+							}
+						}
 					}
 					
-					if(!options.noLock)
-						lockModule("<hbox class='modal-big'>Creating Workspace: &lt;" + workenv.leafName +
-								   "&gt;</hbox><hbox>Copying " + f.leafName + "</hbox>");
-					
-					setTimeout(() => {
-						if(options.debug)
-							log("Copying " + f.leafName + " (" + i + ")");
-						if(!options.no_file_operations)
-							f.copyTo(workenv, f.leafName);
+					if(options.success)
+						options.success(_this);
 
-						setTimeout(() => { copyData(i+1, options); }, 90);
-					}, 10);
-				} catch(err) {
-					log(err, !options.debug);
-					log(err.stack, !options.debug);
-					if(options.rejected)
-						options.rejected(err);
+					unlockModule();
+					_this.header.Workspace.FullCopy = !!options.fullcopy;
+					_this.saveHeader();
+					return true;
 				}
-			}
-			
-			setTimeout(function() { copyData(0, options); }, 100);
+			});
 		}
 
 		execHook("onWorkenvSetup", this);
@@ -282,29 +303,31 @@ function loadWorkEnvironment(id) {
 	if(!wsdir)
 		return;
 
-	return Task.spawn(function*() {
-		let iterator = new OS.File.DirectoryIterator(wsdir);
+	var iterator;
+	let task = Task.spawn(function*() {
+		iterator = new OS.File.DirectoryIterator(wsdir);
 		log("Loading Workspace from " + wsdir);
 		while(true) {
 			let entry = yield iterator.next();
 			if(!entry.isDir) //Unterverzeichnisse untersuchen
 				continue;
 			
+			var header;
 			try {
-				let header = yield OS.File.stat(entry.path+"/.windmillheader");
+				header = yield OS.File.stat(entry.path+"/.windmillheader");
 			} catch(e) {
 				continue;
 			}
-			if(!header.isDir)
-				continue;
 
 			createWorkEnvironment(entry.path, WORKENV_TYPE_Workspace);
 		}
-	}).then(null, function(reason) {
+	});
+	task.then(null, function(reason) {
 		iterator.close();
 		if(reason != StopIteration)
 			throw reason;
 	});
+	return task;
 }
 
 function saveWorkEnvironment(id) {

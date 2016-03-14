@@ -63,8 +63,7 @@ hook("load", function() {
 
 		//Weitere Arbeitsumgebungen laden
 		$("#startup-loading").text("Loading Work Environments");
-		loadtask = loadWorkEnvironment();
-		yield loadtask;
+		try { yield loadWorkEnvironment(); } catch(e) {}
 	}).then(function(result) {
 		$("#startup-loading").fadeOut(500);
 		//Configuration Wizard ggf. starten

@@ -241,16 +241,16 @@ $(window).load(function() {
 					options.no_file_operations = true;
 
 				options.success = function(workenv) {
-					_mainwindow.unlockModule();
+					getModuleByName("cide").contentWindow.unlockModule();
 					createWorkEnvironmentEntry(workenv);
 					showNotification(undefined, Locale("$WESuccessfullyCreated$"), sprintf(Locale("$WESuccessfullyCreatedDesc$"), workenv.title));
 				}
 				options.rejected = function(err) {
-					_mainwindow.unlockModule();
+					getModuleByName("cide").contentWindow.unlockModule();
 					EventInfo("An error occured while creating the work environment.");
 				}
 
-				_mainwindow.lockModule("Copying files to new directory. This may take a while.", true);
+				getModuleByName("cide").contentWindow.lockModule("Copying files to new directory. This may take a while.", true);
 				createNewWorkEnvironment(path+"/"+name, type, options);
 				_self.hide();
 			}
