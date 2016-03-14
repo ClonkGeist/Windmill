@@ -312,12 +312,8 @@ function loadWorkEnvironment(id) {
 			if(!entry.isDir) //Unterverzeichnisse untersuchen
 				continue;
 			
-			var header;
-			try {
-				header = yield OS.File.stat(entry.path+"/.windmillheader");
-			} catch(e) {
+			if(!(yield OS.File.exists(entry.path+"/.windmillheader")))
 				continue;
-			}
 
 			createWorkEnvironment(entry.path, WORKENV_TYPE_Workspace);
 		}
