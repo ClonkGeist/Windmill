@@ -10,7 +10,7 @@ function getReloadPars() {
 	return str;
 }
 
-window.addEventListener("load", function(){
+hook("load", function() {
 	var query = location.search.substr(1).split('&');
 	if(query) {
 		for(var i = 0; i < query.length; i++) {
@@ -18,7 +18,7 @@ window.addEventListener("load", function(){
 				continue;
 
 			var split = query[i].split("=");
-			loadFile((new _sc.file(decodeURI(split[1]))), parseInt(split[0]), true);
+			loadFile(decodeURI(split[1]), parseInt(split[0]), true);
 		}
 	}
 
@@ -26,15 +26,15 @@ window.addEventListener("load", function(){
 	return true;
 });
 
-function loadFile(file) {
+function loadFile(path) {
 	if(audioobj && !audioobj.paused)
 		pauseAudio();
 
-	audiofile = file;
+	audiofile = { path };
 	if(OS_TARGET == "WINNT")
-		audioobj = new Audio("file://"+file.path.replace(/\\/gi, "/"));
+		audioobj = new Audio("file://"+path.replace(/\\/gi, "/"));
 	else
-		audioobj = new Audio("file://"+file.path);
+		audioobj = new Audio("file://"+path);
 
 	initializeAudiofile();
 	return true;
