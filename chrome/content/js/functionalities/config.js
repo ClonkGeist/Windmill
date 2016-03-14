@@ -322,11 +322,6 @@ function setConfigData(sect, key, val, save, ...pars) {
 //Updates bei Versionswechsel
 
 function configVersionUpdate(version) {
-	if(version == "0.12") {
-		var f = _sc.file(_sc.profd+"/config.ini");
-		f.copyTo(f.parent, "config_v0.12.backup.ini");
-	}
-	
 	var removedEntries = [];
 	switch(version) {
 		case "0.1":
