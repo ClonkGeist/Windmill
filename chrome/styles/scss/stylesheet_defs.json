@@ -1,0 +1,13 @@
+[
+{
+	"name": "global",
+	"scss": "global/global.css"
+},
+{
+	"name": "mainFrame",
+	"scss": "modules/main.css",
+	"cssTarget": "styles/main.css",
+	"observe": "main",
+	"require": "global"
+}
+]

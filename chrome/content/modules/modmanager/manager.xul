@@ -6,14 +6,18 @@
 
 <window id="main" title="ModuleManager" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:html="http://www.w3.org/1999/xhtml">
 
+	<script type="application/javascript" src="chrome://windmill/skin/scss/js/sass.js"/>
+	<script type="application/javascript" src="chrome://windmill/skin/scss/js/sass.worker.js"/>
 	<script type="application/javascript" src="chrome://windmill/content/js/default_module.js"/>
 	<script type="application/javascript" src="chrome://windmill/content/js/libs/deck.js"/>
 	<script type="application/javascript" src="chrome://windmill/content/modules/modmanager/js/manager.js"/>
+	<script type="application/javascript" src="chrome://windmill/content/modules/modmanager/js/sass_observer.js"/>
 	
 	<hbox>
 		<button label="Modules" onclick="$('#switch-overview').attr('selectedIndex', 0);" /> |
 		<button label="Config" onclick="$('#switch-overview').attr('selectedIndex', 1);" /> |
 		<button label="DOM Viewer" onclick="$('#switch-overview').attr('selectedIndex', 2);" />
+		<button label="Sass" onclick="$('#switch-overview').attr('selectedIndex', 3);" />
 	</hbox>
 
 	<hbox flex="1" id="wrapper">
@@ -71,6 +75,11 @@
 					<hbox>
 						<label value="DOM Structure:" />
 					</hbox>
+				</vbox>
+			</vbox>
+			<vbox flex="1">
+				<label value="Target Stylesheets" /> 
+				<vbox flex="1" id="ss-deflist">
 				</vbox>
 			</vbox>
 		</deck>

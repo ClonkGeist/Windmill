@@ -120,7 +120,6 @@ window.addEventListener("load", function(){
 	execHook("afterload");
 });
 
-
 var err = Components.utils.reportError;
 
 function warn(str, prefix) {
@@ -358,6 +357,8 @@ else {
 	var _mainwindow = window;
 }
 
+var domwu = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
+
 function frameUpdateWindmillTitle() {
 	if(window.frameWindowTitle && window.frameWindowTitle() != -1) {
 		setWindowTitle("Windmill");
@@ -532,7 +533,7 @@ function writeFile(path, text, fCreateIfNonexistent) {
 
 	if(!f.exists() && fCreateIfNonexistent)
 		f.create(f.NORMAL_FILE_TYPE, 0o777);
-
+	
 	var fstr = _sc.ofstream(f, _scc.PR_WRONLY|_scc.PR_TRUNCATE, 0x200);
 	var cstr = _sc.costream();
 
