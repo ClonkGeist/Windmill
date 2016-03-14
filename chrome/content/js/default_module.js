@@ -458,7 +458,7 @@ function parseINIArray(text) {
 		else if(line.search(/.=./) != -1) {
 			var key = line.match(/(.+?)=/)[1];
 			var value = line.match(/.+?=(.+)/)[1];
-			
+
 			data[current_section][key] = value;
 		}
 	}

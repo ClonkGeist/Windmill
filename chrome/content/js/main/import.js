@@ -66,7 +66,7 @@ var _sc = {
 	},
 	//Dateiinstanz
 	file: function(path, failsafe = true) {
-		if(!path)
+		if(!path || path == "false" || path == "true")
 			return { exists() { return false; } };
 
 		if(OS_TARGET == "WINNT")

@@ -19,6 +19,7 @@ class ConfigEntry extends WindmillObject {
 			this.apply();
 	}
 
+	get type() { return this._type; }
 	set type(type) { this._type = type.toLowerCase(); }
 
 	get value() {
@@ -66,8 +67,9 @@ class ConfigEntry extends WindmillObject {
 				case "boolean":
 				case "bool":
 					if(valup != "FALSE" && valup != "UNDEFINED" && valup != "NULL" && valup != "0" && valup.length)
-						val= true;
-					val = false;
+						val = true;
+					else
+						val = false;
 					break;
 
 				case "array":
@@ -282,15 +284,29 @@ function getConfigData(sect, key, cfgobject) {
 
 	if(cfgobject)
 		return CONFIG[sect][key];
-	return CONFIG[sect][key].value;
+	
+	var type = CONFIG[sect][key].type;
+	var val = CONFIG[sect][key].value;
+	if(type && type != typeof val && typeof val == "string") {
+		switch(type.toLowerCase()) {
+			case "bool":
+			case "boolean":
+				if(val == "true")
+					val = true;
+				if(val == "false")
+					val = false;
+				break;
+		}
+	}
+	return val;
 }
 
-function setConfigData(sect, key, val, save) {
+function setConfigData(sect, key, val, save, ...pars) {
 	if(!CONFIG[sect])
 		CONFIG[sect] = [];
 
 	if(!CONFIG[sect][key])
-		CONFIG[sect][key] = new ConfigEntry(sect, key, val);
+		CONFIG[sect][key] = new ConfigEntry(sect, key, val, ...pars);
 	else {
 		CONFIG[sect][key].value = val;
 		if(save)
