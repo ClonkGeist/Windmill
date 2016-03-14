@@ -459,6 +459,8 @@ function parseINIArray(text) {
 			var key = line.match(/(.+?)=/)[1];
 			var value = line.match(/.+?=(.+)/)[1];
 
+			if(!data[current_section])
+				data[current_section] = [];
 			data[current_section][key] = value;
 		}
 	}
