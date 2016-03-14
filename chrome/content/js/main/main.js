@@ -65,6 +65,8 @@ hook("load", function() {
 		$("#startup-loading").text("Loading Work Environments");
 		try { yield loadWorkEnvironment(); } catch(e) {}
 	}).then(function(result) {
+		updateLocalizaiton();
+
 		$("#startup-loading").fadeOut(500);
 		//Configuration Wizard ggf. starten
 		if(result == -1) {
