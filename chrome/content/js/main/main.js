@@ -205,11 +205,11 @@ ${reason}
 ------------------------------------------------
 ${reason.stack}`).parent().css("display", "");
 	});
-	
+
 	hook("onWorkenvCreated", function(env) {
 		if(!env)
 			return;
-		
+
 		if(env.type != WORKENV_TYPE_ClonkPath)
 			return;
 
@@ -223,31 +223,32 @@ ${reason.stack}`).parent().css("display", "");
 		if(OS_TARGET == "WINNT")
 			ocexecname = "openclonk.exe";
 
-		var ocexec = new _sc.file(path+"/"+ocexecname);
-		if(!ocexec.exists())
-			return;
+		OS.File.exists(path+"/"+ocexecname).then(function(exists) {
+			if(!exists)
+				return clone.find(".cds-lbl-directory").attr("value", "Error: "+ocexecname+" not found.");
 
-		//Mittleren Teil durch 3 Punkte ersetzen wenn zu lang
-		if(path.length > 40) {
-			textpath = path.replace(/(^\/*.+?\/).+(\/.+\/?$)/, function(str, a, b, c) { 
-				var middle = str.substr(0, str.length-b.length).substr(a.length); 
-				return a+("..."+middle.substr(middle.length-(Math.max(40-a.length-b.length, 0))))+b; 
+			//Mittleren Teil durch 3 Punkte ersetzen wenn zu lang
+			if(path.length > 40) {
+				textpath = path.replace(/(^\/*.+?\/).+(\/.+\/?$)/, function(str, a, b, c) { 
+					var middle = str.substr(0, str.length-b.length).substr(a.length); 
+					return a+("..."+middle.substr(middle.length-(Math.max(40-a.length-b.length, 0))))+b; 
+				});
+			}
+			clone.find(".cds-lbl-directory").attr("value", textpath);
+			//tooltip(clone.find(".cds-lbl-directory"), path, 0, 600);
+
+			//TODO: Tags (Standard/Snapshot X/Nightly X/Ggf. eigene Benennung)
+			clone.find(".cds-lbl-type").attr("value", "Standard");
+			clone.click(function() {
+				$("#cds-clonkdirlist").find(".cds-listitem").removeClass("selected");
+				$(this).addClass("selected");
+				setClonkPath(env.path);
 			});
-		}
-		clone.find(".cds-lbl-directory").attr("value", textpath);
-		//tooltip(clone.find(".cds-lbl-directory"), path, 0, 600);
-		
-		//TODO: Tags (Standard/Snapshot X/Nightly X/Ggf. eigene Benennung)
-		clone.find(".cds-lbl-type").attr("value", "Standard");
-		clone.click(function() {
-			$("#cds-clonkdirlist").find(".cds-listitem").removeClass("selected");
-			$(this).addClass("selected");
-			setClonkPath(env.path);
-		});
 
-		if(formatPath(_sc.clonkpath()) == env.path)
-			clone.addClass("selected");
-		clone.appendTo($("#cds-clonkdirlist"));
+			if(formatPath(_sc.clonkpath()) == env.path)
+				clone.addClass("selected");
+			clone.appendTo($("#cds-clonkdirlist"));
+		});
 	});
 	hook("onWorkenvUnloaded", function(env) {
 		$("#page-clonkdirselection").find('.cds-listitem[data-path="'+env.path+'"]').remove();
