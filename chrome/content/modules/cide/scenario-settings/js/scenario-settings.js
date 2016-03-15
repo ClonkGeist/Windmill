@@ -827,38 +827,36 @@ function loadDefinitionsFrom(path, fullpath, maindef, flags, skipError) {
 				break;
 		}
 
-		//Verzeichniselemente durchsuchen
-		try { iterator = new OS.File.DirectoryIterator(path); } catch(e) {
-			setLoadingCaption("$LoadingFailed$");
-			setLoadingSubCaption("An Error occured while loading " + path);
-			log(e);
+
+		setLoadingSubCaption(path);
+
+		let f = _sc.file(path);
+		if(!f.isDirectory())
 			return;
-		}
-		
-		//setLoadingSubCaption(path);
 
-		while(true) {
-			let entry;
-			try { entry = yield iterator.next(); } catch(e) { break; }
+		//Verzeichniselemente durchsuchen
+		let entries = f.directoryEntries;
+		while(entries.hasMoreElements()) {
+			let {leafName, path} = entries.getNext().QueryInterface(Ci.nsIFile);
 
-			if(entry.name.search(/\.ocd$/) != -1) {
-				var subdefs = yield loadDefinitionsFrom(entry.path, true, maindef, flags, skipError);
+			if(leafName.search(/\.ocd$/) != -1) {
+				var subdefs = yield loadDefinitionsFrom(path, true, maindef, flags, skipError);
 				if(subdefs)
 					defs = defs.concat(subdefs);
 				else if(!skipError)
 					return;
 			}
 
-			if(entry.name.toUpperCase() == "DEFCORE.TXT")
-				definition.defcore = parseINIArray(yield OS.File.read(entry.path, {encoding: "utf-8"}));
+			if(leafName.toUpperCase() == "DEFCORE.TXT")
+				definition.defcore = parseINIArray(yield OS.File.read(path, {encoding: "utf-8"}));
 
 			//Stringtables fuer Name/Beschreibung auslesen (Englische StringTables als Fallback verwenden)
-			if(entry.name == Locale("StringTbl$ClonkLangPrefix$.txt", -1) || entry.name == "StringTblUS.txt") {
+			if(leafName == Locale("StringTbl$ClonkLangPrefix$.txt", -1) || leafName == "StringTblUS.txt") {
 				if(definition.title)
-					if(entry.name != Locale("StringTbl$ClonkLangPrefix$.txt", -1))
+					if(leafName != Locale("StringTbl$ClonkLangPrefix$.txt", -1))
 						continue;
 
-				var stringtables = parseINIArray(yield OS.File.read(entry.path, {encoding: "utf-8"}));
+				var stringtables = parseINIArray(yield OS.File.read(path, {encoding: "utf-8"}));
 				if(!stringtables[0])
 					continue;
 
@@ -868,8 +866,6 @@ function loadDefinitionsFrom(path, fullpath, maindef, flags, skipError) {
 					definition.desc = stringtables[0]["Description"];
 			}
 		}
-
-		iterator.close();
 
 		if(definition.defcore != undefined) {
 			if(maindef && definition.defcore["DefCore"]) {
