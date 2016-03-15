@@ -392,6 +392,19 @@ function Locale(str, prefix) {
 	return str;
 }
 
+function getClonkExecutablePath() {
+	//Alternative Executabledatei
+	var name = getConfigData("Global", "AlternativeApp");
+	if(!name) {
+		if(OS_TARGET == "WINNT")
+			name = "openclonk.exe";
+		else
+			name = "openclonk";
+	}
+
+	return _sc.clonkpath() + "/" + name;
+}
+
 var domWrapper;
 
 function displayDOM(el, lang) {
