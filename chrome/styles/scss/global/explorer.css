@@ -1,0 +1,117 @@
+window {
+	background-color: rgb(245, 245, 245);
+	font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+	font-size: 12px;
+}
+
+#operator-list {
+	border-top: rgb(215, 215, 215);
+	background-color: rgb(250, 250, 250);
+}
+
+.operator {
+
+}
+
+#filecontainer {
+	overflow: auto;
+}
+
+li.treeelm {
+	border: none;
+	
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+li.treeelm:hover {
+	background-color: rgba(0, 165, 207, 0.15);
+	outline: 1px solid rgba(0, 165, 207, 0.3);
+	outline-offset: -1px;
+}
+
+li.treeelm::after {
+	content: attr(data-special);
+	color: #070;
+}
+
+li.tree-selected,
+li.tree-selected:focus,
+li.tree-selected:hover {
+	/* background-color: #F4FF8E;*/
+	outline-offset: -1px;
+	background-color: rgba(0, 165, 207, 0.2);
+	outline: 1px solid rgba(0, 165, 207, 0.5);
+	border: none;
+}
+
+ul.tree-expanded {
+	display: block;
+}
+
+ul.tree-collapsed {
+	display: none;
+}
+
+ul {
+	padding-left: 1em;
+	margin-left: 0.5em;
+}
+
+li {
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	border: 1px solid transparent;
+}
+
+.treeelm image {
+	vertical-align: middle;
+	margin-right: 6px;
+}
+
+li {
+	overflow: hidden;
+	white-space: nowrap;
+	display: block;
+	padding-left: 0.5em;
+	padding-right: 0.5em;
+	text-overflow: ellipsis;
+}
+
+li:focus *, li:focus {
+	outline: none;
+}
+
+.maintree {
+	transition: background-color 0.4s;
+	padding-right: 1.5em;
+}
+
+.maintree.dragover {
+	transition: background-color 0.4s;
+	background-color: rgba(102,167,247,0.5);
+}
+
+/* special tree items */
+
+.treeelm_container_empty {
+	color: #444;
+	font-style: italic;
+}
+
+.el-rename-input {
+	-moz-appearance: none;
+	border: none;
+	outline: 1px solid rgb(160, 160, 160);
+	outline: 1px solid rgb(40, 40, 40);
+	outline-offset: -1px;
+	margin: 0;
+	padding: 0;
+}
+
+.el-rename-input * {
+	padding: 0;
+	margin: 0;
+}
+
+/*	need some space	*/

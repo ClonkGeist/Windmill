@@ -1,0 +1,49 @@
+/* context menu */
+
+.contextmenu {
+	background-color: transparent;
+	border: 1px solid gainsboro;
+	min-width: 180px;
+	max-width: 600px;
+	-moz-user-focus: normal;
+	-moz-user-select: none;
+	color: rgb(40, 40, 40);
+}
+
+.ctx-wrapper {
+	background-color: rgb(235,235,235);
+	padding: 5px;
+}
+
+.ctx-menuitem {
+	font-size: 11pt;
+	height: 20px;
+	padding: 1px 4px;
+	cursor: default;
+	
+	transition: background-color 0.3s;
+}
+
+.ctx-menuitem:hover,
+.ctx-menuitem.selected  {
+	background-color: #b6cfe1;
+	background-color: rgba(0, 165, 207, 0.5);
+}
+
+.ctx-disabled {
+	color: grey;
+}
+.ctx-menuseperator {
+	border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.ctx-container {
+	background-image: url("chrome://windmill/content/img/ctx-container.png");
+	background-position: right center;
+	background-repeat: no-repeat;
+}
+
+.ctx-menuicon {
+	width: 20px;
+	margin-right: 10px;
+}

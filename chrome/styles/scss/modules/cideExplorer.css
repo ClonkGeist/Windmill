@@ -1,0 +1,54 @@
+.toolbar { 
+	height: 24px;
+	background-color: gainsboro;
+}
+
+.toolbar-option {
+	width: 60px;
+	text-align: center;
+	line-height: 24px;
+	cursor: pointer;
+	
+	transition: background-color 0.5s;
+}
+
+.toolbar-option:hover { 
+	background-color: #eee;
+	transition: background-color 0s;
+}
+
+.nav-image:hover {
+	background-color: #eee;
+}
+
+.nav-image.deselected {
+	color: #777;
+}
+
+#searchinput {
+	margin: 0px;
+	border: 0px;
+	-moz-appearance: none;
+	background-color: #fff;
+	border-bottom: 1p solid gainsboro;
+	font-size: 1.2em;
+	
+	transition: height 0.5s;
+}
+
+#searchinput.hidden {
+	height: 0px;
+	padding: 0px;
+}
+
+.searchinput:before { 
+	content: '\e618  ';
+	font-family: 'icomoon';
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+	
+	-moz-osx-font-smoothing: grayscale;
+}

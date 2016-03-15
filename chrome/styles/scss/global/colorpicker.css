@@ -1,0 +1,58 @@
+
+
+.clrpckr-wrapper {
+	flex-direction: column;
+}
+
+.html.pick-area {
+	position: relative;
+	flex: 1;
+}
+
+.html.pick-area-sub {
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+}
+
+.pick-area-sub {
+	background: linear-gradient(to bottom, transparent 0%, black 100%);
+	display: inline-block;
+	position: relative;
+}
+
+.pick-area-caret {
+	position: absolute;
+	height: 1px;
+	width: 1px;
+	outline: 1px solid black;
+	-moz-outline-radius: 4px;
+	outline-offset: 3px;
+}
+
+.color-channel {
+	margin-top: 10px;
+	background: linear-gradient(to right, 
+		rgb(255, 0, 0) 0%,
+		rgb(255, 0, 255) 16.66%,
+		rgb(0, 0, 255) 33.33%,
+		rgb(0, 255, 255) 50%,
+		rgb(0, 255, 0) 66.66%,
+		rgb(255, 255, 0) 83.33%,
+		rgb(255, 0 ,0) 100%);
+	
+	height: 20px;
+	padding: 0;
+}
+
+.color-channel-caret {
+	width: 1px;
+	height: 100%;
+	background-color: black;
+}
+
+.alpha-channel {
+	margin-top: 10px;
+}
