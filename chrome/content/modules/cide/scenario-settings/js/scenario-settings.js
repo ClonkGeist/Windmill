@@ -152,7 +152,7 @@ function getCurrentWrapperIndex() {
 		return -1;
 }
 
-function addScript(text, lang, index, path, fShow) {
+function addScript(path, lang, index, path, fShow) {
 	var clone = $(".scenario-settings.draft").clone();
 	clone.removeClass("draft");
 	clone.attr("id", "scensettings-session-"+index);
@@ -163,151 +163,148 @@ function addScript(text, lang, index, path, fShow) {
 	}
 
 	setLoadingCaption("$LoadingReadScenarioData$", index);
-
-	var scendata = parseINIArray(text);
-
-	sessions[index] = { f: (new _sc.file(path)), scendata, path };
+	sessions[index] = { path };
 
 	//Definitionen laden
 	var loadingdefs = [], scenariodefs = [];
-	for(var key in scendata["Definitions"]) {
-		var def = scendata["Definitions"][key];
+	Task.spawn(function*() {
+		let text = yield OS.File.read(path, {encoding: "utf-8"});
+		let scendata = parseINIArray(text), def;
+		sessions[index].scendata = scendata;
 
-		if(def)
-			scenariodefs.push(def);
+		for(var key in scendata["Definitions"]) {
+			def = scendata["Definitions"][key];
 
-		//Geladene und gecachete Definitionen nicht nochmal laden
-		if(definitions[def])
-			continue;
+			if(def)
+				scenariodefs.push(def);
 
-		loadingdefs.push(def);
-	}
-	if(!scendata["Definitions"])
-		loadingdefs = ["Objects.ocd"], scenariodefs = ["Objects.ocd"];
+			//Geladene und gecachete Definitionen nicht nochmal laden
+			if(definitions[def])
+				continue;
 
-	loadingdefs.push(formatPath(sessions[index].f.parent.path).replace(_sc.workpath(index)+"/", ""));
-	scenariodefs.push(formatPath(sessions[index].f.parent.path).replace(_sc.workpath(index)+"/", ""));
-	sessions[index].loadingdefs = loadingdefs;
-	sessions[index].scenariodefs = scenariodefs;
+			loadingdefs.push(def);
+		}
+		if(!scendata["Definitions"])
+			loadingdefs = ["Objects.ocd"], scenariodefs = ["Objects.ocd"];
 
-	var loaddefs = function() {
-		var def = sessions[index].loadingdefs.pop();
+		let temp = formatPath(sessions[index].path).split("/");
+		temp.pop();
+		let relpath = temp.join("/").replace(_sc.workpath(index)+"/", "");
+		loadingdefs.push(relpath);
+		scenariodefs.push(relpath);
+		sessions[index].loadingdefs = loadingdefs;
+		sessions[index].scenariodefs = scenariodefs;
 
-		//Fertig mit dem Laden? Wrapper erstellen
-		if(!def) {
-			setLoadingCaption("$LoadingDone$");
-			setLoadingSubCaption("");
-			getWrapper(".navigation, .settings-page-container", index).addClass("ready");
-			getWrapper(".loadingPage", index).fadeOut(200);
+		while(def = sessions[index].loadingdefs.pop()) {
+			setLoadingCaption("$LoadingDefFrom$: " + def);
+			definitions[def] = { ids: [] };
+			definitions[def].d = yield loadDefinitionsFrom(def, 0, def);
+			if(!definitions[def].d)
+				definitions[def] = undefined;
+		}
+		return text;
+	}).then(function(text) {
+		setLoadingCaption("$LoadingDone$");
+		setLoadingSubCaption("");
+		getWrapper(".navigation, .settings-page-container", index).addClass("ready");
+		getWrapper(".loadingPage", index).fadeOut(200);
 
-			var navbtnfn = function(identifier) { return function() {
-				if($(this).hasClass("nav-page-code") && identifier != "page-code") {
-					//TODO: Auf Changes ueberpruefen und an dieser Stelle ueberarbeiten
-					reloadDefinitions();
-				}
-				getWrapper(".navigation-option", index).removeClass("active");
-				$(this).addClass("active");
+		var navbtnfn = function(identifier) { return function() {
+			if($(this).hasClass("nav-page-code") && identifier != "page-code") {
+				//TODO: Auf Changes ueberpruefen und an dieser Stelle ueberarbeiten
+				reloadDefinitions();
+			}
+			getWrapper(".navigation-option", index).removeClass("active");
+			$(this).addClass("active");
 
-				getWrapper(".settings-page.active", index).removeClass("active");
-				getWrapper("."+identifier, index).addClass("active");
+			getWrapper(".settings-page.active", index).removeClass("active");
+			getWrapper("."+identifier, index).addClass("active");
 
-				closeAddingOverlay(index);
+			closeAddingOverlay(index);
 
-				if(identifier == "page-code") {
-					md_editorframe.contentWindow.setDocumentValue(index, generateScenarioTxt(index));
-					$("#editorframe").addClass("visible");
-				}
-				else
-					$("#editorframe").removeClass("visible")
-			};};
-			getWrapper(".nav-page-general", index).mousedown(navbtnfn("page-general")).trigger("mousedown");
-			getWrapper(".nav-page-objects", index).mousedown(navbtnfn("page-objects"));
-			getWrapper(".nav-page-landscape", index).mousedown(navbtnfn("page-landscape"));
-			getWrapper(".nav-page-environment", index).mousedown(navbtnfn("page-environment"));
-			getWrapper(".nav-page-code", index).mousedown(navbtnfn("page-code"));
-			getWrapper(".nav-reload", index).mousedown(reloadDefinitions);
-			getWrapper(".nav-save", index).mousedown(function() { return saveFile(index); });
+			if(identifier == "page-code") {
+				md_editorframe.contentWindow.setDocumentValue(index, generateScenarioTxt(index));
+				$("#editorframe").addClass("visible");
+			}
+			else
+				$("#editorframe").removeClass("visible")
+		};};
+		getWrapper(".nav-page-general", index).mousedown(navbtnfn("page-general")).trigger("mousedown");
+		getWrapper(".nav-page-objects", index).mousedown(navbtnfn("page-objects"));
+		getWrapper(".nav-page-landscape", index).mousedown(navbtnfn("page-landscape"));
+		getWrapper(".nav-page-environment", index).mousedown(navbtnfn("page-environment"));
+		getWrapper(".nav-page-code", index).mousedown(navbtnfn("page-code"));
+		getWrapper(".nav-reload", index).mousedown(reloadDefinitions);
+		getWrapper(".nav-save", index).mousedown(function() { return saveFile(index); });
 
-			tooltip(getWrapper(".nav-reload", index), "$TooltipReloadDefs$", "html", 600);
+		tooltip(getWrapper(".nav-reload", index), "$TooltipReloadDefs$", "html", 600);
 
-			preparePseudoElements(index);
+		preparePseudoElements(index);
 
-			getWrapper(".sp-o-switchpage", index).click(function() { getWrapper(".sp-o-group", index).toggleClass("inactive"); });
-			getWrapper(".deflist-ao-header-close", index).click(function() { closeAddingOverlay(index); });
+		getWrapper(".sp-o-switchpage", index).click(function() { getWrapper(".sp-o-group", index).toggleClass("inactive"); });
+		getWrapper(".deflist-ao-header-close", index).click(function() { closeAddingOverlay(index); });
 
-			getWrapper(".deflist-ao-listwrapper", index).on("dragover", function(e) {
-				e = e.originalEvent;
-				e.preventDefault();
-			}).on("drop", function(e) {
-				e = e.originalEvent;
-				e.preventDefault();
-				var data = e.dataTransfer.getData("cide/deflistitem");
-				addDeflistEntry($(this).find(".deflist-ao-list-content"), data, 0, { nodragdrop: true });
-			});
+		getWrapper(".deflist-ao-listwrapper", index).on("dragover", function(e) {
+			e = e.originalEvent;
+			e.preventDefault();
+		}).on("drop", function(e) {
+			e = e.originalEvent;
+			e.preventDefault();
+			var data = e.dataTransfer.getData("cide/deflistitem");
+			addDeflistEntry($(this).find(".deflist-ao-list-content"), data, 0, { nodragdrop: true });
+		});
 
-			getWrapper(".deflist-ao-searchinput").keyup(function(e) {
-				$(this).parents(".deflist-ao-listwrapper").find(".deflist-ao-hidesearch").removeClass("deflist-ao-hidesearch");
-				if($(this).val())
-					$(this).parents(".deflist-ao-listwrapper").find(".definition-selection-item:not(.definition-selection-item[data-displayname*='"+$(this).val().toUpperCase()+"'])").addClass("deflist-ao-hidesearch");
-			});
+		getWrapper(".deflist-ao-searchinput").keyup(function(e) {
+			$(this).parents(".deflist-ao-listwrapper").find(".deflist-ao-hidesearch").removeClass("deflist-ao-hidesearch");
+			if($(this).val())
+				$(this).parents(".deflist-ao-listwrapper").find(".definition-selection-item:not(.definition-selection-item[data-displayname*='"+$(this).val().toUpperCase()+"'])").addClass("deflist-ao-hidesearch");
+		});
 
-			//Sonstige Eintraege fuellen
-			getWrapper("[data-scenario-sect!='']").each(function() {
-				if(!$(this).attr("data-scenario-key"))
+		//Sonstige Eintraege fuellen
+		getWrapper("[data-scenario-sect!='']").each(function() {
+			if(!$(this).attr("data-scenario-key"))
+				return;
+
+			var sect = $(this).attr("data-scenario-sect"), key = $(this).attr("data-scenario-key"), val;
+			if(!sessions[index].scendata[sect] || sessions[index].scendata[sect][key] === undefined) {
+				if(!$(this).attr("data-defaultvalue"))
 					return;
 
-				var sect = $(this).attr("data-scenario-sect"), key = $(this).attr("data-scenario-key"), val;
-				if(!sessions[index].scendata[sect] || sessions[index].scendata[sect][key] === undefined) {
-					if(!$(this).attr("data-defaultvalue"))
-						return;
+				val = $(this).attr("data-defaultvalue");
+			}
+			else
+				val = sessions[index].scendata[sect][key];
 
-					val = $(this).attr("data-defaultvalue");
+			if($(this).prop("tagName").toLowerCase() == "input") {
+				switch($(this).attr("type").toLowerCase()) {
+					case "checkbox":
+						$(this).prop("checked", val == "1");
+						break;
+
+					default:
+						val = val.split(",")[0];
+						$(this).val(val);
+						break;
 				}
-				else
-					val = sessions[index].scendata[sect][key];
-
-				if($(this).prop("tagName").toLowerCase() == "input") {
-					switch($(this).attr("type").toLowerCase()) {
-						case "checkbox":
-							$(this).prop("checked", val == "1");
-							break;
-
-						default:
-							val = val.split(",")[0];
-							$(this).val(val);
-							break;
-					}
-				}
-			});
-
-			return true;
-		}
-
-		setLoadingCaption("$LoadingDefFrom$: " + def);
-		setTimeout(function() {
-			definitions[def] = { ids: [] };
-			definitions[def].d = loadDefinitionsFrom(def, 0, def);
-			if(!definitions[def].d)
-				return definitions[def] = undefined;
-
-			loaddefs();
-		}, 10);
-	}
-
-	setTimeout(loaddefs, 10);
-
-	if(!md_editorframe.contentWindow.readyState) {
-		md_editorframe.contentWindow.addEventListener("load", function(){
-			this.addScript(text, lang, index, path, true);
+			}
 		});
-	}
-	else
-		md_editorframe.contentWindow.addScript(text, lang, index, path, true);
+
+		if(!md_editorframe.contentWindow.readyState) {
+			md_editorframe.contentWindow.addEventListener("load", function(){
+				this.addScript(text, lang, index, path, true);
+			});
+		}
+		else
+			md_editorframe.contentWindow.addScript(text, lang, index, path, true);
+	});
 }
 
 function saveFile(index) {
-	writeFile(sessions[index].f, generateScenarioTxt(index));
-	EventInfo("$EI_Saved$", -1);
+	let promise = OS.File.writeAtomic(sessions[index].path, generateScenarioTxt(index), {encoding: "utf-8"});
+	promise.then(function() {
+		EventInfo("$EI_Saved$", -1);
+	});
+	return promise;
 }
 
 function getScenarioValue(obj) {
@@ -388,54 +385,60 @@ function generateScenarioTxt(index) {
 function reloadDefinitions() {
 	closeAddingOverlay(getCurrentWrapperIndex());
 
-	for(var def in definitions) {
-		definitions[def] = { ids: [] };
-		definitions[def].d = loadDefinitionsFrom(def, 0, def, 0, true);
-		if(!definitions[def].d)
-			EventInfo($(getWrapper(".loadingPage-subCaption").text()));
-	}
-
-	$(".definition-selection-item").each(function() {
-		if($(this).parents(".deflist-adding-overlay")[0])
-			return;
-
-		var index = parseInt($(this).parents(".scenario-settings").attr("id").replace("scensettings-session-", ""));
-		var scenariodefs = sessions[index].scenariodefs;
-		for(var i = 0; i < scenariodefs.length; i++) {
-			var def = definitions[scenariodefs[i]].ids[$(this).attr("data-defid")];
-			if(!def)
-				continue;
-
-			if(!def.invalid && $(this).hasClass("invalid")) {
-				def.invalid = false;
-				$(this).removeClass("invalid");
-			}
-			else if(def.invalid) {
-				def.desc = Locale("$DefInvalid$");
-				$(this).addClass("invalid");
-			}
-
-			$(this).attr("data-path", def.path);
-			$(this).attr("data-displayname", def.title.toUpperCase());
-			$(this).contents().first()[0].textContent = def.title;
-			$(this).unbind("mouseenter").unbind("mouseleave");
-			tooltip(this, def.desc, "html", 600);
-
-			break;
-		}
-
-		if(!def) {
-			$(this).addClass("invalid");
-			$(this).unbind("mouseenter").unbind("mouseleave");
-
-			var title = $(this).attr("data-defid");
-			$(this).attr("data-displayname", title.toUpperCase());
-			$(this).contents().first()[0].textContent = title;
-			tooltip(this, Locale("$DefInvalid$"), "html", 600);
+	let task = Task.spawn(function*() {
+		lockModule("Reloading...");
+		for(var def in definitions) {
+			definitions[def] = { ids: [] };
+			definitions[def].d = yield loadDefinitionsFrom(def, 0, def, 0, true);
+			if(!definitions[def].d)
+				EventInfo($(getWrapper(".loadingPage-subCaption").text()));
 		}
 	});
+	task.then(function() {
+		unlockModule();
+		$(".definition-selection-item").each(function() {
+			if($(this).parents(".deflist-adding-overlay")[0])
+				return;
 
-	EventInfo("$ReloadComplete$");
+			var index = parseInt($(this).parents(".scenario-settings").attr("id").replace("scensettings-session-", ""));
+			var scenariodefs = sessions[index].scenariodefs;
+			for(var i = 0; i < scenariodefs.length; i++) {
+				var def = definitions[scenariodefs[i]].ids[$(this).attr("data-defid")];
+				if(!def)
+					continue;
+
+				if(!def.invalid && $(this).hasClass("invalid")) {
+					def.invalid = false;
+					$(this).removeClass("invalid");
+				}
+				else if(def.invalid) {
+					def.desc = Locale("$DefInvalid$");
+					$(this).addClass("invalid");
+				}
+
+				$(this).attr("data-path", def.path);
+				$(this).attr("data-displayname", def.title.toUpperCase());
+				$(this).contents().first()[0].textContent = def.title;
+				$(this).unbind("mouseenter").unbind("mouseleave");
+				tooltip(this, def.desc, "html", 600);
+
+				break;
+			}
+
+			if(!def) {
+				$(this).addClass("invalid");
+				$(this).unbind("mouseenter").unbind("mouseleave");
+
+				var title = $(this).attr("data-defid");
+				$(this).attr("data-displayname", title.toUpperCase());
+				$(this).contents().first()[0].textContent = title;
+				tooltip(this, Locale("$DefInvalid$"), "html", 600);
+			}
+		});
+
+		EventInfo("$ReloadComplete$");
+	}, function() { unlockModule(); });
+	return task;
 }
 
 function createCideToolbar() {}
@@ -778,134 +781,135 @@ const DEFFLAG_VEGETATION = 1, DEFFLAG_ANIMAL = 2, DEFFLAG_HIDEINMENUSYSTEM = 4,
 	  DEFFLAG_VEHICLES = 8;
 
 function loadDefinitionsFrom(path, fullpath, maindef, flags, skipError) {
-	if(!fullpath) {
-		var tpath = _sc.workpath(getCurrentWrapperIndex()) + "/" + path;
-		//Ggf. aus dem Clonkverzeichnis laden
-		if(!_sc.file(tpath).exists())
-			path = _sc.clonkpath()+"/"+path;
+	let iterator;
+	return Task.spawn(function*() {
+		if(!fullpath) {
+			var tpath = _sc.workpath(getCurrentWrapperIndex()) + "/" + path;
+			//Ggf. aus dem Clonkverzeichnis laden
+			if(!(yield OS.File.exists(tpath)))
+				path = _sc.clonkpath()+"/"+path;
+			else
+				path = tpath;
+		}
+		path = formatPath(path);
+
+		var defs = [], definition = new OCDefinition();
+		definition.path = formatPath(path);
+		if(flags)
+			definition.flags = flags;
 		else
-			path = tpath;
-	}
-	var f = new _sc.file(path);
+			flags = 0;
 
-	//Fehler beim Laden
-	if(!f.exists()) {
-		setLoadingCaption("$LoadingFailed$");
-		setLoadingSubCaption(sprintf(Locale("$LoadingFileNotFoundSub$"), f.path));
-		return;
-	}
+		//Definitionen anhand der Ordnerstruktur flaggen
+		// Ist zwar nicht das schoenste, aber da in OpenClonk mangels Menueauswahlsystem zumindest die Originalobjekte keine
+		// passende Kategorien haben, muss man sich wohl so behelfen. Custom-Objekte koennten ggf. durch eigene Windmill-Section geflagged werden (TODO)
+		// (Ist vielleicht aber auch angenehmer mittels Ordnerstruktur?)
+		switch(path.split("/").pop().toUpperCase()) {
+			case "VEGETATIONS.OCD":
+			case "VEGETATION.OCD":
+				flags |= DEFFLAG_VEGETATION;
+				break;
 
-	if(!f.isDirectory()) {
-		setLoadingCaption(sprintf(Locale("$LoadingOfDefFailed$"), maindef));
-		setLoadingSubCaption(sprintf(Locale("$LoadingFileIsNotUnpacked$"), f.path));
-		return;
-	}
+			case "ANIMALS.OCD":
+				flags |= DEFFLAG_ANIMAL;
+				break;
 
-	var defs = [], definition = new OCDefinition();
-	definition.path = formatPath(f.path);
-	if(flags)
-		definition.flags = flags;
-	else
-		flags = 0;
+			case "EFFECTS.OCD":
+			case "HELPERS.OCD":
+			case "HUD.OCD":
+			case "ICONS.OCD":
+			case "LIBRARIES.OCD":
+				flags |= DEFFLAG_HIDEINMENUSYSTEM;
+				break;
 
-	//Definitionen anhand der Ordnerstruktur flaggen
-	// Ist zwar nicht das schoenste, aber da in OpenClonk mangels Menueauswahlsystem zumindest die Originalobjekte keine
-	// passende Kategorien haben, muss man sich wohl so behelfen. Custom-Objekte koennten ggf. durch eigene Windmill-Section geflagged werden (TODO)
-	// (Ist vielleicht aber auch angenehmer mittels Ordnerstruktur?)
-	switch(f.leafName.toUpperCase()) {
-		case "VEGETATIONS.OCD":
-		case "VEGETATION.OCD":
-			flags |= DEFFLAG_VEGETATION;
-			break;
-
-		case "ANIMALS.OCD":
-			flags |= DEFFLAG_ANIMAL;
-			break;
-
-		case "EFFECTS.OCD":
-		case "HELPERS.OCD":
-		case "HUD.OCD":
-		case "ICONS.OCD":
-		case "LIBRARIES.OCD":
-			flags |= DEFFLAG_HIDEINMENUSYSTEM;
-			break;
-
-		case "VEHICLES.OCD":
-			flags |= DEFFLAG_VEHICLES;
-			break;
-	}
-
-	//Verzeichniselemente durchsuchen
-	var entries = f.directoryEntries;
-	while(entries.hasMoreElements()) {
-		var entry = entries.getNext().QueryInterface(Ci.nsIFile);
-
-		if(entry.leafName.search(/\.ocd$/) != -1) {
-			var subdefs = loadDefinitionsFrom(entry.path, true, maindef, flags, skipError);
-			if(subdefs)
-				defs = defs.concat(subdefs);
-			else if(!skipError)
-				return;
+			case "VEHICLES.OCD":
+				flags |= DEFFLAG_VEHICLES;
+				break;
 		}
 
-		if(entry.leafName.toUpperCase() == "DEFCORE.TXT")
-			definition.defcore = parseINIArray(readFile(entry, true));
+		//Verzeichniselemente durchsuchen
+		try { iterator = new OS.File.DirectoryIterator(path); } catch(e) {
+			setLoadingCaption("$LoadingFailed$");
+			setLoadingSubCaption("An Error occured while loading " + path);
+			log(e);
+			return;
+		}
+		
+		//setLoadingSubCaption(path);
 
-		//Stringtables fuer Name/Beschreibung auslesen (Englische StringTables als Fallback verwenden)
-		if(entry.leafName == Locale("StringTbl$ClonkLangPrefix$.txt", -1) || entry.leafName == "StringTblUS.txt") {
-			if(definition.title)
-				if(entry.leafName != Locale("StringTbl$ClonkLangPrefix$.txt", -1))
+		while(true) {
+			let entry;
+			try { entry = yield iterator.next(); } catch(e) { break; }
+
+			if(entry.name.search(/\.ocd$/) != -1) {
+				var subdefs = yield loadDefinitionsFrom(entry.path, true, maindef, flags, skipError);
+				if(subdefs)
+					defs = defs.concat(subdefs);
+				else if(!skipError)
+					return;
+			}
+
+			if(entry.name.toUpperCase() == "DEFCORE.TXT")
+				definition.defcore = parseINIArray(yield OS.File.read(entry.path, {encoding: "utf-8"}));
+
+			//Stringtables fuer Name/Beschreibung auslesen (Englische StringTables als Fallback verwenden)
+			if(entry.name == Locale("StringTbl$ClonkLangPrefix$.txt", -1) || entry.name == "StringTblUS.txt") {
+				if(definition.title)
+					if(entry.name != Locale("StringTbl$ClonkLangPrefix$.txt", -1))
+						continue;
+
+				var stringtables = parseINIArray(yield OS.File.read(entry.path, {encoding: "utf-8"}));
+				if(!stringtables[0])
 					continue;
 
-			var stringtables = parseINIArray(readFile(entry, true));
-			if(!stringtables[0])
-				continue;
-
-			if(stringtables[0]["Name"])
-				definition.title = stringtables[0]["Name"];
-			if(stringtables[0]["Description"])
-				definition.desc = stringtables[0]["Description"];
-		}
-	}
-
-	if(definition.defcore != undefined) {
-		if(maindef && definition.defcore["DefCore"]) {
-			definitions[maindef].ids[definition.defcore["DefCore"]["id"]] = definition;
-
-			//Falls kein Titel vorhanden, ID als Fallback verwenden
-			if(!definition.title)
-				definition.title = definition.defcore["DefCore"]["id"];
-
-			//Windmilleigene Einstellungen
-			if(definition.defcore["Windmill"]) {
-				// MenuCategory:
-				//   Definiert, wo die Definition im Menuesystem angezeigt wird.
-				//   Moegliche Werte: Goals|Rules|Crew|Buildings|Vehicles|Material|Knowledge|Magic|BaseProduction|BaseMaterial|
-				//  			   Vegetation|InEarth|Animals|Nest|Environment
-				definition.menu_categeory = definition.defcore["Windmill"]["MenuCategory"];
-
-				// HideInMenu:
-				//   Falls true, wird die Definition im Menuesystem nicht angezeigt
-				if(definition.defcore["Windmill"]["HideInMenu"]) {
-					if(parseINIValue(definition.defcore["Windmill"]["HideInMenu"], "bool", false))
-						definition.flags |= DEFFLAG_HIDEINMENUSYSTEM;
-					else if(definition.flags & DEFFLAG_HIDEINMENUSYSTEM)
-						definition.flags ^= DEFFLAG_HIDEINMENUSYSTEM;
-				}
-
-				// NoAutoSort:
-				//   Falls true, wird nur MenuCategory zur Sortierung verwendet. Standardwert: true (wenn MenuCategory nicht undefined)
-				definition.no_auto_sort = parseINIValue(definition.defcore["Windmill"]["NoAutoSort"], "bool", true);
-
-				// MaxMenuSelect:
-				//   Gibt die Maximalanzahl fuer die jeweilige Definition an. Standardwert: 100.
-				definition.max_menu_select = parseINIValue(definition.defcore["Windmill"]["MaxMenuSelect"], "int", 100);
+				if(stringtables[0]["Name"])
+					definition.title = stringtables[0]["Name"];
+				if(stringtables[0]["Description"])
+					definition.desc = stringtables[0]["Description"];
 			}
 		}
-		defs.push(definition);
-	}
 
-	return defs;
+		iterator.close();
+
+		if(definition.defcore != undefined) {
+			if(maindef && definition.defcore["DefCore"]) {
+				definitions[maindef].ids[definition.defcore["DefCore"]["id"]] = definition;
+
+				//Falls kein Titel vorhanden, ID als Fallback verwenden
+				if(!definition.title)
+					definition.title = definition.defcore["DefCore"]["id"];
+
+				//Windmilleigene Einstellungen
+				if(definition.defcore["Windmill"]) {
+					// MenuCategory:
+					//   Definiert, wo die Definition im Menuesystem angezeigt wird.
+					//   Moegliche Werte: Goals|Rules|Crew|Buildings|Vehicles|Material|Knowledge|Magic|BaseProduction|BaseMaterial|
+					//  			   Vegetation|InEarth|Animals|Nest|Environment
+					definition.menu_categeory = definition.defcore["Windmill"]["MenuCategory"];
+
+					// HideInMenu:
+					//   Falls true, wird die Definition im Menuesystem nicht angezeigt
+					if(definition.defcore["Windmill"]["HideInMenu"]) {
+						if(parseINIValue(definition.defcore["Windmill"]["HideInMenu"], "bool", false))
+							definition.flags |= DEFFLAG_HIDEINMENUSYSTEM;
+						else if(definition.flags & DEFFLAG_HIDEINMENUSYSTEM)
+							definition.flags ^= DEFFLAG_HIDEINMENUSYSTEM;
+					}
+
+					// NoAutoSort:
+					//   Falls true, wird nur MenuCategory zur Sortierung verwendet. Standardwert: true (wenn MenuCategory nicht undefined)
+					definition.no_auto_sort = parseINIValue(definition.defcore["Windmill"]["NoAutoSort"], "bool", true);
+
+					// MaxMenuSelect:
+					//   Gibt die Maximalanzahl fuer die jeweilige Definition an. Standardwert: 100.
+					definition.max_menu_select = parseINIValue(definition.defcore["Windmill"]["MaxMenuSelect"], "int", 100);
+				}
+			}
+			defs.push(definition);
+		}
+
+		return defs;
+	});
 }
 
 class OCDefinition {
@@ -948,14 +952,14 @@ function getUnsavedFiles() {
 	for(let index in sessions)
 		if(sessions[index])
 			if(true) //Check ob ungespeicherte Aenderungen vorhanden sind
-				files.push({ filepath: sessions[id].f.path, index, module: window });
+				files.push({ filepath: sessions[id].path, index, module: window });
 
 	return files;
 }
 
 function saveFileByPath(path) {
 	for(var id in sessions) {
-		if(sessions[id].f.path == path)
+		if(sessions[id].path == path)
 			return saveFile(id);
 	}
 

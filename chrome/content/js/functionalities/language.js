@@ -34,8 +34,7 @@ function readLanguageInfo(path) {
 	});
 }
 
-//Sprache aktualisieren
-hook("load", function() {
+function updateLocalizaiton() {
 	var lgreplace = $(document.documentElement).html().match(/\$[a-zA-Z0-9_]+?\$/g);
 	if(!lgreplace)
 		return;
@@ -51,4 +50,4 @@ hook("load", function() {
 	}
 	
 	$(document.documentElement).html(doccode);
-});
+}

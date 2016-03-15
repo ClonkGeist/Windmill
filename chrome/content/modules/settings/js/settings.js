@@ -16,27 +16,28 @@ $(window).ready(function() {
 				$(this).find(".view-directory-path").text(getConfigData("CIDE", "ExtProg_"+type));
 		});
 
-		var f = _sc.file(_sc.chpath+"/content/locale");
-		if(!f.exists() || !f.isDirectory())
-			return;
+		let iterator;
+		Task.spawn(function*() {
+			iterator = new OS.File.DirectoryIterator(_sc.chpath+"/content/locale");
+			let i = 0, entry, text;
+			while(true) {
+				entry = yield iterator.next();
+				if(!entry.isDir)
+					continue;
 
-		//Verzeichnisse einzelnd untersuchen
-		var entries = f.directoryEntries, i = 0;
-		while(entries.hasMoreElements()) {
-			var entry = entries.getNext().QueryInterface(Ci.nsIFile);
-			if(!entry.isDirectory())
-				continue;
+				try { text = yield OS.File.read(entry.path+"/language.ini", {encoding: "utf-8"}); } catch(e) { continue; }
 
-			var f = _sc.file(entry.path+"/language.ini");
-			if(!f.exists())
-				continue;
-
-			var parser = _sc.inifact().createINIParser(f);
-			$("#languageselection").append('<menuitem label="'+parser.getString("Head", "Lang")+' - '+parser.getString("Head", "Name")+'"  value="'+entry.leafName+'" />');
-			if(entry.leafName == getConfigData("Global", "Language"))
-				$("#languageselection").parent().prop("selectedIndex", i);
-			++i;
-		}
+				let parser = parseINIArray(text);
+				$("#languageselection").append('<menuitem label="'+parser["Head"]["Lang"]+' - '+parser["Head"]["Name"]+'" value="'+entry.name+'" />');
+				if(entry.name == getConfigData("Global", "Language"))
+					$("#languageselection").parent()[0].selectedIndex = i;
+				++i;
+			}
+		}).then(null, function(reason) {
+			iterator.close();
+			if(reason != StopIteration)
+				throw reason;
+		});
 
 		//KeyBindings auflisten
 		var keybindings = _mainwindow.customKeyBindings, current_prefix;
@@ -280,11 +281,14 @@ function saveSettings() {
 
 		setConfigData(sect, key, val);
 	});
-	saveConfig();
-	_mainwindow.saveKeyBindings();
-	EventInfo("$EI_Saved$", -1);
-	if(changeNeedsRestart)
-		$("#restartBar").addClass("active");
+	Task.spawn(function*() {
+		yield saveConfig();
+		yield _mainwindow.saveKeyBindings();
+	}).then(function() {
+		EventInfo("$EI_Saved$", -1);		
+		if(changeNeedsRestart)
+			$("#restartBar").addClass("active");
+	});
 }
 
 function filePickerOptions(id) {

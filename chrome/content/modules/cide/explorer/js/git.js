@@ -186,13 +186,16 @@ function openGitCommitDialog() {
 			onclick: function(e, btn, _self) {
 				if(!$(_self.element).find("#git-files .dlg-list-item").length || !$(_self.element).find("#git_commitmsg").val())
 					return e.stopImmediatePropagation();
-				writeFile(_sc.file(_sc.profd+"/windmilltmpcommit.txt"), $(_self.element).find("#git_commitmsg").val(), true);
-				var args = ["-C", path, "commit", "-F", _sc.profd+"/windmilltmpcommit.txt"];
-				getAppByID("git").create(args, 0x1, function() {
-					EventInfo("$EI_Commited$");
-				}, function(data) {
-					logToGitConsole(data);
-				});
+
+				OS.File.writeAtomic(_sc.profd+"/windmilltmpcommit.txt", $(_self.element).find("#git_commitmsg").val(), {encoding: "utf-8"})
+					.then(function() {
+						var args = ["-C", path, "commit", "-F", _sc.profd+"/windmilltmpcommit.txt"];
+						getAppByID("git").create(args, 0x1, function() {
+							EventInfo("$EI_Commited$");
+						}, function(data) {
+							logToGitConsole(data);
+						});
+					});
 			}
 		}, "cancel"]});
 	
