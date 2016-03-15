@@ -163,17 +163,17 @@ function addScript(path, lang, index, path, fShow) {
 	}
 
 	setLoadingCaption("$LoadingReadScenarioData$", index);
-	sessions[index] = { f: {path}, path };
+	sessions[index] = { path };
 
 	//Definitionen laden
 	var loadingdefs = [], scenariodefs = [];
 	Task.spawn(function*() {
 		let text = yield OS.File.read(path, {encoding: "utf-8"});
-		let scendata = parseINIArray(text);
+		let scendata = parseINIArray(text), def;
 		sessions[index].scendata = scendata;
 
 		for(var key in scendata["Definitions"]) {
-			var def = scendata["Definitions"][key];
+			def = scendata["Definitions"][key];
 
 			if(def)
 				scenariodefs.push(def);
@@ -195,15 +195,15 @@ function addScript(path, lang, index, path, fShow) {
 		sessions[index].loadingdefs = loadingdefs;
 		sessions[index].scenariodefs = scenariodefs;
 
-		while(true) {
-			let def = sessions[index].loadingdefs.pop();
+		while(def = sessions[index].loadingdefs.pop()) {
 			setLoadingCaption("$LoadingDefFrom$: " + def);
 			definitions[def] = { ids: [] };
 			definitions[def].d = yield loadDefinitionsFrom(def, 0, def);
 			if(!definitions[def].d)
-				return definitions[def] = undefined;
+				definitions[def] = undefined;
 		}
-	}).then(function() {
+		return text;
+	}).then(function(text) {
 		setLoadingCaption("$LoadingDone$");
 		setLoadingSubCaption("");
 		getWrapper(".navigation, .settings-page-container", index).addClass("ready");
@@ -300,8 +300,11 @@ function addScript(path, lang, index, path, fShow) {
 }
 
 function saveFile(index) {
-	writeFile(sessions[index].f, generateScenarioTxt(index));
-	EventInfo("$EI_Saved$", -1);
+	let promise = OS.File.writeAtomic(sessions[index].path, generateScenarioTxt(index), {encoding: "utf-8"});
+	promise.then(function() {
+		EventInfo("$EI_Saved$", -1);
+	});
+	return promise;
 }
 
 function getScenarioValue(obj) {
@@ -382,54 +385,60 @@ function generateScenarioTxt(index) {
 function reloadDefinitions() {
 	closeAddingOverlay(getCurrentWrapperIndex());
 
-	for(var def in definitions) {
-		definitions[def] = { ids: [] };
-		definitions[def].d = loadDefinitionsFrom(def, 0, def, 0, true);
-		if(!definitions[def].d)
-			EventInfo($(getWrapper(".loadingPage-subCaption").text()));
-	}
-
-	$(".definition-selection-item").each(function() {
-		if($(this).parents(".deflist-adding-overlay")[0])
-			return;
-
-		var index = parseInt($(this).parents(".scenario-settings").attr("id").replace("scensettings-session-", ""));
-		var scenariodefs = sessions[index].scenariodefs;
-		for(var i = 0; i < scenariodefs.length; i++) {
-			var def = definitions[scenariodefs[i]].ids[$(this).attr("data-defid")];
-			if(!def)
-				continue;
-
-			if(!def.invalid && $(this).hasClass("invalid")) {
-				def.invalid = false;
-				$(this).removeClass("invalid");
-			}
-			else if(def.invalid) {
-				def.desc = Locale("$DefInvalid$");
-				$(this).addClass("invalid");
-			}
-
-			$(this).attr("data-path", def.path);
-			$(this).attr("data-displayname", def.title.toUpperCase());
-			$(this).contents().first()[0].textContent = def.title;
-			$(this).unbind("mouseenter").unbind("mouseleave");
-			tooltip(this, def.desc, "html", 600);
-
-			break;
-		}
-
-		if(!def) {
-			$(this).addClass("invalid");
-			$(this).unbind("mouseenter").unbind("mouseleave");
-
-			var title = $(this).attr("data-defid");
-			$(this).attr("data-displayname", title.toUpperCase());
-			$(this).contents().first()[0].textContent = title;
-			tooltip(this, Locale("$DefInvalid$"), "html", 600);
+	let task = Task.spawn(function*() {
+		lockModule("Reloading...");
+		for(var def in definitions) {
+			definitions[def] = { ids: [] };
+			definitions[def].d = yield loadDefinitionsFrom(def, 0, def, 0, true);
+			if(!definitions[def].d)
+				EventInfo($(getWrapper(".loadingPage-subCaption").text()));
 		}
 	});
+	task.then(function() {
+		unlockModule();
+		$(".definition-selection-item").each(function() {
+			if($(this).parents(".deflist-adding-overlay")[0])
+				return;
 
-	EventInfo("$ReloadComplete$");
+			var index = parseInt($(this).parents(".scenario-settings").attr("id").replace("scensettings-session-", ""));
+			var scenariodefs = sessions[index].scenariodefs;
+			for(var i = 0; i < scenariodefs.length; i++) {
+				var def = definitions[scenariodefs[i]].ids[$(this).attr("data-defid")];
+				if(!def)
+					continue;
+
+				if(!def.invalid && $(this).hasClass("invalid")) {
+					def.invalid = false;
+					$(this).removeClass("invalid");
+				}
+				else if(def.invalid) {
+					def.desc = Locale("$DefInvalid$");
+					$(this).addClass("invalid");
+				}
+
+				$(this).attr("data-path", def.path);
+				$(this).attr("data-displayname", def.title.toUpperCase());
+				$(this).contents().first()[0].textContent = def.title;
+				$(this).unbind("mouseenter").unbind("mouseleave");
+				tooltip(this, def.desc, "html", 600);
+
+				break;
+			}
+
+			if(!def) {
+				$(this).addClass("invalid");
+				$(this).unbind("mouseenter").unbind("mouseleave");
+
+				var title = $(this).attr("data-defid");
+				$(this).attr("data-displayname", title.toUpperCase());
+				$(this).contents().first()[0].textContent = title;
+				tooltip(this, Locale("$DefInvalid$"), "html", 600);
+			}
+		});
+
+		EventInfo("$ReloadComplete$");
+	}, function() { unlockModule(); });
+	return task;
 }
 
 function createCideToolbar() {}
@@ -772,64 +781,52 @@ const DEFFLAG_VEGETATION = 1, DEFFLAG_ANIMAL = 2, DEFFLAG_HIDEINMENUSYSTEM = 4,
 	  DEFFLAG_VEHICLES = 8;
 
 function loadDefinitionsFrom(path, fullpath, maindef, flags, skipError) {
-	if(!fullpath) {
-		var tpath = _sc.workpath(getCurrentWrapperIndex()) + "/" + path;
-		//Ggf. aus dem Clonkverzeichnis laden
-		if(!_sc.file(tpath).exists())
-			path = _sc.clonkpath()+"/"+path;
-		else
-			path = tpath;
-	}
-	path = formatPath(path);
-	/*//Fehler beim Laden
-	if(!f.exists()) {
-		setLoadingCaption("$LoadingFailed$");
-		setLoadingSubCaption(sprintf(Locale("$LoadingFileNotFoundSub$"), f.path));
-		return;
-	}
-
-	if(!f.isDirectory()) {
-		setLoadingCaption(sprintf(Locale("$LoadingOfDefFailed$"), maindef));
-		setLoadingSubCaption(sprintf(Locale("$LoadingFileIsNotUnpacked$"), f.path));
-		return;
-	}*/
-
-	var defs = [], definition = new OCDefinition();
-	definition.path = formatPath(path);
-	if(flags)
-		definition.flags = flags;
-	else
-		flags = 0;
-
-	//Definitionen anhand der Ordnerstruktur flaggen
-	// Ist zwar nicht das schoenste, aber da in OpenClonk mangels Menueauswahlsystem zumindest die Originalobjekte keine
-	// passende Kategorien haben, muss man sich wohl so behelfen. Custom-Objekte koennten ggf. durch eigene Windmill-Section geflagged werden (TODO)
-	// (Ist vielleicht aber auch angenehmer mittels Ordnerstruktur?)
-	switch(path.split("/").pop().toUpperCase()) {
-		case "VEGETATIONS.OCD":
-		case "VEGETATION.OCD":
-			flags |= DEFFLAG_VEGETATION;
-			break;
-
-		case "ANIMALS.OCD":
-			flags |= DEFFLAG_ANIMAL;
-			break;
-
-		case "EFFECTS.OCD":
-		case "HELPERS.OCD":
-		case "HUD.OCD":
-		case "ICONS.OCD":
-		case "LIBRARIES.OCD":
-			flags |= DEFFLAG_HIDEINMENUSYSTEM;
-			break;
-
-		case "VEHICLES.OCD":
-			flags |= DEFFLAG_VEHICLES;
-			break;
-	}
-
 	let iterator;
 	return Task.spawn(function*() {
+		if(!fullpath) {
+			var tpath = _sc.workpath(getCurrentWrapperIndex()) + "/" + path;
+			//Ggf. aus dem Clonkverzeichnis laden
+			if(!(yield OS.File.exists(tpath)))
+				path = _sc.clonkpath()+"/"+path;
+			else
+				path = tpath;
+		}
+		path = formatPath(path);
+
+		var defs = [], definition = new OCDefinition();
+		definition.path = formatPath(path);
+		if(flags)
+			definition.flags = flags;
+		else
+			flags = 0;
+
+		//Definitionen anhand der Ordnerstruktur flaggen
+		// Ist zwar nicht das schoenste, aber da in OpenClonk mangels Menueauswahlsystem zumindest die Originalobjekte keine
+		// passende Kategorien haben, muss man sich wohl so behelfen. Custom-Objekte koennten ggf. durch eigene Windmill-Section geflagged werden (TODO)
+		// (Ist vielleicht aber auch angenehmer mittels Ordnerstruktur?)
+		switch(path.split("/").pop().toUpperCase()) {
+			case "VEGETATIONS.OCD":
+			case "VEGETATION.OCD":
+				flags |= DEFFLAG_VEGETATION;
+				break;
+
+			case "ANIMALS.OCD":
+				flags |= DEFFLAG_ANIMAL;
+				break;
+
+			case "EFFECTS.OCD":
+			case "HELPERS.OCD":
+			case "HUD.OCD":
+			case "ICONS.OCD":
+			case "LIBRARIES.OCD":
+				flags |= DEFFLAG_HIDEINMENUSYSTEM;
+				break;
+
+			case "VEHICLES.OCD":
+				flags |= DEFFLAG_VEHICLES;
+				break;
+		}
+
 		//Verzeichniselemente durchsuchen
 		try { iterator = new OS.File.DirectoryIterator(path); } catch(e) {
 			setLoadingCaption("$LoadingFailed$");
@@ -837,6 +834,9 @@ function loadDefinitionsFrom(path, fullpath, maindef, flags, skipError) {
 			log(e);
 			return;
 		}
+		
+		//setLoadingSubCaption(path);
+
 		while(true) {
 			let entry;
 			try { entry = yield iterator.next(); } catch(e) { break; }
@@ -952,14 +952,14 @@ function getUnsavedFiles() {
 	for(let index in sessions)
 		if(sessions[index])
 			if(true) //Check ob ungespeicherte Aenderungen vorhanden sind
-				files.push({ filepath: sessions[id].f.path, index, module: window });
+				files.push({ filepath: sessions[id].path, index, module: window });
 
 	return files;
 }
 
 function saveFileByPath(path) {
 	for(var id in sessions) {
-		if(sessions[id].f.path == path)
+		if(sessions[id].path == path)
 			return saveFile(id);
 	}
 
