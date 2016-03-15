@@ -4,10 +4,32 @@
 	"scss": "global/global.css"
 },
 {
+	"name": "icons",
+	"scss": "global/icomoon.css"
+},
+{
+	"name": "explorer",
+	"scss": "global/explorer.css"
+},
+{
 	"name": "mainFrame",
 	"scss": "modules/main.css",
 	"cssTarget": "styles/main.css",
 	"observe": "main",
 	"require": "global"
+},
+{
+	"name": "cideExplorer",
+	"scss": "modules/cideExplorer.css",
+	"cssTarget": "content/modules/cide/explorer/explorer.css",
+	"observe": "CIDE Explorer",
+	"require": "global|explorer|icons"
+},
+{
+	"name": "cbExplorer",
+	"scss": "modules/cbExplorer.css",
+	"cssTarget": "content/modules/cbridge/cbexplorer/cbexplorer.css",
+	"observe": "CBridge Explorer",
+	"require": "global|explorer|icons"
 }
 ]

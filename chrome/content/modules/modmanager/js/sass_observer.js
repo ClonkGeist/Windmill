@@ -26,19 +26,22 @@ function generateCssFile(index) {
 var subjects = [];
 function observeScssFile(index) {
 	if(!alreadySubject(index))
-		subjects.push(ssDefs[index]);
+		if(ssDefs[index].fScss)
+			subjects.push(ssDefs[index]);
+		else
+			log("to observe scss file hasn't been found");
 }
 
 hook("load", function() {
 	var f = _sc.file(_sc.chpath+"/styles/scss/stylesheet_defs.json");
 
 	if(!f.exists())
-		return log("styleshett deflist not found");
+		return log("SS Obsever: styleshett deflist not found");
 	
 	var str = readFile(f);
 	
 	if(!str || !str.length)
-		return log("styleshett deflist not viable");
+		return log("SS Obsever: styleshett deflist not viable");
 	
 	ssDefs = JSON.parse(str);
 	
@@ -57,6 +60,8 @@ hook("load", function() {
 		else
 			ssDefs[i].fScss = false;
 	}
+	
+	showObj2(ssDefs, 1);
 	
 	// manually add main-frame as it has no addModule-Callback
 	loadModuleSheets("main");
@@ -124,13 +129,14 @@ function reloadStylesheet(fScss, def) {
 			
 			if(module) {
 				var u = module.domwu;
-				var uri = _mainwindow._sc.ioserv().newURI(OS.Path.toFileURI(_sc.chpath + "/" + def.cssTarget), null, null);
+				var uri = module._sc.ioserv().newURI(OS.Path.toFileURI(_sc.chpath + "/" + def.cssTarget), null, null);
+				log("Sass: Write file: " + _sc.chpath + "/" + def.cssTarget);
 				u.removeSheet(uri, u.AGENT_SHEET);
 				writeFile(_sc.file(_sc.chpath + "/" + def.cssTarget), result.text, true);
 				u.loadSheet(uri, u.AGENT_SHEET);
 			}
 			else {
-				writeFile(_sc.file(def.cssTarget), result.text, true);
+				writeFile(_sc.file(_sc.chpath + "/" + def.cssTarget), result.text, true);
 			}
 		}
 	});
