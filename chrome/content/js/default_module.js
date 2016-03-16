@@ -559,31 +559,44 @@ function writeFile(path, text, fCreateIfNonexistent) {
 	fstr.close();
 }
 
-function computeFileHash(path) {
-	//Letzte Zeile macht seit FF46.0a2 Probleme (Error) da alter Code
-	//Ist sowieso fraglich ob wir die Funktion nutzen; Da wir mit Clonk zu tun haben waere CRC32 fuer die Zwecke sinnvoller?
+function OSFileRecursive(sourcepath, destpath, callback, operation = "copy") {
+	let task = Task.spawn(function*() {
+		let f = new _sc.file(sourcepath);
+		if(!f.isDirectory()) {
+			try { yield OS.File[operation](sourcepath, destpath); }
+			catch(e) {
+				let file = yield OS.File.openUnique(destpath, { humanReadable: true });
+				yield OS.File[operation](sourcepath, file.path);
+			}
+			return;
+		}
+		else {
+			let counter = 0, extra = "";
+			while(true) {
+				try { yield OS.File.makeDir(destpath+extra, {ignoreExisting: false}); }
+				catch(e) {
+					extra = " " + (++counter);
+					return;
+				}
+				break;
+			}
+		}
+		
+		let entries = f.directoryEntries;
+		while(entries.hasMoreElements()) {
+			let entry = entries.getNext().QueryInterface(Ci.nsIFile);
+
+			if(callback)
+				callback(entry.leafName, entry.path);
+
+			yield OSFileRecursive(entry.path, destpath+"/"+entry.leafName, callback, operation);
+		}
+	});
+	task.then(null, function(reason) {
+		log(reason);
+	});
 	
-	/*var f = new _sc.file(path);
-	var istream = new _sc.ifstream(f, 0x01, 0o444, false);
-
-	var ch = new _sc.crptohash();
-	ch.init(ch.MD5);
-
-	//Ganze Datei lesen
-	const PR_UINT32_MAX = 0xffffffff;
-	ch.updateFromStream(istream, PR_UINT32_MAX);
-
-	//Binaerdaten holen
-	var hash = ch.finish(false);
-
-	// return the two-digit hexadecimal code for a byte
-	function toHexString(charCode)
-	{
-	  return ("0" + charCode.toString(16)).slice(-2);
-	}
-
-	// convert the binary hash data to a hex string.
-	return [toHexString(hash.charCodeAt(i)) for(i in hash)].join("");*/
+	return task;
 }
 
 function removeSubFrames() {

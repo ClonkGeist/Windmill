@@ -138,7 +138,7 @@ function createTreeElement(tree, label, container, open, img, filename, special)
 			//Objekt befindet sich bereits im root
 			if($(d_obj).parent()[0] == $(MAINTREE_OBJ)[0])
 				return false;
-			
+
 			//Pfad vorher
 			var d_path = _sc.workpath(d_obj) + getTreeObjPath(d_obj);
 			var e_path = _sc.workpath(e.target);
@@ -156,12 +156,13 @@ function createTreeElement(tree, label, container, open, img, filename, special)
 			var d_path = _sc.workpath(d_obj) + getTreeObjPath(d_obj);
 			var e_path = _sc.workpath(getTreeCntById(e_id)) + getTreeObjPath(getTreeCntById(e_id));
 		}
-		
-		var f = _sc.file(d_path), nDir = _sc.file(e_path);
-		if(!f.exists() || !nDir.exists() || !nDir.isDirectory())
-			return false;
 
-		var containerloaded = !!getTreeCntById(e_id).children("li")[0];
+		/*var f = _sc.file(d_path), nDir = _sc.file(e_path);
+		if(!f.exists() || !nDir.exists() || !nDir.isDirectory())
+			return false;*/
+
+		var containerloaded = !!getTreeCntById(e_id).children("li")[0], fname = d_path.split("/").pop();
+		e_path += "/"+fname;
 
 		//Container öffnen
 		if(e_id >= 0)
@@ -169,7 +170,7 @@ function createTreeElement(tree, label, container, open, img, filename, special)
 		
 		//Bei Druck der Steuerungstaste kopieren
 		if(e.ctrlKey || getConfigData("Explorer", "CopyOnDragDrop")) {
-			var t = f.leafName.split("."), fext = '.'+t[t.length-1];
+			/*var t = f.leafName.split("."), fext = '.'+t[t.length-1];
 			t.pop();
 			if(t.length)
 				var nofext = t.join(".");
@@ -195,9 +196,47 @@ function createTreeElement(tree, label, container, open, img, filename, special)
 			
 			if(containerloaded)
 				createTreeElement(cont, fname, !!d_cnt[0], false, img);
-			sortTreeContainerElements(cont);
+			sortTreeContainerElements(cont);*/
+			var t = fname.split("."), fext = "."+t[t.length-1];
+			t.pop();
+			if(t.length)
+				var nofext = t.join(".");
+			else {
+				var nofext = fname;
+				fext = "";
+			} 
+
+			let task = Task.spawn(function*() {
+				let result = yield OS.File.openUnique(e_path, { humanReadable: true });
+				log("RESULT:");
+				log(result);
+				yield OS.File.copy(d_path, result.path);
+			});
+			task.then(function() {
+				var img = $(d_obj).find("image").attr("src");
+				var cont;
+				
+				if(e_id >= 0)
+					cont = getTreeCntById(e_id);
+				else
+					cont = MAINTREE_OBJ;
+				
+				if(containerloaded)
+					createTreeElement(cont, fname, !!d_cnt[0], false, img);
+				sortTreeContainerElements(cont);
+			}, function(reason) {
+				EventInfo("An error occured while trying to copy the file.");
+				log(reason);
+			});
 		}
 		else {
+			let promise = OS.File.move(d_path, e_path);
+			promise.then(function() {
+				
+			}, function(reason) {
+				EventInfo("An error occured while trying to move the file.");
+				log(reason);
+			});
 			//Datei verschieben
 			f.renameTo(nDir,f.leafName);
 
