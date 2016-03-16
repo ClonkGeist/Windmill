@@ -103,7 +103,7 @@ li:focus *, li:focus {
   background-color: rgba(102, 167, 247, 0.5); }
 
 /* special tree items */
-.treeelm_container_empty {
+.treeelm-container-empty {
   color: #444;
   font-style: italic; }
 

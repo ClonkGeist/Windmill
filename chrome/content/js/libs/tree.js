@@ -33,11 +33,13 @@ function createTreeElement(tree, label, container, open, img, filename, special)
 	else
 		filename = '';
 	
-	$(tree).append('<li id="treeelm-'+TREE_ELM_ID+'" tabindex="0" name="'+label.toLowerCase()+'" class="treeobj treeelm'+(container?' treecontainer':'')+' '+special+'" xmlns="http://www.w3.org/1999/xhtml"' +
-	drag+filename+'>'+imgTag+' <description>' + label + '</description></li>');
+	$(tree).append(`<li id="treeelm-${TREE_ELM_ID}" tabindex="0" name="${label.toLowerCase()}" 
+		class="treeobj treeelm${container?' treecontainer':''} ${special}" xmlns="http://www.w3.org/1999/xhtml"
+		${drag}${filename}>${imgTag} <description>${label}</description></li>`);
 	if(container)
 		$(tree).append('<ul id="treecnt-'+TREE_ELM_ID+'" class="treeobj treecnt '+special+'" xmlns="http://www.w3.org/1999/xhtml"></ul>');
-	
+	if(!special)
+		$(tree).children(".treeelm-container-empty").remove();
 	var elm = $("#treeelm-"+TREE_ELM_ID)[0],
 		cnt = $("#treecnt-"+TREE_ELM_ID)[0];
 	
@@ -170,33 +172,6 @@ function createTreeElement(tree, label, container, open, img, filename, special)
 		
 		//Bei Druck der Steuerungstaste kopieren
 		if(e.ctrlKey || getConfigData("Explorer", "CopyOnDragDrop")) {
-			/*var t = f.leafName.split("."), fext = '.'+t[t.length-1];
-			t.pop();
-			if(t.length)
-				var nofext = t.join(".");
-			else {
-				var nofext = f.leafName;
-				fext = '';
-			}
-			var fname = f.leafName, i = 1;
-			while(_sc.file(nDir.path+"/"+fname).exists()) {
-				fname = nofext + " - " + i + fext;
-				i++;
-			}
-			
-			f.copyTo(nDir, fname);
-			
-			var img = $(d_obj).find("image").attr("src");
-			var cont;
-			
-			if(e_id >= 0)
-				cont = getTreeCntById(e_id);
-			else
-				cont = MAINTREE_OBJ;
-			
-			if(containerloaded)
-				createTreeElement(cont, fname, !!d_cnt[0], false, img);
-			sortTreeContainerElements(cont);*/
 			var t = fname.split("."), fext = "."+t[t.length-1];
 			t.pop();
 			if(t.length)
@@ -206,11 +181,10 @@ function createTreeElement(tree, label, container, open, img, filename, special)
 				fext = "";
 			} 
 
+			lockModule();
+			let fpath;
 			let task = Task.spawn(function*() {
-				let result = yield OS.File.openUnique(e_path, { humanReadable: true });
-				log("RESULT:");
-				log(result);
-				yield OS.File.copy(d_path, result.path);
+				fpath = yield OSFileRecursive(d_path, e_path);
 			});
 			task.then(function() {
 				var img = $(d_obj).find("image").attr("src");
@@ -221,42 +195,46 @@ function createTreeElement(tree, label, container, open, img, filename, special)
 				else
 					cont = MAINTREE_OBJ;
 				
+				fname = fpath.split("/").pop();
 				if(containerloaded)
-					createTreeElement(cont, fname, !!d_cnt[0], false, img);
+					createTreeElement(cont, fname, !!d_cnt[0], false, img, fname);
 				sortTreeContainerElements(cont);
+				unlockModule();
 			}, function(reason) {
 				EventInfo("An error occured while trying to copy the file.");
 				log(reason);
+				unlockModule();
 			});
 		}
 		else {
-			let promise = OS.File.move(d_path, e_path);
+			//Datei verschieben
+			let promise = OSFileRecursive(d_path, e_path, null, "move");
+			lockModule();
 			promise.then(function() {
-				
+				//Elemente verschieben
+				if(containerloaded) {
+					if(e_id >= 0) {
+						$(d_obj).detach().appendTo(getTreeCntById(e_id));
+						if(d_cnt[0])
+							$(d_cnt).detach().appendTo(getTreeCntById(e_id));
+						sortTreeContainerElements(getTreeCntById(e_id));
+					}
+					else {
+						$(d_obj).detach().appendTo(MAINTREE_OBJ);
+						if(d_cnt[0])
+							$(d_cnt).detach().appendTo(MAINTREE_OBJ);
+						sortTreeContainerElements(MAINTREE_OBJ);
+					}
+				}
+				else
+					$(d_obj).remove();
+				unlockModule();
 			}, function(reason) {
 				EventInfo("An error occured while trying to move the file.");
 				log(reason);
+				unlockModule();
 			});
-			//Datei verschieben
-			f.renameTo(nDir,f.leafName);
 
-			//Elemente verschieben
-			if(containerloaded) {
-				if(e_id >= 0) {
-					$(d_obj).detach().appendTo(getTreeCntById(e_id));
-					if(d_cnt[0])
-						$(d_cnt).detach().appendTo(getTreeCntById(e_id));
-					sortTreeContainerElements(getTreeCntById(e_id));
-				}
-				else {
-					$(d_obj).detach().appendTo(MAINTREE_OBJ);
-					if(d_cnt[0])
-						$(d_cnt).detach().appendTo(MAINTREE_OBJ);
-					sortTreeContainerElements(MAINTREE_OBJ);
-				}
-			}
-			else
-				$(d_obj).remove();
 		}
 		
 		return;
@@ -475,6 +453,9 @@ function setupMaintree(obj) {
 }
 
 function setupTreeObj(obj) {
+	if($(obj).hasClass("no-selection"))
+		return;
+
 	//Events wie onclick, ondblclick bearbeiten
 	$(obj).click(function() {
 		if($(obj).find("textbox")[0])
@@ -608,7 +589,7 @@ function sortTreeContainerElements(obj) {
 	if(!$(cont)[0])
 		cont = MAINTREE_OBJ;
 	
-	aContElm = $(cont).children("li").toArray();
+	aContElm = $(cont).children("li:not(.no-selection)").toArray();
 	aContElm.sort(function(a,b) {
 		//Fileextensions nehmen
 		var t = getTreeItemFilename(a).split("."), fexta = t[t.length-1].toLowerCase();

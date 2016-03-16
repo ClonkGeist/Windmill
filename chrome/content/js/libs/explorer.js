@@ -404,12 +404,13 @@ function getFileExtensionPriority(extension) {
 }
 
 function createEmptyTemplate(container) {
-	createTreeElement(container, Locale("$treeelm_container_empty$"), false, false, false, false, "treeelm_container_empty");
+	createTreeElement(container, Locale("$treeelm_container_empty$"), false, false, false, false, "treeelm-container-empty");
+	
 	return true;
 }
 
 function onTreeObjRemove(obj_container) {
-	if(!obj_container.find("li").get(0))
+	if(!obj_container.find("li")[0])
 		createEmptyTemplate(obj_container);
 	
 	return true;

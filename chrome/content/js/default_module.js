@@ -559,25 +559,29 @@ function writeFile(path, text, fCreateIfNonexistent) {
 	fstr.close();
 }
 
-function OSFileRecursive(sourcepath, destpath, callback, operation = "copy") {
+function OSFileRecursive(sourcepath, destpath, callback, operation = "copy", noOverwrite = (operation == "copy")) {
+	//TODO: Overwrite vorschlagen
 	let task = Task.spawn(function*() {
-		let f = new _sc.file(sourcepath);
+		let f = new _sc.file(sourcepath), extra = "", file;
 		if(!f.isDirectory()) {
-			try { yield OS.File[operation](sourcepath, destpath); }
+			try { yield OS.File[operation](sourcepath, destpath, {noOverwrite}); }
 			catch(e) {
-				let file = yield OS.File.openUnique(destpath, { humanReadable: true });
-				yield OS.File[operation](sourcepath, file.path);
+				file = yield OS.File.openUnique(destpath, { humanReadable: true });
+				destpath = file.path;
+				yield OS.File[operation](sourcepath, destpath);
+				log(">> " + e);
 			}
-			return;
+			return destpath;
 		}
 		else {
-			let counter = 0, extra = "";
+			let counter = 0;
 			while(true) {
 				try { yield OS.File.makeDir(destpath+extra, {ignoreExisting: false}); }
 				catch(e) {
 					extra = " " + (++counter);
-					return;
+					continue;
 				}
+				destpath += extra;
 				break;
 			}
 		}
@@ -589,8 +593,10 @@ function OSFileRecursive(sourcepath, destpath, callback, operation = "copy") {
 			if(callback)
 				callback(entry.leafName, entry.path);
 
-			yield OSFileRecursive(entry.path, destpath+"/"+entry.leafName, callback, operation);
+			yield OSFileRecursive(entry.path, destpath+"/"+entry.leafName, callback, operation, noOverwrite);
 		}
+		
+		return destpath+extra;
 	});
 	task.then(null, function(reason) {
 		log(reason);
