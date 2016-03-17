@@ -1,9 +1,6 @@
 <?xml version="1.0"?>
 
-<?xml-stylesheet href="chrome://windmill/content/modules/cide/meshviewer/css/style.css" type="text/css"?>
-<?xml-stylesheet type="text/css" href="chrome://windmill/skin/colorpicker.css"?>
-<?xml-stylesheet href="chrome://windmill/skin/icomoon.css" type="text/css"?>
-<?xml-stylesheet href="chrome://windmill/skin/default_module.css" type="text/css"?>
+<?xml-stylesheet href="chrome://windmill/content/modules/cide/meshviewer/meshviewer.css" type="text/css"?>
 
 <window id="main" 
 		title="Meshviewer" 

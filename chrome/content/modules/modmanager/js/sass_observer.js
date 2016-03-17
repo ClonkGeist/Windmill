@@ -54,7 +54,8 @@ hook("load", function() {
 	setInterval(function() {
 		for(let i = 0; i < ssDefs.length; i++) {
 			let f = _sc.file(_sc.chpath+"/styles/scss/" + ssDefs[i].scss)
-			
+			if(!f.exists())
+				continue
 			if(f.lastModifiedTime !== ssDefs[i].modified) {
 				log("Sass: Scss-File modification detected: " + (ssDefs[i].name || ssDefs[i].index))
 				reloadStylesheet(f, ssDefs[i])
