@@ -549,6 +549,7 @@ function getUnsavedFiles(deck) {
 function openFileInDeck(file, fSideDeck) {
 	var t = file.leafName.split("."), fext = t[t.length-1].toLowerCase(); 
 	var deck = fSideDeck?sidedeck:maindeck;
+	var path = formatPath(file.path);
 
 	if(!file.exists())
 		return;
@@ -599,7 +600,7 @@ function openFileInDeck(file, fSideDeck) {
 			break;
 		case "ogg":
 		case "wav":
-			addAudioplayer(file);
+			addAudioplayer(path);
 			break;
 
 		default:
@@ -609,9 +610,9 @@ function openFileInDeck(file, fSideDeck) {
 
 var md_audioplayer = -1;
 
-function addAudioplayer(file) {
+function addAudioplayer(path) {
 	if(getConfigData("CIDE", "AU_Audio"))
-		return OpenFileWithProgram(file, getConfigData("CIDE", "ExtProg_Audio"));
+		return OpenFileWithProgram(path, getConfigData("CIDE", "ExtProg_Audio"));
 
 	var module = getModule(md_audioplayer, true);
 
@@ -623,16 +624,16 @@ function addAudioplayer(file) {
 			return warn("$err_loading_module$");
 	}
 
-	var t = file.leafName.split('.'), fext = t[t.length-1];
+	var t = path.split("/").pop().split('.'), fext = t[t.length-1];
 	var iconstr = "chrome://windmill/content/img/icon-fileext-"+fext+".png";
 
 	if(!module.contentWindow.readyState) {
 		module.contentWindow.addEventListener("load", function() {
-			this.loadFile(file, 0, true);
+			this.loadFile(path);
 		});
 	}
-	else if(!module.contentWindow.fileLoaded("audioplayer", file.path))
-		module.contentWindow.loadFile(file, 0, true);
+	else if(!module.contentWindow.fileLoaded("audioplayer", path))
+		module.contentWindow.loadFile(path);
 
 	$("#audioplayer").addClass("active");
 }
@@ -768,14 +769,9 @@ function OpenFileWithProgram(file, extprogstr) {
 	if(!extprogstr)
 		return warn("$err_no_external_program$");
 
-	var args = [file.path];
+	var args = [(typeof file == "string")?file:file.path];
 
 	var f = new _sc.file(extprogstr);
-	if(!f.exists())
-		return warn("$err_external_program_not_exist$");
-	if(!f.isExecutable())
-		return warn("$err_external_program_not_executable$");
-
 	var process = _sc.process(f);
 	process.run(false, args, args.length);
 

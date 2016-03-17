@@ -392,6 +392,19 @@ function Locale(str, prefix) {
 	return str;
 }
 
+function getClonkExecutablePath() {
+	//Alternative Executabledatei
+	var name = getConfigData("Global", "AlternativeApp");
+	if(!name) {
+		if(OS_TARGET == "WINNT")
+			name = "openclonk.exe";
+		else
+			name = "openclonk";
+	}
+
+	return _sc.clonkpath() + "/" + name;
+}
+
 var domWrapper;
 
 function displayDOM(el, lang) {
@@ -460,6 +473,8 @@ function parseINIArray(text) {
 			var key = line.match(/(.+?)=/)[1];
 			var value = line.match(/.+?=(.+)/)[1];
 
+			if(!data[current_section])
+				data[current_section] = [];
 			data[current_section][key] = value;
 		}
 	}
@@ -544,31 +559,50 @@ function writeFile(path, text, fCreateIfNonexistent) {
 	fstr.close();
 }
 
-function computeFileHash(path) {
-	//Letzte Zeile macht seit FF46.0a2 Probleme (Error) da alter Code
-	//Ist sowieso fraglich ob wir die Funktion nutzen; Da wir mit Clonk zu tun haben waere CRC32 fuer die Zwecke sinnvoller?
+function OSFileRecursive(sourcepath, destpath, callback, operation = "copy", noOverwrite = (operation == "copy")) {
+	//TODO: Overwrite vorschlagen
+	let task = Task.spawn(function*() {
+		let f = new _sc.file(sourcepath), extra = "", file;
+		if(!f.isDirectory()) {
+			try { yield OS.File[operation](sourcepath, destpath, {noOverwrite}); }
+			catch(e) {
+				file = yield OS.File.openUnique(destpath, { humanReadable: true });
+				destpath = file.path;
+				yield OS.File[operation](sourcepath, destpath);
+				log(">> " + e);
+			}
+			return destpath;
+		}
+		else {
+			let counter = 0;
+			while(true) {
+				try { yield OS.File.makeDir(destpath+extra, {ignoreExisting: false}); }
+				catch(e) {
+					extra = " " + (++counter);
+					continue;
+				}
+				destpath += extra;
+				break;
+			}
+		}
+		
+		let entries = f.directoryEntries;
+		while(entries.hasMoreElements()) {
+			let entry = entries.getNext().QueryInterface(Ci.nsIFile);
+
+			if(callback)
+				callback(entry.leafName, entry.path);
+
+			yield OSFileRecursive(entry.path, destpath+"/"+entry.leafName, callback, operation, noOverwrite);
+		}
+		
+		return destpath+extra;
+	});
+	task.then(null, function(reason) {
+		log(reason);
+	});
 	
-	/*var f = new _sc.file(path);
-	var istream = new _sc.ifstream(f, 0x01, 0o444, false);
-
-	var ch = new _sc.crptohash();
-	ch.init(ch.MD5);
-
-	//Ganze Datei lesen
-	const PR_UINT32_MAX = 0xffffffff;
-	ch.updateFromStream(istream, PR_UINT32_MAX);
-
-	//Binaerdaten holen
-	var hash = ch.finish(false);
-
-	// return the two-digit hexadecimal code for a byte
-	function toHexString(charCode)
-	{
-	  return ("0" + charCode.toString(16)).slice(-2);
-	}
-
-	// convert the binary hash data to a hex string.
-	return [toHexString(hash.charCodeAt(i)) for(i in hash)].join("");*/
+	return task;
 }
 
 function removeSubFrames() {

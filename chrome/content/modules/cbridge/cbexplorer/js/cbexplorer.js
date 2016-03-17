@@ -4,7 +4,7 @@ function initializeDirectory() {
 	unlockModule();
 }
 
-$(window).load(function() {	
+function explorerLoadWorkEnvironments() {
 	//Verzeichnis vorbereiten (c4group-explodes)
 	// TODO: CBExplorer soll keine C4Group-Explodes mehr im Rootverzeichnis machen! Es nimmt was es kriegen kann.
 	PrepareDirectory(_sc.clonkpath(), function() {
@@ -12,7 +12,9 @@ $(window).load(function() {
 
 		initializeDirectory();
 	});
+}
 
+$(window).load(function() {	
 	//Password input
 	$("#set-pwact").click(function() {
 		if($(this).hasClass("activated")) {

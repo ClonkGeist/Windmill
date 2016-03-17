@@ -28,7 +28,6 @@
 var cPkr,
 	players = [];
 hook("load", function() {
-	
 	cPkr = createColorPicker(document.getElementById("ap-clrpckr"));
 	
 	var image = new Image();
@@ -75,35 +74,35 @@ hook("load", function() {
 	
 	
 	//Spielerdatei aus Benutzerpfad rauslesen und in Liste eintragen
-	var dir = new _sc.file(_sc.env.get("APPDATA")+"/OpenClonk");
-	if(dir.exists()) {
-		var entries = dir.directoryEntries;
-		while(entries.hasMoreElements()) {
-			var entry = entries.getNext().QueryInterface(Ci.nsIFile);
-			var t = entry.leafName.split('.');
+	var iterator;
+	Task.spawn(function*() {
+		iterator = new OS.File.DirectoryIterator(_sc.env.get("APPDATA")+"/OpenClonk");
+		while(true) {
+			let entry = yield iterator.next();
+			let t = entry.name.split('.');
 			if(t.length == 1)
 				continue;
-			
+
 			if(t[t.length-1] == "ocp") {
 				var text, img, imgstr = "chrome://windmill/content/img/DefaultPlayer.png";
-				if(!entry.isDirectory()) {
-					var group = readC4GroupFile(entry);
+				if(!entry.isDir) {
+					var group = readC4GroupFile(_sc.file(entry.path));
 					text = group.getEntryByName("Player.txt").data.byte2str();
 					img = group.getEntryByName("BigIcon.png");
 					if(img)
 						imgstr = "data:image/png;base64,"+btoa(img.data.byte2str(true));
 				}
 				else {
-					text = readFile(entry.path+"/Player.txt");
-					if(_sc.file(entry.path+"/BigIcon.png").exists())
+					text = yield OS.File.read(entry.path+"/Player.txt", {encoding: "utf-8"});
+					if(yield OS.File.exists(entry.path+"/BigIcon.png"))
 						imgstr = "file://"+formatPath(entry.path)+"/BigIcon.png";
 				}
 				var sects = parseINI(text);
 				players.push(sects);
-				addPlayerlistItem(players.length - 1, entry.leafName, imgstr);
+				addPlayerlistItem(players.length - 1, entry.name, imgstr);
 			}
 		}
-	}
+	});
 });
 
 function addPlayerlistItem(id, filename, imgstr) {
@@ -215,51 +214,44 @@ function addNewPlayer() {
 	var clr = cPkr.getColor();
 	plr["Player"]["ColorDw"] = ((clr[0] << 16)|(clr[1] << 8)|clr[2]).toString();
 	
-	var dir = new _sc.file(_sc.env.get("APPDATA")+"/OpenClonk");
-	if(dir.exists()) {
-		var new_plrfile = new _sc.file(dir.path+"/"+plr["Player"]["Name"].replace(/[^a-zA-Z0-9_-]/, "_")+".ocp");
-		if(new_plrfile.exists()) {
-			//Fehlermeldung ausgeben
-			return;
-		}
-		
-		new_plrfile.createUnique(Ci.nsIFile.DIRECTORY_TYPE, 0o777);
-		var playertext = new _sc.file(new_plrfile.path+"/Player.txt"), text = "";
-		
+	Task.spawn(function*() {
+		let plrleafname = plr["Player"]["Name"].replace(/[^a-zA-Z0-9_-]/, "_")+".ocp";
+		let plrpath = _sc.env.get("APPDATA")+"/OpenClonk/"+plrleafname;
+		yield OS.File.makeDir(plrpath);
+
+		let text = "";
+
 		for(var sect in plr) {
 			if(!plr[sect])
 				continue;
-			
+
 			text += "["+sect+"]\r\n";
 			for(var key in plr[sect]) {
 				if(plr[sect][key] === undefined)
 					continue;
-				
+
 				text += key+"="+plr[sect][key]+"\r\n";
 			}
-			
+
 			text += "\r\n";
 		}
-		
-		writeFile(playertext, text, true);
-		
+
+		yield OS.File.writeAtomic(plrpath+"/Player.txt", text, {encoding: "utf-8"});
+
 		//Mittels C4Group packen
 		var filename = "c4group";
 		if(OS_TARGET == "WINNT")
 			filename = "c4group.exe";
-		var c4group = _sc.file(_sc.clonkpath() + "/" + filename);
-		if(!c4group.exists() || !c4group.isExecutable())
-			return warn("$err_group_not_found$");
-		
-		var process = _ws.pr(c4group);
-		var args = [new_plrfile.path, "-p"];
-		
+
+		var process = _ws.pr(_sc.file(_sc.clonkpath() + "/" + filename));
+		var args = [plrpath, "-p"];
+
 		process.create(args, 0x1, function() {
 			players.push(plr);
-			addPlayerlistItem(players.length-1, new_plrfile.leafName, "chrome://windmill/content/img/DefaultPlayer.png");
+			addPlayerlistItem(players.length-1, plrleafname, "chrome://windmill/content/img/DefaultPlayer.png");
 			switchPlrPage('page-playerselection');
 		});
-	}
+	});
 }
 
 function savePlayer() {
@@ -310,12 +302,9 @@ function getNewPlayer() {
 }
 
 function removePlayer(iplr) {
-	var f = new _sc.file(_sc.env.get("APPDATA")+"/OpenClonk/" + players[iplr][0]);
-	
-	if(!f.exists())
-		return;
-	
-	f.remove(true);
-	$("[data-playerid='"+iplr+"']").remove();
-	return true;
+	let promise = OS.File.remove(_sc.env.get("APPDATA")+"/OpenClonk/" + players[iplr][0], { ignoreAbsent: true });
+	promise.then(function() {
+		$("[data-playerid='"+iplr+"']").remove();
+	});
+	return promise;
 }

@@ -3,53 +3,42 @@ hook("load", function() {
 	//Tree initalisieren
 	setupMaintree($("#maintree"));
 
-	var f = _sc.file(_sc.clonkpath());
-
-	//Clonkpfad existiert nicht?
-	if(!f.exists() || !f.isDirectory()) {
-		$("#filecontainer").text(Locale("$err_path_not_found$"));
-		return;
-	}
-
-	//Alternative Executabledatei
-	var name = getConfigData("Global", "AlternativeApp");
-	if(!name) {
-		if(OS_TARGET == "WINNT")
-			name = "openclonk.exe";
-		else
-			name = "openclonk";
-	}
-	var clonkexe = _sc.file(_sc.clonkpath() + "/" + name);
-
-	//openclonk.exe wurde nicht gefunden?
-	if(!clonkexe.exists() || !clonkexe.isExecutable()) {
-		$("#filecontainer").text(name + " was not found.");
-		return;
-	}
-
-	$("#filecontainer").append(Locale("<label id='msg-loading' value='$loading$' />"));
-	lockModule("$loading$");
-
-	if(initializeContextMenu)
-		initializeContextMenu();
-
-	bindKeyToObj(new KeyBinding("Refresh", "F5", function() {
-		$(MAINTREE_OBJ).empty();
-
-		initializeDirectory();
-	}, 0, "DEX"), MAINTREE_OBJ);
-	bindKeyToObj(new KeyBinding("Search", "F3", function() {
-		if($("#searchinput")[0]) {
-			$("#searchinput").removeClass("hidden").focus();
-			$("#searchinput")[0].setSelectionRange(0, $("#searchinput").val().length);
+	let promise = OS.File.stat(getClonkExecutablePath());
+	promise.then(function(info) {
+		if(info.isDir) {
+			$("#filecontainer").text("An error occurred while loading: File not found.");
+			return;
 		}
-	}, 0, "DEX"), MAINTREE_OBJ);
 
-	if($("#searchinput")[0])
-		bindKeyToObj(new KeyBinding("__startsearch", "ENTER", function() {
-			var text = $("#searchinput").val();
-			searchFile(text);
-		}, 0, 0, {no_customization: true}), $("#searchinput"));
+		$("#filecontainer").append(Locale("<label id='msg-loading' value='$loading$' />"));
+		lockModule("$loading$");
+
+		if(initializeContextMenu)
+			initializeContextMenu();
+
+		bindKeyToObj(new KeyBinding("Refresh", "F5", function() {
+			$(MAINTREE_OBJ).empty();
+
+			initializeDirectory();
+		}, 0, "DEX"), MAINTREE_OBJ);
+		bindKeyToObj(new KeyBinding("Search", "F3", function() {
+			if($("#searchinput")[0]) {
+				$("#searchinput").removeClass("hidden").focus();
+				$("#searchinput")[0].setSelectionRange(0, $("#searchinput").val().length);
+			}
+		}, 0, "DEX"), MAINTREE_OBJ);
+
+		if($("#searchinput")[0])
+			bindKeyToObj(new KeyBinding("__startsearch", "ENTER", function() {
+				var text = $("#searchinput").val();
+				searchFile(text);
+			}, 0, 0, {no_customization: true}), $("#searchinput"));
+
+		explorerLoadWorkEnvironments();
+	}, function(reason) {
+		$("#filecontainer").text("An error occured while loading: " + reason);
+		return;
+	});
 
 	return true;
 });
@@ -80,7 +69,7 @@ function searchFile(searchstr, workpath) {
 function navigateToPath(path, open_and_select) {
 	path = path.replace(_sc.workpath(path) + "/", "");
 	var branches = path.split("/");
-	
+
 	//Ggf. leeres Endelement rausnehmen (wenn der Path auf '/' endet. Wird dann am Ende auch geoeffnet)
 	var open_last_branch = false;
 	if(!branches[branches.length-1]) {
@@ -197,11 +186,11 @@ function PrepareDirectory2(c4group, path, entries, call) {
 		runp = true;
 		break;
 	}
-	
+
 	if(!runp)
 		if(typeof call == "function")
 			return call();
-	
+
 	return true;
 }
 
@@ -278,15 +267,8 @@ function loadDirectory(path, parentobj, autosearch_parent, no_async) {
 
 	if(!f.exists() || !f.isDirectory())
 		return;
-
-	var showDirectoryEntries = function() {
-		//Verzeichniselemente in Array einlesen
-		var entries = f.directoryEntries, aDirEntries = [];
-		while(entries.hasMoreElements()) {
-			var entry = entries.getNext().QueryInterface(Ci.nsIFile), container = false;
-			aDirEntries[aDirEntries.length] = entry;
-		}
-		
+	
+	function processEntryList(aDirEntries) {
 		//Array sortieren
 		aDirEntries.sort(function(a,b) {
 			//Fileextensions nehmen
@@ -313,18 +295,47 @@ function loadDirectory(path, parentobj, autosearch_parent, no_async) {
 		//Ggf. Pseudoelement fuer leeren Ordner erzeugen
 		if(!tree_element_added)
 			createEmptyTemplate(parentobj);
-		
-		//Ladetemplate loeschen
-		$(parentobj).find(".treeitem_loading").remove();
-	};
+	}
 	
-	if(no_async)
-		showDirectoryEntries();
+	if(no_async) {
+		//Verzeichniselemente in Array einlesen
+		var entries = f.directoryEntries, aDirEntries = [];
+		while(entries.hasMoreElements()) {
+			var entry = entries.getNext().QueryInterface(Ci.nsIFile), container = false;
+			aDirEntries[aDirEntries.length] = entry;
+		}
+
+		processEntryList(aDirEntries);
+	}
 	else {
-		//Ladetemplate
-		createTreeElement(parentobj, "&lt;...&gt;", false, false, "", "", "treeitem_loading");
+		let task = Task.spawn(function*() {
+			//Ladetemplate
+			createTreeElement(parentobj, "&lt;...&gt;", false, false, "", "", "treeitem_loading");
+			
+			let iterator = new OS.File.DirectoryIterator(f.path), subentries = [], entry;
+			while(true) {
+				try { entry = yield iterator.next(); } catch(e) {
+					if(e != StopIteration)
+						return e;
+
+					break;
+				}
+
+				//Ins nsIFile-Format uebersetzen
+				entry.leafName = entry.name;
+				entry.isDirectory = function() { return this.isDir };
+				subentries.push(entry);
+			}
+
+			processEntryList(subentries);
+
+			iterator.close();
+
+			//Ladetemplate loeschen
+			$(parentobj).find(".treeitem_loading").remove();
+		});
 		
-		setTimeout(showDirectoryEntries, 10);
+		return task;
 	}
 	return true;
 }
@@ -393,12 +404,13 @@ function getFileExtensionPriority(extension) {
 }
 
 function createEmptyTemplate(container) {
-	createTreeElement(container, Locale("$treeelm_container_empty$"), false, false, false, false, "treeelm_container_empty");
+	createTreeElement(container, Locale("$treeelm_container_empty$"), false, false, false, false, "treeelm-container-empty");
+	
 	return true;
 }
 
 function onTreeObjRemove(obj_container) {
-	if(!obj_container.find("li").get(0))
+	if(!obj_container.find("li")[0])
 		createEmptyTemplate(obj_container);
 	
 	return true;

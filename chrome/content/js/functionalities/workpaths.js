@@ -72,57 +72,17 @@ class WorkEnvironment {
 					if(!source)
 						source = _sc.clonkpath();
 					_this.header.Workspace.SourceDir = source;
-					
-					let deepCopy = function(path, i) {
-						return Task.spawn(function*() {
-							let iterator = new OS.File.DirectoryIterator(path);
-							while(true) {
-								let entry;
-								try { entry = yield iterator.next(); } catch(e) { break; }
-								let dest = _this.path+formatPath(entry.path).replace(formatPath(source), "");
-								
-								if(!options.noLock && getModuleByName("cide").contentWindow)
-									getModuleByName("cide").contentWindow
-									.lockModule("<hbox class='modal-big'>Creating Workspace: &lt;" + _this._path.split("/").pop() +
-											   "&gt;</hbox><hbox>Copying " + filelist[i] + "</hbox>"+
-											   "<hbox style='font-size: 0.6em'>"+formatPath(entry.path)+"</hbox>");
-								
-								if(entry.isDir) {
-									yield OS.File.makeDir(dest);
-									yield deepCopy(entry.path, i);
-								}
-								else
-									yield OS.File.copy(entry.path, dest);
-							}
-							iterator.close();
-						});
-					}
+
 					for(let i = 0; i < filelist.length; i++) {
 						let src = source+"/"+filelist[i], dest = formatPath(_this.path+"/"+filelist[i]);
 						let stat = yield OS.File.stat(src);
-						if(!options.noLock && getModuleByName("cide").contentWindow)
-							getModuleByName("cide").contentWindow
-							.lockModule("<hbox class='modal-big'>Creating Workspace: &lt;" + _this._path.split("/").pop() +
-									   "&gt;</hbox><hbox>Copying " + filelist[i] + "</hbox>"+
-									    "<hbox style='font-size: 0.6em'>"+dest+"</hbox>");
-						if(stat.isDir) {
-							try { yield OS.File.makeDir(dest); } catch(e) { log(e); }
-							try { yield deepCopy(src, i); } catch(e) {
-								if(options.debug) {
-									log("An error occured while trying to copy " + filelist[i]);
-									log(e);
-								}
-							}
-						}
-						else {
-							try { yield OS.File.copy(src, dest); }
-							catch(e) {
-								if(options.debug) {
-									log("An error occured while trying to copy " + filelist[i]);
-									log(e);
-								}
-							}
-						}
+						yield OSFileRecursive(src, dest, function(name, entrypath) {
+							if(!options.noLock && getModuleByName("cide").contentWindow)
+								getModuleByName("cide").contentWindow
+								.lockModule("<hbox class='modal-big'>Creating Workspace: &lt;" + _this._path.split("/").pop() +
+										   "&gt;</hbox><hbox>Copying " + filelist[i] + "</hbox>"+
+										   "<hbox style='font-size: 0.6em'>"+formatPath(entrypath)+"</hbox>");
+						});
 					}
 					
 					if(options.success)
@@ -312,12 +272,8 @@ function loadWorkEnvironment(id) {
 			if(!entry.isDir) //Unterverzeichnisse untersuchen
 				continue;
 			
-			var header;
-			try {
-				header = yield OS.File.stat(entry.path+"/.windmillheader");
-			} catch(e) {
+			if(!(yield OS.File.exists(entry.path+"/.windmillheader")))
 				continue;
-			}
 
 			createWorkEnvironment(entry.path, WORKENV_TYPE_Workspace);
 		}

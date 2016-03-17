@@ -95,8 +95,6 @@ $(window).load(function() {
 		bindKeyToObj(keyb_opensidedeck, obj);
 	});
 
-	explorerLoadWorkEnvironments();
-
 	var dlgcontent = $("#dlg_workenvironment").html();
 	$("#dlg_workenvironment").remove();
 
