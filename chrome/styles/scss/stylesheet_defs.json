@@ -22,14 +22,14 @@
 	"name": "cideExplorer",
 	"scss": "modules/cideExplorer.css",
 	"cssTarget": "content/modules/cide/explorer/explorer.css",
-	"observe": "CIDE Explorer",
+	"observe": "cide-explorer",
 	"require": "global|explorer|icons"
 },
 {
 	"name": "cbExplorer",
 	"scss": "modules/cbExplorer.css",
 	"cssTarget": "content/modules/cbridge/cbexplorer/cbexplorer.css",
-	"observe": "CBridge Explorer",
+	"observe": "cbridge-explorer",
 	"require": "global|explorer|icons"
 }
 ]

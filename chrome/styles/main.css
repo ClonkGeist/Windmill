@@ -1,3 +1,34 @@
+/*-- Sammelstyles fuer Inhalte der default_module.js --*/
+.eventinfo {
+  background-color: black;
+  opacity: 0.6;
+  font-size: 9pt;
+  color: white;
+  width: 100px;
+  position: fixed;
+  z-index: 100;
+  padding: 2px 7px;
+  pointer-events: none; }
+
+/* Windmill Modal */
+.windmill-modal {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #000;
+  opacity: 0.5;
+  font-size: 16pt;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; }
+
+.modal-big {
+  font-size: 24pt; }
+
 window {
   background-color: #2d2d2d;
   font-family: "Segoe UI", "Trebuchet MS", sans-serif;
@@ -28,14 +59,13 @@ window.maximized .restore-window {
   padding: 0 initial; }
 
 .window-button:hover {
-  background-color: #db4631; }
+  background-color: #dc4632; }
 
 #modules-wrapper {
   outline: 1px solid #191919; }
 
 resizer {
   -moz-appearance: none;
-  background-color: green;
   background-color: transparent;
   height: 4px;
   width: 4px;
@@ -107,10 +137,10 @@ toolbox, toolbarbutton, toolbar, button, #header {
   padding-right: 1em; }
 
 #inner-navigation button:hover {
-  background: #db4631; }
+  background: #dc4632; }
 
 #inner-navigation button.active {
-  background: #db4631; }
+  background: #dc4632; }
 
 caption {
   background-color: inherit; }
@@ -125,18 +155,14 @@ caption {
   transition: background-color 0.3s, opacity 1s;
   pointer-events: auto; }
 
-#switchMode:hover {
-  background: #db4631; }
-
-#switchmode.selected {
-  background: #db4631; }
+#switchMode:hover,
+#switchmode.selected,
+.nav-image:hover {
+  background: #dc4632; }
 
 .nav-image {
   vertical-align: middle;
   transition: background-color 0.3s; }
-
-.nav-image:hover {
-  background: #db4631; }
 
 .nav-image.deactivated {
   color: #999; }
@@ -174,8 +200,6 @@ caption {
   overflow: auto; }
 
 .sidebar {
-  background-color: gainsboro;
-  /*65,105,225*/
   background-color: whitesmoke;
   height: 100%;
   width: 300px;
@@ -201,7 +225,7 @@ caption {
   border-left-color: grey; }
 
 .ps-playerlistitem.selected {
-  border-left-color: #db4631; }
+  border-left-color: #dc4632; }
 
 .cds-listitem.selected {
   border-left-color: #0A4163; }
@@ -247,7 +271,7 @@ caption {
   display: -moz-box; }
 
 .ps-h {
-  background: #db4631;
+  background: #dc4632;
   color: white;
   margin: 0;
   line-height: 1.6em;
@@ -350,7 +374,7 @@ caption {
   opacity: 1; }
 
 .togglemode-img.activated {
-  background-color: #db4631; }
+  background-color: #dc4632; }
 
 .togglemode-img.invisible {
   margin-left: 18px;

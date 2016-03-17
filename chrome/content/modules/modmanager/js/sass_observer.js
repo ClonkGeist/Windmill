@@ -1,143 +1,149 @@
 
 // stylesheet-definitionlist
-var ssDefs;
-
-hook("onModuleAdd", function(mDef, modframe, id) {	
-	loadModuleSheets(mDef.modulename);
-});
-
-function loadModuleSheets(moduleName) {
-	for(let i in ssDefs) {
-		if(ssDefs[i].observe && ssDefs[i].observe === moduleName) {
-			$("#ss-deflist").append("<hbox>"+
-				"<label value=\""+ssDefs[i].leafName+"\" flex=\"1\" />"+
-				"<label value=\""+moduleName+"\" flex=\"1\"/>"+
-				"<button label=\"Generate CSS File\" onclick=\"generateCssFile("+i+")\" />"+
-				"<button label=\"Observe\" onclick=\"observeScssFile("+i+")\" />"+
-			"</hbox>");
-		}
-	}
-}
+var ssDefs
 
 function generateCssFile(index) {
-	reloadStylesheet(_sc.file(_sc.chpath+"/styles/scss/" + ssDefs[index].scss), ssDefs[index]);
-}
-
-var subjects = [];
-function observeScssFile(index) {
-	if(!alreadySubject(index))
-		if(ssDefs[index].fScss)
-			subjects.push(ssDefs[index]);
-		else
-			log("to observe scss file hasn't been found");
+	reloadStylesheet(ssDefs[index].fScss, ssDefs[index])
 }
 
 hook("load", function() {
-	var f = _sc.file(_sc.chpath+"/styles/scss/stylesheet_defs.json");
+	var f = _sc.file(_sc.chpath+"/styles/scss/stylesheet_defs.json")
 
 	if(!f.exists())
-		return log("SS Obsever: styleshett deflist not found");
+		return log("SS Obsever: styleshett deflist not found")
 	
-	var str = readFile(f);
+	var str = readFile(f)
 	
 	if(!str || !str.length)
-		return log("SS Obsever: styleshett deflist not viable");
+		return log("SS Obsever: styleshett deflist not viable")
 	
-	ssDefs = JSON.parse(str);
+	ssDefs = JSON.parse(str)
 	
 	for(var i in ssDefs) {
-		ssDefs[i].scss = formatPath(ssDefs[i].scss);
-		ssDefs[i].cssTarget = formatPath(ssDefs[i].cssTarget);
+		let def = ssDefs[i]
+		def.scss = formatPath(def.scss)
+		def.cssTarget = formatPath(def.cssTarget)
 		
-		ssDefs[i].index = i;
-		let s = ssDefs[i].scss.split("/");
-		ssDefs[i].leafName = s[s.length - 1];
-		ssDefs[i].fScss = _sc.file(_sc.chpath+"/styles/scss/" + ssDefs[i].scss);
+		def.index = i
+		let s = def.scss.split("/")
+		def.leafName = s[s.length - 1]
+		def.fScss = _sc.file(_sc.chpath+"/styles/scss/" + def.scss)
+		def.children = []
 		
 		// ensure such file exists and get last modified time
-		if(ssDefs[i].fScss.exists())
-			ssDefs[i].modified = ssDefs[i].fScss.lastModifiedTime;
+		if(def.fScss.exists())
+			def.modified = def.fScss.lastModifiedTime
 		else
-			ssDefs[i].fScss = false;
+			def.fScss = false
+		
+		$("#ss-deflist").append("<row>"+
+				"<label value=\""+def.leafName+"\" flex=\"1\" />"+
+				"<label value=\""+(def.observe || "Global")+"\" flex=\"1\"/>"+
+				"<label class=\"update-date\" value=\"unknown\" flex=\"1\"/>"+
+				"<button label=\"Generate CSS File\" onclick=\"generateCssFile("+i+")\" />"+
+			"</row>")
 	}
 	
-	showObj2(ssDefs, 1);
-	
-	// manually add main-frame as it has no addModule-Callback
-	loadModuleSheets("main");
+	for(var i in ssDefs)
+		// add as a child to libraries to be updated too
+		if(ssDefs[i].require)
+			ssDefs[i].require.split("|").forEach(v => {
+				getSSDefByName(v).children.push(ssDefs[i])
+			})
 	
 	setInterval(function() {
-		for(let i = 0; i < subjects.length; i++) {
-			let f = _sc.file(_sc.chpath+"/styles/scss/" + subjects[i].scss);
+		for(let i = 0; i < ssDefs.length; i++) {
+			let f = _sc.file(_sc.chpath+"/styles/scss/" + ssDefs[i].scss)
 			
-			if(f.lastModifiedTime !== subjects[i].modified) {
-				reloadStylesheet(f, subjects[i]);
-				subjects[i].modified = f.lastModifiedTime;
+			if(f.lastModifiedTime !== ssDefs[i].modified) {
+				log("Sass: Scss-File modification detected: " + (ssDefs[i].name || ssDefs[i].index))
+				reloadStylesheet(f, ssDefs[i])
+				ssDefs[i].modified = f.lastModifiedTime
 			}
 		}
-	}, 1500);
-});
+	}, 1500)
+})
 
 function getSSDefByName(name) {
 	
 	for(let i = 0; i < ssDefs.length; i++)
 		if(ssDefs[i].name === name)
-			return ssDefs[i];
+			return ssDefs[i]
 	
-	return false;
+	return false
 }
 
 function alreadySubject(index) {
 	for(let i = 0; i < subjects.length; i++)
 		if(subjects[i].index === index)
-			return true;
+			return true
 	
-	return false;
+	return false
 }
 
 function reloadStylesheet(fScss, def) {
+	log("Sass: trying to reload definition '" + (def.name || def.index ) + "'")
+	if(def.children && def.children.length)
+		def.children.forEach(child => reloadStylesheet(child.fScss, child))
+	
+	var module = def.observe
 	
 	if(!def.cssTarget)
-		return;
+		return
 	
-	var headstring = "";
+	if(def.observe === "main")
+		module = _mainwindow
+	else
+		module = module.contentWindow
+	
+	var headstring = ""
 	if(def.require) {
-		var imports = def.require.split("|");
+		var imports = def.require.split("|")
 		for(let i = 0; i < imports.length; i++) {
-			let imp = getSSDefByName(imports[i]);
+			let imp = getSSDefByName(imports[i])
 			if(!imp)
-				log("Sass error: Required import def not found ("+imports[i]+")");
+				log("Sass error: Required import def not found ("+imports[i]+")")
 			
-			let f = _sc.file(_sc.chpath+"/styles/scss/" + imp.scss);
+			let f = _sc.file(_sc.chpath+"/styles/scss/" + imp.scss)
 			
 			if(!f.exists())
-				log("Sass error: Required import scss not found ("+imports[i]+")");
+				log("Sass error: Required import scss not found ("+imports[i]+")")
 			else
-				headstring += readFile(f) + "\n";
+				headstring += readFile(f) + "\n"
 		}
 	}
 	Sass.compile(headstring + readFile(fScss), function(result) {
 		if(result.message) {
-			log("Sass.compile() error: "+ result.message);
-			log(result.formatted);
+			log("Sass.compile() error: " + result.message)
+			log(result.formatted)
+			log(fScss.path);
 		}
-		else {			
-			if(def.observe === "main")
-				var module = _mainwindow;
-			else
-				var module = getModuleByName(def.observe);
-			
-			if(module) {
-				var u = module.domwu;
-				var uri = module._sc.ioserv().newURI(OS.Path.toFileURI(_sc.chpath + "/" + def.cssTarget), null, null);
-				log("Sass: Write file: " + _sc.chpath + "/" + def.cssTarget);
-				u.removeSheet(uri, u.AGENT_SHEET);
-				writeFile(_sc.file(_sc.chpath + "/" + def.cssTarget), result.text, true);
-				u.loadSheet(uri, u.AGENT_SHEET);
+		else {
+			var mdls = getModulesByName(def.observe)
+			if(mdls && mdls.length) {
+				var uri = _mainwindow._sc.ioserv().newURI(OS.Path.toFileURI(_sc.chpath + "/" + def.cssTarget), null, null)
+				log("Sass: Write file: " + _sc.chpath + "/" + def.cssTarget)
+				
+				var mdls = getModulesByName(def.observe)
+				mdls.forEach(m => {showObj2(m, 1);
+					let u = m.ownerGlobal.domwu
+					if(!u)
+						return
+					u.removeSheet(uri, u.AGENT_SHEET)
+					writeFile(_sc.file(_sc.chpath + "/" + def.cssTarget), result.text, true)
+					u.loadSheet(uri, u.AGENT_SHEET)
+				})
 			}
 			else {
-				writeFile(_sc.file(_sc.chpath + "/" + def.cssTarget), result.text, true);
+				log("Sass: Write file: " + _sc.chpath + "/" + def.cssTarget)
+				writeFile(_sc.file(_sc.chpath + "/" + def.cssTarget), result.text, true)
 			}
+			
+			
+			// update info
+			var d = new Date()
+			$("#ss-deflist").children().eq(def.index).find(".update-date")
+				.attr("value", d.getHours() + ":" + (d.getMinutes()<10?'0':'') + d.getMinutes())
 		}
-	});
+	})
 }

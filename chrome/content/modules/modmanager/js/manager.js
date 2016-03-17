@@ -123,8 +123,6 @@ function onModuleAdded(def, modframe) {
 	setTimeout(function() {
 		$("row#"+modframe.id).removeClass("newModule");
 	}, 2500);
-	
-	execHook("onModuleAdd", def, modframe, modframe.id);
 }
 
 function showDOMTree(modframe) {	
