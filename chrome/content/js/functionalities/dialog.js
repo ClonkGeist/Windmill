@@ -105,11 +105,32 @@ class _WDialog extends WindmillObject {
 			btn.attr("id", btnobj.id);
 		
 		//Click-Handler
+		let _this = this;
+		let bindfunc = function(fn) {
+			btn.on("command", (e) => { 
+				try {
+					if(fn.isGenerator()) {
+						Task.spawn(function*() {
+							let generator = fn(e, e.target, _this), result;
+							while(result = yield generator.next()) 
+								if(result.done)
+									return;
+						});
+					}
+					fn(e, e.target, _this); 
+				} catch(err) { 
+					log(err, true); 
+					log(err.stack, true);
+					_this.hide();
+				} 
+			});
+		}
 		if(btnobj.clickhandler)
-			btn.on("command", (e) => { try { btnobj.clickhandler(e, e.target, this); } catch(err) { log(err, true); log(err.stack, true); this.hide(); } });
+			bindfunc(btnobj.clickhandler);
 		if(btnobj.onclick)
-			btn.on("command", (e) => { try { btnobj.onclick(e, e.target, this); } catch(err) { log(err, true); log(err.stack, true); this.hide(); } });
-		
+			bindfunc(btnobj.onclick);	
+		//btn.on("command", (e) => { try { btnobj.onclick(e, e.target, this); } catch(err) { log(err, true); log(err.stack, true); this.hide(); } });
+
 		//Butonn hinzufÅEen
 		btn.appendTo(elm);
 		return btn;
@@ -174,11 +195,6 @@ class _WDialog extends WindmillObject {
 		});
 
 		//Callbacks
-		/*if(this.hook_show instanceof Array) {
-			for(var i = 0; i < this.hook_show; i++)
-				if(typeof this.hook_show[i] == "function")
-					this.hook_show[i]();
-		}*/
 		this.execHook("show");
 		if(typeof this.options.onshow == "function")
 			this.options.onshow();

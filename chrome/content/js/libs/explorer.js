@@ -260,13 +260,6 @@ function loadDirectory(path, parentobj, autosearch_parent, no_async) {
 		
 		$(parentobj).empty();
 	}
-
-	var f = _sc.file(path);
-	if(autosearch_parent && f.parent)
-		f = f.parent;
-
-	if(!f.exists() || !f.isDirectory())
-		return;
 	
 	function processEntryList(aDirEntries) {
 		//Array sortieren
@@ -298,6 +291,12 @@ function loadDirectory(path, parentobj, autosearch_parent, no_async) {
 	}
 	
 	if(no_async) {
+		var f = _sc.file(path);
+		if(autosearch_parent && f.parent)
+			f = f.parent;
+
+		if(!f.exists() || !f.isDirectory())
+			return;
 		//Verzeichniselemente in Array einlesen
 		var entries = f.directoryEntries, aDirEntries = [];
 		while(entries.hasMoreElements()) {
@@ -311,8 +310,12 @@ function loadDirectory(path, parentobj, autosearch_parent, no_async) {
 		let task = Task.spawn(function*() {
 			//Ladetemplate
 			createTreeElement(parentobj, "&lt;...&gt;", false, false, "", "", "treeitem_loading");
-			
-			let iterator = new OS.File.DirectoryIterator(f.path), subentries = [], entry;
+			if(autosearch_parent) {
+				let splitpath = formatPath(path).split("/");
+				splitpath.pop();
+				path = splitpath.join("/");
+			}
+			let iterator = new OS.File.DirectoryIterator(path), subentries = [], entry;
 			while(true) {
 				try { entry = yield iterator.next(); } catch(e) {
 					if(e != StopIteration)

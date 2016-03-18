@@ -624,57 +624,74 @@ function removeTreeEntry(obj, forced, ignoreFile) {
 	if(!$(obj)[0])
 		return;
 
-	var f = _sc.file(_sc.workpath(obj)+getTreeObjPath(obj));
-	if(f.exists()) {
+	let task = Task.spawn(function*() {
+		if(ignoreFile)
+			return;
+
+		let path = _sc.workpath(obj)+getTreeObjPath(obj);
+		let info;
+		try { info = yield OS.File.stat(path); }
+		catch(e) {
+			if(e.becauseNoSuchFile)
+				return;
+		}
+
 		//Hauptverzeichnis nicht löschen
-		if(formatPath(f.path) == _sc.workpath(obj) && !forced) {
+		if(formatPath(path) == _sc.workpath(obj) && !forced) {
 			//Dialog oeffnen
 			var dlg = new WDialog("$DlgDeleteConfirmation$", "DEX", { modal: true, css: { "width": "450px" }, btnright: [{ label: "$DlgBtnDelete$",
-				onclick: function(e, btn, dialog) {
+				onclick: function*(e, btn, dialog) {
 					getWorkEnvironmentByPath(_sc.workpath(obj)).unload();
-					removeTreeEntry(obj, true);
+					yield removeTreeEntry(obj, true);
 					dialog.hide();
 				}
 			},{ label: "$DlgBtnUnload$",
-				onclick: function(e, btn, dialog) {
+				onclick: function*(e, btn, dialog) {
 					getWorkEnvironmentByPath(_sc.workpath(obj)).unload();
-					removeTreeEntry(obj, true, true);
+					yield removeTreeEntry(obj, true, true);
 					dialog.hide();
 				}
 			}, "cancel"]});
-			dlg.setContent(sprintf(Locale('<hbox><description style="width: 450px;">$DlgDeleteConfirmationDesc$</description></hbox>'), formatPath(f.path).split("/").pop()));
+			dlg.setContent(sprintf(Locale('<hbox><description style="width: 450px;">$DlgDeleteConfirmationDesc$</description></hbox>'), formatPath(path).split("/").pop()));
 			dlg.show();
 			dlg = 0;
-			return;
+			return -1;
 		}
 
-		if(!ignoreFile)
-			f.remove(true);
-	}
+		if(info.isDir) 
+			yield OS.File.removeDir(path);
+		else
+			yield OS.File.remove(path);
+	});
+	task.then(function(ignore) {
+		if(ignore)
+			return;
+		var cnt, obj_container;
+		obj_container = $(obj).parent();
+		
+		var selection_index = getTreeEntryIndex(obj);
+		if(!$(obj).next()[0])
+			selection_index--;
 
-	var cnt, obj_container;
-	obj_container = $(obj).parent();
-	
-	var selection_index = getTreeEntryIndex(obj);
-	if(!$(obj).next()[0])
-		selection_index--;
+		if(cnt = getTreeCntById(getTreeObjId(obj)))
+			$(cnt).remove();
 
-	if(cnt = getTreeCntById(getTreeObjId(obj)))
-		$(cnt).remove();
+		$(obj).remove();
+		
+		//Element darunter auswaehlen
+		if($(obj_container).find("li")[0])
+			selectTreeItem(getTreeEntryByIndex(selection_index));
+		//Alternativ vorherigen Container auswaehlen
+		else
+			selectTreeItem(getTreeObjById(getTreeObjId(obj_container)));
 
-	$(obj).remove();
-	
-	//Element darunter auswaehlen
-	if($(obj_container).find("li")[0])
-		selectTreeItem(getTreeEntryByIndex(selection_index));
-	//Alternativ vorherigen Container auswaehlen
-	else
-		selectTreeItem(getTreeObjById(getTreeObjId(obj_container)));
-
-	//Remove-Callback
-	onTreeObjRemove(obj_container);
-	
-	return true;
+		//Remove-Callback
+		onTreeObjRemove(obj_container);
+	}, function(reason) {
+		EventInfo("An error occured while trying to remove the file.");
+		log(reason);
+	});
+	return task;
 }
 
 /*-- Umbenennen --*/
