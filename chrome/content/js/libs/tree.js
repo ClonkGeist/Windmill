@@ -115,7 +115,6 @@ function createTreeElement(tree, label, container, open, img, filename, special)
 			}
 		}
 	});
-	//}
 	
 	var id = TREE_ELM_ID;
 	//Drag and Drop
@@ -624,6 +623,11 @@ function removeTreeEntry(obj, forced, ignoreFile) {
 	if(!$(obj)[0])
 		return;
 
+	if(getWorkEnvironmentByPath(_sc.workpath(obj)).options.rejectDeletion) {
+		EventInfo("Deletion rejected");
+		return;
+	}
+
 	let task = Task.spawn(function*() {
 		if(ignoreFile)
 			return;
@@ -697,6 +701,11 @@ function removeTreeEntry(obj, forced, ignoreFile) {
 /*-- Umbenennen --*/
 
 function renameTreeObj(obj) {
+	if(getWorkEnvironmentByPath(_sc.workpath(obj)).options.rejectRename) {
+		EventInfo("Rename rejected");
+		return;
+	}
+
 	$(obj).children("description").css("display", "none");
 	var filename = obj.attr("filename"), t;
 	if(!filename && obj.attr("workpath"))
