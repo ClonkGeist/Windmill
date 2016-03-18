@@ -559,13 +559,15 @@ function writeFile(path, text, fCreateIfNonexistent) {
 	fstr.close();
 }
 
-function OSFileRecursive(sourcepath, destpath, callback, operation = "copy", noOverwrite = (operation == "copy")) {
+function OSFileRecursive(sourcepath, destpath, callback, operation = "copy", noOverwrite = (operation == "copy"), __rec) {
 	//TODO: Overwrite vorschlagen
 	let task = Task.spawn(function*() {
 		let f = new _sc.file(sourcepath), extra = "", file;
 		if(!f.isDirectory()) {
 			try { yield OS.File[operation](sourcepath, destpath, {noOverwrite}); }
 			catch(e) {
+				if(noOverwrite == 2)
+					throw e;
 				file = yield OS.File.openUnique(destpath, { humanReadable: true });
 				destpath = file.path;
 				yield OS.File[operation](sourcepath, destpath);
@@ -578,6 +580,8 @@ function OSFileRecursive(sourcepath, destpath, callback, operation = "copy", noO
 			while(true) {
 				try { yield OS.File.makeDir(destpath+extra, {ignoreExisting: false}); }
 				catch(e) {
+					if(noOverwrite == 2)
+						throw e;
 					extra = " " + (++counter);
 					continue;
 				}
@@ -593,9 +597,14 @@ function OSFileRecursive(sourcepath, destpath, callback, operation = "copy", noO
 			if(callback)
 				callback(entry.leafName, entry.path);
 
-			yield OSFileRecursive(entry.path, destpath+"/"+entry.leafName, callback, operation, noOverwrite);
+			yield OSFileRecursive(entry.path, destpath+"/"+entry.leafName, callback, operation, noOverwrite, true);
 		}
-		
+
+		//Ggf. nochmal aufraeumen
+		if(f.isDirectory())
+			if(!__rec && operation == "move")
+				yield OS.File.removeDir(sourcepath, {ignoreAbsent: true})
+
 		return destpath+extra;
 	});
 	task.then(null, function(reason) {

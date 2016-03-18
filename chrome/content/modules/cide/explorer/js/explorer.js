@@ -956,24 +956,7 @@ function onTreeFileDragDrop(cnt, f) {
 }
 
 function onTreeObjRename(obj, name) {
-	var f = _sc.file(_sc.workpath(obj)+getTreeObjPath(obj));
-	if(!f.exists())
-		return false;
 
-	var p = f.parent;
-
-	try { f = f.renameTo(p, name); }
-	catch(e) {
-		warn("$err_could_not_rename_file$");
-		
-		log(e, true);
-		log(e.stack, true);
-		return -1;
-	}
-
-	var env;
-	if($(obj).hasClass("workenvironment") && (env = getWorkEnvironmentByPath($(obj).attr("workpath"))))
-		env.path = p.path+"/"+name;
 
 	return true;
 }

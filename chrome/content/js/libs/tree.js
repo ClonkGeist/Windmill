@@ -719,46 +719,73 @@ function renameTreeObj(obj) {
 		$(obj).attr("draggable", "false");
 
 	$("#edit-filename").blur(function(e) {
-		var val = $(this).val(), r;
-		if(val && val.length > 0) {
-			if((r = onTreeObjRename(obj, val)) > 0) {
-				$(obj).children("description").text(val);
-				if($(obj).hasClass("workenvironment"))
-					$(obj).attr("workpath", $(obj).attr("workpath").replace(/\/[^/]+$/, "/"+val));
-				else
-					$(obj).attr("filename", val);
-			}
-			else if(r == -1)
-				$(obj).children("description").text(filename);
+		function restoreEntry() {			
+			if(drag)
+				$(obj).attr("draggable", "true");
+			$(obj).css("text-overflow", "");
+			$(obj).children("description").css("display", "initial");
+			$("#edit-filename").remove();
 		}
 
-		if(drag)
-			$(obj).attr("draggable", "true");
-		$(obj).css("text-overflow", "");
-		$(obj).children("description").css("display", "initial");
-		$("#edit-filename").remove();
+		let val = $(this).val();
 
-		var filepath = _sc.workpath(obj) + getTreeObjPath(obj);
-		var file = _sc.file(filepath);
-		var t = file.leafName.split("."), fext = t[t.length-1];
-		if(!obj.hasClass("workenvironment")) {
-			var img = "chrome://windmill/content/img/icon-fileext-other.png";
-			if(file.isDirectory())
-				img = "chrome://windmill/content/img/icon-directory.png";
+		if(!val || !val.length || val == filename)
+			return restoreEntry();
 
-			for(var p in specialData) {
-				var d = specialData[p];
+		//Source und Destination festlegen
+		let source = formatPath(_sc.workpath(obj)+getTreeObjPath(obj));
+		let splitpath = source.split("/");
+		splitpath.pop();
+		splitpath.push(val);
+		let destpath = splitpath.join("/");
 
-				if(d.ext == fext && d.img.length) {
-					img = d.img;
-					break;
+		//Task zum Umbenennen
+		Task.spawn(function*() {
+			if(!val || !val.length)
+				throw -1;
+
+			//Fuer Ordner rekursiv mit Errorthrowing bei Overwrite
+			yield OSFileRecursive(source, destpath, null, "move", 2);
+
+			let env;
+			if($(obj).hasClass("workenvironment") && (env = getWorkEnvironmentByPath($(obj).attr("workpath"))))
+				env.path = destpath;
+
+			return yield OS.File.stat(destpath);
+		}).then(function(info) {
+			restoreEntry();
+			$(obj).children("description").text(val);
+			if($(obj).hasClass("workenvironment"))
+				$(obj).attr("workpath", $(obj).attr("workpath").replace(/\/[^/]+$/, "/"+val));
+			else
+				$(obj).attr("filename", val);
+
+			if(!obj.hasClass("workenvironment")) {
+				let img = "chrome://windmill/content/img/icon-fileext-other.png";
+				if(info.isDir)
+					img = "chrome://windmill/content/img/icon-directory.png";
+
+				let fext = val.split(".").pop();
+				for(var p in specialData) {
+					let d = specialData[p];
+
+					if(d.ext == fext && d.img.length) {
+						img = d.img;
+						break;
+					}
 				}
+
+				$(obj).find("image").attr("src", img);
 			}
 
-			$(obj).find("image").attr("src", img);
-		}
+			sortTreeContainerElements($(obj).parent());
+		}, function(reason) {
+			EventInfo("An error occured while trying to rename the file");
+			log(reason);
 
-		sortTreeContainerElements($(obj).parent());
+			restoreEntry();
+			$(obj).children("description").text(filename);
+		});
 	});
 	$("#edit-filename").keypress(function(e) {
 		if(e.which == 13) {
