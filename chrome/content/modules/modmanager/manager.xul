@@ -16,7 +16,7 @@
 	<hbox>
 		<button label="Modules" onclick="$('#switch-overview').attr('selectedIndex', 0);" /> |
 		<button label="Config" onclick="$('#switch-overview').attr('selectedIndex', 1);" /> |
-		<button label="DOM Viewer" onclick="$('#switch-overview').attr('selectedIndex', 2);" />
+		<button label="DOM Viewer" onclick="$('#switch-overview').attr('selectedIndex', 2);" /> |
 		<button label="Sass" onclick="$('#switch-overview').attr('selectedIndex', 3);" />
 	</hbox>
 
@@ -79,7 +79,25 @@
 			</vbox>
 			<vbox flex="1">
 				<label value="Target Stylesheets" /> 
-				<vbox flex="1" id="ss-deflist">
+				<vbox flex="1">
+					<grid flex="1">
+						<columns>
+							<column flex="1" />
+							<column flex="1" />
+							<column flex="4" />
+						</columns>
+						
+						<rows id="ss-deflist">
+							<row class="header">
+								<label value="Sass file" />
+								<label value="Module" />
+								<label value="Last Update" />
+								<label value="Options" />
+							</row>
+							<row class="content">
+							</row>
+						</rows>
+					</grid>
 				</vbox>
 			</vbox>
 		</deck>

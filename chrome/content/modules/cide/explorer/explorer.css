@@ -414,7 +414,7 @@ li:focus *, li:focus {
 
 .toolbar {
   height: 24px;
-  background-color: gainsboro; }
+  background-color: #ebebeb; }
 
 .toolbar-option {
   width: 60px;

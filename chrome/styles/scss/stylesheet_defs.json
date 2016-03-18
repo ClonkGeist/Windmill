@@ -12,6 +12,10 @@
 	"scss": "global/explorer.css"
 },
 {
+	"name": "colorPicker",
+	"scss": "global/colorPicker.css"
+},
+{
 	"name": "mainFrame",
 	"scss": "modules/main.css",
 	"cssTarget": "styles/main.css",
@@ -22,14 +26,56 @@
 	"name": "cideExplorer",
 	"scss": "modules/cideExplorer.css",
 	"cssTarget": "content/modules/cide/explorer/explorer.css",
-	"observe": "CIDE Explorer",
+	"observe": "cide-explorer",
 	"require": "global|explorer|icons"
 },
 {
 	"name": "cbExplorer",
 	"scss": "modules/cbExplorer.css",
 	"cssTarget": "content/modules/cbridge/cbexplorer/cbexplorer.css",
-	"observe": "CBridge Explorer",
+	"observe": "cbridge-explorer",
 	"require": "global|explorer|icons"
+},
+{
+	"name": "audioplayer",
+	"scss": "modules/audioplayer.css",
+	"cssTarget": "content/modules/cide/audioplayer/audioplayer.css",
+	"observe": "audioplayer",
+	"require": "global|icons"
+},
+{
+	"name": "bmpEditor",
+	"scss": "modules/bmpEditor.css",
+	"cssTarget": "content/modules/cide/bmpeditor/style.css",
+	"observe": "bmpeditor",
+	"require": "global|icons"
+},
+{
+	"name": "aceEditor",
+	"scss": "modules/aceEditor.css",
+	"cssTarget": "content/modules/cide/editor/editor.css",
+	"observe": "scripteditor",
+	"require": "global|icons"
+},
+{
+	"name": "imagePreview",
+	"scss": "modules/imagePreview.css",
+	"cssTarget": "content/modules/cide/imagepreview/imagepreview.css",
+	"observe": "imagepreview",
+	"require": "global|icons"
+},
+{
+	"name": "meshViewer",
+	"scss": "modules/meshViewer.css",
+	"cssTarget": "content/modules/cide/meshviewer/meshviewer.css",
+	"observe": "meshviewer",
+	"require": "global|icons|colorPicker"
+},
+{
+	"name": "scenarioSettings",
+	"scss": "modules/scenarioSettings.css",
+	"cssTarget": "content/modules/cide/meshviewer/scenarioSettings.css",
+	"observe": "scenario-settings",
+	"require": "global|icons"
 }
 ]

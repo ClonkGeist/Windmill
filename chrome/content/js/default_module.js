@@ -357,7 +357,7 @@ else {
 	var _mainwindow = window;
 }
 
-var domwu = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
+var domwu = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils) || top.domwu;
 
 function frameUpdateWindmillTitle() {
 	if(window.frameWindowTitle && window.frameWindowTitle() != -1) {
