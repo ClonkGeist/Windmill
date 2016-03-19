@@ -7,7 +7,7 @@ var CTX_MENUITEM_ID_COUNTER = 0;
  *      Callback kurz bevor das Menue erscheint. Uebergebener Parameter by_obj (Objekt auf das das Kontextmenü geoeffnet worden ist). 
  *      Wird in Objektkontext gecalled. (this = ContextMenu-Objekt)
  *  - [2d-array] entryarray: 
- *      2 dimensionales Array das die einzelnen Eintraege enthaelt. [[label, id, clickHadnler, subMenu, options]] (s. addEntry)
+ *      2 dimensionales Array das die einzelnen Eintraege enthaelt. [[label, id, clickHandler, subMenu, options]] (s. addEntry)
  *      Kann auch als Eintrag "seperator" enthalten, um einen Seperator an der jeweiligen Stelle hinzuzufuegen.
  *  - [string] langpre:
  *      Lokalisierungspraefix das fuer das Kontextmenü genutzt wird.
@@ -106,23 +106,38 @@ class _ContextMenuEntry {
 				}
 
 				$(this.topMenu.element).find(".ctx-menuitem.selected").removeClass("selected");
-			},function() {});
-		
+			}, function() {});
+
 			if(!this.subMenu) {
 				$(this.element).click((e) => {
-					this.clickHandler(target, e.target, this);
-					if($(".contextmenu").prop("contextmenu_obj"))
-						$(".contextmenu").prop("contextmenu_obj").hideMenu();
+					if(this.clickHandler.isGenerator()) {
+						let _this = this;
+						Task.spawn(function*() {
+							yield* _this.clickHandler(target, e.target, _this);
+						}).then(function() {
+							if($(".contextmenu").prop("contextmenu_obj"))
+								$(".contextmenu").prop("contextmenu_obj").hideMenu();
+						}, function(err) {
+							log(err);							
+							if($(".contextmenu").prop("contextmenu_obj"))
+								$(".contextmenu").prop("contextmenu_obj").hideMenu();
+						});	
+					}
+					else {
+						this.clickHandler(target, e.target, this);
+						if($(".contextmenu").prop("contextmenu_obj"))
+							$(".contextmenu").prop("contextmenu_obj").hideMenu();
+					}
 				});
 			}
 			else {
 				$(this.element).hover((e) => {
 					if(jQuery.contains(document, this.subMenu.element))
 						return;
-				
+
 					//Untermenue öffnen
 					$(e.target).addClass("selected");
-					
+
 					if(MODULE_LANG == "xul")
 						this.subMenu.showMenu(0, 0, target, window.screenX+$(e.target).offset().left+$(e.target).outerWidth(), window.screenY+$(e.target).offset().top, e.target, this);
 					else

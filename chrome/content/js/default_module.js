@@ -590,9 +590,13 @@ function OSFileRecursive(sourcepath, destpath, callback, operation = "copy", noO
 			while(true) {
 				try { yield OS.File.makeDir(destpath+extra, {ignoreExisting: false}); }
 				catch(e) {
+					if(!e.becauseExists)
+						throw e;
 					if(noOverwrite == 2)
 						throw e;
-					extra = " " + (++counter);
+					if(counter > 99)
+						throw "Could not create an alternative name";
+					extra = " - " + (++counter);
 					continue;
 				}
 				destpath += extra;

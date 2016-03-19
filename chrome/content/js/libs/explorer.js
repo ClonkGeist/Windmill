@@ -317,7 +317,7 @@ function loadDirectory(path, parentobj, autosearch_parent, no_async) {
 			while(true) {
 				try { entry = yield iterator.next(); } catch(e) {
 					if(e != StopIteration)
-						return e;
+						throw e;
 
 					break;
 				}

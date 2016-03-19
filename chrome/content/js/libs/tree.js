@@ -53,8 +53,7 @@ function createTreeElement(tree, label, container, open, img, filename, special)
 		$(cnt).addClass("tree-collapsed");
 		$(elm).addClass("tree-collapsed");
 	}
-	
-	//if(container) {
+
 	$(elm).children("description")[0].addEventListener("dragover", function(e) {
 		var dragService = _sc.dragserv();
 		var dragSession = dragService.getCurrentSession();
@@ -115,7 +114,7 @@ function createTreeElement(tree, label, container, open, img, filename, special)
 			}
 		}
 	});
-	
+
 	var id = TREE_ELM_ID;
 	//Drag and Drop
 	if(drag) {
@@ -157,10 +156,6 @@ function createTreeElement(tree, label, container, open, img, filename, special)
 			var d_path = _sc.workpath(d_obj) + getTreeObjPath(d_obj);
 			var e_path = _sc.workpath(getTreeCntById(e_id)) + getTreeObjPath(getTreeCntById(e_id));
 		}
-
-		/*var f = _sc.file(d_path), nDir = _sc.file(e_path);
-		if(!f.exists() || !nDir.exists() || !nDir.isDirectory())
-			return false;*/
 
 		var containerloaded = !!getTreeCntById(e_id).children("li")[0], fname = d_path.split("/").pop();
 		e_path += "/"+fname;
@@ -276,21 +271,10 @@ function getTreeObjPath(obj) {
 	return path;
 }
 
-function getTreeObjById(id) {
-	return $("#treeelm-"+id);
-}
-
-function getTreeCntById(id) {
-	return $("#treecnt-"+id);
-}
-
-function getTreeObjId(obj) {
-	return parseInt($(obj).attr("id").replace(/.+-/, ""));
-}
-
-function getCurrentTreeSelection() {
-	return $(".tree-selected", MAINTREE_OBJ)[0];
-} 
+function getTreeObjById(id) { return $("#treeelm-"+id); }
+function getTreeCntById(id) { return $("#treecnt-"+id); }
+function getTreeObjId(obj) { return parseInt($(obj).attr("id").replace(/.+-/, "")); }
+function getCurrentTreeSelection() { return $(".tree-selected", MAINTREE_OBJ)[0]; }
 
 //Item-Markierung
 function selectTreeItem(obj, openParents) {
@@ -822,12 +806,8 @@ function handleTreeEntry(obj, open_sidedeck) {
 			var args = getOCStartArguments(formatPath(filepath));
 			if(args == -1)
 				return;
-			
-			var name = "openclonk";
-			if(OS_TARGET == "WINNT")
-				name = "openclonk.exe";
 
-			var f = _sc.file(_sc.clonkpath() + "/" + name);
+			var f = _sc.file(getClonkExecutablePath());
 			var process = _ws.pr(f);
 			process.create(args);
 			break;

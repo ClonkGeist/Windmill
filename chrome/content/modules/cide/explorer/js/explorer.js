@@ -505,61 +505,42 @@ function initializeContextMenu() {
 
 		//Ordner
 
-		["$ctxfolder$", 0, function() { // Ordner erstellen
-			createNewFile(Ci.nsIFile.DIRECTORY_TYPE, "$create_newfolder$", true, "chrome://windmill/content/img/icon-directory.png");
+		["$ctxfolder$", 0, function*() { // Ordner erstellen
+			yield createNewFile(true, "$create_newfolder$", true, "chrome://windmill/content/img/icon-directory.png");
 		}, 0, { iconsrc: "chrome://windmill/content/img/icon-directory.png" }],
-		["$ctxobjfolder$", 0, function() { // Objektordner erstellen
-			createNewFile(Ci.nsIFile.DIRECTORY_TYPE, "$create_newobjfolder$.ocd", true);
+		["$ctxobjfolder$", 0, function*() { // Objektordner erstellen
+			yield createNewFile(true, "$create_newobjfolder$.ocd", true);
 		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png" }],
-		["$ctxscenfolder$", 0, function() { // Rundenordner erstellen
-			createNewFile(Ci.nsIFile.DIRECTORY_TYPE, "$create_newscenfolder$.ocf", true);
+		["$ctxscenfolder$", 0, function*() { // Rundenordner erstellen
+			yield createNewFile(true, "$create_newscenfolder$.ocf", true);
 		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocf.png" }],
 
 		//Textdateien
 		"seperator",
 
-		["$ctxtext$", 0, function() { // Textdatei erstellen
-			var f = createNewFile(Ci.nsIFile.NORMAL_FILE_TYPE, "$create_newtxt$.txt", false);
-			var fstr = _sc.ofstream(f, 2, 0x200);
-			var cstr = _sc.costream();
-
-			var text = " ";
-			cstr.init(fstr, "utf-8", text.length, Ci.nsIConverterInputStream.DEFAULT_REPLACEMENT_CHARACTER);
-			cstr.writeString(text);
-
-			cstr.close();
-			fstr.close();
+		["$ctxtext$", 0, function*() { // Textdatei erstellen
+			yield createNewFile(false, "$create_newtxt$.txt");
 		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-txt.png" }],
 
 		//Bilddateien
 		"seperator",
 
 		["$ctxgbmp$", 0, function() { //BMPDatei erstellen
-			createNewFile(Ci.nsIFile.NORMAL_FILE_TYPE, "$create_newimg$.bmp", false);
+			yield createNewFile(false, "$create_newimg$.bmp", false);
 		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-bmp.png" }],
 		["$ctxgpng$", 0, function() { //PNGDatei erstellen
-			createNewFile(Ci.nsIFile.NORMAL_FILE_TYPE, "$create_newimg$.png", false);
+			yield createNewFile(false, "$create_newimg$.png", false);
 		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-png.png" }],
 		["$ctxgjpg$", 0, function() { //JPGDatei erstellen
-			createNewFile(Ci.nsIFile.NORMAL_FILE_TYPE, "$create_newimg$.jpg", false);
+			yield createNewFile(false, "$create_newimg$.jpg", false);
 		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-jpg.png" }],
 
 		//Scriptdateien
 		"seperator",
 
 		["$ctxscript$", 0, function() { //Scriptdatei erstellen
-			var f = createNewFile(Ci.nsIFile.NORMAL_FILE_TYPE, "$create_newscript$.c", false);
-		
-			//File-/Converterstream
-			var fstr = _sc.ofstream(f, 2, 0x200);
-			var cstr = _sc.costream();
-
-			var text = "/*-- New Scriptfile --*/\r\n\r\n\r\n\r\nfunc Initialize() {\r\n  return true;\r\n}\r\n";
-			cstr.init(fstr, "utf-8", text.length, Ci.nsIConverterInputStream.DEFAULT_REPLACEMENT_CHARACTER);
-			cstr.writeString(text);
-
-			cstr.close();
-			fstr.close();
+			var f = createNewFile(false, "$create_newscript$.c", false, null, 
+					"/*-- New Scriptfile --*/\r\n\r\n\r\n\r\nfunc Initialize() {\r\n  return true;\r\n}\r\n");
 		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-c.png" }]
 	], MODULE_LPRE, { allowIcons: true });
 
@@ -871,38 +852,71 @@ function CreateNewGamefile(type, treeobj) {
 function getFullPathForSelection() { return _sc.workpath() + getTreeObjPath(getCurrentTreeSelection()); }
 
 //Neue Datei erstellen
-function createNewFile(type, name, container, image) {
-	var path = _sc.workpath() + getTreeObjPath(getCurrentTreeSelection());
-	var f = _sc.file(path+"/"+Locale(name));
-	f.createUnique(type, 0o777);
+function createNewFile(is_dir, name, container, image, content) {
+	let cntpath = _sc.workpath() + getTreeObjPath(getCurrentTreeSelection()), path = cntpath + "/" + Locale(name);
+	let cnt = getTreeCntById(getTreeObjId(getCurrentTreeSelection()));
+	let task = Task.spawn(function*() {
+		if(!is_dir) {
+			let fileinfo = yield OS.File.openUnique(path, {humanReadable: true});
+			if(content && typeof content == "string")
+				yield OS.File.writeAtomic(fileinfo.path, content, {encoding: "utf-8"});
+			else
+				yield fileinfo.file.write(content);
 
-	if(!image) {
-		var t = f.leafName.split("."), fext = t[t.length-1];
-		image = "chrome://windmill/content/img/icon-fileext-other.png";
+			fileinfo.file.close();
+			path = fileinfo.path;
+		}
+		else {
+			let counter = 0, extra = "";
+			while(true) {
+				try { yield OS.File.makeDir(path+extra, {ignoreExisting: false}); }
+				catch(e) {
+					if(!e.becauseExists)
+						throw e;
+					if(counter > 99)
+						throw "Could not create an alternative name";
 
-		for(var p in specialData) {
-			var d = specialData[p];
-
-			if(d.ext == fext && d.img.length) {
-				image = d.img;
+					extra = " - " + (++counter);
+					continue;
+				}
+				path += extra;
 				break;
 			}
 		}
-	}
+	});
+	task.then(function() {
+		let filename = formatPath(path).split("/").pop();
+		if(!image) {
+			let t = filename.split("."), fext = t[t.length-1];
+			image = "chrome://windmill/content/img/icon-fileext-other.png";
 
-	var cnt = getTreeCntById(getTreeObjId(getCurrentTreeSelection()));
-	if($(cnt).html().length)
-		$(cnt).empty();
+			for(var p in specialData) {
+				var d = specialData[p];
 
-	loadDirectory(path, cnt, 0, true);
+				if(d.ext == fext && d.img.length) {
+					image = d.img;
+					break;
+				}
+			}
+		}
 
-	//Auswahl mit setTimeout verzoegert durchfuehren, da die Auswahl sonst wegen dem Kontextmenue sofort verschwindet (blur)
-	setTimeout(function() {
-		selectTreeItem($(cnt).find('[filename="'+f.leafName+'"]'), true);
-		renameTreeObj($(cnt).find('[filename="'+f.leafName+'"]'));
-	}, 10);
+		if($(cnt).html().length)
+			$(cnt).empty();
 
-	return f;
+		let task = loadDirectory(cntpath, cnt, 0);
+		task.then(function() {
+			if($(cnt).find('[filename="'+filename+'"]')[0]) {
+				selectTreeItem($(cnt).find('[filename="'+filename+'"]'), true);
+				renameTreeObj($(cnt).find('[filename="'+filename+'"]'));
+			}
+		}, function(err) {
+			log("ERROR: " + err);
+		});
+	}, function(e) {
+		EventInfo("An error occured while trying to create a new file");
+		log(e);
+	});
+	return task;
 }
 
 function hideFileExtension(fext) {}
@@ -946,11 +960,7 @@ function onTreeFileDragDrop(cnt, f) {
 	return createTreeElement(cnt, f.leafName, f.isDirectory(), 0, img);
 }
 
-function onTreeObjRename(obj, name) {
-
-
-	return true;
-}
+function onTreeObjRename(obj, name) { return true; }
 
 function getOCStartArguments(path) {
 	var args = ["--editor", "--nonetwork", path];
