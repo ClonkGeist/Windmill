@@ -446,9 +446,7 @@ $(window).load(function() {
 			//Dialog oeffnen
 			let dlg = new WDialog("$DlgWEImport$", MODULE_LPRE, { modal: true, css: { "width": "450px" }, btnright: [{ label: "$DlgBtnCopy$",
 				onclick: function*(e, btn, dialog) {
-					log("copy--");
 					yield OSFileRecursive(fp.file.path, getConfigData("CIDE", "WorkspaceParentDirectory")+"/"+fp.file.leafName);
-					log("create env");
 					yield Task.spawn(createEnvironment);
 					dialog.hide();
 				}

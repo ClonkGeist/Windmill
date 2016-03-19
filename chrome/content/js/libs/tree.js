@@ -623,7 +623,7 @@ function removeTreeEntry(obj, forced, ignoreFile) {
 	if(!$(obj)[0])
 		return;
 
-	if(getWorkEnvironmentByPath(_sc.workpath(obj)).options.rejectDeletion) {
+	if(getWorkEnvironmentByPath(_sc.workpath(obj)) && getWorkEnvironmentByPath(_sc.workpath(obj)).options.rejectDeletion) {
 		EventInfo("Deletion rejected");
 		return;
 	}
@@ -645,14 +645,14 @@ function removeTreeEntry(obj, forced, ignoreFile) {
 			//Dialog oeffnen
 			var dlg = new WDialog("$DlgDeleteConfirmation$", "DEX", { modal: true, css: { "width": "450px" }, btnright: [{ label: "$DlgBtnDelete$",
 				onclick: function*(e, btn, dialog) {
-					yield removeTreeEntry(obj, true);
 					getWorkEnvironmentByPath(_sc.workpath(obj)).unload();
+					yield removeTreeEntry(obj, true);
 					dialog.hide();
 				}
 			},{ label: "$DlgBtnUnload$",
 				onclick: function*(e, btn, dialog) {
-					yield removeTreeEntry(obj, true, true);
 					getWorkEnvironmentByPath(_sc.workpath(obj)).unload();
+					yield removeTreeEntry(obj, true, true);
 					dialog.hide();
 				}
 			}, "cancel"]});
