@@ -645,14 +645,14 @@ function removeTreeEntry(obj, forced, ignoreFile) {
 			//Dialog oeffnen
 			var dlg = new WDialog("$DlgDeleteConfirmation$", "DEX", { modal: true, css: { "width": "450px" }, btnright: [{ label: "$DlgBtnDelete$",
 				onclick: function*(e, btn, dialog) {
-					getWorkEnvironmentByPath(_sc.workpath(obj)).unload();
 					yield removeTreeEntry(obj, true);
+					getWorkEnvironmentByPath(_sc.workpath(obj)).unload();
 					dialog.hide();
 				}
 			},{ label: "$DlgBtnUnload$",
 				onclick: function*(e, btn, dialog) {
-					getWorkEnvironmentByPath(_sc.workpath(obj)).unload();
 					yield removeTreeEntry(obj, true, true);
+					getWorkEnvironmentByPath(_sc.workpath(obj)).unload();
 					dialog.hide();
 				}
 			}, "cancel"]});

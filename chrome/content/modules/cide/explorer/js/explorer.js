@@ -28,7 +28,7 @@ function createWorkEnvironmentEntry(workenv, first) {
 	$(getTreeObjById(id)).attr("workpath", path);
 	if(first)
 		treeExpand(getTreeCntById(id), true);
-	
+
 	if(workenv.repository) {
 		getAppByID("git").create(["-C", path, "branch"], 0x1, 0, function(data) {
 			if(!data || !data.length || data.search(/\w/) == -1)
@@ -83,7 +83,7 @@ function explorerLoadWorkEnvironments() {
 
 $(window).load(function() {
 	_mainwindow.triggerModeButtonIcon();
-	
+
 	var keyb_opensidedeck = new KeyBinding("OpenInSidedeck", "Ctrl-ENTER", function(e, target) {
 			handleTreeEntry(target, true);
 		}, 0, "DEX");
@@ -101,14 +101,14 @@ $(window).load(function() {
 	//Erstellungsdialog fuer Arbeitsumgebungen
 	$("#newWorkEnvironment").mousedown(function() {
 		var dlg = new WDialog("$DlgNewWorkEnvironment$", MODULE_LPRE, { modal: true, css: { "width": "600px" }, btnright: [{ preset: "accept",
-			onclick: function(e, btn, _self) {
-				var error = (str) => { return $(_self.element).find("#dex_dlg_workenv_errorbox").text(Locale(str)); }
+			onclick: function*(e, btn, _self) {
+				let error = (str) => { return $(_self.element).find("#dex_dlg_workenv_errorbox").text(Locale(str)); }
 
-				var type = parseInt($(_self.element).find("#dex_dlg_workenv_type").val()), file;
+				let type = parseInt($(_self.element).find("#dex_dlg_workenv_type").val()), file;
 				if(type == _mainwindow.WORKENV_TYPE_ClonkPath) {
 					//Checken ob der angegebene Pfad existiert/valide ist
-					var path = $(_self.element).find("#dex_dlg_workenv_ocpath").text();
-					try {
+					let path = $(_self.element).find("#dex_dlg_workenv_ocpath").text();
+					/*try {
 						file = new _sc.file(path);
 					}
 					catch(err) {
@@ -119,9 +119,25 @@ $(window).load(function() {
 					if(!file.exists() || !file.isDirectory()) {
 						error("$DlgErrWEPathDoesNotExist$");
 						return e.stopImmediatePropagation();
+					}*/
+					let info;
+					try { info = yield OS.File.stat(path); }
+					catch(err) {
+						if(err.becauseNoSuchFile) {
+							error("$DlgErrWEPathDoesNotExist$");
+							return e.stopImmediatePropagation();
+						}
+						else {
+							error("<hbox>The following error occured while trying to create the work environment:</hbox><hbox>"+err+"</hbox>");
+							return e.stopImmediatePropagation();
+						}
+					}
+					if(!info.isDir) {						
+						error("$DlgErrWEPathDoesNotExist$");
+						return e.stopImmediatePropagation();
 					}
 
-					var cdirs = JSON.parse(getConfigData("Global", "ClonkDirectories")) || [];
+					let cdirs = JSON.parse(getConfigData("Global", "ClonkDirectories")) || [];
 
 					//Ueberpruefen ob Pfad bereits vorhanden ist
 					if(cdirs.indexOf(path) != -1) {
@@ -132,9 +148,11 @@ $(window).load(function() {
 					//Ansonsten der Liste hinzufuegen und speichern
 					cdirs.push(path);
 					setConfigData("Global", "ClonkDirectories", cdirs, true);
-					var workenv = createWorkEnvironment(path, _mainwindow.WORKENV_TYPE_ClonkPath);
+
+					let workenv = createWorkEnvironment(path, _mainwindow.WORKENV_TYPE_ClonkPath);
 					workenv.alwaysexplode = $(_self.element).find("#dex_dlg_workenv_explodecdir").attr("checked") || false;
 					workenv.saveHeader();
+
 					//Ggf. neu laden wenn kein Clonkverzeichnis vorher vorhanden war. (Da wichtige Sachen beim Laden des Explorers erledigt werden muessen)
 					if(cdirs.length == 1) {
 						window.location.reload();
@@ -157,21 +175,14 @@ $(window).load(function() {
 				}
 
 				//Workspaceverzeichnis erstellen und ggf. Error zurueckwerfen
-				try {
-					file = _sc.file(path);
-				} catch(err) {
-					log(err, true);
-					log(err.stack, true);
-					error("$DlgErrWEInvalidPath$");
-					return e.stopImmediatePropagation();
-				}
-				if(!file.exists()) {
-					try {
-						file.create(Ci.nsIFile.DIRECTORY_TYPE, 0o777);
-					} catch(err) {
-						log(err, true);
-						log(err.stack, true);
-						error("$DlgErrWENoAccess$");
+				try { yield OS.File.makeDir(path); }
+				catch(err) {
+					if(err.becauseNoSuchFile) {
+						error("$DlgErrWEInvalidPath$");
+						return e.stopImmediatePropagation();
+					}
+					else {
+						error("<hbox>The following error occured while trying to create the work environment:</hbox><hbox>"+err+"</hbox>");
 						return e.stopImmediatePropagation();
 					}
 				}
@@ -331,11 +342,7 @@ $(window).load(function() {
 
 			var rv = fp.show();
 			if(rv == Ci.nsIFilePicker.returnOK) {
-				var ocexecname = "openclonk";
-				if(OS_TARGET == "WINNT")
-					ocexecname = "openclonk.exe";
-
-				var ocexec = new _sc.file(fp.file.path+"/"+ocexecname);
+				var ocexec = new _sc.file(fp.file.path+"/"+getClonkExecutablePath(true));
 				if(!ocexec.exists()) {
 					warn("$err_ocexecutable_not_found$", "STG");
 					return $(this).trigger("command");
@@ -396,7 +403,7 @@ $(window).load(function() {
 
 		var rv = fp.show();
 		if(rv == Ci.nsIFilePicker.returnOK) {
-			var header = new _sc.file(fp.file.path+"/.windmillheader"), gitdir;
+			let header = new _sc.file(fp.file.path+"/.windmillheader"), gitdir;
 			if(!header.exists()) {
 				gitdir = new _sc.file(fp.file.path+"/.git");
 				if(!gitdir.exists() || !_sc.file(gitdir.path+"/config")) {
@@ -408,13 +415,12 @@ $(window).load(function() {
 			if(_sc.workpath(fp.file))
 				return warn("$err_workspace_already_loaded$");
 
-			var createEnvironment = function() {
-				var env = createWorkEnvironment(formatPath(getConfigData("CIDE", "WorkspaceParentDirectory"))+"/"+fp.file.leafName, _mainwindow.WORKENV_TYPE_Workspace, true);
+			function* createEnvironment() {
+				let env = createWorkEnvironment(formatPath(getConfigData("CIDE", "WorkspaceParentDirectory"))+"/"+fp.file.leafName, _mainwindow.WORKENV_TYPE_Workspace, true);
 				env.unloaded = false;
 				if(gitdir) {
 					env.repository = true;
-					var config = new _sc.file(gitdir.path+"/config");
-					var configtext = readFile(config);
+					let configtext = yield OS.File.read(gitdir.path+"/config", {encoding: "utf-8"});
 					for(var lines = configtext.split("\n"), i = 0, origin = false; i < lines.length; i++) {
 						if(/\[remote.+?"origin"\]/.test(lines[i]))
 							origin = true;
@@ -435,18 +441,19 @@ $(window).load(function() {
 			}
 
 			if(formatPath(fp.file.path).search(formatPath(getConfigData("CIDE", "WorkspaceParentDirectory"))) != -1)
-				return createEnvironment();
+				return Task.spawn(createEnvironment);
 
 			//Dialog oeffnen
-			var dlg = new WDialog("$DlgWEImport$", MODULE_LPRE, { modal: true, css: { "width": "450px" }, btnright: [{ label: "$DlgBtnCopy$",
-				onclick: function(e, btn, dialog) {
-					fp.file.copyTo(_sc.file(getConfigData("CIDE", "WorkspaceParentDirectory")), fp.file.leafName);
-					createEnvironment();
+			let dlg = new WDialog("$DlgWEImport$", MODULE_LPRE, { modal: true, css: { "width": "450px" }, btnright: [{ label: "$DlgBtnCopy$",
+				onclick: function*(e, btn, dialog) {
+					log("copy " + fp.file.path + " to " + getConfigData("CIDE", "WorkspaceParentDirectory")+"/"+fp.file.leafName);
+					yield OSFileRecursive(fp.file.path, getConfigData("CIDE", "WorkspaceParentDirectory")+"/"+fp.file.leafName);
+					yield Task.spawn(createEnvironment);
 					dialog.hide();
 				}
 			},{ label: "$DlgBtnLink$",
-				onclick: function(e, btn, dialog) {
-					var env = createNewWorkEnvironment(formatPath(getConfigData("CIDE", "WorkspaceParentDirectory"))+"/"+fp.file.leafName, _mainwindow.WORKENV_TYPE_Workspace);
+				onclick: function*(e, btn, dialog) {
+					let env = createNewWorkEnvironment(formatPath(getConfigData("CIDE", "WorkspaceParentDirectory"))+"/"+fp.file.leafName, _mainwindow.WORKENV_TYPE_Workspace);
 					env.unloaded = false;
 					env.linkedTo = formatPath(fp.file.path);
 					env.saveHeader();
@@ -613,11 +620,7 @@ function initializeContextMenu() {
 		var elmid = getTreeObjId(sel);
 		var cnt = getTreeCntById(elmid);
 
-		var name = "c4group";
-		if(OS_TARGET == "WINNT")
-			name = "c4group.exe";
-
-		var c4group = _sc.file(_sc.clonkpath() + "/" + name);
+		var c4group = _sc.file(getC4GroupPath());
 		var dir = _sc.file(_sc.workpath()+getTreeObjPath(sel));
 
 		if(!c4group.exists() || !c4group.isExecutable())
@@ -651,11 +654,7 @@ function initializeContextMenu() {
 		var elmid = getTreeObjId(sel);
 		var cnt = getTreeCntById(elmid);
 
-		var name = "c4group";
-		if(OS_TARGET == "WINNT")
-			name = "c4group.exe";
-
-		var c4group = _sc.file(_sc.clonkpath() + "/" + name);
+		var c4group = _sc.file(getC4GroupPath());
 		var dir = _sc.file(_sc.workpath()+getTreeObjPath(sel));
 
 		if(!c4group.exists() || !c4group.isExecutable())
@@ -701,11 +700,7 @@ function initializeContextMenu() {
 		if(!file.exists())
 			return;
 
-		var name = "openclonk";
-		if(OS_TARGET == "WINNT")
-			name = "openclonk.exe";
-
-		var f = _sc.file(_sc.clonkpath() + "/" + name);
+		var f = _sc.file(getClonkExecutablePath());
 		var process = _ws.pr(f);
 		process.create(["--fullscreen", "--nonetwork", filepath], 0, 0, function(data) {
 			log(data);
@@ -723,11 +718,7 @@ function initializeContextMenu() {
 				if(!file.exists())
 					return;
 
-				var name = "openclonk";
-				if(OS_TARGET == "WINNT")
-					name = "openclonk.exe";
-
-				var f = _sc.file(_sc.clonkpath() + "/" + name);
+				var f = _sc.file(getClonkExecutablePath());
 				var process = _ws.pr(f);
 				var args = _mainwindow.$("#dex_dlg_parameters").val().split(' ');
 				args.push(filepath);

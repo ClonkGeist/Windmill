@@ -108,15 +108,13 @@ function navigateToPath(path, open_and_select) {
 
 function PrepareDirectory(path, call) {
 	//c4group suchen
-	var name = "c4group";
-	if(OS_TARGET == "WINNT")
-		name = "c4group.exe";
+	let c4group;
 
 	var nodir = false, noc4group = false;
 	if(!_sc.clonkpath())
 		noc4group = true;
 	else {
-		var c4group = _sc.file(_sc.clonkpath() + "/" + name);
+		c4group = _sc.file(getC4GroupPath());
 		if(!c4group.exists() || !c4group.isExecutable())
 			noc4group = true;
 	}

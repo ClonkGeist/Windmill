@@ -25,10 +25,25 @@ function fallbackInformation() {
 const wmP_NO_WINDOW = 0x00000001;
 const wmP_BLOCKING  = 0x00000002;
 
+function formatPath(path) {
+	if(!path || typeof path != "string")
+		return path;
+
+	if(OS_TARGET == "WINNT") {
+		path = path.replace(/\\/g, "/");
+		path = path.replace(/(^[A-Z]:\/)\//i, "$1");
+	}
+	
+	return path;
+}
+
 class wmProcess extends WindmillInterface {
 	constructor(file) {
 		super();
-		this.file = file;
+		if(typeof file == "object" && file.toString().search("nsILocalFile") != -1) //Etwas hackig, aber keine andere Moeglichkeit
+			this.path = file.path;
+		else
+			this.path = file;
 
 		setInterval(() => { this.routine(); }, 250);
 	}
@@ -38,7 +53,7 @@ class wmProcess extends WindmillInterface {
 			this.hook("stdout", outputListener);
 		if(onProcessClosed)
 			this.hook("closed", onProcessClosed);
-		
+
 		if(OS_TARGET == "WINNT") {
 			this.pipe_out_rd = new HANDLE;
 			this.pipe_out_wr = new HANDLE;
@@ -80,7 +95,7 @@ class wmProcess extends WindmillInterface {
 				flags ^= wmP_BLOCKING
 
 			dump("Create Process with command line " + cmdLine + "\r\n");
-			if(!CreateProcess(this.file.path, this.file.leafName+cmdLine, null, null, true, sfl(flags, this), null, null, this.si.address(), this.pi.address())) {
+			if(!CreateProcess(this.path, this.name+cmdLine, null, null, true, sfl(flags, this), null, null, this.si.address(), this.pi.address())) {
 				throw "Process could not be created. Error code: " + GetLastError();
 				return;
 			}
@@ -173,6 +188,10 @@ class wmProcess extends WindmillInterface {
 		this.status = 2;
 		this.execHook("closed", this.exitCode);
 	}
+	
+	set path(val) { this._path = formatPath(val); }
+	get path() { return this._path; }
+	get name() { return this.path.split("/").pop(); }
 
 	OSCONST(wmconst) {
 		if(OS_TARGET == "WINNT") {

@@ -392,7 +392,7 @@ function Locale(str, prefix) {
 	return str;
 }
 
-function getClonkExecutablePath() {
+function getClonkExecutablePath(filename_only) {
 	//Alternative Executabledatei
 	var name = getConfigData("Global", "AlternativeApp");
 	if(!name) {
@@ -401,6 +401,17 @@ function getClonkExecutablePath() {
 		else
 			name = "openclonk";
 	}
+
+	if(filename_only)
+		return name;
+	return _sc.clonkpath() + "/" + name;
+}
+
+function getC4GroupPath() {
+	if(OS_TARGET == "WINNT")
+		name = "c4group.exe";
+	else
+		name = "c4group";
 
 	return _sc.clonkpath() + "/" + name;
 }
