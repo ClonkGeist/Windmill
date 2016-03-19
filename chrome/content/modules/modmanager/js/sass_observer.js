@@ -36,7 +36,10 @@ hook("load", function() {
 		else
 			def.fScss = false
 		
-		$("#ss-deflist").append("<row>"+
+		if(def.observe) && !getModuleDef(def.observe))
+			log("To observe module definition hasn't been found: " + def.observe);
+		
+		$("#ss-deflist").append("<row id=\"ss-def-"+i+"\">"+
 				"<label value=\""+def.leafName+"\" flex=\"1\" />"+
 				"<label value=\""+(def.observe || "Global")+"\" flex=\"1\"/>"+
 				"<label class=\"update-date\" value=\"unknown\" flex=\"1\"/>"+
@@ -82,6 +85,12 @@ function alreadySubject(index) {
 	return false
 }
 
+Sass.options({
+	precision: 3,
+	comments: false,
+	style: Sass.style.compressed
+})
+
 function reloadStylesheet(fScss, def) {
 	log("Sass: trying to reload definition '" + (def.name || def.index ) + "'")
 	if(def.children && def.children.length)
@@ -113,7 +122,7 @@ function reloadStylesheet(fScss, def) {
 				headstring += readFile(f) + "\n"
 		}
 	}
-	Sass.compile(headstring + readFile(fScss), function(result) {
+	Sass.compile(headstring + (readFile(fScss) || ""), function(result) {
 		if(result.message) {
 			log("Sass.compile() error: " + result.message)
 			log(result.formatted)
@@ -126,13 +135,14 @@ function reloadStylesheet(fScss, def) {
 				log("Sass: Write file: " + _sc.chpath + "/" + def.cssTarget)
 				
 				var mdls = getModulesByName(def.observe)
-				mdls.forEach(m => {showObj2(m, 1);
+				mdls.forEach(m => {
 					let u = m.ownerGlobal.domwu
 					if(!u)
 						return
-					u.removeSheet(uri, u.AGENT_SHEET)
+					u.removeSheet(uri, u.USER_SHEET)
 					writeFile(_sc.file(_sc.chpath + "/" + def.cssTarget), result.text, true)
-					u.loadSheet(uri, u.AGENT_SHEET)
+					u.loadSheet(uri, u.USER_SHEET)
+					u.redraw();
 				})
 			}
 			else {
@@ -143,7 +153,7 @@ function reloadStylesheet(fScss, def) {
 			
 			// update info
 			var d = new Date()
-			$("#ss-deflist").children().eq(def.index).find(".update-date")
+			$("#ss-def-" + def.index).find(".update-date")
 				.attr("value", d.getHours() + ":" + (d.getMinutes()<10?'0':'') + d.getMinutes())
 		}
 	})

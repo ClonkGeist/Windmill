@@ -20,7 +20,7 @@
 	"scss": "modules/main.css",
 	"cssTarget": "styles/main.css",
 	"observe": "main",
-	"require": "global"
+	"require": "global|icons"
 },
 {
 	"name": "cideExplorer",
@@ -33,7 +33,7 @@
 	"name": "cbExplorer",
 	"scss": "modules/cbExplorer.css",
 	"cssTarget": "content/modules/cbridge/cbexplorer/cbexplorer.css",
-	"observe": "cbridge-explorer",
+	"observe": "cbexplorer",
 	"require": "global|explorer|icons"
 },
 {
@@ -74,8 +74,43 @@
 {
 	"name": "scenarioSettings",
 	"scss": "modules/scenarioSettings.css",
-	"cssTarget": "content/modules/cide/meshviewer/scenarioSettings.css",
+	"cssTarget": "content/modules/cide/scenario-settings/scenarioSettings.css",
 	"observe": "scenario-settings",
+	"require": "global|icons"
+},
+{
+	"name": "showGames",
+	"scss": "modules/showGames.css",
+	"cssTarget": "content/modules/cbridge/showgames/showgames.css",
+	"observe": "showgames",
+	"require": "global|icons"
+},
+{
+	"name": "settings",
+	"scss": "modules/settings.css",
+	"cssTarget": "content/modules/settings/settings.css",
+	"observe": "settings",
+	"require": "global|icons"
+},
+{
+	"name": "cide",
+	"scss": "modules/cide.css",
+	"cssTarget": "content/modules/cide/main/cide.css",
+	"observe": "cide",
+	"require": "global|icons"
+},
+{
+	"name": "cfgWizard",
+	"scss": "modules/cfgWizard.css",
+	"cssTarget": "content/modules/configurationwizard/cfgwizard.css",
+	"observe": "configwizard",
+	"require": "global|icons"
+},
+{
+	"name": "modManager",
+	"scss": "modules/modManager.css",
+	"cssTarget": "content/modules/modmanager/modManager.css",
+	"observe": "modmanager",
 	"require": "global|icons"
 }
 ]

@@ -251,7 +251,7 @@ class Deck extends WindmillObject {
 					align="center" 
 					class="deck-${this.id}-button-${id} deck-nav-elm">${icon}
 					<description>${label}</description>
-					<box class="close-button" onclick="closePage(event, ${this.id}, ${id})" />
+					<box class="close-button icon-x" onclick="closePage(event, ${this.id}, ${id})" />
 					</hbox>`);
 				
 				var deckId = this.id;
