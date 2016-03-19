@@ -110,14 +110,14 @@ class _WDialog extends WindmillObject {
 			btn.on("command", (e) => { 
 				try {
 					if(fn.isGenerator()) {
+						_this.lock();
 						Task.spawn(function*() {
-							let generator = fn(e, e.target, _this), result;
-							while(result = yield generator.next()) 
-								if(result.done)
-									return;
+							yield* fn(e, e.target, _this);
+							_this.unlock();
 						});
 					}
-					fn(e, e.target, _this); 
+					else
+						fn(e, e.target, _this); 
 				} catch(err) { 
 					log(err, true); 
 					log(err.stack, true);
@@ -129,11 +129,20 @@ class _WDialog extends WindmillObject {
 			bindfunc(btnobj.clickhandler);
 		if(btnobj.onclick)
 			bindfunc(btnobj.onclick);	
-		//btn.on("command", (e) => { try { btnobj.onclick(e, e.target, this); } catch(err) { log(err, true); log(err.stack, true); this.hide(); } });
 
 		//Butonn hinzufÅEen
 		btn.appendTo(elm);
 		return btn;
+	}
+
+	lock() {
+		$(this.element).find(".main-wdialog-lockoverlay").css("background", "rgba(255,255,255,0.4)");
+		$(this.element).find(".main-wdialog-wrapper").css("pointer-events", "none");
+	}
+
+	unlock() {
+		$(this.element).find(".main-wdialog-lockoverlay").css("background", "rgba(255,255,255,0)");
+		$(this.element).find(".main-wdialog-wrapper").css("pointer-events", "");
 	}
 
 	//Dialog anzeigen

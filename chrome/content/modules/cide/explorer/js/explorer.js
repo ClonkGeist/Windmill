@@ -446,13 +446,15 @@ $(window).load(function() {
 			//Dialog oeffnen
 			let dlg = new WDialog("$DlgWEImport$", MODULE_LPRE, { modal: true, css: { "width": "450px" }, btnright: [{ label: "$DlgBtnCopy$",
 				onclick: function*(e, btn, dialog) {
-					log("copy " + fp.file.path + " to " + getConfigData("CIDE", "WorkspaceParentDirectory")+"/"+fp.file.leafName);
+					log("copy--");
 					yield OSFileRecursive(fp.file.path, getConfigData("CIDE", "WorkspaceParentDirectory")+"/"+fp.file.leafName);
+					log("create env");
 					yield Task.spawn(createEnvironment);
 					dialog.hide();
 				}
 			},{ label: "$DlgBtnLink$",
 				onclick: function*(e, btn, dialog) {
+					log("link");
 					let env = createNewWorkEnvironment(formatPath(getConfigData("CIDE", "WorkspaceParentDirectory"))+"/"+fp.file.leafName, _mainwindow.WORKENV_TYPE_Workspace);
 					env.unloaded = false;
 					env.linkedTo = formatPath(fp.file.path);

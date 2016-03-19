@@ -295,23 +295,29 @@
 	<!-- Dialogs -->
 	<box id="wdialogmodal"></box>
 	<vbox class="main-wdialog draft" align="center" tabindex="1">
-		<spacer flex="1" />
-		<vbox class="main-wdialog-wrapper">
-			<hbox class="main-wdialog-head">
-				<vbox class="main-wdialog-title"></vbox>
-				<spacer flex="1"/>
-				<vbox class="main-wdialog-controls"></vbox>
-			</hbox>
-			<vbox class="main-wdialog-content" flex="1">
-				
+		<spacer flex="1"/>
+		<stack>
+			<vbox flex="1">
+				<vbox class="main-wdialog-wrapper">
+					<hbox class="main-wdialog-head">
+						<vbox class="main-wdialog-title"></vbox>
+						<spacer flex="1"/>
+						<vbox class="main-wdialog-controls"></vbox>
+					</hbox>
+					<vbox class="main-wdialog-content" flex="1">
+						
+					</vbox>
+					<hbox class="main-wdialog-footer">
+						<hbox class="main-wdialog-btnleft"></hbox>
+						<spacer flex="1"/>
+						<hbox class="main-wdialog-btnright"></hbox>
+					</hbox>
+				</vbox>
 			</vbox>
-			<hbox class="main-wdialog-footer">
-				<hbox class="main-wdialog-btnleft"></hbox>
-				<spacer flex="1"/>
-				<hbox class="main-wdialog-btnright"></hbox>
-			</hbox>
-		</vbox>
-		<spacer flex="1" />
+			<vbox flex="1" class="main-wdialog-lockoverlay" style="background: rgba(255, 255, 255, 0); transform: background 1s;">
+			</vbox>
+		</stack>
+		<spacer flex="1"/>
 	</vbox>
 	<!-- dialog end -->
 </stack>

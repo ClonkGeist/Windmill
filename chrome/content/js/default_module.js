@@ -582,7 +582,6 @@ function OSFileRecursive(sourcepath, destpath, callback, operation = "copy", noO
 				file = yield OS.File.openUnique(destpath, { humanReadable: true });
 				destpath = file.path;
 				yield OS.File[operation](sourcepath, destpath);
-				log(">> " + e);
 			}
 			return destpath;
 		}
@@ -616,6 +615,8 @@ function OSFileRecursive(sourcepath, destpath, callback, operation = "copy", noO
 			if(!__rec && operation == "move")
 				yield OS.File.removeDir(sourcepath, {ignoreAbsent: true})
 
+		if(!__rec)
+			log("feddich");
 		return destpath+extra;
 	});
 	task.then(null, function(reason) {
