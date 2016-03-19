@@ -115,7 +115,6 @@ function createTreeElement(tree, label, container, open, img, filename, special)
 			}
 		}
 	});
-	//}
 	
 	var id = TREE_ELM_ID;
 	//Drag and Drop
@@ -624,62 +623,89 @@ function removeTreeEntry(obj, forced, ignoreFile) {
 	if(!$(obj)[0])
 		return;
 
-	var f = _sc.file(_sc.workpath(obj)+getTreeObjPath(obj));
-	if(f.exists()) {
+	if(getWorkEnvironmentByPath(_sc.workpath(obj)).options.rejectDeletion) {
+		EventInfo("Deletion rejected");
+		return;
+	}
+
+	let task = Task.spawn(function*() {
+		if(ignoreFile)
+			return;
+
+		let path = _sc.workpath(obj)+getTreeObjPath(obj);
+		let info;
+		try { info = yield OS.File.stat(path); }
+		catch(e) {
+			if(e.becauseNoSuchFile)
+				return;
+		}
+
 		//Hauptverzeichnis nicht löschen
-		if(formatPath(f.path) == _sc.workpath(obj) && !forced) {
+		if(formatPath(path) == _sc.workpath(obj) && !forced) {
 			//Dialog oeffnen
 			var dlg = new WDialog("$DlgDeleteConfirmation$", "DEX", { modal: true, css: { "width": "450px" }, btnright: [{ label: "$DlgBtnDelete$",
-				onclick: function(e, btn, dialog) {
+				onclick: function*(e, btn, dialog) {
 					getWorkEnvironmentByPath(_sc.workpath(obj)).unload();
-					removeTreeEntry(obj, true);
+					yield removeTreeEntry(obj, true);
 					dialog.hide();
 				}
 			},{ label: "$DlgBtnUnload$",
-				onclick: function(e, btn, dialog) {
+				onclick: function*(e, btn, dialog) {
 					getWorkEnvironmentByPath(_sc.workpath(obj)).unload();
-					removeTreeEntry(obj, true, true);
+					yield removeTreeEntry(obj, true, true);
 					dialog.hide();
 				}
 			}, "cancel"]});
-			dlg.setContent(sprintf(Locale('<hbox><description style="width: 450px;">$DlgDeleteConfirmationDesc$</description></hbox>'), formatPath(f.path).split("/").pop()));
+			dlg.setContent(sprintf(Locale('<hbox><description style="width: 450px;">$DlgDeleteConfirmationDesc$</description></hbox>'), formatPath(path).split("/").pop()));
 			dlg.show();
 			dlg = 0;
-			return;
+			return -1;
 		}
 
-		if(!ignoreFile)
-			f.remove(true);
-	}
+		if(info.isDir) 
+			yield OS.File.removeDir(path);
+		else
+			yield OS.File.remove(path);
+	});
+	task.then(function(ignore) {
+		if(ignore)
+			return;
+		var cnt, obj_container;
+		obj_container = $(obj).parent();
+		
+		var selection_index = getTreeEntryIndex(obj);
+		if(!$(obj).next()[0])
+			selection_index--;
 
-	var cnt, obj_container;
-	obj_container = $(obj).parent();
-	
-	var selection_index = getTreeEntryIndex(obj);
-	if(!$(obj).next()[0])
-		selection_index--;
+		if(cnt = getTreeCntById(getTreeObjId(obj)))
+			$(cnt).remove();
 
-	if(cnt = getTreeCntById(getTreeObjId(obj)))
-		$(cnt).remove();
+		$(obj).remove();
+		
+		//Element darunter auswaehlen
+		if($(obj_container).find("li")[0])
+			selectTreeItem(getTreeEntryByIndex(selection_index));
+		//Alternativ vorherigen Container auswaehlen
+		else
+			selectTreeItem(getTreeObjById(getTreeObjId(obj_container)));
 
-	$(obj).remove();
-	
-	//Element darunter auswaehlen
-	if($(obj_container).find("li")[0])
-		selectTreeItem(getTreeEntryByIndex(selection_index));
-	//Alternativ vorherigen Container auswaehlen
-	else
-		selectTreeItem(getTreeObjById(getTreeObjId(obj_container)));
-
-	//Remove-Callback
-	onTreeObjRemove(obj_container);
-	
-	return true;
+		//Remove-Callback
+		onTreeObjRemove(obj_container);
+	}, function(reason) {
+		EventInfo("An error occured while trying to remove the file.");
+		log(reason);
+	});
+	return task;
 }
 
 /*-- Umbenennen --*/
 
 function renameTreeObj(obj) {
+	if(getWorkEnvironmentByPath(_sc.workpath(obj)).options.rejectRename) {
+		EventInfo("Rename rejected");
+		return;
+	}
+
 	$(obj).children("description").css("display", "none");
 	var filename = obj.attr("filename"), t;
 	if(!filename && obj.attr("workpath"))
@@ -702,46 +728,73 @@ function renameTreeObj(obj) {
 		$(obj).attr("draggable", "false");
 
 	$("#edit-filename").blur(function(e) {
-		var val = $(this).val(), r;
-		if(val && val.length > 0) {
-			if((r = onTreeObjRename(obj, val)) > 0) {
-				$(obj).children("description").text(val);
-				if($(obj).hasClass("workenvironment"))
-					$(obj).attr("workpath", $(obj).attr("workpath").replace(/\/[^/]+$/, "/"+val));
-				else
-					$(obj).attr("filename", val);
-			}
-			else if(r == -1)
-				$(obj).children("description").text(filename);
+		function restoreEntry() {			
+			if(drag)
+				$(obj).attr("draggable", "true");
+			$(obj).css("text-overflow", "");
+			$(obj).children("description").css("display", "initial");
+			$("#edit-filename").remove();
 		}
 
-		if(drag)
-			$(obj).attr("draggable", "true");
-		$(obj).css("text-overflow", "");
-		$(obj).children("description").css("display", "initial");
-		$("#edit-filename").remove();
+		let val = $(this).val();
 
-		var filepath = _sc.workpath(obj) + getTreeObjPath(obj);
-		var file = _sc.file(filepath);
-		var t = file.leafName.split("."), fext = t[t.length-1];
-		if(!obj.hasClass("workenvironment")) {
-			var img = "chrome://windmill/content/img/icon-fileext-other.png";
-			if(file.isDirectory())
-				img = "chrome://windmill/content/img/icon-directory.png";
+		if(!val || !val.length || val == filename)
+			return restoreEntry();
 
-			for(var p in specialData) {
-				var d = specialData[p];
+		//Source und Destination festlegen
+		let source = formatPath(_sc.workpath(obj)+getTreeObjPath(obj));
+		let splitpath = source.split("/");
+		splitpath.pop();
+		splitpath.push(val);
+		let destpath = splitpath.join("/");
 
-				if(d.ext == fext && d.img.length) {
-					img = d.img;
-					break;
+		//Task zum Umbenennen
+		Task.spawn(function*() {
+			if(!val || !val.length)
+				throw -1;
+
+			//Fuer Ordner rekursiv mit Errorthrowing bei Overwrite
+			yield OSFileRecursive(source, destpath, null, "move", 2);
+
+			let env;
+			if($(obj).hasClass("workenvironment") && (env = getWorkEnvironmentByPath($(obj).attr("workpath"))))
+				env.path = destpath;
+
+			return yield OS.File.stat(destpath);
+		}).then(function(info) {
+			restoreEntry();
+			$(obj).children("description").text(val);
+			if($(obj).hasClass("workenvironment"))
+				$(obj).attr("workpath", $(obj).attr("workpath").replace(/\/[^/]+$/, "/"+val));
+			else
+				$(obj).attr("filename", val);
+
+			if(!obj.hasClass("workenvironment")) {
+				let img = "chrome://windmill/content/img/icon-fileext-other.png";
+				if(info.isDir)
+					img = "chrome://windmill/content/img/icon-directory.png";
+
+				let fext = val.split(".").pop();
+				for(var p in specialData) {
+					let d = specialData[p];
+
+					if(d.ext == fext && d.img.length) {
+						img = d.img;
+						break;
+					}
 				}
+
+				$(obj).find("image").attr("src", img);
 			}
 
-			$(obj).find("image").attr("src", img);
-		}
+			sortTreeContainerElements($(obj).parent());
+		}, function(reason) {
+			EventInfo("An error occured while trying to rename the file");
+			log(reason);
 
-		sortTreeContainerElements($(obj).parent());
+			restoreEntry();
+			$(obj).children("description").text(filename);
+		});
 	});
 	$("#edit-filename").keypress(function(e) {
 		if(e.which == 13) {

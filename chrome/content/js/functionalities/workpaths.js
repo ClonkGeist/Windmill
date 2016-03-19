@@ -6,6 +6,11 @@ class WorkEnvironment {
 		this._path = this.truepath = formatPath(path);
 		this.id = id;
 		this.options = options;
+		if(this.options.secured) {
+			this.options.rejectDeletion = true;
+			this.options.rejectRename = true;
+			this.options.rejectMove = true;
+		}
 
 		this.header = { Workspace: {
 			Type,
@@ -242,7 +247,7 @@ var WORKENV_List = [], WORKENV_Current;
 function loadWorkEnvironment(id) {
 	if(OS_TARGET == "WINNT")
 		createWorkEnvironment(formatPath(_sc.env.get("APPDATA")+"/OpenClonk"), WORKENV_TYPE_Workspace, 0,
-		{readOnly: true, unloaded: false, rejectDeletion: true, alternativeTitle: "$WEUserData$", identifier: "UserData"});
+		{readOnly: true, unloaded: false, secured: true, alternativeTitle: "$WEUserData$", identifier: "UserData"});
 
 	//Clonkverzeichnisse laden und ggf. leere Eintraege loeschen
 	var clonkdirs = JSON.parse(getConfigData("Global", "ClonkDirectories")), temp = [];
