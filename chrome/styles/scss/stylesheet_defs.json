@@ -8,6 +8,10 @@
 	"scss": "global/icomoon.css"
 },
 {
+	"name": "specialUi",
+	"scss": "global/specialUi.css"
+},
+{
 	"name": "explorer",
 	"scss": "global/explorer.css"
 },
@@ -16,11 +20,15 @@
 	"scss": "global/colorPicker.css"
 },
 {
+	"name": "contextMenu",
+	"scss": "global/contextMenu.css"
+},
+{
 	"name": "mainFrame",
 	"scss": "modules/main.css",
 	"cssTarget": "styles/main.css",
 	"observe": "main",
-	"require": "global|icons"
+	"require": "global|icons|contextMenu|colorPicker"
 },
 {
 	"name": "cideExplorer",
@@ -111,6 +119,6 @@
 	"scss": "modules/modManager.css",
 	"cssTarget": "content/modules/modmanager/modManager.css",
 	"observe": "modmanager",
-	"require": "global|icons"
+	"require": "global|icons|specialUi"
 }
 ]

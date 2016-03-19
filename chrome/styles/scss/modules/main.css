@@ -212,10 +212,12 @@ caption {
 	transition: width 0.3s;
 	color: rgb(60, 60, 60);
 	border-left: 1px solid gainsboro;
+	box-sizing: border-box;
 }
 
 .sidebar.invisible {
 	width: 0px !important;
+	border-left-width: 0px;
 }
 
 #ps-playerdetails {
@@ -367,7 +369,7 @@ caption {
 }
 
 .notification-item:hover {
-	background-color: $workerbase;
+	background-color: $clr-base;
 }
 
 .notification-head {

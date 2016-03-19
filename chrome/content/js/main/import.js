@@ -121,6 +121,8 @@ var _sc = {
 		str.init(file, flags, perm, behaviorFlags);
 		return str;
 	},
+	// Chrome Window
+	chwin : function() { nsIDOMChromeWindow },
 	//Binary-Output-Stream
 	bostream : function() { return Cc['@mozilla.org/binaryoutputstream;1'].createInstance(Ci.nsIBinaryOutputStream); },
 	//Binary-Input-Stream

@@ -1,1 +1,624 @@
-.eventinfo{background-color:black;opacity:0.6;font-size:9pt;color:white;width:100px;position:fixed;z-index:100;padding:2px 7px;pointer-events:none}.windmill-modal{position:absolute;left:0;top:0;right:0;bottom:0;background-color:#000;opacity:0.5;font-size:16pt;color:white;display:flex;flex-direction:column;align-items:center;justify-content:center}.modal-big{font-size:24pt}@font-face{font-family:'icomoon';src:url("chrome://windmill/skin/icomoon.ttf?-icmbrc") format("truetype");font-weight:normal;font-style:normal}[class^="icon-"],[class*=" icon-"]{font-family:'icomoon';font-style:normal;font-weight:normal;font-variant:normal;text-transform:none;line-height:1;-moz-osx-font-smoothing:grayscale}.icon-32,.icon-24,.icon-16{cursor:default}.icon-16{font-size:16px}.icon-24{font-size:24px}.icon-32{font-size:32px;color:white}.icon-clonkpath:before{content:"\e90b"}.icon-console:before{content:"\e90c"}.icon-eye:before{content:"\e90d"}.icon-reload-2:before{content:"\e90e"}.icon-workspace:before{content:"\e90f"}.icon-environment:before{content:"\e903"}.icon-landscape:before{content:"\e904"}.icon-objects:before{content:"\e906"}.icon-reload:before{content:"\e908"}.icon-wireframe2:before{content:"\e909"}.icon-canvas-scale:before{content:"\e900"}.icon-reflect-h:before{content:"\e901"}.icon-reflect-v:before{content:"\e902"}.icon-undo:before{content:"\e965"}.icon-redo:before{content:"\e966"}.icon-bg-filled:before{content:"\e629"}.icon-grid:before{content:"\e631"}.icon-restore:before{content:"\e632"}.icon-transparent:before{content:"\e633"}.icon-the-mill:before{content:"\e634"}.icon-warning:before{content:"\e635"}.icon-wireframe:before{content:"\e636"}.icon-empty-space:before{content:"\e637"}.icon-draw-line:before{content:"\e62b"}.icon-erase:before{content:"\e62c"}.icon-fill-circle:before{content:"\e62d"}.icon-fill-rect:before{content:"\e62e"}.icon-select-poly:before{content:"\e62f"}.icon-cursor:before{content:"\e630"}.icon-doc-backwards:before{content:"\e601"}.icon-continue-at-start:before{content:"\e625"}.icon-snippet:before{content:"\e628"}.icon-whole-word:before{content:"\e60a"}.icon-csense:before{content:"\e61a"}.icon-editor-frame:before{content:"\e627"}.icon-paint-bucket:before{content:"\e603"}.icon-magic-wand:before{content:"\e997"}.icon-volume-high:before{content:"\ea26"}.icon-volume-mute2:before{content:"\ea2a"}.icon-select-rect:before{content:"\e61f"}.icon-select-circle:before{content:"\e620"}.icon-arrow-down:before{content:"\e621"}.icon-arrow-left:before{content:"\e622"}.icon-arrow-right:before{content:"\e623"}.icon-arrow-up:before{content:"\e624"}.icon-measure:before{content:"\e626"}.icon-bars-ref-1-3:before{content:"\e600"}.icon-backwards:before{content:"\e604"}.icon-backwards_sharp:before{content:"\e605"}.icon-x:before{content:"\e602"}.icon-maximize:before{content:"\e60e"}.icon-minimize:before{content:"\e60f"}.icon-multisource:before{content:"\e610"}.icon-play:before{content:"\e611"}.icon-add-player:before{content:"\e62a"}.icon-ref-2-3:before{content:"\e613"}.icon-ref-3-3:before{content:"\e614"}.icon-save:before{content:"\e617"}.icon-search:before{content:"\e618"}.icon-stop:before{content:"\e619"}.icon-trashbin:before{content:"\e61b"}.icon-pencil:before{content:"\e905"}.icon-quill:before{content:"\e907"}.icon-eyedropper:before{content:"\e90a"}.icon-folder:before{content:"\e92f"}.icon-spinner11:before{content:"\e984"}.icon-git:before{content:"\eae2"}.icon-brackets:before{content:"\e606"}.icon-cam:before{content:"\e607"}.icon-checked:before{content:"\e608"}.icon-controller:before{content:"\e609"}.icon-gear:before{content:"\e60b"}.icon-heartbeat:before{content:"\e60c"}.icon-lock:before{content:"\e60d"}.icon-players:before{content:"\e612"}.icon-resource_saviour:before{content:"\e615"}.icon-runtimejoin:before{content:"\e616"}.icon-trophy:before{content:"\e61c"}.icon-update:before{content:"\e61d"}.icon-world:before{content:"\e61e"}.icon-git-modified:before{content:"M"}.icon-git-added:before{content:"A"}.icon-git-deleted:before{content:"D"}.icon-git-renamed:before{content:"R"}.icon-git-copied:before{content:"C"}.icon-git-updatedUnmerged:before{content:"U"}.icon-git-untracked:before{content:"?"}html,body{background-color:#f5f5f5;font-family:"Segoe UI", Verdana, sans-serif;color:#282828;padding:0;margin:0}html,body,#wrapper{height:100%;width:100%}#wrapper{position:relative}#reference-container{width:60%;position:absolute;left:0;top:0;bottom:0;overflow-y:auto;padding:0 1.5em;-moz-box-sizing:border-box;box-sizing:border-box;-moz-user-select:none}#game-info{width:40%;max-width:40%;position:absolute;right:0;top:0;bottom:0;overflow-y:auto;-moz-box-sizing:border-box;box-sizing:border-box;padding-top:1em;cursor:default}#game-info-wrapper{padding:0 10%}#toolbar{color:#b4b4b4;display:flex;justify-content:flex-end;margin-top:10px;margin-bottom:7px}#toolbar-wrapper>*{display:inline-block;margin-left:5px}#toolbar-wrapper>*:hover{color:grey}#ref-layout-list>*{display:none}#ref-layout-list>*:first-child{display:inline-block}#ref-toggle-update.activated{color:#0876BA}#reference-list{width:100%;-moz-appearance:none;display:table;padding:0;border-collapse:collapse !important}.reference{background-color:white;width:33.3%;height:6em;float:left;display:table-cell;cursor:pointer;font-size:0.8em;-moz-box-sizing:border-box;box-sizing:border-box;position:relative;border-collapse:collapse;border:none;box-shadow:1px 0 0 0 #e6e6e6,0 1px 0 0 #e6e6e6,1px 1px 0 0 #e6e6e6,1px 0 0 0 #e6e6e6 inset,0 1px 0 0 #e6e6e6 inset;background-image:repeating-linear-gradient(-45deg, transparent, transparent 4px, #f0f0f0 4px, #f0f0f0 5px)}.reference p{margin:0}.ref-flexwrapper{display:flex}.ref-content{flex:1;padding:0.5em}.ref-title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ref-hostname{font-size:0.8em;color:grey;display:block}.ref-info{width:100%;padding:0.5em;bottom:0;left:0;right:0;position:absolute;-moz-box-sizing:border-box;box-sizing:border-box}.ref-playerinfo{float:right}.ref-playercount{font-size:1.4em}.ref-icons>img{width:16px;height:16px}.ref-icons{float:left;clear:left}.ref-playernames{float:left;clear:left}.ref-titleimage{height:6em}.reference-draft{display:none}.reference.running{color:grey}.reference.running .ref-titleimage{filter:grayscale(100%)}#reference-list .reference.runtimejoin{color:#282828}.password-icon,.league-icon{display:none}.reference.password .password-icon,.reference.league .league-icon{display:inline-block}.portsopen{background-image:none}#ports-tooltip{width:180px;height:60px;word-wrap:break-word;background-color:black;color:white;font-size:8pt;transition:opacity 0.3s;position:absolute;padding:3px;z-index:100;opacity:0;pointer-events:none}#ports-tooltip.visible{opacity:0.5;display:block}#reference-list.ref-layout-shortinfo .reference:nth-child(3n+2){clear:left}#reference-list.ref-layout-shortinfo .ref-playernames{display:none}#reference-list.ref-layout-shortinfo .ref-comment{display:none}#reference-list.ref-layout-classic .ref-playerinfo,#reference-list.ref-layout-longinfo .ref-playerinfo{display:none}#reference-list.ref-layout-classic .ref-content{position:relative}#reference-list.ref-layout-shortinfo .ref-titleimage,#reference-list.ref-layout-longinfo .ref-titleimage{display:none}#reference-list.ref-layout-classic .ref-icons,#reference-list.ref-layout-longinfo .ref-icons{float:right;clear:none}#reference-list.ref-layout-longinfo .reference{width:50%}#reference-list.ref-layout-longinfo .reference:nth-child(2n){clear:left}#reference-list.ref-layout-classic .reference{clear:left;width:100%}#game-info.selected-ref #game-ref-info,#game-info-motd{display:initial}#game-info.selected-ref #game-info-motd,#game-ref-info{display:none}#game-info h2{padding:0;margin:0.5em 0 0.5em 0;border-bottom:1px solid gainsboro;display:block;font-size:0.7em;color:grey;font-weight:normal;text-transform:uppercase}h2{background-color:inherit;-moz-appearance:none;font-family:"Segoe UI", Verdana, sans-serif}#game-playerlist p{margin:0.2em 0}#game-playerlist>*:hover{background-color:#f5f5f5}.game-player-name,.game-player-clientname{display:inline-block}.game-player-clientname{float:right}#game-title{margin:0;font-size:20px;line-height:20px;font-family:"Segoe UI", "Trebuchet MS", Verdana, sans-serif;padding:0}#game-hostname{margin-top:10px;font-size:15px;line-height:15px;padding:0}#ressavemode-btn{display:none}#ressavemode-btn.ressavemode{display:block;position:absolute;top:0px;right:0px;width:32px;height:32px;background-color:black;opacity:0.5;transition:opacity 0.3s, background-color 0.3s;z-index:1}#ressavemode-btn:hover{opacity:1;background-color:#db4631}
+/*-- Sammelstyles fuer Inhalte der default_module.js --*/
+.eventinfo {
+  background-color: black;
+  opacity: 0.6;
+  font-size: 9pt;
+  color: white;
+  width: 100px;
+  position: fixed;
+  z-index: 100;
+  padding: 2px 7px;
+  pointer-events: none; }
+
+/* Windmill Modal */
+.windmill-modal {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #000;
+  opacity: 0.5;
+  font-size: 16pt;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; }
+
+.modal-big {
+  font-size: 24pt; }
+
+@font-face {
+  font-family: 'icomoon';
+  src: url("chrome://windmill/skin/icomoon.ttf?-icmbrc") format("truetype");
+  font-weight: normal;
+  font-style: normal; }
+
+[class^="icon-"], [class*=" icon-"] {
+  font-family: 'icomoon';
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -moz-osx-font-smoothing: grayscale; }
+
+.icon-32,
+.icon-24,
+.icon-16 {
+  cursor: default; }
+
+.icon-16 {
+  font-size: 16px; }
+
+.icon-24 {
+  font-size: 24px; }
+
+.icon-32 {
+  font-size: 32px;
+  color: white; }
+
+.icon-clonkpath:before {
+  content: "\e90b"; }
+
+.icon-console:before {
+  content: "\e90c"; }
+
+.icon-eye:before {
+  content: "\e90d"; }
+
+.icon-reload-2:before {
+  content: "\e90e"; }
+
+.icon-workspace:before {
+  content: "\e90f"; }
+
+.icon-environment:before {
+  content: "\e903"; }
+
+.icon-landscape:before {
+  content: "\e904"; }
+
+.icon-objects:before {
+  content: "\e906"; }
+
+.icon-reload:before {
+  content: "\e908"; }
+
+.icon-wireframe2:before {
+  content: "\e909"; }
+
+.icon-canvas-scale:before {
+  content: "\e900"; }
+
+.icon-reflect-h:before {
+  content: "\e901"; }
+
+.icon-reflect-v:before {
+  content: "\e902"; }
+
+.icon-undo:before {
+  content: "\e965"; }
+
+.icon-redo:before {
+  content: "\e966"; }
+
+.icon-bg-filled:before {
+  content: "\e629"; }
+
+.icon-grid:before {
+  content: "\e631"; }
+
+.icon-restore:before {
+  content: "\e632"; }
+
+.icon-transparent:before {
+  content: "\e633"; }
+
+.icon-the-mill:before {
+  content: "\e634"; }
+
+.icon-warning:before {
+  content: "\e635"; }
+
+.icon-wireframe:before {
+  content: "\e636"; }
+
+.icon-empty-space:before {
+  content: "\e637"; }
+
+.icon-draw-line:before {
+  content: "\e62b"; }
+
+.icon-erase:before {
+  content: "\e62c"; }
+
+.icon-fill-circle:before {
+  content: "\e62d"; }
+
+.icon-fill-rect:before {
+  content: "\e62e"; }
+
+.icon-select-poly:before {
+  content: "\e62f"; }
+
+.icon-cursor:before {
+  content: "\e630"; }
+
+.icon-doc-backwards:before {
+  content: "\e601"; }
+
+.icon-continue-at-start:before {
+  content: "\e625"; }
+
+.icon-snippet:before {
+  content: "\e628"; }
+
+.icon-whole-word:before {
+  content: "\e60a"; }
+
+.icon-csense:before {
+  content: "\e61a"; }
+
+.icon-editor-frame:before {
+  content: "\e627"; }
+
+.icon-paint-bucket:before {
+  content: "\e603"; }
+
+.icon-magic-wand:before {
+  content: "\e997"; }
+
+.icon-volume-high:before {
+  content: "\ea26"; }
+
+.icon-volume-mute2:before {
+  content: "\ea2a"; }
+
+.icon-select-rect:before {
+  content: "\e61f"; }
+
+.icon-select-circle:before {
+  content: "\e620"; }
+
+.icon-arrow-down:before {
+  content: "\e621"; }
+
+.icon-arrow-left:before {
+  content: "\e622"; }
+
+.icon-arrow-right:before {
+  content: "\e623"; }
+
+.icon-arrow-up:before {
+  content: "\e624"; }
+
+.icon-measure:before {
+  content: "\e626"; }
+
+.icon-bars-ref-1-3:before {
+  content: "\e600"; }
+
+.icon-backwards:before {
+  content: "\e604"; }
+
+.icon-backwards_sharp:before {
+  content: "\e605"; }
+
+.icon-x:before {
+  content: "\e602"; }
+
+.icon-maximize:before {
+  content: "\e60e"; }
+
+.icon-minimize:before {
+  content: "\e60f"; }
+
+.icon-multisource:before {
+  content: "\e610"; }
+
+.icon-play:before {
+  content: "\e611"; }
+
+.icon-add-player:before {
+  content: "\e62a"; }
+
+.icon-ref-2-3:before {
+  content: "\e613"; }
+
+.icon-ref-3-3:before {
+  content: "\e614"; }
+
+.icon-save:before {
+  content: "\e617"; }
+
+.icon-search:before {
+  content: "\e618"; }
+
+.icon-stop:before {
+  content: "\e619"; }
+
+.icon-trashbin:before {
+  content: "\e61b"; }
+
+.icon-pencil:before {
+  content: "\e905"; }
+
+.icon-quill:before {
+  content: "\e907"; }
+
+.icon-eyedropper:before {
+  content: "\e90a"; }
+
+.icon-folder:before {
+  content: "\e92f"; }
+
+.icon-spinner11:before {
+  content: "\e984"; }
+
+.icon-git:before {
+  content: "\eae2"; }
+
+.icon-brackets:before {
+  content: "\e606"; }
+
+.icon-cam:before {
+  content: "\e607"; }
+
+.icon-checked:before {
+  content: "\e608"; }
+
+.icon-controller:before {
+  content: "\e609"; }
+
+.icon-gear:before {
+  content: "\e60b"; }
+
+.icon-heartbeat:before {
+  content: "\e60c"; }
+
+.icon-lock:before {
+  content: "\e60d"; }
+
+.icon-players:before {
+  content: "\e612"; }
+
+.icon-resource_saviour:before {
+  content: "\e615"; }
+
+.icon-runtimejoin:before {
+  content: "\e616"; }
+
+.icon-trophy:before {
+  content: "\e61c"; }
+
+.icon-update:before {
+  content: "\e61d"; }
+
+.icon-world:before {
+  content: "\e61e"; }
+
+.icon-git-modified:before {
+  content: "M"; }
+
+.icon-git-added:before {
+  content: "A"; }
+
+.icon-git-deleted:before {
+  content: "D"; }
+
+.icon-git-renamed:before {
+  content: "R"; }
+
+.icon-git-copied:before {
+  content: "C"; }
+
+.icon-git-updatedUnmerged:before {
+  content: "U"; }
+
+.icon-git-untracked:before {
+  content: "?"; }
+
+html, body {
+  background-color: whitesmoke;
+  font-family: "Segoe UI", Verdana, sans-serif;
+  color: #282828;
+  padding: 0;
+  margin: 0; }
+
+html, body, #wrapper {
+  height: 100%;
+  width: 100%; }
+
+#wrapper {
+  position: relative; }
+
+#reference-container {
+  width: 60%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  overflow-y: auto;
+  padding: 0 1.5em;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  -moz-user-select: none; }
+
+#game-info {
+  width: 40%;
+  max-width: 40%;
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  overflow-y: auto;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  padding-top: 1em;
+  cursor: default; }
+
+#game-info-wrapper {
+  padding: 0 10%; }
+
+#toolbar {
+  color: #b4b4b4;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+  margin-bottom: 7px; }
+
+#toolbar-wrapper > * {
+  display: inline-block;
+  margin-left: 5px; }
+
+#toolbar-wrapper > *:hover {
+  color: grey; }
+
+#ref-layout-list > * {
+  display: none; }
+
+#ref-layout-list > *:first-child {
+  display: inline-block; }
+
+#ref-toggle-update.activated {
+  color: #0876BA; }
+
+/*	references 	*/
+#reference-list {
+  width: 100%;
+  -moz-appearance: none;
+  display: table;
+  padding: 0;
+  border-collapse: collapse !important; }
+
+.reference {
+  /*background-color: rgb(250, 250, 250);*/
+  background-color: white;
+  /*border: 1px solid rgb(230, 230, 230);*/
+  width: 33.3%;
+  height: 6em;
+  float: left;
+  display: table-cell;
+  cursor: pointer;
+  font-size: 0.8em;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  position: relative;
+  border-collapse: collapse;
+  /*  workaround ... */
+  border: none;
+  box-shadow: 1px 0 0 0 #e6e6e6, 0 1px 0 0 #e6e6e6, 1px 1px 0 0 #e6e6e6, 1px 0 0 0 #e6e6e6 inset, 0 1px 0 0 #e6e6e6 inset;
+  background-image: repeating-linear-gradient(-45deg, transparent, transparent 4px, #f0f0f0 4px, #f0f0f0 5px); }
+
+.reference p {
+  margin: 0; }
+
+.ref-flexwrapper {
+  display: flex; }
+
+.ref-content {
+  flex: 1;
+  padding: 0.5em; }
+
+.ref-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; }
+
+.ref-hostname {
+  font-size: 0.8em;
+  color: grey;
+  display: block; }
+
+.ref-info {
+  width: 100%;
+  padding: 0.5em;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  position: absolute;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box; }
+
+.ref-playerinfo {
+  float: right; }
+
+.ref-playercount {
+  font-size: 1.4em; }
+
+.ref-icons > img {
+  width: 16px;
+  height: 16px; }
+
+.ref-icons {
+  float: left;
+  clear: left; }
+
+.ref-playernames {
+  float: left;
+  clear: left; }
+
+.ref-titleimage {
+  height: 6em; }
+
+/* reference classes to control their appearence:
+
+	reference-
+		draft
+		running
+		runtimejoin
+		password
+		league
+		portsopen
+*/
+.reference-draft {
+  display: none; }
+
+.reference.running {
+  color: grey; }
+
+.reference.running .ref-titleimage {
+  filter: grayscale(100%); }
+
+#reference-list .reference.runtimejoin {
+  color: #282828; }
+
+.password-icon,
+.league-icon {
+  display: none; }
+
+.reference.password .password-icon,
+.reference.league .league-icon {
+  display: inline-block; }
+
+.portsopen {
+  background-image: none; }
+
+#ports-tooltip {
+  width: 180px;
+  height: 60px;
+  word-wrap: break-word;
+  background-color: black;
+  color: white;
+  font-size: 8pt;
+  transition: opacity 0.3s;
+  position: absolute;
+  padding: 3px;
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none; }
+
+#ports-tooltip.visible {
+  opacity: 0.5;
+  display: block; }
+
+/*	layout specifics	*/
+#reference-list.ref-layout-shortinfo .reference:nth-child(3n+2) {
+  clear: left; }
+
+#reference-list.ref-layout-shortinfo .ref-playernames {
+  display: none; }
+
+#reference-list.ref-layout-shortinfo .ref-comment {
+  display: none; }
+
+#reference-list.ref-layout-classic .ref-playerinfo,
+#reference-list.ref-layout-longinfo .ref-playerinfo {
+  display: none; }
+
+#reference-list.ref-layout-classic .ref-content {
+  position: relative; }
+
+#reference-list.ref-layout-shortinfo .ref-titleimage,
+#reference-list.ref-layout-longinfo .ref-titleimage {
+  display: none; }
+
+#reference-list.ref-layout-classic .ref-icons,
+#reference-list.ref-layout-longinfo .ref-icons {
+  float: right;
+  clear: none; }
+
+#reference-list.ref-layout-longinfo .reference {
+  width: 50%; }
+
+#reference-list.ref-layout-longinfo .reference:nth-child(2n) {
+  clear: left; }
+
+#reference-list.ref-layout-classic .reference {
+  clear: left;
+  width: 100%; }
+
+/* description */
+#game-info.selected-ref #game-ref-info,
+#game-info-motd {
+  display: initial; }
+
+#game-info.selected-ref #game-info-motd,
+#game-ref-info {
+  display: none; }
+
+#game-info h2 {
+  padding: 0;
+  margin: 0.5em 0 0.5em 0;
+  border-bottom: 1px solid gainsboro;
+  display: block;
+  font-size: 0.7em;
+  color: grey;
+  font-weight: normal;
+  /*	letter-spacing: 3px;*/
+  text-transform: uppercase; }
+
+h2 {
+  background-color: inherit;
+  -moz-appearance: none;
+  font-family: "Segoe UI", Verdana, sans-serif; }
+
+#game-playerlist p {
+  margin: 0.2em 0; }
+
+#game-playerlist > *:hover {
+  background-color: whitesmoke; }
+
+.game-player-name,
+.game-player-clientname {
+  display: inline-block; }
+
+.game-player-clientname {
+  float: right; }
+
+#game-title {
+  margin: 0;
+  font-size: 20px;
+  line-height: 20px;
+  font-family: "Segoe UI", "Trebuchet MS", Verdana, sans-serif;
+  padding: 0; }
+
+#game-hostname {
+  margin-top: 10px;
+  font-size: 15px;
+  line-height: 15px;
+  padding: 0; }
+
+/* button */
+#ressavemode-btn {
+  display: none; }
+
+#ressavemode-btn.ressavemode {
+  display: block;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  width: 32px;
+  height: 32px;
+  background-color: black;
+  opacity: 0.5;
+  transition: opacity 0.3s, background-color 0.3s;
+  z-index: 1; }
+
+#ressavemode-btn:hover {
+  opacity: 1;
+  background-color: #db4631; }
+
+/*	need some space	*/

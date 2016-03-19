@@ -36,7 +36,7 @@ hook("load", function() {
 		else
 			def.fScss = false
 		
-		if(def.observe) && !getModuleDef(def.observe))
+		if(def.observe && def.observe !== "main" && !getModuleDef(def.observe))
 			log("To observe module definition hasn't been found: " + def.observe);
 		
 		$("#ss-deflist").append("<row id=\"ss-def-"+i+"\">"+
@@ -88,7 +88,7 @@ function alreadySubject(index) {
 Sass.options({
 	precision: 3,
 	comments: false,
-	style: Sass.style.compressed
+	//style: Sass.style.compressed
 })
 
 function reloadStylesheet(fScss, def) {
@@ -98,8 +98,13 @@ function reloadStylesheet(fScss, def) {
 	
 	var module = def.observe
 	
-	if(!def.cssTarget)
+	if(!def.cssTarget) {
+		// update info
+		var d = new Date()
+		$("#ss-def-" + def.index).find(".update-date")
+			.attr("value", d.getHours() + ":" + (d.getMinutes()<10?'0':'') + d.getMinutes())
 		return
+	}
 	
 	if(def.observe === "main")
 		module = _mainwindow

@@ -1,7 +1,18 @@
 window {
-	background-color: rgb(250, 250, 250);
+	background-color: $clr-paper;
 	font-family: $font-stack;
 	overflow-y: scroll;
+}
+
+button {
+	-moz-appearance: none;
+	border: none;
+	@include text_button;
+	text-align: center;
+}
+
+#switch-overview {
+	padding: 20px;
 }
 
 .btn-reload {
@@ -17,14 +28,19 @@ window {
 	color: rgb(80, 80, 80);
 }
 
+row:hover {
+	@include: hover_blue;
+}
+
 row.header {
-	background-color: gainsboro;
-	border-bottom: 1px solid grey;
+	background-color: $clr-empty;
+	border-bottom: 1px solid $clr-base;
 }
 
 row > * {
-	border-left: 1px dotted grey;
-	padding-left: 5px;
+	border-left: 3px solid $clr-empty;
+	padding-left: 10px;
+	vertical-align: center;
 }
 
 row.removedModule {
@@ -79,7 +95,7 @@ grid {
 }
 
 .inspect-line:hover {
-	background-color: rgba(0, 165, 207, 0.15);
+	@include hover_blue;
 	-moz-user-select: text;
 }
 

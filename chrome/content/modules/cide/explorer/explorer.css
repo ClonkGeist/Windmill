@@ -1,1 +1,457 @@
-.eventinfo{background-color:black;opacity:0.6;font-size:9pt;color:white;width:100px;position:fixed;z-index:100;padding:2px 7px;pointer-events:none}.windmill-modal{position:absolute;left:0;top:0;right:0;bottom:0;background-color:#000;opacity:0.5;font-size:16pt;color:white;display:flex;flex-direction:column;align-items:center;justify-content:center}.modal-big{font-size:24pt}window{background-color:#f5f5f5;font-family:"Segoe UI","Trebuchet MS",sans-serif;font-size:12px}#operator-list{border-top:#d7d7d7;background-color:#fafafa}#filecontainer{overflow:auto}li.treeelm{border:none;-moz-box-sizing:border-box;box-sizing:border-box}li.treeelm:hover{background-color:rgba(0,165,207,0.15);outline:1px solid rgba(0,165,207,0.3);outline-offset:-1px}li.treeelm::after{content:attr(data-special);color:#070}li.tree-selected,li.tree-selected:focus,li.tree-selected:hover{outline-offset:-1px;background-color:rgba(0,165,207,0.2);outline:1px solid rgba(0,165,207,0.5);border:none}ul.tree-expanded{display:block}ul.tree-collapsed{display:none}ul{padding-left:1em;margin-left:0.5em}li{-moz-box-sizing:border-box;box-sizing:border-box;border:1px solid transparent}.treeelm image{vertical-align:middle;margin-right:6px}li{overflow:hidden;white-space:nowrap;display:block;padding-left:0.5em;padding-right:0.5em;text-overflow:ellipsis}li:focus *,li:focus{outline:none}.maintree{transition:background-color 0.4s;padding-right:1.5em}.maintree.dragover{transition:background-color 0.4s;background-color:rgba(102,167,247,0.5)}.treeelm-container-empty{color:#444;font-style:italic}.el-rename-input{-moz-appearance:none;border:none;outline:1px solid #a0a0a0;outline:1px solid #282828;outline-offset:-1px;margin:0;padding:0}.el-rename-input *{padding:0;margin:0}@font-face{font-family:'icomoon';src:url("chrome://windmill/skin/icomoon.ttf?-icmbrc") format("truetype");font-weight:normal;font-style:normal}[class^="icon-"],[class*=" icon-"]{font-family:'icomoon';font-style:normal;font-weight:normal;font-variant:normal;text-transform:none;line-height:1;-moz-osx-font-smoothing:grayscale}.icon-32,.icon-24,.icon-16{cursor:default}.icon-16{font-size:16px}.icon-24{font-size:24px}.icon-32{font-size:32px;color:white}.icon-clonkpath:before{content:"\e90b"}.icon-console:before{content:"\e90c"}.icon-eye:before{content:"\e90d"}.icon-reload-2:before{content:"\e90e"}.icon-workspace:before{content:"\e90f"}.icon-environment:before{content:"\e903"}.icon-landscape:before{content:"\e904"}.icon-objects:before{content:"\e906"}.icon-reload:before{content:"\e908"}.icon-wireframe2:before{content:"\e909"}.icon-canvas-scale:before{content:"\e900"}.icon-reflect-h:before{content:"\e901"}.icon-reflect-v:before{content:"\e902"}.icon-undo:before{content:"\e965"}.icon-redo:before{content:"\e966"}.icon-bg-filled:before{content:"\e629"}.icon-grid:before{content:"\e631"}.icon-restore:before{content:"\e632"}.icon-transparent:before{content:"\e633"}.icon-the-mill:before{content:"\e634"}.icon-warning:before{content:"\e635"}.icon-wireframe:before{content:"\e636"}.icon-empty-space:before{content:"\e637"}.icon-draw-line:before{content:"\e62b"}.icon-erase:before{content:"\e62c"}.icon-fill-circle:before{content:"\e62d"}.icon-fill-rect:before{content:"\e62e"}.icon-select-poly:before{content:"\e62f"}.icon-cursor:before{content:"\e630"}.icon-doc-backwards:before{content:"\e601"}.icon-continue-at-start:before{content:"\e625"}.icon-snippet:before{content:"\e628"}.icon-whole-word:before{content:"\e60a"}.icon-csense:before{content:"\e61a"}.icon-editor-frame:before{content:"\e627"}.icon-paint-bucket:before{content:"\e603"}.icon-magic-wand:before{content:"\e997"}.icon-volume-high:before{content:"\ea26"}.icon-volume-mute2:before{content:"\ea2a"}.icon-select-rect:before{content:"\e61f"}.icon-select-circle:before{content:"\e620"}.icon-arrow-down:before{content:"\e621"}.icon-arrow-left:before{content:"\e622"}.icon-arrow-right:before{content:"\e623"}.icon-arrow-up:before{content:"\e624"}.icon-measure:before{content:"\e626"}.icon-bars-ref-1-3:before{content:"\e600"}.icon-backwards:before{content:"\e604"}.icon-backwards_sharp:before{content:"\e605"}.icon-x:before{content:"\e602"}.icon-maximize:before{content:"\e60e"}.icon-minimize:before{content:"\e60f"}.icon-multisource:before{content:"\e610"}.icon-play:before{content:"\e611"}.icon-add-player:before{content:"\e62a"}.icon-ref-2-3:before{content:"\e613"}.icon-ref-3-3:before{content:"\e614"}.icon-save:before{content:"\e617"}.icon-search:before{content:"\e618"}.icon-stop:before{content:"\e619"}.icon-trashbin:before{content:"\e61b"}.icon-pencil:before{content:"\e905"}.icon-quill:before{content:"\e907"}.icon-eyedropper:before{content:"\e90a"}.icon-folder:before{content:"\e92f"}.icon-spinner11:before{content:"\e984"}.icon-git:before{content:"\eae2"}.icon-brackets:before{content:"\e606"}.icon-cam:before{content:"\e607"}.icon-checked:before{content:"\e608"}.icon-controller:before{content:"\e609"}.icon-gear:before{content:"\e60b"}.icon-heartbeat:before{content:"\e60c"}.icon-lock:before{content:"\e60d"}.icon-players:before{content:"\e612"}.icon-resource_saviour:before{content:"\e615"}.icon-runtimejoin:before{content:"\e616"}.icon-trophy:before{content:"\e61c"}.icon-update:before{content:"\e61d"}.icon-world:before{content:"\e61e"}.icon-git-modified:before{content:"M"}.icon-git-added:before{content:"A"}.icon-git-deleted:before{content:"D"}.icon-git-renamed:before{content:"R"}.icon-git-copied:before{content:"C"}.icon-git-updatedUnmerged:before{content:"U"}.icon-git-untracked:before{content:"?"}.toolbar{height:24px;background-color:#ebebeb}.toolbar-option{width:60px;text-align:center;line-height:24px;cursor:pointer;transition:background-color 0.5s}.toolbar-option:hover{background-color:#eee;transition:background-color 0s}.nav-image:hover{background-color:#eee}.nav-image.deselected{color:#777}#searchinput{margin:0px;border:0px;-moz-appearance:none;background-color:#fff;border-bottom:1p solid gainsboro;font-size:1.2em;transition:height 0.5s}#searchinput.hidden{height:0px;padding:0px}.searchinput:before{content:'\e618  ';font-family:'icomoon';font-style:normal;font-weight:normal;font-variant:normal;text-transform:none;line-height:1;-moz-osx-font-smoothing:grayscale}
+/*-- Sammelstyles fuer Inhalte der default_module.js --*/
+.eventinfo {
+  background-color: black;
+  opacity: 0.6;
+  font-size: 9pt;
+  color: white;
+  width: 100px;
+  position: fixed;
+  z-index: 100;
+  padding: 2px 7px;
+  pointer-events: none; }
+
+/* Windmill Modal */
+.windmill-modal {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #000;
+  opacity: 0.5;
+  font-size: 16pt;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; }
+
+.modal-big {
+  font-size: 24pt; }
+
+window {
+  background-color: whitesmoke;
+  font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+  font-size: 12px; }
+
+#operator-list {
+  border-top: #d7d7d7;
+  background-color: #fafafa; }
+
+#filecontainer {
+  overflow: auto; }
+
+li.treeelm {
+  border: none;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box; }
+
+li.treeelm:hover {
+  background-color: rgba(0, 165, 207, 0.15);
+  outline: 1px solid rgba(0, 165, 207, 0.3);
+  outline-offset: -1px; }
+
+li.treeelm::after {
+  content: attr(data-special);
+  color: #070; }
+
+li.tree-selected,
+li.tree-selected:focus,
+li.tree-selected:hover {
+  /* background-color: #F4FF8E;*/
+  outline-offset: -1px;
+  background-color: rgba(0, 165, 207, 0.2);
+  outline: 1px solid rgba(0, 165, 207, 0.5);
+  border: none; }
+
+ul.tree-expanded {
+  display: block; }
+
+ul.tree-collapsed {
+  display: none; }
+
+ul {
+  padding-left: 1em;
+  margin-left: 0.5em; }
+
+li {
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  border: 1px solid transparent; }
+
+.treeelm image {
+  vertical-align: middle;
+  margin-right: 6px; }
+
+li {
+  overflow: hidden;
+  white-space: nowrap;
+  display: block;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  text-overflow: ellipsis; }
+
+li:focus *, li:focus {
+  outline: none; }
+
+.maintree {
+  transition: background-color 0.4s;
+  padding-right: 1.5em; }
+
+.maintree.dragover {
+  transition: background-color 0.4s;
+  background-color: rgba(102, 167, 247, 0.5); }
+
+/* special tree items */
+.treeelm-container-empty {
+  color: #444;
+  font-style: italic; }
+
+.el-rename-input {
+  -moz-appearance: none;
+  border: none;
+  outline: 1px solid #a0a0a0;
+  outline: 1px solid #282828;
+  outline-offset: -1px;
+  margin: 0;
+  padding: 0; }
+
+.el-rename-input * {
+  padding: 0;
+  margin: 0; }
+
+/*	need some space	*/
+@font-face {
+  font-family: 'icomoon';
+  src: url("chrome://windmill/skin/icomoon.ttf?-icmbrc") format("truetype");
+  font-weight: normal;
+  font-style: normal; }
+
+[class^="icon-"], [class*=" icon-"] {
+  font-family: 'icomoon';
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -moz-osx-font-smoothing: grayscale; }
+
+.icon-32,
+.icon-24,
+.icon-16 {
+  cursor: default; }
+
+.icon-16 {
+  font-size: 16px; }
+
+.icon-24 {
+  font-size: 24px; }
+
+.icon-32 {
+  font-size: 32px;
+  color: white; }
+
+.icon-clonkpath:before {
+  content: "\e90b"; }
+
+.icon-console:before {
+  content: "\e90c"; }
+
+.icon-eye:before {
+  content: "\e90d"; }
+
+.icon-reload-2:before {
+  content: "\e90e"; }
+
+.icon-workspace:before {
+  content: "\e90f"; }
+
+.icon-environment:before {
+  content: "\e903"; }
+
+.icon-landscape:before {
+  content: "\e904"; }
+
+.icon-objects:before {
+  content: "\e906"; }
+
+.icon-reload:before {
+  content: "\e908"; }
+
+.icon-wireframe2:before {
+  content: "\e909"; }
+
+.icon-canvas-scale:before {
+  content: "\e900"; }
+
+.icon-reflect-h:before {
+  content: "\e901"; }
+
+.icon-reflect-v:before {
+  content: "\e902"; }
+
+.icon-undo:before {
+  content: "\e965"; }
+
+.icon-redo:before {
+  content: "\e966"; }
+
+.icon-bg-filled:before {
+  content: "\e629"; }
+
+.icon-grid:before {
+  content: "\e631"; }
+
+.icon-restore:before {
+  content: "\e632"; }
+
+.icon-transparent:before {
+  content: "\e633"; }
+
+.icon-the-mill:before {
+  content: "\e634"; }
+
+.icon-warning:before {
+  content: "\e635"; }
+
+.icon-wireframe:before {
+  content: "\e636"; }
+
+.icon-empty-space:before {
+  content: "\e637"; }
+
+.icon-draw-line:before {
+  content: "\e62b"; }
+
+.icon-erase:before {
+  content: "\e62c"; }
+
+.icon-fill-circle:before {
+  content: "\e62d"; }
+
+.icon-fill-rect:before {
+  content: "\e62e"; }
+
+.icon-select-poly:before {
+  content: "\e62f"; }
+
+.icon-cursor:before {
+  content: "\e630"; }
+
+.icon-doc-backwards:before {
+  content: "\e601"; }
+
+.icon-continue-at-start:before {
+  content: "\e625"; }
+
+.icon-snippet:before {
+  content: "\e628"; }
+
+.icon-whole-word:before {
+  content: "\e60a"; }
+
+.icon-csense:before {
+  content: "\e61a"; }
+
+.icon-editor-frame:before {
+  content: "\e627"; }
+
+.icon-paint-bucket:before {
+  content: "\e603"; }
+
+.icon-magic-wand:before {
+  content: "\e997"; }
+
+.icon-volume-high:before {
+  content: "\ea26"; }
+
+.icon-volume-mute2:before {
+  content: "\ea2a"; }
+
+.icon-select-rect:before {
+  content: "\e61f"; }
+
+.icon-select-circle:before {
+  content: "\e620"; }
+
+.icon-arrow-down:before {
+  content: "\e621"; }
+
+.icon-arrow-left:before {
+  content: "\e622"; }
+
+.icon-arrow-right:before {
+  content: "\e623"; }
+
+.icon-arrow-up:before {
+  content: "\e624"; }
+
+.icon-measure:before {
+  content: "\e626"; }
+
+.icon-bars-ref-1-3:before {
+  content: "\e600"; }
+
+.icon-backwards:before {
+  content: "\e604"; }
+
+.icon-backwards_sharp:before {
+  content: "\e605"; }
+
+.icon-x:before {
+  content: "\e602"; }
+
+.icon-maximize:before {
+  content: "\e60e"; }
+
+.icon-minimize:before {
+  content: "\e60f"; }
+
+.icon-multisource:before {
+  content: "\e610"; }
+
+.icon-play:before {
+  content: "\e611"; }
+
+.icon-add-player:before {
+  content: "\e62a"; }
+
+.icon-ref-2-3:before {
+  content: "\e613"; }
+
+.icon-ref-3-3:before {
+  content: "\e614"; }
+
+.icon-save:before {
+  content: "\e617"; }
+
+.icon-search:before {
+  content: "\e618"; }
+
+.icon-stop:before {
+  content: "\e619"; }
+
+.icon-trashbin:before {
+  content: "\e61b"; }
+
+.icon-pencil:before {
+  content: "\e905"; }
+
+.icon-quill:before {
+  content: "\e907"; }
+
+.icon-eyedropper:before {
+  content: "\e90a"; }
+
+.icon-folder:before {
+  content: "\e92f"; }
+
+.icon-spinner11:before {
+  content: "\e984"; }
+
+.icon-git:before {
+  content: "\eae2"; }
+
+.icon-brackets:before {
+  content: "\e606"; }
+
+.icon-cam:before {
+  content: "\e607"; }
+
+.icon-checked:before {
+  content: "\e608"; }
+
+.icon-controller:before {
+  content: "\e609"; }
+
+.icon-gear:before {
+  content: "\e60b"; }
+
+.icon-heartbeat:before {
+  content: "\e60c"; }
+
+.icon-lock:before {
+  content: "\e60d"; }
+
+.icon-players:before {
+  content: "\e612"; }
+
+.icon-resource_saviour:before {
+  content: "\e615"; }
+
+.icon-runtimejoin:before {
+  content: "\e616"; }
+
+.icon-trophy:before {
+  content: "\e61c"; }
+
+.icon-update:before {
+  content: "\e61d"; }
+
+.icon-world:before {
+  content: "\e61e"; }
+
+.icon-git-modified:before {
+  content: "M"; }
+
+.icon-git-added:before {
+  content: "A"; }
+
+.icon-git-deleted:before {
+  content: "D"; }
+
+.icon-git-renamed:before {
+  content: "R"; }
+
+.icon-git-copied:before {
+  content: "C"; }
+
+.icon-git-updatedUnmerged:before {
+  content: "U"; }
+
+.icon-git-untracked:before {
+  content: "?"; }
+
+.toolbar {
+  height: 24px;
+  background-color: #ebebeb; }
+
+.toolbar-option {
+  width: 60px;
+  text-align: center;
+  line-height: 24px;
+  cursor: pointer;
+  transition: background-color 0.5s; }
+
+.toolbar-option:hover {
+  background-color: #eee;
+  transition: background-color 0s; }
+
+.nav-image:hover {
+  background-color: #eee; }
+
+.nav-image.deselected {
+  color: #777; }
+
+#searchinput {
+  margin: 0px;
+  border: 0px;
+  -moz-appearance: none;
+  background-color: #fff;
+  border-bottom: 1p solid gainsboro;
+  font-size: 1.2em;
+  transition: height 0.5s; }
+
+#searchinput.hidden {
+  height: 0px;
+  padding: 0px; }
+
+.searchinput:before {
+  content: '\e618  ';
+  font-family: 'icomoon';
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -moz-osx-font-smoothing: grayscale; }
