@@ -102,7 +102,7 @@
 			</vbox>
 		</stack>
 		<stack flex="1">
-			<box id="modules-wrapper" flex="1">
+			<box id="modules-wrapper" flex="1" class="startup-loading">
 			</box>
 			<vbox id="startup-loading" flex="1" top="0" bottom="0">
 			</vbox>

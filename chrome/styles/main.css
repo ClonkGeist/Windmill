@@ -442,7 +442,13 @@ window.maximized .restore-window {
   background-color: #dc4632; }
 
 #modules-wrapper {
-  outline: 1px solid #191919; }
+  outline: 1px solid #191919;
+  filter: blur(0px);
+  transition: filter 0.8s;
+  transition-delay: 1s; }
+
+#modules-wrapper.startup-loading {
+  filter: blur(3px); }
 
 resizer {
   -moz-appearance: none;
@@ -826,6 +832,7 @@ caption {
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  background-color: #2d2d2d;
   font-size: 2.5em;
   color: white; }
 

@@ -41,6 +41,12 @@ window.maximized .restore-window {
 
 #modules-wrapper {
 	outline: 1px solid rgb(25, 25, 25);
+	filter: blur(0px);
+	transition: filter 0.8s;
+	transition-delay: 1s;
+}
+#modules-wrapper.startup-loading {
+	filter: blur(3px);
 }
 
 resizer {
@@ -483,7 +489,8 @@ caption {
 	align-items: center;
 	justify-content: center;
 	flex-direction: column;
-	
+
+	background-color: $chrome-clr;
 	font-size: 2.5em;
 	color: white;
 }

@@ -67,8 +67,7 @@ hook("load", function() {
 	}).then(function(result) {
 		localizeModule();
 
-		$("#startup-loading").fadeOut(500);
-		$(".startup-loading").removeClass("startup-loading");
+		$("#startup-loading").text("Creating and Initializing Modules");
 		//Configuration Wizard ggf. starten
 		if(result == -1) {
 			$("#wrapper").css("display", "none");
@@ -110,7 +109,7 @@ hook("load", function() {
 
 			togglePage(mainDeck.id, $(this).hasClass("cBridge")?mainDeck.getModuleId("cbridge"):mainDeck.getModuleId("cide"));
 		});
-		
+
 		//cIDE/cBridge-Deaktivier Box
 		var mouseholdID = 0;
 		$(".togglemode-img").mouseenter(function() {
@@ -129,7 +128,7 @@ hook("load", function() {
 		}).bind("mouseup mouseleave", function() {
 			clearTimeout(mouseholdID);
 		});
-		
+
 		$("#toggle-cide").click(function() {
 			$(this).toggleClass("activated");
 			//todo: cide deaktivieren
@@ -138,14 +137,14 @@ hook("load", function() {
 			$(this).toggleClass("activated");
 			//todo: cbridge deaktivieren
 		});
-		
+
 		//Einstellungen
 		$("#showSettings").click(function() {
 			if(mainDeck.selectedId == mainDeck.getModuleId("settings")) {
 				togglePage(mainDeck.id, mainDeck.previd);
 				return;
 			}
-		
+
 			togglePage(mainDeck.id, mainDeck.getModuleId("settings"));
 		});
 		//Modulemanager
@@ -154,7 +153,7 @@ hook("load", function() {
 				togglePage(mainDeck.id, mainDeck.previd);
 				return;
 			}
-		
+
 			togglePage(mainDeck.id, mainDeck.getModuleId("modmanager"));
 		});
 		//Ressourcensparender Modus
@@ -167,7 +166,7 @@ hook("load", function() {
 			dlg.setContent("<description>$DlgResSaveFileWarning$</description>");
 			dlg.show();
 		});
-		
+
 		//Playerselection
 		$("#showPlayerSelect").click(function() {
 			$("#playerselect").toggleClass("invisible");
@@ -187,10 +186,10 @@ hook("load", function() {
 			$("#developerlog").addClass("invisible");
 			$("#gitlog").toggleClass("invisible");
 		});
-		
+
 		//Neustart
 		$("#restartWindmill").click(function() { restartWindmill(); });
-		
+
 		if(!getConfigData("Global", "DevMode"))
 			$(".devmode-elm").css("display", "none");
 
@@ -593,6 +592,11 @@ function triggerModeButtonIcon() {
 	setTimeout(function() {
 		$("#switchMode").removeClass("icon-the-mill").addClass("icon-brackets").css("opacity", "1");
 	}, 1000);
+
+	if($(".startup-loading")[0]) {
+		$("#startup-loading").fadeOut(800);
+		$(".startup-loading").removeClass("startup-loading");
+	}
 }
 
 window.addEventListener("focus", function(event) {
