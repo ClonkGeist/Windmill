@@ -2,11 +2,7 @@
 
 
 <?xml-stylesheet type="text/css" href="chrome://windmill/skin/main.css"?>
-<?xml-stylesheet type="text/css" href="chrome://windmill/skin/icomoon.css"?>
 <?xml-stylesheet type="text/css" href="chrome://windmill/skin/dialog.css"?>
-<?xml-stylesheet type="text/css" href="chrome://windmill/skin/contextmenu.css"?>
-<?xml-stylesheet type="text/css" href="chrome://windmill/skin/default_module.css"?>
-<?xml-stylesheet type="text/css" href="chrome://windmill/skin/colorpicker.css"?>
 
 <window 
 	id="main"
@@ -28,7 +24,7 @@
 
 <!-- Notification draft -->
 <hbox class="notification-item draft" flex="1">
-	<vbox class="notification-head" style="border: 1px solid green">
+	<vbox class="notification-head">
 		
 	</vbox>
 	<vbox class="notification-icon">
@@ -351,6 +347,4 @@
 	
 	<script type="application/javascript" src="chrome://windmill/content/js/libs/colorpicker.js"/>
 	<script type="application/javascript" src="chrome://windmill/content/js/main/player.js"/>
-	
-	<box id="force-redraw-window-element" style="display: none"></box>
 </window>

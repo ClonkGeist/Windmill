@@ -1,0 +1,231 @@
+window {
+	background-color: rgb(245, 245, 245);
+	font-family: $font-stack;
+	background-color: rgb(225, 225, 225);
+}
+
+splitter {
+	-moz-appearance: none;
+	
+	/* kill the border, it won't work either like we want it to*/
+	border-width: 0;
+	outline: 1px solid gainsboro;
+	outline-offset: -1px;
+	width: 3px;
+	background-color: rgb(245, 245, 245);
+}
+
+splitter * {
+	-moz-appearance: none;
+	outline: none;
+}
+
+splitter[state=dragged] {
+	background-color: rgb(215, 215, 215);
+}
+
+/** Audioplayer **/
+
+#audioplayer {
+	transition: height 0.3s;
+}
+
+#audioplayer.active {
+	height: 33px;
+}
+
+/** Navigation **/
+
+.modules-nav,
+toolbar {
+	-moz-appearance: none;
+	border: none;
+	background: none;
+}
+
+toolbox {
+	-moz-appearance: none;
+	border: none;
+	background: none;
+	border-bottom: 1px solid rgb(215, 215, 215);
+	border-bottom: 1px solid rgb(225, 225, 225);
+	border: none;
+}
+
+.modules-nav {
+	overflow: hidden;
+}
+
+.deck-nav-elm {
+	padding: 5px 5px;
+	height: 1em;
+	transition: background-color 0.15s;
+	cursor: pointer;
+	box-sizing: border-box;
+	color: rgb(80, 80, 80);
+}
+
+.deck-nav-elm.active,
+.deck-nav-elm.active:hover {
+	color: rgb(80, 80, 80);
+	background-color: rgb(250, 250, 250);
+	background-color: rgb(240, 240, 240);
+}
+
+.deck-nav-elm:hover {
+	background-color: rgb(250, 250, 250);
+	outline: 1px solid rgb(235, 235, 235);
+}
+
+.close-button {
+	width: 14px;
+	height: 14px;
+	max-height: 14px;
+	color: grey;
+	
+	padding: 0;
+	margin: 0;
+	margin-left: 0.3em;
+	
+	border-radius: 14px;
+	
+	-moz-box-align: center;
+}
+
+.close-button:hover {
+	color: black;
+}
+
+.deck-desc {
+	color: rgb(180, 180, 180);
+	margin: auto;	
+}
+
+.deckbox {
+	display: none;
+}
+
+.deck-visible {
+	display: -moz-box;
+}
+
+button:focus, 
+button:focus *, 
+toolbarbutton:focus, 
+toolbarbutton:focus  *{
+	outline: none;
+}
+
+/* Navigation Scrolling */
+
+.deck-nav-scrollbar {
+	background-color: #d8d8d8;
+	height: 2px;
+	overflow: hidden;
+}
+.deck-nav-scroller {
+	background-color: #2e9afe;
+}
+.deck-nav-scrollelement {
+	transition: width 0.3s;
+}
+
+#sidedeck-scroller {
+	background-color: rgb(252,163,2);
+}
+
+@font-face {
+	font-family: 'icomoon';
+	src:url('chrome://windmill/skin/icomoon.ttf?-icmbrc') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+.deckbtn-scroll {
+	padding: 3px 4px;
+	height: 1em;
+	width: 14px;
+	cursor: pointer;
+}
+
+.deckbtn-scrollLeft:before {
+	content: "\e622";
+}
+
+.deckbtn-scrollRight:before {
+	content: "\e623";
+}
+
+.deckbtn-scrollLeft,
+.deckbtn-scrollRight {
+	color: grey;
+	font-family: 'icomoon';
+	font-size: 10px;
+}
+
+.deckbtn-scrollLeft:hover ,
+.deckbtn-scrollRight:hover {
+	color: rgb(80, 80, 80);
+}
+
+.deckbtn-scrollLeft.deckbtn-scrollDisabled,
+.deckbtn-scrollRight.deckbtn-scrollDisabled {
+	color: rgb(200, 200, 200);
+	cursor: default;
+}
+
+.deckbtn-scrollhide {
+	display: none;
+}
+
+.tooltip-tabbutton *,
+.tooltip-tabbutton {
+	-moz-window-shadow: none;
+	box-shadow: none;
+	-moz-appearance: none;
+	
+	color: rgb(80, 80, 80);
+	border: none;
+}
+
+.tooltip-tabbutton {
+	background-color: transparent;
+	font-size: 14px;
+	padding: 0;
+}
+
+.tooltip-tabbutton > * {
+	padding: 2px 5px;
+	background-color: rgb(235,235,235);
+	border: 1px solid gainsboro;
+	margin: 0;
+}
+
+/*deck {
+    transition: box-shadow 0.3s;
+}*/
+ 
+.dragover-sidedeck-right {
+	border-right: 3px solid orange;
+    box-shadow: inset -7px 9px 7px rgba(252,163,2,0.7);
+}
+ 
+.dragover-sidedeck-bottom {
+	border-bottom: 3px solid orange;
+    box-shadow: inset -7px 9px 7px rgba(252,163,2,0.7);
+	box-shadow: inset 7px -9px 7px rgba(252,163,2,0.7);
+}
+
+.dragover-sidedeck-left {
+	border-left: 3px solid orange;
+}
+
+.dragover-sidedeck-top {
+	border-top: 3px solid orange;
+}
+
+.dragover-deck {
+	outline: 3px solid orange;
+}
+
+/*	need some space	*/

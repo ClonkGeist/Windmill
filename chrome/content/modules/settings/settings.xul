@@ -1,8 +1,6 @@
 <?xml version="1.0"?>
 
 <?xml-stylesheet href="chrome://windmill/content/modules/settings/settings.css" type="text/css"?>
-<?xml-stylesheet href="chrome://windmill/skin/icomoon.css" type="text/css"?>
-<?xml-stylesheet href="chrome://windmill/skin/default_module.css" type="text/css"?>
 
 <window id="main" title="Settings" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 

@@ -596,7 +596,6 @@ function triggerModeButtonIcon() {
 }
 
 window.addEventListener("focus", function(event) {
-	//document.getElementById('force-redraw-window-element').innerHTML = ""; 
-	document.getElementById('force-redraw-window-element').style.display = ""; 
-	document.getElementById('force-redraw-window-element').style.display = "none"; 
+	if(domwu)
+		domwu.redraw();
 }, false);

@@ -321,188 +321,94 @@
   content: "?"; }
 
 window {
-  background-color: whitesmoke;
+  background-color: #fafafa;
   font-family: "Segoe UI", "Trebuchet MS", sans-serif;
-  background-color: #e1e1e1; }
+  overflow-y: scroll; }
 
-splitter {
+button {
   -moz-appearance: none;
-  /* kill the border, it won't work either like we want it to*/
-  border-width: 0;
-  outline: 1px solid gainsboro;
-  outline-offset: -1px;
-  width: 3px;
+  border: none;
+  background-color: gainsboro;
+  border-bottom: 1px solid #b4b4b4;
+  padding: 5px 10px;
+  padding-right: 3px;
+  /* -2px padding from spinners */
+  color: #505050;
+  display: inline-flex;
+  outline: none;
+  text-align: center; }
+  button:hover {
+    background-color: #b4b4b4;
+    outline: none; }
+
+#switch-overview {
+  padding: 20px; }
+
+.btn-reload {
+  margin-right: 3px; }
+
+.icon-16 {
+  cursor: pointer;
+  color: grey; }
+
+.icon-16:hover {
+  color: #505050; }
+
+row:hover {
   background-color: whitesmoke; }
 
-splitter * {
-  -moz-appearance: none;
-  outline: none; }
-
-splitter[state=dragged] {
-  background-color: #d7d7d7; }
-
-/** Audioplayer **/
-#audioplayer {
-  transition: height 0.3s; }
-
-#audioplayer.active {
-  height: 33px; }
-
-/** Navigation **/
-.modules-nav,
-toolbar {
-  -moz-appearance: none;
-  border: none;
-  background: none; }
-
-toolbox {
-  -moz-appearance: none;
-  border: none;
-  background: none;
-  border-bottom: 1px solid #d7d7d7;
-  border-bottom: 1px solid #e1e1e1;
-  border: none; }
-
-.modules-nav {
-  overflow: hidden; }
-
-.deck-nav-elm {
-  padding: 5px 5px;
-  height: 1em;
-  transition: background-color 0.15s;
-  cursor: pointer;
-  box-sizing: border-box;
-  color: #505050; }
-
-.deck-nav-elm.active,
-.deck-nav-elm.active:hover {
-  color: #505050;
-  background-color: #fafafa;
-  background-color: #f0f0f0; }
-
-.deck-nav-elm:hover {
-  background-color: #fafafa;
-  outline: 1px solid #ebebeb; }
-
-.close-button {
-  width: 14px;
-  height: 14px;
-  max-height: 14px;
-  color: grey;
-  padding: 0;
-  margin: 0;
-  margin-left: 0.3em;
-  border-radius: 14px;
-  -moz-box-align: center; }
-
-.close-button:hover {
-  color: black; }
-
-.deck-desc {
-  color: #b4b4b4;
-  margin: auto; }
-
-.deckbox {
-  display: none; }
-
-.deck-visible {
-  display: -moz-box; }
-
-button:focus,
-button:focus *,
-toolbarbutton:focus,
-toolbarbutton:focus * {
-  outline: none; }
-
-/* Navigation Scrolling */
-.deck-nav-scrollbar {
-  background-color: #d8d8d8;
-  height: 2px;
-  overflow: hidden; }
-
-.deck-nav-scroller {
-  background-color: #2e9afe; }
-
-.deck-nav-scrollelement {
-  transition: width 0.3s; }
-
-#sidedeck-scroller {
-  background-color: #fca302; }
-
-@font-face {
-  font-family: 'icomoon';
-  src: url("chrome://windmill/skin/icomoon.ttf?-icmbrc") format("truetype");
-  font-weight: normal;
-  font-style: normal; }
-
-.deckbtn-scroll {
-  padding: 3px 4px;
-  height: 1em;
-  width: 14px;
-  cursor: pointer; }
-
-.deckbtn-scrollLeft:before {
-  content: "\e622"; }
-
-.deckbtn-scrollRight:before {
-  content: "\e623"; }
-
-.deckbtn-scrollLeft,
-.deckbtn-scrollRight {
-  color: grey;
-  font-family: 'icomoon';
-  font-size: 10px; }
-
-.deckbtn-scrollLeft:hover,
-.deckbtn-scrollRight:hover {
-  color: #505050; }
-
-.deckbtn-scrollLeft.deckbtn-scrollDisabled,
-.deckbtn-scrollRight.deckbtn-scrollDisabled {
-  color: #c8c8c8;
-  cursor: default; }
-
-.deckbtn-scrollhide {
-  display: none; }
-
-.tooltip-tabbutton *,
-.tooltip-tabbutton {
-  -moz-window-shadow: none;
-  box-shadow: none;
-  -moz-appearance: none;
-  color: #505050;
-  border: none; }
-
-.tooltip-tabbutton {
-  background-color: transparent;
-  font-size: 14px;
-  padding: 0; }
-
-.tooltip-tabbutton > * {
-  padding: 2px 5px;
+row.header {
   background-color: #ebebeb;
-  border: 1px solid gainsboro;
-  margin: 0; }
+  border-bottom: 1px solid whitesmoke; }
 
-/*deck {
-    transition: box-shadow 0.3s;
-}*/
-.dragover-sidedeck-right {
-  border-right: 3px solid orange;
-  box-shadow: inset -7px 9px 7px rgba(252, 163, 2, 0.7); }
+row > * {
+  border-left: 3px solid #ebebeb;
+  padding-left: 10px;
+  vertical-align: center; }
 
-.dragover-sidedeck-bottom {
-  border-bottom: 3px solid orange;
-  box-shadow: inset -7px 9px 7px rgba(252, 163, 2, 0.7);
-  box-shadow: inset 7px -9px 7px rgba(252, 163, 2, 0.7); }
+row.removedModule {
+  background-color: red; }
 
-.dragover-sidedeck-left {
-  border-left: 3px solid orange; }
+row.newModule {
+  background-color: green; }
 
-.dragover-sidedeck-top {
-  border-top: 3px solid orange; }
+row.configSection {
+  background-color: lightgrey; }
 
-.dragover-deck {
-  outline: 3px solid orange; }
+row.configChanged {
+  background-color: moccasin; }
+
+.cfg-val {
+  min-width: 20px; }
+
+.cfg-val:hover {
+  cursor: pointer;
+  color: royalblue; }
+
+#lblbtn-save:hover {
+  cursor: pointer;
+  color: royalblue; }
+
+grid {
+  -moz-user-focus: normal;
+  background-color: white; }
+
+#wrapper {
+  overflow-y: scroll; }
+
+/* dom inspector */
+#dom-container {
+  font-family: monospace;
+  padding: 1.5em;
+  -moz-user-select: text; }
+
+#dom-container * {
+  -moz-user-select: text !important; }
+
+.inspect-line:hover {
+  background-color: rgba(0, 165, 207, 0.15);
+  outline: 1px solid rgba(0, 165, 207, 0.3);
+  outline-offset: -1px;
+  -moz-user-select: text; }
 
 /*	need some space	*/

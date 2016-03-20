@@ -1,0 +1,387 @@
+html, body {
+	background-color: rgb(245, 245, 245);
+	font-family: "Segoe UI", Verdana, sans-serif;
+	color: rgb(40, 40, 40);
+	padding: 0;
+	margin: 0;
+}
+
+html, body, #wrapper {
+	height: 100%;
+	width: 100%;
+}
+
+#wrapper {
+	position: relative;
+}
+
+#reference-container {
+	width: 60%;
+	position: absolute;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	
+	overflow-y: auto;
+	padding: 0 1.5em;
+	
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	
+	-moz-user-select: none;
+}
+
+#game-info {
+	width: 40%;
+	max-width: 40%;
+	position: absolute;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	
+	overflow-y: auto;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	
+	padding-top: 1em;
+	
+	cursor: default;
+}
+
+#game-info-wrapper {
+	padding: 0 10%;
+}
+
+#toolbar {
+	color: rgb(180, 180, 180);
+	display: flex;
+	justify-content: flex-end;
+	margin-top: 10px;
+	margin-bottom: 7px;
+}
+
+#toolbar-wrapper > *{
+	display: inline-block;
+	margin-left: 5px;
+}
+
+#toolbar-wrapper > *:hover{
+	color: grey;
+}
+
+#ref-layout-list > * {
+	display: none;
+}
+
+#ref-layout-list > *:first-child {
+	display: inline-block;
+}
+
+#ref-toggle-update.activated {
+	color: #0876BA;
+}
+
+/*	references 	*/
+
+#reference-list {
+	width: 100%;
+	-moz-appearance: none;
+	display: table;
+	padding: 0;
+	border-collapse: collapse !important;
+}
+
+.reference {
+	/*background-color: rgb(250, 250, 250);*/
+	background-color: white;
+	/*border: 1px solid rgb(230, 230, 230);*/
+	width: 33.3%;
+	height: 6em;
+	float: left;
+	display: table-cell;
+	cursor: pointer;
+	font-size: 0.8em;
+	
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	position: relative;
+	border-collapse: collapse;
+	
+	/*  workaround ... */
+	
+	border: none;
+	box-shadow: 
+		1px 0 0 0 rgb(230, 230, 230), 
+		0 1px 0 0 rgb(230, 230, 230), 
+		1px 1px 0 0 rgb(230, 230, 230),
+		1px 0 0 0 rgb(230, 230, 230) inset, 
+		0 1px 0 0 rgb(230, 230, 230) inset;
+	
+	background-image: repeating-linear-gradient(-45deg, 
+		transparent, 
+		transparent 4px, 
+		rgb(240, 240, 240) 4px, 
+		rgb(240, 240, 240) 5px);
+}
+
+.reference p {
+	margin: 0;
+}
+
+.ref-flexwrapper {
+	display: flex;
+}
+
+.ref-content {
+	flex: 1;
+	padding: 0.5em;
+}
+
+.ref-title {
+	overflow: hidden; 
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.ref-hostname {
+	font-size: 0.8em;
+	color: grey;
+	display: block;
+}
+
+.ref-info {
+	width: 100%;
+	padding: 0.5em;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	position: absolute;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+.ref-playerinfo {
+	float: right;
+}
+
+.ref-playercount {
+	font-size: 1.4em;
+}
+
+.ref-icons > img {
+	width: 16px;
+	height: 16px;
+}
+
+.ref-icons {
+	float: left;
+	clear: left;
+}
+
+.ref-playernames {
+	float: left;
+	clear: left;
+}
+
+.ref-titleimage {
+	height: 6em;
+}
+
+/* reference classes to control their appearence:
+
+	reference-
+		draft
+		running
+		runtimejoin
+		password
+		league
+		portsopen
+*/
+
+.reference-draft {
+	display: none;
+}
+
+.reference.running {
+	color: grey;
+}
+
+.reference.running .ref-titleimage {
+	filter: grayscale(100%);
+}
+
+#reference-list .reference.runtimejoin {
+	color: rgb(40, 40, 40);
+}
+
+.password-icon,
+.league-icon {
+	display: none;
+}
+
+.reference.password .password-icon,
+.reference.league .league-icon {
+	display: inline-block;
+}
+
+.portsopen {
+	background-image: none;
+}
+
+#ports-tooltip {
+	width: 180px;
+	height: 60px;
+	word-wrap: break-word;
+	background-color: black;
+	color: white;
+	font-size: 8pt;
+	
+	transition: opacity 0.3s;
+	
+	position: absolute;
+	padding: 3px;
+	z-index: 100;
+	opacity: 0;
+	
+	pointer-events: none;
+}
+#ports-tooltip.visible { opacity: 0.5; display: block;}
+/*	layout specifics	*/
+
+#reference-list.ref-layout-shortinfo .reference:nth-child(3n+2) {
+	clear: left;
+}
+
+#reference-list.ref-layout-shortinfo .ref-playernames {
+	display: none;
+}
+
+#reference-list.ref-layout-shortinfo .ref-comment {
+	display: none;
+}
+
+#reference-list.ref-layout-classic .ref-playerinfo,
+#reference-list.ref-layout-longinfo .ref-playerinfo {
+	display: none;
+}
+
+#reference-list.ref-layout-classic .ref-content {
+	position: relative;
+}
+
+#reference-list.ref-layout-shortinfo .ref-titleimage,
+#reference-list.ref-layout-longinfo .ref-titleimage {
+	display: none;
+}
+
+#reference-list.ref-layout-classic .ref-icons,
+#reference-list.ref-layout-longinfo .ref-icons {
+	float: right;
+	clear: none;
+}
+
+#reference-list.ref-layout-longinfo .reference {
+	width: 50%;
+}
+
+#reference-list.ref-layout-longinfo .reference:nth-child(2n) {
+	clear: left;
+}
+
+#reference-list.ref-layout-classic .reference {
+	clear: left;
+	width: 100%;
+}
+
+/* description */
+
+
+#game-info.selected-ref #game-ref-info,
+#game-info-motd {
+	display: initial;
+}
+
+#game-info.selected-ref #game-info-motd,
+#game-ref-info {
+	display: none;
+}
+
+#game-info h2 {
+	padding: 0;
+	margin: 0.5em 0 0.5em 0;
+	border-bottom: 1px solid gainsboro;
+	display: block;
+	
+	font-size: 0.7em;
+	color: grey;
+	font-weight: normal;
+/*	letter-spacing: 3px;*/
+	text-transform: uppercase;
+}
+
+h2 {
+	background-color: inherit;
+	-moz-appearance: none;
+	font-family: "Segoe UI", Verdana, sans-serif;
+}
+
+#game-playerlist p {
+	margin: 0.2em 0;
+}
+
+#game-playerlist > *:hover {
+	background-color: rgb(245, 245, 245);
+}
+
+.game-player-name, 
+.game-player-clientname {
+	display: inline-block;
+}
+
+.game-player-clientname {
+	float: right;
+}
+
+#game-title {
+	margin: 0;
+	font-size: 20px;
+	line-height: 20px;
+	font-family: "Segoe UI", "Trebuchet MS", Verdana, sans-serif;
+	padding: 0;
+}
+
+#game-hostname {
+	margin-top: 10px;
+	font-size: 15px;
+	line-height: 15px;
+	padding: 0;
+}
+
+
+/* button */
+
+#ressavemode-btn {
+	display: none;
+}
+#ressavemode-btn.ressavemode {
+	display: block;
+	position: absolute;
+	top: 0px;
+	right: 0px;
+
+	width: 32px;
+	height: 32px;
+
+	background-color: black;	
+	opacity: 0.5;
+	
+	transition: opacity 0.3s, background-color 0.3s;
+	z-index: 1;
+}
+
+#ressavemode-btn:hover {
+	opacity: 1;
+	background-color: rgb(219, 70, 49);
+}
+
+/*	need some space	*/
