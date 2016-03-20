@@ -106,13 +106,19 @@ class _WDialog extends WindmillObject {
 		
 		//Click-Handler
 		let _this = this;
-		let bindfunc = function(fn) {
+		let bindfunc = function(fn, fn2) {
 			btn.on("command", (e) => { 
 				try {
 					if(fn.isGenerator()) {
 						_this.lock();
 						Task.spawn(function*() {
 							yield* fn(e, e.target, _this);
+							if(fn2) {
+								if(fn2.isGenerator())
+									yield* fn2(e, e.target, _this);
+								else
+									fn2(e, e.target, _this);
+							}
 							_this.unlock();
 						});
 					}
@@ -126,8 +132,8 @@ class _WDialog extends WindmillObject {
 			});
 		}
 		if(btnobj.clickhandler)
-			bindfunc(btnobj.clickhandler);
-		if(btnobj.onclick)
+			bindfunc(btnobj.clickhandler, btnobj.onclick);
+		if(btnobj.onclick && (!btnobj.clickhandler || !btnobj.clickhandler.isGenerator()))
 			bindfunc(btnobj.onclick);	
 
 		//Butonn hinzufÅEen

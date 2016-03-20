@@ -809,7 +809,9 @@ function handleTreeEntry(obj, open_sidedeck) {
 
 			var f = _sc.file(getClonkExecutablePath());
 			var process = _ws.pr(f);
-			process.create(args);
+			process.create(args, 0, 0, function(data) {
+				log(data);
+			});
 			break;
 		
 		default:

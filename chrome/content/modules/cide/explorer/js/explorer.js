@@ -494,11 +494,11 @@ function initializeContextMenu() {
 	var submenu_new = new ContextMenu(0, [ //Neu
 		//Spielinhalte
 
-		["$ctxObject$", 0, function() {
-			CreateNewGamefile("ocd", $(getCurrentTreeSelection()));
+		["$ctxObject$", 0, function*() {
+			yield CreateNewGamefile("ocd", $(getCurrentTreeSelection()));
 		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png" }],
-		["$ctxScenario$", 0, function() {
-			CreateNewGamefile("ocs", $(getCurrentTreeSelection()));
+		["$ctxScenario$", 0, function*() {
+			yield CreateNewGamefile("ocs", $(getCurrentTreeSelection()));
 		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocs.png" }],
 
 		"seperator",
@@ -538,9 +538,9 @@ function initializeContextMenu() {
 		//Scriptdateien
 		"seperator",
 
-		["$ctxscript$", 0, function() { //Scriptdatei erstellen
-			var f = createNewFile(false, "$create_newscript$.c", false, null, 
-					"/*-- New Scriptfile --*/\r\n\r\n\r\n\r\nfunc Initialize() {\r\n  return true;\r\n}\r\n");
+		["$ctxscript$", 0, function*() { //Scriptdatei erstellen
+			yield createNewFile(false, "$create_newscript$.c", false, null, 
+					"/*-- New Scriptfile --*/\r\n\r\nfunc Initialize() {\r\n  return true;\r\n}\r\n");
 		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-c.png" }]
 	], MODULE_LPRE, { allowIcons: true });
 
@@ -703,7 +703,7 @@ function initializeContextMenu() {
 				var process = _ws.pr(f);
 				var args = _mainwindow.$("#dex_dlg_parameters").val().split(' ');
 				args.push(filepath);
-				process.run(args, 0, 0, function(data) {
+				process.create(args, 0, 0, function(data) {
 					log(data);
 				});
 			}
@@ -757,96 +757,103 @@ function initializeContextMenu() {
 
 //Neue Spieldatei (Objekt/Szenario) erstellen
 function CreateNewGamefile(type, treeobj) {
-	var dir = _sc.file(_sc.chpath + "/content/modules/cide/explorer/cide_templates/"+type);
-	if(!dir.exists())
-		return warn("$err_template_not_found$");
+	let task = Task.spawn(function*() {
+		let dir = _sc.file(_sc.chpath + "/content/modules/cide/explorer/cide_templates/"+type);
+		if(!dir.exists())
+			return warn("$err_template_not_found$");
 
-	var dlgtitle = "Gamefile$";
-	if(type == "ocs")
-		dlgtitle = "Scenario$";
-	else if(type == "ocd")
-		dlgtitle = "Object$";
+		let dlgtitle = "Gamefile$";
+		if(type == "ocs")
+			dlgtitle = "Scenario$";
+		else if(type == "ocd")
+			dlgtitle = "Object$";
 
-	//Dialog öffnen
-	var dlg = new WDialog("$DlgCreateNew"+dlgtitle, MODULE_LPRE, { modal: true, css: { "width": "450px" }, btnright: [{ preset: "accept",
-			//Annehmen-Button
-			onclick: function(e, btn, _self) {
-				var error = (str) => { return $(_self.element).find("#dex_dlg_gamefile_errorbox").text(Locale(str)); }
+		//Dialog öffnen
+		let dlg = new WDialog("$DlgCreateNew"+dlgtitle, MODULE_LPRE, { modal: true, css: { "width": "450px" }, btnright: [{ preset: "accept",
+				//Annehmen-Button
+				onclick: function*(e, btn, _self) {
+					let error = (str) => { return $(_self.element).find("#dex_dlg_gamefile_errorbox").text(Locale(str)); }
 
-				var name = _mainwindow.$("#dex_dlg_gffilename").val();
-				if(!name || (OS_TARGET == "WINNT" && name.search(/[\\/:*?"<>|]/) != -1) || name.length < 1) {
-					error('$DlgInvalidFilename$');
-					return e.stopImmediatePropagation();
-				}
+					let name = _mainwindow.$("#dex_dlg_gffilename").val();
+					if(!name || (OS_TARGET == "WINNT" && name.search(/[\\/:*?"<>|]/) != -1) || name.length < 1) {
+						error('$DlgInvalidFilename$');
+						return e.stopImmediatePropagation();
+					}
 
-				name += '.'+type;
+					name += '.'+type;
 
-				var ndir = _sc.file(_sc.workpath(treeobj) + getTreeObjPath(treeobj) + '/' + name);
-				if(ndir.exists()) {
-					error('$DlgFilenameExists$');
-					return e.stopImmediatePropagation();
-				}
+					let ndir = _sc.workpath(treeobj) + getTreeObjPath(treeobj) + '/' + name;
+					try {
+						yield OS.File.makeDir(ndir, { ignoreExisting: false });
+					}
+					catch(err) {
+						if(err.becauseExists)
+							error('$DlgFilenameExists$');
+						else
+							error('Error: ' + err);
 
-				var cidedir = dir;
-				ndir.create(Ci.nsIFile.DIRECTORY_TYPE, 0o777);
+						return e.stopImmediatePropagation();
+					}
 
-				//Auswahl in neu erstelltes Verzeichnis kopieren
-				_mainwindow.$('#dex_dlg_gffiles > .dlg-checklistitem.selected').each(function() {
-					var f = _sc.file(cidedir.path + '/' + $(this).text());
-					if(!f.exists())
-						return;
+					//Auswahl in neu erstelltes Verzeichnis kopieren
+					let filelist = [];
+					$(_self.element).find('#dex_dlg_gffiles > .dlg-checklistitem.selected').each(function() {
+						filelist.push($(this).text());
+					});
 
-					f.copyTo(ndir, f.leafName);
-					return true;
-				});
+					for(var i = 0; i < filelist.length; i++)
+						yield OSFileRecursive(dir.path+"/"+filelist[i], formatPath(ndir+"/"+filelist[i]));
 
-				//TODO: Für Szenarios, Scenario.txt abrufen (falls überhaupt vorhanden) und Definitions setzen
+					//TODO: Für Szenarios, Scenario.txt abrufen (falls überhaupt vorhanden) und Definitions setzen
 
-				$(getTreeCntById(getTreeObjId(treeobj))).empty();
-				loadDirectory(_sc.workpath(treeobj) + getTreeObjPath(treeobj), getTreeCntById(getTreeObjId(treeobj)));
-				setTimeout(function() {
-					var new_tree_obj = $(getTreeCntById(getTreeObjId(treeobj))).find("[filename='"+ndir.leafName+"']");
-					selectTreeItem(new_tree_obj, true);
-					treeExpand(new_tree_obj);
-				}, 10);
-			}}, "cancel"]});
+					$(getTreeCntById(getTreeObjId(treeobj))).empty();
+					loadDirectory(_sc.workpath(treeobj) + getTreeObjPath(treeobj), getTreeCntById(getTreeObjId(treeobj)));
+					setTimeout(function() {
+						let new_tree_obj = $(getTreeCntById(getTreeObjId(treeobj))).find("[filename='"+ndir.leafName+"']");
+						selectTreeItem(new_tree_obj, true);
+						treeExpand(new_tree_obj);
+					}, 10);
+				}}, "cancel"]});
 
-	var selectedFiles = readFile(dir.path+'/.templateList.txt');
-	if(!selectedFiles)
-		selectedFiles = '';
+		let selectedFiles;
+		try { selectedFiles = yield OS.File.read(dir.path+'/.templateList.txt', {encoding: "utf-8"}); }
+		catch(e) { selectedFiles = undefined; };
+		if(!selectedFiles)
+			selectedFiles = '';
 
-	//Dateiauswahl erstellen
-	var content = `<vbox><hbox class="dlg_infobox error" id="dex_dlg_gamefile_errorbox"><description></description></hbox>
-				   <vbox><description>$DlgGfFilenameDesc$</description><textbox id="dex_dlg_gffilename"></textbox></vbox><vbox>
-				   <description>$DlgGfPickFiles$</description></vbox><vbox id="dex_dlg_gffiles" class="dlg-checklistbox">`;
+		//Dateiauswahl erstellen
+		let content = `<vbox><hbox class="dlg_infobox error" id="dex_dlg_gamefile_errorbox"><description></description></hbox>
+					   <vbox><description>$DlgGfFilenameDesc$</description><textbox id="dex_dlg_gffilename"></textbox></vbox><vbox>
+					   <description>$DlgGfPickFiles$</description></vbox><vbox id="dex_dlg_gffiles" class="dlg-checklistbox">`;
 
-	//Auflisten
-	var entries = dir.directoryEntries;
-	while(entries.hasMoreElements()) {
-		var entry = entries.getNext().QueryInterface(Ci.nsIFile);
+		//Auflisten
+		let entries = dir.directoryEntries;
+		while(entries.hasMoreElements()) {
+			let entry = entries.getNext().QueryInterface(Ci.nsIFile);
 
-		if(entry.leafName == ".templateList.txt")
-			continue;
+			if(entry.leafName == ".templateList.txt")
+				continue;
 
-		//Falls in der Liste vorhanden, Datei auswählen
-		var selstr = '';
-		if(OS_TARGET == "WINNT") {
-			if(selectedFiles.search(RegExp("(^|\\|)"+entry.leafName+"($|\\|)")) != -1)
+			//Falls in der Liste vorhanden, Datei auswählen
+			let selstr = '';
+			if(OS_TARGET == "WINNT") {
+				if(selectedFiles.search(RegExp("(^|\\|)"+entry.leafName+"($|\\|)")) != -1)
+					selstr = ' selected';
+			}
+			else if(selectedFiles.search(RegExp("(^|/|)"+entry.leafName+"($|/|)")) != -1)
 				selstr = ' selected';
+
+			content += `<hbox class="dlg-checklistitem ${selstr}">${entry.leafName}</hbox>`;
 		}
-		else if(selectedFiles.search(RegExp("(^|/|)"+entry.leafName+"($|/|)")) != -1)
-			selstr = ' selected';
 
-		content += `<hbox class="dlg-checklistitem ${selstr}">${entry.leafName}</hbox>`;
-	}
+		content += '</vbox></vbox>';
 
-	content += '</vbox></vbox>';
+		dlg.setContent(content);
+		dlg.show();
+		setTimeout(function() { $(dlg.element).find("#dex_dlg_gffilename")[0].focus(); dlg = 0; }, 10);
+	});
 
-	dlg.setContent(content);
-	dlg.show();
-	setTimeout(function() { $(dlg.element).find("#dex_dlg_gffilename")[0].focus(); dlg = 0; }, 10);
-
-	return true;
+	return task;
 }
 
 function getFullPathForSelection() { return _sc.workpath() + getTreeObjPath(getCurrentTreeSelection()); }
