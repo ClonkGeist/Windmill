@@ -557,8 +557,19 @@ function OSFileRecursive(sourcepath, destpath, callback, operation = "copy", noO
 		}
 		else {
 			let counter = 0;
+
+			//Verzeichnisnamen aufspalten um passenden Alternativen Namen generieren zu koennen (Dabei Dateierweiterungen beruecksichtigen)
+			let dirpath = destpath.split("/");
+			let dirname = dirpath.pop().split(".");
+			dirpath = dirpath.join("/")+"/";
+			let fext = "";
+			if(dirname.length > 1)
+				fext = "."+dirname.pop();
+
+			dirname = dirname.join(".");
+
 			while(true) {
-				try { yield OS.File.makeDir(destpath+extra, {ignoreExisting: false}); }
+				try { yield OS.File.makeDir(dirpath+dirname+extra+fext, {ignoreExisting: false}); }
 				catch(e) {
 					if(!e.becauseExists)
 						throw e;
@@ -569,7 +580,7 @@ function OSFileRecursive(sourcepath, destpath, callback, operation = "copy", noO
 					extra = " - " + (++counter);
 					continue;
 				}
-				destpath += extra;
+				destpath = dirpath+dirname+extra+fext;
 				break;
 			}
 		}

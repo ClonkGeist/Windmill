@@ -452,7 +452,6 @@ $(window).load(function() {
 				}
 			},{ label: "$DlgBtnLink$",
 				onclick: function*(e, btn, dialog) {
-					log("link");
 					let env = createNewWorkEnvironment(formatPath(getConfigData("CIDE", "WorkspaceParentDirectory"))+"/"+fp.file.leafName, _mainwindow.WORKENV_TYPE_Workspace);
 					env.unloaded = false;
 					env.linkedTo = formatPath(fp.file.path);
@@ -525,13 +524,13 @@ function initializeContextMenu() {
 		//Bilddateien
 		"seperator",
 
-		["$ctxgbmp$", 0, function() { //BMPDatei erstellen
+		["$ctxgbmp$", 0, function*() { //BMPDatei erstellen
 			yield createNewFile(false, "$create_newimg$.bmp", false);
 		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-bmp.png" }],
-		["$ctxgpng$", 0, function() { //PNGDatei erstellen
+		["$ctxgpng$", 0, function*() { //PNGDatei erstellen
 			yield createNewFile(false, "$create_newimg$.png", false);
 		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-png.png" }],
-		["$ctxgjpg$", 0, function() { //JPGDatei erstellen
+		["$ctxgjpg$", 0, function*() { //JPGDatei erstellen
 			yield createNewFile(false, "$create_newimg$.jpg", false);
 		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-jpg.png" }],
 
@@ -546,28 +545,17 @@ function initializeContextMenu() {
 
 	treeContextMenu.addEntry("$ctxnew$", 0, 0, submenu_new, {identifier: "ctxNew"});
 	//Duplizieren
-	treeContextMenu.addEntry("$ctxduplicate$", 0, function() {
-		var path = _sc.workpath() + getTreeObjPath(getCurrentTreeSelection());
-		var f = new _sc.file(path);
-		var t = f.leafName.split("."), fext = t[t.length-1];
-		t.pop();
-		if(t.length)
-			var nofext = t.join(".");
-		else
-			var nofext = f.leafName;
+	treeContextMenu.addEntry("$ctxduplicate$", 0, function*() {
+		let cnt = $(getCurrentTreeSelection()).parent();
+		let path = _sc.workpath() + getTreeObjPath(getCurrentTreeSelection());
+		yield OSFileRecursive(path, path);
 
-		var nFilename = f.leafName, i = 1;
-		while(_sc.file(f.parent.path+"/"+nFilename).exists()) {
-			nFilename = nofext + " - " + i + "." + fext;
-			i++;
-		}
-		f.copyTo(f.parent, nFilename);
-
-		var cnt = $(getCurrentTreeSelection()).parent();
 		if($(cnt).html().length)
 			$(cnt).empty();
 
-		loadDirectory(f.parent.path, cnt);
+		let parentpath = path.split("/");
+		parentpath.pop();
+		loadDirectory(parentpath.join("/"), cnt);
 	}, 0, { identifier: 'ctxDuplicate' });
 	//Kopieren
 	treeContextMenu.addEntry("$ctxcopy$", 0, function() { copyTreeEntry(getCurrentTreeSelection()); }, 0, { identifier: 'ctxCopy' });

@@ -349,6 +349,13 @@
 .ctx-disabled {
   color: grey; }
 
+.ctx-locked {
+  color: rgba(127, 127, 127, 0.5);
+  transform: color 1s; }
+
+.ctx-locked:hover {
+  background-color: transparent; }
+
 .ctx-menuseperator {
   border-bottom: 1px solid rgba(0, 0, 0, 0.15); }
 

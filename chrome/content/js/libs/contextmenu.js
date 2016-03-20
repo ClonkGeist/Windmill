@@ -81,9 +81,9 @@ class _ContextMenuEntry {
 
 		//Element erstellen
 		if(MODULE_LANG == "xul")
-			this.element = $(`<hbox class="ctx-menuitem" id="context-${this.id}">${icon}<vbox>${this.label}</vbox></hbox>`).get(0);
+			this.element = $(`<hbox class="ctx-menuitem" id="context-${this.id}">${icon}<vbox>${this.label}</vbox></hbox>`)[0];
 		else
-			this.element = $(`<div class="ctx-menuitem" id="context-${this.id}">${icon}${this.label}</div>`).get(0);
+			this.element = $(`<div class="ctx-menuitem" id="context-${this.id}">${icon}${this.label}</div>`)[0];
 
 		$(this.element).appendTo($(obj));
 		
@@ -110,15 +110,21 @@ class _ContextMenuEntry {
 
 			if(!this.subMenu) {
 				$(this.element).click((e) => {
+					if($(e.target).hasClass("ctx-locked"))
+						return;
+
 					if(this.clickHandler.isGenerator()) {
 						let _this = this;
 						Task.spawn(function*() {
+							_this.lock();
 							yield* _this.clickHandler(target, e.target, _this);
 						}).then(function() {
+							_this.unlock();
 							if($(".contextmenu").prop("contextmenu_obj"))
 								$(".contextmenu").prop("contextmenu_obj").hideMenu();
 						}, function(err) {
-							log(err);							
+							log(err);					
+							_this.unlock();							
 							if($(".contextmenu").prop("contextmenu_obj"))
 								$(".contextmenu").prop("contextmenu_obj").hideMenu();
 						});	
@@ -132,6 +138,8 @@ class _ContextMenuEntry {
 			}
 			else {
 				$(this.element).hover((e) => {
+					if($(e.target).hasClass("ctx-locked"))
+						return;
 					if(jQuery.contains(document, this.subMenu.element))
 						return;
 
@@ -152,6 +160,20 @@ class _ContextMenuEntry {
 			return;
 		
 		this.subMenu.hideMenu();
+	}
+
+	lock() {
+		if(this.subMenu)
+			this.subMenu.lock();
+		else
+			this.topMenu.lock();
+	}
+
+	unlock() {
+		if(this.subMenu)
+			this.subMenu.unlock();
+		else
+			this.topMenu.unlock();
 	}
 }
  
@@ -222,8 +244,11 @@ class _ContextMenu {
 		if(typeof this.showing == "function")
 			this.showing(obj_by);
 	
+		if(menuitemobj && menuitemobj.topMenu)
+			this.topMenu = menuitemobj.topMenu;
+
 		if(MODULE_LANG == "xul") {
-			this.element = $("<panel class='contextmenu'></panel>")[0];
+			this.element = $("<panel class='contextmenu' noautohide='true'></panel>")[0];
 			$(this.element).appendTo($(document.documentElement));
 			this.element.openPopup();
 
@@ -301,6 +326,8 @@ class _ContextMenu {
 	hideMenu() {
 		if(!this.element)
 			return;
+		if(this.locked)
+			return;
 
 		for(var i = 0; i < this.entries.length; i++)
 			this.entries[i].hideMenu();
@@ -310,6 +337,27 @@ class _ContextMenu {
 
 		$(this.opened_by).focus();
 		this.opened_by = 0;
+	}
+	
+	lock() {
+		$(this.element).find(".ctx-menuitem").addClass("ctx-locked");
+		this.locked = true;
+		if(this.topMenu)
+			this.topMenu.lock();
+	}
+	
+	unlock() {
+		$(this.element).find(".ctx-menuitem.ctx-locked").removeClass("ctx-locked");
+		this.locked = false;
+		if(this.topMenu)
+			this.topMenu.unlock();
+	}
+	
+	set topMenu(val) { this._topMenu = val; }
+	get topMenu() {
+		if(!this.element)
+			return;
+		return this._topMenu;
 	}
 }
 
