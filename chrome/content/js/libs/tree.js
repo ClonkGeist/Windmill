@@ -803,7 +803,7 @@ function handleTreeEntry(obj, open_sidedeck) {
 	//Files behandeln je nach Fileextension
 	switch(fext) {
 		case "ocs": //Szenarien starten
-			var args = getOCStartArguments(formatPath(filepath));
+			let args = getOCStartArguments(formatPath(filepath), true);
 			if(args == -1)
 				return;
 

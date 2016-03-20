@@ -108,18 +108,6 @@ $(window).load(function() {
 				if(type == _mainwindow.WORKENV_TYPE_ClonkPath) {
 					//Checken ob der angegebene Pfad existiert/valide ist
 					let path = $(_self.element).find("#dex_dlg_workenv_ocpath").text();
-					/*try {
-						file = new _sc.file(path);
-					}
-					catch(err) {
-						error("$DlgErrWEInvalidPath$")
-						return e.stopImmediatePropagation();
-					}
-
-					if(!file.exists() || !file.isDirectory()) {
-						error("$DlgErrWEPathDoesNotExist$");
-						return e.stopImmediatePropagation();
-					}*/
 					let info;
 					try { info = yield OS.File.stat(path); }
 					catch(err) {
@@ -957,40 +945,39 @@ function onTreeFileDragDrop(cnt, f) {
 
 function onTreeObjRename(obj, name) { return true; }
 
-function getOCStartArguments(path) {
-	var args = ["--editor", "--nonetwork", path];
-	if(!getConfigData("CIDE", "RejectScenarioBackup")) {
-		//Scenario.txt temporaer backuppen, mit vollen Pfaden veraendern und dann wieder zuruecksetzen
-		var scenario = new _sc.file(`${path}/Scenario.txt`);
-		if(scenario.exists()) {
-			var content = readFile(scenario);
-			var data = parseINIArray(content);
-			for(var key in data["Definitions"]) {
-				var def = data["Definitions"][key];
+function getOCStartArguments(path, nextversion) {
+	let args = ["--editor", "--nonetwork", path];
+	if(!getConfigData("CIDE", "RejectScenarioBackup") && nextversion) {
+		Task.spawn(function*() {
+			//Scenario.txt temporaer backuppen, mit vollen Pfaden veraendern und dann wieder zuruecksetzen
+			let scenario = path+"/Scenario.txt";
+			let content = yield OS.File.read(scenario, {encoding: "utf-8"});
+			let data = parseINIArray(content);
+			for(let key in data["Definitions"]) {
+				let def = data["Definitions"][key];
 
-				var newpath = _sc.workpath(path)+"/"+def;
-				var file = new _sc.file(newpath);
-				if(file.exists()) {
+				let newpath = _sc.workpath(path)+"/"+def;
+				if(yield OS.File.exists(newpath)) {
 					newpath = newpath.replace(/\//g, "\\");
 					data["Definitions"][key] = newpath;
 				}
 			}
 
-			var order = ["Head", "Definitions", "Game", "Player1", "Player2", "Player3", "Player4", "Landscape", "Weather", "Animals"], text = "";
+			let order = ["Head", "Definitions", "Game", "Player1", "Player2", "Player3", "Player4", "Landscape", "Weather", "Animals"], text = "";
 
 			//Sonstige Sections
-			for(var key in data)
+			for(let key in data)
 				if(data[key] instanceof Array && order.indexOf(key) == -1 && isNaN(parseInt(key)))
 					order.push(key);
 
 			//Text generieren
 			for(var i = 0; i < order.length; i++) {
-				var sect = order[i];
+				let sect = order[i];
 				if(!data[sect])
 					continue;
 
 				text += "["+sect+"]\r\n";
-				for(var key in data[sect]) {
+				for(let key in data[sect]) {
 					if(data[sect][key] === undefined)
 						continue;
 
@@ -1000,14 +987,15 @@ function getOCStartArguments(path) {
 				text += "\r\n";
 			}
 
-			writeFile(scenario, text);
+			OS.File.writeAtomic(scenario, text, {encoding: "utf-8"});
+			let restore = function() {
+				OS.File.writeAtomic(scenario, content, {encoding: "utf-8"});
+				log("Scenario file was resetted successfully.");
+			}
+			setTimeout(restore, 10000);
 
-			//Zuruecksetzen
-			setTimeout(function() {
-				writeFile(scenario, content);
-				log("Scenario file is now successfully resetted.");
-			}, 5000);
-		}
+			return {args, restore};
+		});
 	}
 
 	return args;
