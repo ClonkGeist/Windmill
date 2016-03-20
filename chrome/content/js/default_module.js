@@ -266,78 +266,9 @@ if(top != window) {
 					return;
 			});
 		}, 1000);
-		
-		//Sprache aktualisieren
-		hook("load", function() {
-			var rgx = /\$[a-zA-Z0-9_]+?\$/g;
-			var getReplacement = function(lgreplace) {
-				return __l[MODULE_LPRE+"_"+lgreplace.replace(/\$/g, "")];
-			}
-			var fnLocale = function(i, obj) {
-				//Keine Lokalisierung
-				if($(obj).attr("no_localization") != undefined)
-					return;
-				
-				//Attribute durchgehen
-				jQuery.each(obj.attributes, function(j, attr) {
-					var match = $(obj).attr(attr.name).match(rgx);
-					if(match)
-						$(obj).attr(attr.name, getReplacement(match[0]));
-				});
-				
-				//Textnodes durchgehen
-				$(obj).contents().each(function() {
-					if(this.nodeType == 3) {
-						this.nodeValue = jQuery.trim($(this).text()).replace(rgx, function(match) {
-							if(getReplacement(match))
-								return getReplacement(match);
-							else
-								return match;
-						});
-					}
-				});
-				
-				jQuery.each($(obj).children("*"), fnLocale);
-			}
-			jQuery.each($("body > *"), fnLocale);
-		});
 	}
-	else if(MODULE_LANG == "xul") {
-		//Sprache aktualisieren
-		hook("load", function() {
-			var rgx = /\$[a-zA-Z0-9_]+?\$/g;
-			var getReplacement = function(lgreplace) {
-				return __l[MODULE_LPRE+"_"+lgreplace.replace(/\$/g, "")];
-			}
-			var fnLocale = function(i, obj) {
-				//Keine Lokalisierung
-				if($(obj).attr("no_localization"))
-					return;
-				
-				//Attribute durchgehen
-				jQuery.each(obj.attributes, function(j, attr) {
-					var match = $(obj).attr(attr.name).match(rgx);
-					if(match)
-						$(obj).attr(attr.name, getReplacement(match[0])); //Funktioniert nicht bei Attribut "emptytext"? [=> placeholder-Attribut verwenden!]
-				});
-				
-				//Textnodes durchgehen
-				$(obj).contents().each(function() {
-					if(this.nodeType == 3) {
-						this.nodeValue = jQuery.trim($(this).text()).replace(rgx, function(match) {
-							if(getReplacement(match))
-								return getReplacement(match);
-							else
-								return match;
-						});
-					}
-				});
-				
-				jQuery.each($(obj).children("*"), fnLocale);
-			}
-			jQuery.each($(document.documentElement).children("*"), fnLocale);
-		});
-	}
+
+	hook("load", localizeModule);
 
 	$(window).focus(function() {
 		if(window.createCideToolbar) {
@@ -392,8 +323,46 @@ function Locale(str, prefix) {
 	return str;
 }
 
-function getClonkExecutablePath(filename_only) {
-	//Alternative Executabledatei
+function localizeModule() {
+	let rgx = /\$[a-zA-Z0-9_]+?\$/g;
+
+	function getReplacement(lgreplace) {
+		return __l[MODULE_LPRE+"_"+lgreplace.replace(/\$/g, "")];
+	}
+
+	function fnLocale(i, obj) {
+		//Keine Lokalisierung
+		if($(obj).attr("no_localization"))
+			return;
+
+		//Attribute durchgehen
+		jQuery.each(obj.attributes, function(j, attr) {
+			let match = $(obj).attr(attr.name).match(rgx);
+			if(match)
+				$(obj).attr(attr.name, getReplacement(match[0]));
+		});
+
+		//Textnodes durchgehen
+		$(obj).contents().each(function() {
+			if(this.nodeType == 3) {
+				this.nodeValue = jQuery.trim($(this).text()).replace(rgx, function(match) {
+					if(getReplacement(match))
+						return getReplacement(match);
+					else
+						return match;
+				});
+			}
+		});
+
+		jQuery.each($(obj).children("*"), fnLocale);
+	}
+
+	if(MODULE_LANG == "html")
+		jQuery.each($("body > *"), fnLocale);
+	else if(MODULE_LANG == "xul")
+		jQuery.each($(document.documentElement).children("*"), fnLocale);
+}
+function getClonkExecutablePath(filename_only) {	//Alternative Executabledatei
 	var name = getConfigData("Global", "AlternativeApp");
 	if(!name) {
 		if(OS_TARGET == "WINNT")

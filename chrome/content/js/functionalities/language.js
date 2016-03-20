@@ -33,21 +33,3 @@ function readLanguageInfo(path) {
 		return lang;
 	});
 }
-
-function updateLocalizaiton() {
-	var lgreplace = $(document.documentElement).html().match(/\$[a-zA-Z0-9_]+?\$/g);
-	if(!lgreplace)
-		return;
-	
-	var doccode = $(document.documentElement).html();
-	for(var d in lgreplace) {
-		var id = lgreplace[d];
-		var str = __l[MODULE_LPRE+"_"+id.match(/\$([a-zA-Z0-9_]+?)\$/)[1]];
-		if(!str)
-			str = id;
-		
-		doccode = doccode.replace(RegExp(id.replace(/\$/g, "\\$")), str);		
-	}
-	
-	$(document.documentElement).html(doccode);
-}

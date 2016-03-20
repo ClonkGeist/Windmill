@@ -65,7 +65,7 @@ hook("load", function() {
 		$("#startup-loading").text("Loading Work Environments");
 		try { yield loadWorkEnvironment(); } catch(e) {}
 	}).then(function(result) {
-		updateLocalizaiton();
+		localizeModule();
 
 		$("#startup-loading").fadeOut(500);
 		//Configuration Wizard ggf. starten
@@ -517,7 +517,6 @@ var draggingWindow = false,
 	
 hook("load", function() {
 	$(".header-ctrl").mousedown(function(e) {
-		
 		if(!$(e.target).hasClass("header-ctrl"))
 			return;
 		draggingWindow = true;
