@@ -362,6 +362,7 @@ function localizeModule() {
 	else if(MODULE_LANG == "xul")
 		jQuery.each($(document.documentElement).children("*"), fnLocale);
 }
+
 function getClonkExecutablePath(filename_only) {	//Alternative Executabledatei
 	var name = getConfigData("Global", "AlternativeApp");
 	if(!name) {
