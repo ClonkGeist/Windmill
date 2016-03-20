@@ -488,6 +488,14 @@ caption {
 	color: white;
 }
 
+#modules-nav {
+	transition: opacity 1s;
+}
 
+#modules-nav.startup-loading {
+	visibility: hidden;
+	width: 0px;
+	opacity: 0;
+}
 
 /*	need some space	*/

@@ -35,7 +35,7 @@
 }
 .ctx-locked {
 	color: rgba(127, 127, 127, 0.5);
-	transform: color 1s;
+	transition: color 1s;
 }
 .ctx-locked:hover {
 	background-color: transparent;

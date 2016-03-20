@@ -73,7 +73,7 @@
 				</hbox>
 				<hbox>
 					<toolbox flex="1">
-						<toolbar id="modules-nav" align="start">
+						<toolbar id="modules-nav" align="start" class="startup-loading">
 							<!-- buttons for main modules will be inserted here -->
 							<spacer id="cide-spacer" />
 							<hbox id="cide-toolbar" align="start"></hbox>

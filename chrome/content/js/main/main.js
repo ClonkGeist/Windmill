@@ -68,6 +68,7 @@ hook("load", function() {
 		localizeModule();
 
 		$("#startup-loading").fadeOut(500);
+		$(".startup-loading").removeClass("startup-loading");
 		//Configuration Wizard ggf. starten
 		if(result == -1) {
 			$("#wrapper").css("display", "none");

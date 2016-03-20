@@ -351,7 +351,7 @@
 
 .ctx-locked {
   color: rgba(127, 127, 127, 0.5);
-  transform: color 1s; }
+  transition: color 1s; }
 
 .ctx-locked:hover {
   background-color: transparent; }
@@ -828,5 +828,13 @@ caption {
   flex-direction: column;
   font-size: 2.5em;
   color: white; }
+
+#modules-nav {
+  transition: opacity 1s; }
+
+#modules-nav.startup-loading {
+  visibility: hidden;
+  width: 0px;
+  opacity: 0; }
 
 /*	need some space	*/
