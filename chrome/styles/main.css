@@ -445,7 +445,7 @@ window.maximized .restore-window {
   outline: 1px solid #191919;
   filter: blur(0px);
   transition: filter 0.8s;
-  transition-delay: 1s; }
+  transition-delay: 0.3s; }
 
 #modules-wrapper.startup-loading {
   filter: blur(3px); }
