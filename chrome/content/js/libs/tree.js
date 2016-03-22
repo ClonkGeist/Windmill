@@ -555,12 +555,10 @@ function pasteFile(target) {
 	
 	//Falls Verzeichnisinhalte schon geladen sind, Tree-Eintrag hinzufuegen
 	var cont = getTreeCntById(getTreeObjId(target));
-	if(cont.children("li")[0]) {
+	if(cont.children("li")[0])
 		//Tree-Eintrag erzeugen
-		addFileTreeEntry(copiedFile, cont);
-		sortTreeContainerElements(cont);
-	}
-	
+		addFileTreeEntry(copiedFile, cont, true);
+
 	//Ggf. Baumelement oeffnen
 	if(target != MAINTREE_OBJ)
 		treeExpand(target);

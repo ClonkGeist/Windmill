@@ -355,7 +355,7 @@ function loadDirectory(path, parentobj, autosearch_parent, no_async) {
 
 function FilenameBlacklist() { return [".git"] }
 
-function addFileTreeEntry(entry, parentobj) {
+function addFileTreeEntry(entry, parentobj, sort_container) {
 	if(FilenameBlacklist().indexOf(entry.leafName) != -1 && getConfigData("CIDE", "HideUnsupportedFiles"))
 		return;
 
@@ -401,6 +401,8 @@ function addFileTreeEntry(entry, parentobj) {
 		
 		//Baumelement erzeugen
 		createTreeElement(parentobj, title, container, 0, icon, entry.leafName, 0);
+		if(sort_container)
+			sortTreeContainerElements(parentobj);
 		return true;
 	});
 	
