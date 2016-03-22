@@ -138,4 +138,8 @@ textbox.deactivated {
 	padding: 40px;
 }
 
+#previewdesc {
+	white-space: pre-wrap;
+}
+
 /*	need some space	*/

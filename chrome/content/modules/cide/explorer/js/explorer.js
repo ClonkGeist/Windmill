@@ -886,7 +886,7 @@ function createNewFile(is_dir, name, container, image, content) {
 		if($(cnt).html().length)
 			$(cnt).empty();
 
-		let task = loadDirectory(cntpath, cnt, 0);
+		let task = loadDirectory(cntpath, cnt);
 		task.then(function() {
 			if($(cnt).find('[filename="'+filename+'"]')[0]) {
 				selectTreeItem($(cnt).find('[filename="'+filename+'"]'), true);

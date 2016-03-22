@@ -59,8 +59,9 @@ function initializeContextMenu() {
 				return EventInfo("$FileNotFound$");
 
 			$(getModuleByName("cide-explorer").contentWindow).focus();
-			if(!getModuleByName("cide-explorer").contentWindow.navigateToPath(formatPath(f.path)+"/", true))
-				return EventInfo("$FileNotFound$");
+			getModuleByName("cide-explorer").contentWindow.navigateToPath(formatPath(f.path)+"/", true).then(null, function() {
+				EventInfo("$FileNotFound$");
+			});
 		}, 0],
 		"seperator",
 		["$ctxOpenMeshes$", 0, 0, (new ContextMenu(ctxInsertMeshEntries, [], MODULE_LPRE)), { identifier: "openMeshes" }],
