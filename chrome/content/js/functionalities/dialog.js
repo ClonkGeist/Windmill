@@ -138,6 +138,8 @@ class _WDialog extends WindmillObject {
 
 		//Butonn hinzufÅEen
 		btn.appendTo(elm);
+		
+		btnobj.element = btn;
 		return btn;
 	}
 
@@ -172,7 +174,7 @@ class _WDialog extends WindmillObject {
 								if((btn = this.options.btnright[i]) && btn.preset == "cancel")
 									break;
 						try {
-							btn.clickhandler(e, e.target, this);
+							$(btn.element).trigger("click");
 						} catch(e) {}
 					}
 					this.hide();
