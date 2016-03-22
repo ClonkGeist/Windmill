@@ -23,7 +23,7 @@ function createWorkEnvironmentEntry(workenv, first) {
 	if(workenv.options.identifier == "UserData")
 		img = "chrome://windmill/content/img/icon-workenvironment-user.png";
 
-	var id = createTreeElement(MAINTREE_OBJ, title, true, 0, img, 0, "workenvironment"+typeclass);
+	var id = createTreeElement(MAINTREE_OBJ, title, true, 0, img, 0, "workenvironment"+typeclass, { noSelection: false });
 	$(getTreeCntById(id)).attr("workpath", path);
 	$(getTreeObjById(id)).attr("workpath", path);
 	if(first)

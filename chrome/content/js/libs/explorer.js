@@ -316,7 +316,7 @@ function loadDirectory(path, parentobj, autosearch_parent, no_async) {
 	else {
 		let task = Task.spawn(function*() {
 			//Ladetemplate
-			createTreeElement(parentobj, "&lt;...&gt;", false, false, "", "", "treeitem_loading");
+			createTreeElement(parentobj, "&lt;...&gt;", false, false, "", "", "treeitem-loading", { noSelection: false });
 			if(autosearch_parent) {
 				let splitpath = formatPath(path).split("/");
 				splitpath.pop();
@@ -341,7 +341,12 @@ function loadDirectory(path, parentobj, autosearch_parent, no_async) {
 			yield processEntryList(subentries);
 
 			//Ladetemplate loeschen
-			$(parentobj).find(".treeitem_loading").remove();
+			let select_first_item;
+			if($(parentobj).find(".treeitem-loading.tree-selected")[0])
+				select_first_item = true;
+			$(parentobj).find(".treeitem-loading").remove();
+			if(select_first_item)
+				selectTreeItem($(parentobj).children("li:not(.no-selection)")[0]);
 		});
 		task.then(null, function(reason) {
 			log("An error occured while trying to load the directory:");

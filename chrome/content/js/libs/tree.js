@@ -18,7 +18,7 @@ _sc.workpath = function(treeobj) {
 
 function noDragDropItem() {}
 
-function createTreeElement(tree, label, container, open, img, filename, special) {
+function createTreeElement(tree, label, container, open, img, filename, special, options = { noSelection: !!special }) {
 	if(img)
 		var imgTag = '<image src="'+img+'" width="16" height="16" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" /> ';
 	else
@@ -46,7 +46,7 @@ function createTreeElement(tree, label, container, open, img, filename, special)
 	if(!elm)
 		return log("Tree error: Tree element with id " + TREE_ELM_ID + " (label: " + label + ") was not created.", true);
 		
-	if(special && special.search(/workenvironment/) == -1)
+	if(options.noSelection)
 		$(elm).addClass("no-selection");
 
 	if(!open && container) {
@@ -508,34 +508,34 @@ function pasteFile(target) {
 	target = $(target)[0];
 
 	var destination = _sc.file(_sc.workpath(target)+getTreeObjPath(target));
-	
+
 	//Pruefen ob das Ziel ein Ordner ist
 	if(!destination.isDirectory())
 		return false;
-	
+
 	//Pruefen ob gueltiger Clipboard-Inhalt vorhanden ist
 	if(!Services.clipboard.hasDataMatchingFlavors(["application/x-moz-file"], 1, Services.clipboard.kGlobalClipboard))
 		return false;
-	
+
 	//Transferable-Objekt erzeugen
 	var trans = new _sc.transferable();
 	trans.init(null);
 	trans.addDataFlavor("application/x-moz-file");
-	
+
 	//Datei aus dem Clipboard laden
 	Services.clipboard.getData(trans, Services.clipboard.kGlobalClipboard);
 	var file = {}, fileSize = {};
 	trans.getTransferData("application/x-moz-file", file, fileSize);
 	file = file.value.QueryInterface(Ci.nsIFile);
-	
+
 	//TODO: Namen ggf. aendern falls Datei schon vorhanden ist
 	var newFilename = file.leafName;
-	
+
 	//Rekursives Kopieren vermeiden
 	if(destination.path == file.path) {
 		var tempfile = new _sc.file(destination.path+"/"+newFilename);
 		tempfile.create(Ci.nsIFile.DIRECTORY_TYPE, 0o777);
-		
+
 		//Ordnerinhalte einzelnd rueberkopieren
 		var entries = file.directoryEntries;
 		while(entries.hasMoreElements()) {
@@ -548,11 +548,11 @@ function pasteFile(target) {
 	}
 	else
 		file.copyTo(destination, newFilename);
-	
+
 	var copiedFile = _sc.file(destination.path+"/"+newFilename);
 	if(!copiedFile.exists())
 		return false;
-	
+
 	//Falls Verzeichnisinhalte schon geladen sind, Tree-Eintrag hinzufuegen
 	var cont = getTreeCntById(getTreeObjId(target));
 	if(cont.children("li")[0])
@@ -562,7 +562,7 @@ function pasteFile(target) {
 	//Ggf. Baumelement oeffnen
 	if(target != MAINTREE_OBJ)
 		treeExpand(target);
-	
+
 	return true;
 }
 
