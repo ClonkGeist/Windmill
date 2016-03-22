@@ -154,11 +154,31 @@ class _WDialog extends WindmillObject {
 	//Dialog anzeigen
 	show() {
 		//Kopie erstellen
-		var clone = $(".main-wdialog.draft").clone(true);
+		let clone = $(".main-wdialog.draft").clone(true);
 		clone.attr("data-usemodal", this.options.modal);
 		clone.removeClass("draft");
-		this.element = clone.get(0);
-		
+		this.element = clone[0];
+		if(!this.options.noEscape)
+			clone.keydown((e) => {
+				if(e.key == "Escape") {
+					if(!e.shiftKey) {
+						let found, btn = {};
+						if(this.options.btnleft)
+							for(var i = 0; i < this.options.btnleft.length; i++)
+								if((btn = this.options.btnleft[i]) && btn.preset == "cancel")
+									break;
+						if(this.options.btnright && btn.preset != "cancel")
+							for(var i = 0; i < this.options.btnright.length; i++)
+								if((btn = this.options.btnright[i]) && btn.preset == "cancel")
+									break;
+						try {
+							btn.clickhandler(e, e.target, this);
+						} catch(e) {}
+					}
+					this.hide();
+				}
+			});
+
 		//CSS-Einstellungen Eernehmen
 		if(this.options.css)
 			clone.find(".main-wdialog-wrapper").css(this.options.css);
@@ -268,7 +288,7 @@ class _WDialog extends WindmillObject {
 
 		this.updateTextNodes();
 	}
-	
+
 	updateTextNodes(objects = $(this.element).find("description")) {
 		//XUL-Description Elemente in der Breite anpassen (da sie sonst komisch overflowen)
 		objects.each((index, elm) => {
