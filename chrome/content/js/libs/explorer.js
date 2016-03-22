@@ -67,6 +67,7 @@ function searchFile(searchstr, workpath) {
 }
 
 function navigateToPath(path, open_and_select) {
+	let fullpath = path;
 	path = path.replace(_sc.workpath(path) + "/", "");
 	var branches = path.split("/");
 
@@ -77,33 +78,35 @@ function navigateToPath(path, open_and_select) {
 		branches.pop();
 	}
 
-	var obj = MAINTREE_OBJ;
+	let obj = MAINTREE_OBJ;
 	//Branches einzelnd durchgehen und TreeObj suchen
-	for(var i = 0; i < branches.length; i++) {
-		//Gegebenenfalls Ordnerinhalte laden die noch nicht geladen sind.
-		if(!$(obj).find("li")[0])
-			loadDirectory(_sc.workpath(obj)+getTreeObjPath(obj), obj, false, true);
+	return Task.spawn(function*() {
+		if(!(yield OS.File.exists(fullpath)))
+			throw "File not found";
+		for(var i = 0; i < branches.length; i++) {
+			//Gegebenenfalls Ordnerinhalte laden die noch nicht geladen sind.
+			if(!$(obj).find("li")[0])
+				yield loadDirectory(_sc.workpath(obj)+getTreeObjPath(obj), obj);
 
-		//Checken ob Branch existiert
-		var obj = $(obj).find("li[filename='"+branches[i]+"']");
-		if(!obj[0])
-			return;
+			//Checken ob Branch existiert
+			obj = $(obj).find("li[filename='"+branches[i]+"']");
+			if(!obj[0])
+				return;
 
-		//Naechsten Container auswaehlen
-		if(i+1 < branches.length)
-			obj = getTreeCntById(getTreeObjId(obj));
-	}
-	
-	//Gegebenenfalls oeffnen und auswaehlen
-	if(open_and_select) {
-		setTimeout(function() {
-			selectTreeItem(obj, true);
-			if(open_last_branch)
-				treeExpand(obj);
-		}, 10);
-	}
+			//Naechsten Container auswaehlen
+			if(i+1 < branches.length)
+				obj = getTreeCntById(getTreeObjId(obj));
+		}
 
-	return obj;
+		//Gegebenenfalls oeffnen und auswaehlen
+		if(open_and_select) {
+			setTimeout(function() {
+				selectTreeItem(obj, true);
+				if(open_last_branch)
+					treeExpand(obj);
+			}, 10);
+		}
+	});
 }
 
 function PrepareDirectory(path, call) {
@@ -258,7 +261,7 @@ function loadDirectory(path, parentobj, autosearch_parent, no_async) {
 		
 		$(parentobj).empty();
 	}
-	
+
 	function processEntryList(aDirEntries) {
 		//Array sortieren
 		aDirEntries.sort(function(a,b) {
@@ -268,26 +271,32 @@ function loadDirectory(path, parentobj, autosearch_parent, no_async) {
 			
 			return fileSorting(t, t2, fexta, fextb);
 		});
-		
-		var tree_element_added = false;
-		
-		//Arrayelemente verarbeiten
-		for(var i = 0; i < aDirEntries.length; i++) {
-			var entry = aDirEntries[i], container = false;
-			
-			//TODO: Fileextensions verarbeiten und ggf. Informationen zwischenspeichern fE Previews
-			
-			if(addFileTreeEntry(entry, parentobj)) {
-				//Leerer-Ordner-Eintrag verhindern
-				tree_element_added = true
+
+		return Task.spawn(function*() {
+			var tree_element_added = false;
+
+			//Arrayelemente verarbeiten
+			for(var i = 0; i < aDirEntries.length; i++) {
+				var entry = aDirEntries[i], container = false;
+
+				//TODO: Fileextensions verarbeiten und ggf. Informationen zwischenspeichern fE Previews
+
+				if(yield addFileTreeEntry(entry, parentobj)) {
+					//Leerer-Ordner-Eintrag verhindern
+					tree_element_added = true
+				}
 			}
-		}
-		
-		//Ggf. Pseudoelement fuer leeren Ordner erzeugen
-		if(!tree_element_added)
-			createEmptyTemplate(parentobj);
+
+			//Ggf. Pseudoelement fuer leeren Ordner erzeugen
+			if(!tree_element_added)
+				createEmptyTemplate(parentobj);
+		});
 	}
-	
+
+	/* Da processEntryList und addFileTreeEntry auch nicht mehr asynchron sind, ist no_async auch nicht mehr 
+	 * voll synchron, garantiert also nicht das dass Verzeichnis komplett geladen/angezeigt ist nach Abschluss.
+	 * Daher moeglichst die asynchrone Funktion mittels Tasks/Promises nutzen.
+	 */
 	if(no_async) {
 		var f = _sc.file(path);
 		if(autosearch_parent && f.parent)
@@ -328,12 +337,15 @@ function loadDirectory(path, parentobj, autosearch_parent, no_async) {
 				subentries.push(entry);
 			}
 
-			processEntryList(subentries);
-
 			iterator.close();
+			yield processEntryList(subentries);
 
 			//Ladetemplate loeschen
 			$(parentobj).find(".treeitem_loading").remove();
+		});
+		task.then(null, function(reason) {
+			log("An error occured while trying to load the directory:");
+			log(reason);
 		});
 		
 		return task;
@@ -354,42 +366,45 @@ function addFileTreeEntry(entry, parentobj) {
 	if(hideFileExtension(fext))
 		return false;
 
-	var {title, icon} = getTreeEntryData(entry, fext)||{};
-	if(!title)
-		title = entry.leafName;
+	let task = Task.spawn(function*() {
+		let {title, icon} = yield getTreeEntryData(entry, fext)||{};
+		if(!title)
+			title = entry.leafName;
 
-	if(!icon) {
-		for(var p in specialData) {
-			var d = specialData[p];
+		if(!icon) {
+			for(var p in specialData) {
+				var d = specialData[p];
 
-			if(d.ext == fext && d.img.length) {
-				icon = d.img;
-				fSpecial = true;
-				break;
+				if(d.ext == fext && d.img.length) {
+					icon = d.img;
+					fSpecial = true;
+					break;
+				}
 			}
 		}
-	}
 
-	if(entry.isDirectory()) {
-		container = true;
+		if(entry.isDirectory()) {
+			container = true;
+			
+			//Standard Ordnericon verwenden
+			if(!fSpecial && !icon)
+				icon = "chrome://windmill/content/img/icon-directory.png";
+		}
+		else if(getConfigData("CIDE", "HideUnsupportedFiles") && !fSpecial)
+			return false;
 		
-		//Standard Ordnericon verwenden
-		if(!fSpecial && !icon)
-			icon = "chrome://windmill/content/img/icon-directory.png";
-	}
-	else if(getConfigData("CIDE", "HideUnsupportedFiles") && !fSpecial)
-		return false;
-	
-	if(noContainer(fext))
-		container = false;
+		if(noContainer(fext))
+			container = false;
 
-	if(!icon)
-		icon = "chrome://windmill/content/img/icon-fileext-other.png";
+		if(!icon)
+			icon = "chrome://windmill/content/img/icon-fileext-other.png";
+		
+		//Baumelement erzeugen
+		createTreeElement(parentobj, title, container, 0, icon, entry.leafName, 0);
+		return true;
+	});
 	
-	//Baumelement erzeugen
-	createTreeElement(parentobj, title, container, 0, icon, entry.leafName, 0);
-	
-	return true;
+	return task;
 }
 
 function getFileExtensionPriority(extension) {

@@ -115,33 +115,37 @@ function getTreeEntryData(entry, fext) {
 	if(!entry.isDirectory())
 		return false;
 
-	var data = {};
-	var title = readFile(entry.path+"/Title.txt");
-	if(title) {
-		lines = title.split('\n');
-		var titleUS;
-		for(var i = 0; i < lines.length; i++) {
-			if(__l["ClonkLangPrefix"] != "US" && lines[i].search(/US:/) != -1)
-				titleUS = lines[i].match(/:(.+)/)[1];
+	let task = Task.spawn(function*() {
+		let data = {};
+		let title = yield OS.File.read(entry.path+"/Title.txt", {encoding: "utf-8"});
+		if(title) {
+			lines = title.split('\n');
+			let titleUS;
+			for(var i = 0; i < lines.length; i++) {
+				if(__l["ClonkLangPrefix"] != "US" && lines[i].search(/US:/) != -1)
+					titleUS = lines[i].match(/:(.+)/)[1];
 
-			if(lines[i].search(RegExp(__l["ClonkLangPrefix"]+":", "i")) != -1) {
-				data.title = lines[i].match(/:(.+)/)[1];
-				break;
+				if(lines[i].search(RegExp(__l["ClonkLangPrefix"]+":", "i")) != -1) {
+					data.title = lines[i].match(/:(.+)/)[1];
+					break;
+				}
 			}
+
+			if(!data.title && titleUS)
+				data.title = titleUS;
+		}
+		let iconpath = entry.path+"/Icon.png";
+		if(yield OS.File.exists(iconpath)) {
+			if(OS_TARGET == "WINNT")
+				data.icon = "file://"+iconpath.replace(/\\\\/, "/");
+			else
+				data.icon = "file://"+iconpath;
 		}
 
-		if(!data.title && titleUS)
-			data.title = titleUS;
-	}
-	var icon = _sc.file(entry.path+"/Icon.png");
-	if(icon.exists()) {
-		if(OS_TARGET == "WINNT")
-			data.icon = "file://"+icon.path.replace(/\\\\/, "/");
-		else
-			data.icon = "file://"+icon.path;
-	}
+		return data;
+	});
 
-	return data;
+	return task;
 }
 
 function noContainer(fext) {return fext == "ocs"; }
@@ -149,40 +153,48 @@ function noDragDropItem() {return true;}
 
 function onTreeDeselect(obj) { $("#previewimage").attr("src", ""); }
 function onTreeSelect(obj) {
-	var path = _sc.clonkpath() + getTreeObjPath(obj);
-	if(!_sc.file(path).exists())
-		return;
+	Task.spawn(function*() {
+		let path = _sc.clonkpath() + getTreeObjPath(obj), info;
 
-	if(_sc.file(path+"/Title.png").exists()) {
-		if(OS_TARGET == "WINNT")
-			$("#previewimage").attr("src", "file://"+path.replace(/\\/, "/")+"/Title.png");
+		info = yield OS.File.stat(path);
+		if(!info.isDir)
+			return;
+
+		if(yield OS.File.exists(path+"/Title.png")) {
+			if(OS_TARGET == "WINNT")
+				$("#previewimage").attr("src", "file://"+path.replace(/\\/, "/")+"/Title.png");
+			else
+				$("#previewimage").attr("src", "file://"+path+"/Title.png");
+		}
 		else
-			$("#previewimage").attr("src", "file://"+path+"/Title.png");
-	}
-	else
-		$("#previewimage").attr("src", "");
+			$("#previewimage").attr("src", "");
 
-	var prefix = Locale("$ClonkLangPrefix$", -1);
-	if(!_sc.file(path+"/Desc"+prefix+".txt").exists())
-		prefix = "US";
+		let prefix = Locale("$ClonkLangPrefix$", -1), text;
+		try {
+			text = yield OS.File.read(path+"/Desc"+prefix+".txt", {encoding: "utf-8"});
+		}
+		catch(e) {
+			try {
+				text = yield OS.File.read(path+"/DescUS.txt", {encoding: "utf-8"});
+			}
+			catch(e) {
+				$("#previewdesc").html("");
+				return;
+			}
+		}
 
-	if(_sc.file(path+"/Desc"+prefix+".txt").exists()) {
-		var text = readFile(path+"/Desc"+prefix+".txt"); //.
-		$("#previewdesc").text(text); //HTML/XUL in Beschreibungen deaktivieren
-		$("#previewdesc").html($("#previewdesc").html().replace(/\n/g, '<br xmlns="http://www.w3.org/1999/xhtml"/>'));
-	}
-	else
-		$("#previewdesc").html("");
-
+		//HTML/XUL in Beschreibungen deaktivieren
+		$("#previewdesc").text(text);
+	});
 	return true;
 }
 
-function onTreeExpand(obj) {
+function onTreeExpand(obj, listitem) {
 	//Verzeichnis schon geladen
 	if($(obj).children("li")[0])
 		return;
 
-	loadDirectory(_sc.workpath(obj)+getTreeObjPath(obj), $(obj));
+	loadDirectory(_sc.clonkpath()+getTreeObjPath(obj), $(obj));
 	return true;
 }
 
