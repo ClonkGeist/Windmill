@@ -44,6 +44,8 @@ class wmProcess extends WindmillInterface {
 			this.path = file.path;
 		else
 			this.path = file;
+		this.promises = [];
+		this.full_output_buffer = "";
 
 		setInterval(() => { this.routine(); }, 250);
 	}
@@ -113,12 +115,19 @@ class wmProcess extends WindmillInterface {
 			fallbackInformation();
 		}
 	}
+
+	createPromise(...pars) {
+		let promise = new Promise(function(success, rejected) {
+			this.create(...pars);
+		});
+		this.promises.push(promise);
+	}
 	
 	routine() {
 		if(!this.status)
 			return;
 
-		if(this._HOOKS["stdout"]) {
+		if(this._HOOKS["stdout"] || this.promises.length) {
 			var data = this.pipe_read();
 			if(data)
 				this.execHook("stdout", data, this.status);
@@ -166,6 +175,7 @@ class wmProcess extends WindmillInterface {
 		}
 
 		this.lastReadData = str_output;
+		this.full_output_buffer += str_output;
 		return str_output;
 	}
 	
@@ -184,6 +194,11 @@ class wmProcess extends WindmillInterface {
 			CloseHandle(this.pi.hProcess);
 			CloseHandle(this.pi.hThread);
 		}
+
+		for(var i = 0; i < this.promises; i++)
+			if(this.promises[i])
+				this.promises[i].resolve(this.full_output_buffer, this.exitCode, this);
+		this.promises = [];
 
 		this.status = 2;
 		this.execHook("closed", this.exitCode);

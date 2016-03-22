@@ -5,6 +5,8 @@
 var {TextDecoder, TextEncoder, OS} = Components.utils.import("resource://gre/modules/osfile.jsm", {});
 Components.utils.import("resource://gre/modules/Task.jsm");
 
+const OCGRP_FILEEXTENSIONS = ["ocd", "ocs","ocg","ocf","ocs", "oci", "ocp"];
+
 //Hilfsfunktion zum loggen
 function log(str, hidden, type) {
 	if(getConfigData("Global", "DevMode")) {
@@ -553,7 +555,7 @@ function OSFileRecursive(sourcepath, destpath, callback, operation = "copy", noO
 				destpath = file.path;
 				yield OS.File[operation](sourcepath, destpath);
 			}
-			return destpath;
+			return {path: destpath, file: f};
 		}
 		else {
 			let counter = 0;
@@ -600,7 +602,7 @@ function OSFileRecursive(sourcepath, destpath, callback, operation = "copy", noO
 			if(!__rec && operation == "move")
 				yield OS.File.removeDir(sourcepath, {ignoreAbsent: true})
 
-		return destpath+extra;
+		return {path: destpath+extra, file: f};
 	});
 	task.then(null, function(reason) {
 		log(reason);

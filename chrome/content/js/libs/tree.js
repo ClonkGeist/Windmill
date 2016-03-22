@@ -181,7 +181,7 @@ function createTreeElement(tree, label, container, open, img, filename, special,
 			lockModule();
 			let fpath;
 			let task = Task.spawn(function*() {
-				fpath = yield OSFileRecursive(d_path, e_path);
+				fpath = (yield OSFileRecursive(d_path, e_path)).path;
 			});
 			task.then(function() {
 				var img = $(d_obj).find("image").attr("src");

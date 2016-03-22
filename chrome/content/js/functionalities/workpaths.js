@@ -79,15 +79,20 @@ class WorkEnvironment {
 					_this.header.Workspace.SourceDir = source;
 
 					for(let i = 0; i < filelist.length; i++) {
-						let src = source+"/"+filelist[i], dest = formatPath(_this.path+"/"+filelist[i]);
+						let src = source+"/"+filelist[i], dest = formatPath(_this.path+"/"+filelist[i]);						
 						let stat = yield OS.File.stat(src);
-						yield OSFileRecursive(src, dest, function(name, entrypath) {
+						let {file} = yield OSFileRecursive(src, dest, function(name, entrypath) {
 							if(!options.noLock && getModuleByName("cide").contentWindow)
 								getModuleByName("cide").contentWindow
 								.lockModule("<hbox class='modal-big'>Creating Workspace: &lt;" + _this._path.split("/").pop() +
 										   "&gt;</hbox><hbox>Copying " + filelist[i] + "</hbox>"+
 										   "<hbox style='font-size: 0.6em'>"+formatPath(entrypath)+"</hbox>");
 						});
+						if(!file.isDirectory() && OCGRP_FILEEXTENSIONS.indexOf(filelist[i].split(".").pop() != -1)) {
+							let c4group = _sc.file(getC4GroupPath());
+							let process = new _ws.pr(c4group);
+							yield process.createPromise(["-x", src, dest]);
+						}
 					}
 					
 					if(options.success)

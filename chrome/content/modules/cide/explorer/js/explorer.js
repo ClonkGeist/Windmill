@@ -349,12 +349,14 @@ $(window).load(function() {
 				var workenv = getWorkEnvironmentByPath(clonkdirs[i]);
 				$(dlg.element).find("#dex_dlg_workenv_source_clonkdir > menupopup").append('<menuitem label="'+workenv.title+'" value="'+i+'"/>');
 			}
-			//$(dlg.element).find("#dex_dlg_workenv_source_clonkdir")[0].selectItem = 0;
 			$(dlg.element).find("#dex_dlg_workenv_source_clonkdir").prop("selectedIndex", 0).prop("value", "0").on("command", function() {
 				//Auflisten
 				var entries = (new _sc.file(_sc.clonkpath(this.value))).directoryEntries, list = "";
 				while(entries.hasMoreElements()) {
 					var entry = entries.getNext().QueryInterface(Ci.nsIFile);
+					if(entry.leafName == ".windmillheader")
+						continue;
+
 					var additionalclasses = '';
 					if($(dlg.element).find("#dex_dlg_workenv_select_all").attr("checked"))
 						additionalclasses = ' selected';
@@ -585,9 +587,7 @@ function initializeContextMenu() {
 
 		var process = _ws.pr(c4group);
 		lockModule("Packing " + dir.leafName);
-		process.create([dir.path, "-p"], 0x00000001, function(data) {
-			log(data);
-		}, function() {
+		process.create([dir.path, "-p"], 0x00000001, function() {
 			unlockModule();
 			
 			if(!cnt[0])
@@ -603,6 +603,8 @@ function initializeContextMenu() {
 			//Gepackt
 			$(sel).addClass("tree-packed");
 			EventInfo("$EI_Packed$");
+		}, function(data) {
+			log(data);
 		});
 	}, 0, { identifier: 'ctxPack' });
 	//Zerlegen
@@ -1062,7 +1064,7 @@ function treeHideContextItems(by_obj, identifier) {
 		case "ctxReload":
 		case "ctxExplode":
 			//Nur für Groupdateien. (Und Reload noch für Ordner)
-			if(["ocd", "ocs","ocg","ocf","ocs", "oci", "ocp"].indexOf(fext) < 0 && !directory)
+			if(OCGRP_FILEEXTENSIONS.indexOf(fext) < 0 && !directory)
 				return 1;
 
 			//Packen/Zerlegen nicht für Ordner
