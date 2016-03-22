@@ -233,7 +233,7 @@ function openGitCommitDialog() {
 				}
 				icons += iconfn(lines[i][0], "green") + iconfn(lines[i][1], "red");
 
-				$('<hbox class="dlg-list-item"><hbox style="width: 32px;">'+icons+'</hbox>'+lines[i].substr(3)+'</hbox>')
+				$('<hbox class="dlg-list-item"><hbox style="width: 32px;">'+icons+'</hbox><description>'+lines[i].substr(3)+'</description></hbox>')
 					.appendTo($(dlg.element).find("#git-files"));
 			}
 	});

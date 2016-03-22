@@ -201,14 +201,6 @@ class _WDialog extends WindmillObject {
 				$("#wdialogmodal").mousedown(() => { this.hide(); });
 		}
 
-		//XUL-Description Elemente in der Breite anpassen (da sie sonst komisch overflowen)
-		clone.find("description").each(function() {
-			var o = $(this).offset(), op = clone.find(".main-wdialog-wrapper").offset();
-			var additional = clone.find(".main-wdialog-content").outerWidth()-clone.find(".main-wdialog-content").width();
-			var owdt = clone.find(".main-wdialog-wrapper").innerWidth();
-			$(this).css("width", (owdt-(o.left-op.left)-additional)+"px");
-		});
-
 		//Callbacks
 		this.execHook("show");
 		if(typeof this.options.onshow == "function")
@@ -218,6 +210,8 @@ class _WDialog extends WindmillObject {
 	}
 	
 	updatePseudoElements() {
+		let dlgelm = this.element, dlg = this;
+
 		//Checklistbox
 		var clickfn = function() {
 			if($(this).hasClass("disabled"))
@@ -225,8 +219,8 @@ class _WDialog extends WindmillObject {
 
 			$(this).toggleClass('selected');
 		}
-		$(this.element).find(".dlg-checklistitem").unbind("click").click(clickfn);
-		$(this.element).find(".dlg-checklistbox").off("DOMSubtreeModified").on("DOMSubtreeModified", function() {
+		$(dlgelm).find(".dlg-checklistitem").unbind("click").click(clickfn);
+		$(dlgelm).find(".dlg-checklistbox").off("DOMSubtreeModified").on("DOMSubtreeModified", function() {
 			var height = parseInt($(this).css("max-height"));
 			var elmheight = $(this).find(".dlg-checklistitem:not(.hidden)").length * $(this).find(".dlg-checklistitem:not(.hidden)").height()+2;
 			if(elmheight < height)
@@ -235,6 +229,7 @@ class _WDialog extends WindmillObject {
 			height += parseInt($(this).css("padding-top")) + parseInt($(this).css("padding-bottom"));
 			$(this).css("height", height);
 			$(this).find(".dlg-checklistitem").unbind("click").click(clickfn);
+			dlg.updateTextNodes();
 		});
 
 		//Listbox
@@ -249,8 +244,8 @@ class _WDialog extends WindmillObject {
 				$(this).addClass('selected');
 			}
 		}
-		$(this.element).find(".dlg-list-item").unbind("click").click(clickfn2);
-		$(this.element).find(".dlg-listbox").off("DOMSubtreeModified").on("DOMSubtreeModified", function() {
+		$(dlgelm).find(".dlg-list-item").unbind("click").click(clickfn2);
+		$(dlgelm).find(".dlg-listbox").off("DOMSubtreeModified").on("DOMSubtreeModified", function() {
 			var height = parseInt($(this).css("max-height"));
 			var elmheight = $(this).find(".dlg-list-item:not(.hidden)").length * $(this).find(".dlg-list-item:not(.hidden)").height()+4;
 			if(elmheight < height)
@@ -258,16 +253,29 @@ class _WDialog extends WindmillObject {
 
 			$(this).css("height", height);
 			$(this).find(".dlg-list-item").unbind("click").click(clickfn2);
+			dlg.updateTextNodes();
 		});
-		
+
 		//Infobox: Error
-		$(this.element).find(".dlg_infobox.error").hide();
-		
-		var observer = new MutationObserver(function(mutations) {
+		$(dlgelm).find(".dlg_infobox.error").hide();
+
+		let observer = new MutationObserver(function(mutations) {
 			$(mutations[0].target).show();
 		});
-		$(this.element).find(".dlg_infobox.error").each(function() {
+		$(dlgelm).find(".dlg_infobox.error").each(function() {
 			observer.observe(this, { childList: true });
+		});
+
+		this.updateTextNodes();
+	}
+	
+	updateTextNodes(objects = $(this.element).find("description")) {
+		//XUL-Description Elemente in der Breite anpassen (da sie sonst komisch overflowen)
+		objects.each((index, elm) => {
+			let o = $(elm).offset(), op = $(this.element).find(".main-wdialog-wrapper").offset();
+			let additional = $(this.element).find(".main-wdialog-content").outerWidth()-$(this.element).find(".main-wdialog-content").width();
+			let owdt = $(this.element).find(".main-wdialog-wrapper").innerWidth();
+			$(elm).css("width", (owdt-(o.left-op.left)-additional)+"px");
 		});
 	}
 	

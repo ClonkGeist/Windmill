@@ -27,10 +27,6 @@
 	pointer-events: initial;
 }
 
-description {
-	word-wrap: break-word;
-}
-
 .main-wdialog-title {
 	padding: 2px 5px;
 }
