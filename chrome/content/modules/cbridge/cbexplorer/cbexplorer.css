@@ -120,6 +120,24 @@ li:focus *, li:focus {
   padding: 0;
   margin: 0; }
 
+/* Workenv Creating Info */
+#workenv-creating-info {
+  overflow: hidden;
+  padding: 2px 5px;
+  background-color: white;
+  transition: height 1s; }
+
+#workenv-creating-info:hover > #workenv-creating-info-body {
+  height: initial; }
+
+#workenv-creating-info-title {
+  text-align: center; }
+
+#workenv-creating-info-body {
+  height: 0px;
+  overflow: hidden;
+  transition: height 1s; }
+
 /*	need some space	*/
 @font-face {
   font-family: 'icomoon';

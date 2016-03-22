@@ -82,11 +82,9 @@ class WorkEnvironment {
 						let src = source+"/"+filelist[i], dest = formatPath(_this.path+"/"+filelist[i]);						
 						let stat = yield OS.File.stat(src);
 						let {file} = yield OSFileRecursive(src, dest, function(name, entrypath) {
-							if(!options.noLock && getModuleByName("cide").contentWindow)
-								getModuleByName("cide").contentWindow
-								.lockModule("<hbox class='modal-big'>Creating Workspace: &lt;" + _this._path.split("/").pop() +
-										   "&gt;</hbox><hbox>Copying " + filelist[i] + "</hbox>"+
-										   "<hbox style='font-size: 0.6em'>"+formatPath(entrypath)+"</hbox>");
+							if(!options.noLock && getModuleByName("cide-explorer").contentWindow)
+								getModuleByName("cide-explorer").contentWindow
+								.updateCreateWorkEnvInfo("Creating: <"+_this._path.split("/").pop()+">", "Copying " + filelist[i]);
 						});
 						if(!file.isDirectory() && OCGRP_FILEEXTENSIONS.indexOf(filelist[i].split(".").pop() != -1)) {
 							let c4group = _sc.file(getC4GroupPath());
@@ -98,7 +96,8 @@ class WorkEnvironment {
 					if(options.success)
 						options.success(_this);
 
-					unlockModule();
+					if(!options.noLock && getModuleByName("cide-explorer").contentWindow)
+						getModuleByName("cide-explorer").contentWindow.updateCreateWorkEnvInfo();
 					_this.header.Workspace.FullCopy = !!options.fullcopy;
 					_this.saveHeader();
 					return true;

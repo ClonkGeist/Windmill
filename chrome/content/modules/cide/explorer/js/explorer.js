@@ -81,6 +81,17 @@ function explorerLoadWorkEnvironments() {
 	unlockModule();
 }
 
+function updateCreateWorkEnvInfo(title, content) {
+	if(title)
+		$("#workenv-creating-info-title").text(title);
+	if(content)
+		$("#workenv-creating-info-body").text(content);
+	if(!title && !content)
+		$("#workenv-creating-info").css("height", "0px");
+	else
+		$("#workenv-creating-info").css("height", "");
+}
+
 $(window).load(function() {
 	_mainwindow.triggerModeButtonIcon();
 
@@ -247,7 +258,7 @@ $(window).load(function() {
 					EventInfo("An error occured while creating the work environment.");
 				}
 
-				getModuleByName("cide").contentWindow.lockModule("Copying files to new directory. This may take a while.", true);
+				//getModuleByName("cide").contentWindow.lockModule("Copying files to new directory. This may take a while.", true);
 				createNewWorkEnvironment(path+"/"+name, type, options);
 				_self.hide();
 			}

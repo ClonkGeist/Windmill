@@ -145,4 +145,12 @@
 			<!-- build explorer here -->
 		</box>
 	</vbox>
+	<vbox id="workenv-creating-info">
+		<hbox id="workenv-creating-info-title">
+			
+		</hbox>
+		<hbox id="workenv-creating-info-body">
+			
+		</hbox>
+	</vbox>
 </window>

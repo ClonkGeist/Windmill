@@ -81,7 +81,6 @@ hook("load", function() {
 		//Navigation
 		navigation = new Navigation($("#inner-navigation"));
 		initializeModules();
-
 		mainDeck.hook("showItem", function(deck, itemId) {
 			if(itemId != cideID) {
 				$(document).attr("title", "Windmill");
