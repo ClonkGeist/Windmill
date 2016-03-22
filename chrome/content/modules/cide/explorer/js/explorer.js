@@ -940,7 +940,7 @@ function onTreeFileDragDrop(cnt, f) {
 			img = "chrome://windmill/content/img/icon-directory.png";
 	}
 
-	return createTreeElement(cnt, f.leafName, f.isDirectory(), 0, img);
+	return createTreeElement(cnt, f.leafName, f.isDirectory(), 0, img, f.leafName);
 }
 
 function onTreeObjRename(obj, name) { return true; }

@@ -96,23 +96,22 @@ function createTreeElement(tree, label, container, open, img, filename, special)
 		}
 	   
 		//Files durchgehen und verschieben
-		var path = _sc.workpath(elm) + getTreeObjPath(elm);
-		
-		for(var i = 0; i < files.length; i++) {
-			var f = files[i];
-			
-			//Datei befindet sich in anderem Laufwerk? Dann moveTo, ansonsten renameTo
-			if(f.path[0] != path[0])
-				f.moveTo(_sc.file(path), f.leafName);
-			else
-				f.renameTo(_sc.file(path), f.leafName);
-			
-			//Callback wenn Container schon Inhalte hat
-			if($(cnt).children("li")[0]) {
-				onTreeFileDragDrop(cnt, _sc.file(path+"/"+f.leafName));
-				sortTreeContainerElements(cnt);
+		let path = _sc.workpath(elm) + getTreeObjPath(elm);
+
+		Task.spawn(function*() {
+			for(var i = 0; i < files.length; i++) {
+				let f = files[i];
+				//Datei befindet sich in anderem Laufwerk? Dann moveTo, ansonsten renameTo
+				yield OSFileRecursive(f.path, path+"/"+f.leafName, null, "move");
+				
+				//Callback wenn Container schon Inhalte hat
+				if($(cnt).children("li")[0]) {
+					onTreeFileDragDrop(cnt, _sc.file(path+"/"+f.leafName));
+					sortTreeContainerElements(cnt);
+				}
 			}
-		}
+		});
+		
 	});
 
 	var id = TREE_ELM_ID;
@@ -132,6 +131,10 @@ function createTreeElement(tree, label, container, open, img, filename, special)
 		var data = parseInt(e.dataTransfer.getData("text/cideexplorer"));
 		var d_obj = getTreeObjById(data), d_cnt = getTreeCntById(data); //data_object
 		var e_id = -1; //destination
+
+		//DragDrop von ausserhalb?
+		if(!d_obj[0])
+			return;
 
 		//Verschieben ins Rootverzeichnis
 		if($(e.target).attr("id") == "maintree" || $(e.target).prop("tagName") == "li") {
@@ -234,7 +237,7 @@ function createTreeElement(tree, label, container, open, img, filename, special)
 		return;
 	});
 	elm.addEventListener("dragend", function(e) {
-		
+
 	});
 
 	//Listitemfunktionen initialisieren
