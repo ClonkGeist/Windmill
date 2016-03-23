@@ -122,19 +122,27 @@ function setClonkPath(val = 0) {
 
 //Shortcut hinzufügen
 _sc.clonkpath = function(index = 0, findnext = true) {
-		let clonkdirs = JSON.parse(getConfigData("Global", "ClonkDirectories"));
-		if(findnext && (!clonkdirs || !clonkdirs[(clonkpath_id+index)%clonkdirs.length]))
-			for(var i = 0; i < clonkdirs.length; i++) {
-				let new_index = (clonkpath_id+index+i)%clonkdirs.length;
-				if(clonkdirs[new_index]) {
-					setClonkPath(new_index);
-					index = new_index;
-					break;
-				}
-		if(clonkdirs[index])
-			return formatPath(clonkdirs[index].path);
-	};
-}
+	let clonkdirs = JSON.parse(getConfigData("Global", "ClonkDirectories"));
+	if(clonkpath_id === undefined) {
+		for(var i = 0; i < clonkdirs.length; i++)
+			if(clonkdirs[i].active) {
+				setClonkPath(i);
+				break;
+			}
+	}
+	index = (clonkpath_id+index)%clonkdirs.length;
+	if(findnext && (!clonkdirs || !clonkdirs[index]))
+		for(var i = 0; i < clonkdirs.length; i++) {
+			let new_index = (index+i)%clonkdirs.length;
+			if(clonkdirs[new_index]) {
+				setClonkPath(new_index);
+				index = new_index;
+				break;
+			}
+		}
+	if(clonkdirs[index])
+		return formatPath(clonkdirs[index].path);
+};
 
 function addConfigString(section, key, defaultval, ...pars) {
 	if(!CONFIG[section])
