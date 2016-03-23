@@ -358,7 +358,7 @@ class Deck extends WindmillObject {
 		var index = getChildPosition(this.items[itemId]);
 		$(this.element).attr("selectedIndex", index);
 		
-		[this.selectedIndex, this.prevId, this.selectedId] = [index, this.selectedId, itemId];
+		[this.selectedIndex, this.previd, this.selectedId] = [index, this.selectedId, itemId];
 
 		// deligate to iframe for custom handling
 		if(this.deligated[itemId]) {
@@ -392,7 +392,7 @@ class Deck extends WindmillObject {
 		if(!noFocus)
 			$(this.items[itemId]).focus();
 	}
-	
+
 	showDesc() {
 		$(this.element).attr("selectedIndex", 0);
 		this.selectedIndex = 0;
