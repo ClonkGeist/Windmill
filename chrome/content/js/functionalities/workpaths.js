@@ -254,11 +254,11 @@ function loadWorkEnvironment(id) {
 		{readOnly: true, unloaded: false, secured: true, alternativeTitle: "$WEUserData$", identifier: "UserData"});
 
 	//Clonkverzeichnisse laden und ggf. leere Eintraege loeschen
-	var clonkdirs = JSON.parse(getConfigData("Global", "ClonkDirectories")), temp = [];
+	let clonkdirs = JSON.parse(getConfigData("Global", "ClonkDirectories")), temp = [];
 	if(clonkdirs) {
 		for(var i = 0; i < clonkdirs.length; i++) {
-			if(clonkdirs[i]) {
-				createWorkEnvironment(clonkdirs[i], WORKENV_TYPE_ClonkPath);
+			if(clonkdirs[i] && clonkdirs[i].path) {
+				createWorkEnvironment(clonkdirs[i].path, WORKENV_TYPE_ClonkPath);
 				temp.push(clonkdirs[i]);
 			}
 			else if(i < clonkpath_id)
@@ -275,7 +275,6 @@ function loadWorkEnvironment(id) {
 	var iterator;
 	let task = Task.spawn(function*() {
 		iterator = new OS.File.DirectoryIterator(wsdir);
-		log("Loading Workspace from " + wsdir);
 		while(true) {
 			let entry = yield iterator.next();
 			if(!entry.isDir) //Unterverzeichnisse untersuchen

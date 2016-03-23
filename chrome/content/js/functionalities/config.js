@@ -92,37 +92,49 @@ class ConfigEntry extends WindmillObject {
 	}
 }
 
-var MODULE_LIST = [], MODULE_DEF_LIST = [], CONFIG = [], CONFIG_BACKUP = [], CONFIG_FIRSTSTART = false;
+var CONFIG = [], CONFIG_BACKUP = [], CONFIG_FIRSTSTART = false;
+let clonkpath_id;
 
-var clonkpath_id = 0;
 function setClonkPath(val = 0) {
+	let paths = JSON.parse(getConfigData("Global", "ClonkDirectories"));
 	if(typeof val == "string") {
-		var paths = JSON.parse(getConfigData("Global", "ClonkDirectories"));
-		for(var i = 0; i < paths.length; i++)
-			if(formatPath(paths[i]) == val)
-				return clonkpath_id = i;
+		for(var i = 0; i < paths.length; i++) {
+			if(paths[i].active)
+				paths[i].active = false;
+			if(formatPath(paths[i].path) == val) {
+				paths[i].active = true;
+				clonkpath_id = i;
+			}
+		}
 	}
-	else if(typeof val == "number")
+	else if(typeof val == "number") {
+		if(paths[clonkpath_id])
+			paths[clonkpath_id].active = false;
 		clonkpath_id = val;
-	
+		if(paths[val])
+			paths[val].active = true;
+	}
+
 	execHook("onClonkPathChange");
+	setConfigData("Global", "ClonkDirectories", paths, true);
 	return;
 }
 
 //Shortcut hinzufügen
-_sc.clonkpath = function(index = clonkpath_id, findnext = true) {
-	var clonkdirs = JSON.parse(getConfigData("Global", "ClonkDirectories"));
-	if(findnext && (!clonkdirs || !clonkdirs[index]))
-		for(var i = 0; i < clonkdirs.length; i++)
-			if(clonkdirs[i]) {
-				if(index == clonkpath_id)
-					setClonkPath(i);
-				index = i;
-				break;
-			}
-
-	return formatPath(clonkdirs[index]);
-};
+_sc.clonkpath = function(index = 0, findnext = true) {
+		let clonkdirs = JSON.parse(getConfigData("Global", "ClonkDirectories"));
+		if(findnext && (!clonkdirs || !clonkdirs[(clonkpath_id+index)%clonkdirs.length]))
+			for(var i = 0; i < clonkdirs.length; i++) {
+				let new_index = (clonkpath_id+index+i)%clonkdirs.length;
+				if(clonkdirs[new_index]) {
+					setClonkPath(new_index);
+					index = new_index;
+					break;
+				}
+		if(clonkdirs[index])
+			return formatPath(clonkdirs[index].path);
+	};
+}
 
 function addConfigString(section, key, defaultval, ...pars) {
 	if(!CONFIG[section])
@@ -138,9 +150,15 @@ function addConfigString(section, key, defaultval, ...pars) {
 function getConfig() { return CONFIG; }
 
 function initializeConfig() {
-	addConfigString("Global", "ClonkDirectories", "[]");
+	addConfigString("Global", "ClonkDirectories", "[]").hook("onWritingAccess", function(val) {
+		if(this.value == "[]" && val instanceof Array) {
+			for(var i = 0; i < val.length; i++)
+				if(val[i].active)
+					setClonkPath(i);
+		}
+	});
 	addConfigString("Global", "FirstStartDevTest", "false");
-	addConfigString("Global", "Version", "0.15");
+	addConfigString("Global", "Version", "0.2");
 	addConfigString("Global", "Language", "en-US");
 	addConfigString("Global", "DevMode", true);
 	addConfigString("Global", "ShowHiddenLogs", false);
@@ -333,6 +351,15 @@ function configVersionUpdate(version) {
 		
 		case "0.12":
 			removedEntries.push(["CIDE", "AU_RTF"], ["CIDE", "ExtProg_RTF"]);
+		case "0.15":
+			if(getConfigData("Global", "ClonkDirectories")) {
+				let clonkdirs = JSON.parse(getConfigData("Global", "ClonkDirectories"));
+				for(var i = 0; i < clonkdirs.length; i++)
+					if(clonkdirs[i])
+						clonkdirs[i] = { path: clonkdirs[i], active: !i};
+
+				setConfigData("Global", "ClonkDirectories", clonkdirs);
+			}
 	}
 	
 	//Veraltete Eintraege loeschen

@@ -90,7 +90,7 @@ class WindmillObject {
 		
 		if(!this._HOOKS[eventName])
 			this._HOOKS[eventName] = [];
-		
+
 		this._HOOKS[eventName].push(fn);
 	}
 	
