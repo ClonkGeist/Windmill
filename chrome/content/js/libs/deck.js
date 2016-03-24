@@ -208,7 +208,7 @@ class Deck extends WindmillObject {
 							data = formatPath(this.options[data].file.path);
 					}
 				}
-				
+
 				var ovdata = workpathov(data);
 				if(noWorkspaceName)
 					ovdata = ovdata.replace(/\/[^/]+$/g, "");
