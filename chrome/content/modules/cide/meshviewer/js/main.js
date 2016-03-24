@@ -4,7 +4,9 @@ var session;
 var scenes = {};
 var sceneMeta = {};
 var clrpckr;
-var currentModule;
+var CM_PATHALIAS = "fpath";
+
+function TabManager() { return scenes; }
 
 function initModelviewer(file, idMdl) {
 	
@@ -64,7 +66,7 @@ function showDeckItem(idMdl) {
 	
 	$("#canvas-wrapper").addClass("appearance-"+scenes[idMdl].background?scenes[idMdl].background:"light");
 	
-	currentModule = idMdl;
+	CM_ACTIVEID = idMdl;
 	
 	
 	// update UI of animation panel
@@ -102,11 +104,6 @@ function updateAnimationUI(frame) {
 		el.appendItem(frame.animList[i], i);
 	
 	el.selectedIndex = frame.currentAnimIndex || 0;
-}
-
-function frameWindowTitle() { 
-	if(scenes[currentModule])
-		return formatPath(scenes[currentModule].fpath).substr(_sc.workpath(currentModule, true).length+1);
 }
 
 function insertTextureUnit(w, h, mesh, key, src) {
@@ -157,9 +154,9 @@ hook("load", function() {
 	
 	$("#animation-list").on("command", function(e) {
 		$("#anim-ctrls").removeClass("anim-played");
-		scenes[currentModule].pauseAnimation();
+		scenes[CM_ACTIVEID].pauseAnimation();
 		
-		scenes[currentModule].setAnimation(document.getElementById("animation-list").selectedIndex);
+		scenes[CM_ACTIVEID].setAnimation(document.getElementById("animation-list").selectedIndex);
 		
 		// make animation controls clickable
 		$("#anim-ctrls").removeClass("no-animation-selected");
@@ -167,10 +164,10 @@ hook("load", function() {
 	
 	$("#play-anim").click(function(e) {
 		$("#anim-ctrls").addClass("anim-played");
-		scenes[currentModule].playAnimation();
+		scenes[CM_ACTIVEID].playAnimation();
 		
-		if(scenes[currentModule].getAnimationPosition() >= 100)
-			scenes[currentModule].setAnimationPosition(0);
+		if(scenes[CM_ACTIVEID].getAnimationPosition() >= 100)
+			scenes[CM_ACTIVEID].setAnimationPosition(0);
 		
 		window.requestAnimationFrame(updateAnimationProgressmeter);
 	});
@@ -193,7 +190,7 @@ hook("load", function() {
 				x = w;
 			
 			$("#ap-progress").width(x + "px");
-			scenes[currentModule].setAnimationPosition(x/w*100);
+			scenes[CM_ACTIVEID].setAnimationPosition(x/w*100);
 		}
 	});
 	
@@ -205,7 +202,7 @@ hook("load", function() {
 		$(this).toggleClass("enabled");
 		
 		var enabledReplay = $(this).hasClass("enabled");
-		scenes[currentModule].replayOnFinishAnimation = enabledReplay;
+		scenes[CM_ACTIVEID].replayOnFinishAnimation = enabledReplay;
 	});
 	
 	$("#toggle-wireframe-button").click(function() {
@@ -216,7 +213,7 @@ hook("load", function() {
 	});
 	
 	$("#getTrans-button").click(function() {
-		var data = (scenes[currentModule].getIngameTransformationFormat());
+		var data = (scenes[CM_ACTIVEID].getIngameTransformationFormat());
 		
 		if(!data)
 			return;
@@ -257,7 +254,7 @@ hook("load", function() {
 	});
 	
 	$("#reset-view-button").click(function() {
-		scenes[currentModule].resetView();
+		scenes[CM_ACTIVEID].resetView();
 	});
 });
 
@@ -278,22 +275,22 @@ function pasteTxtIntoClipboard(txt) {
 
 function pauseAnimation() {
 	$("#anim-ctrls").removeClass("anim-played");
-	scenes[currentModule].pauseAnimation();
+	scenes[CM_ACTIVEID].pauseAnimation();
 }
 
 var dragged = false;
 
 function updateAnimationProgressmeter() {
-	var p = scenes[currentModule].getAnimationPosition();
+	var p = scenes[CM_ACTIVEID].getAnimationPosition();
 	$("#ap-progress").width((document.getElementById("ap-wrapper").clientWidth - 1)/100*p + "px");
 	
 	if(p < 100)
 		window.requestAnimationFrame(updateAnimationProgressmeter);
 	else {
-		if(scenes[currentModule].replayOnFinishAnimation) {
+		if(scenes[CM_ACTIVEID].replayOnFinishAnimation) {
 			$("#ap-progress").width(0 + "px");
-			scenes[currentModule].setAnimationPosition(0);
-			scenes[currentModule].playAnimation();
+			scenes[CM_ACTIVEID].setAnimationPosition(0);
+			scenes[CM_ACTIVEID].playAnimation();
 			window.requestAnimationFrame(updateAnimationProgressmeter);
 		}
 		else
@@ -307,17 +304,9 @@ function setBackground(tag) {
 	});
 	
 	$(".canvas-wrapper").addClass("appearance-"+tag);
-	scenes[currentModule].background = tag;
+	scenes[CM_ACTIVEID].background = tag;
 	$(".bg-selected").removeClass("bg-selected");
 	$("#bg-"+tag).addClass("bg-selected");
-}
-
-function fileLoaded(path) {
-	for(var id in scenes)
-		if(scenes[id] && scenes[id].fpath == path)
-			return id;
-	
-	return -1;
 }
 
 function resize() {

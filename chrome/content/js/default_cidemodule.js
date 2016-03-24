@@ -1,5 +1,6 @@
 /*-- Default Cide Module Functionality --*/
 
+var CM_ACTIVEID = 0;
 class WindmillCideAliases {
 	constructor() {
 		
@@ -11,9 +12,9 @@ class WindmillCideAliases {
 		return "path";
 	}
 	get active_id() {
-		if(window.CM_ACTIVEID)
-			return window.CM_ACTIVEID;
-		return 0;
+		if(window.alternativeActiveId)
+			return window.alternativeActiveId();
+		return CM_ACTIVEID;
 	}
 }
 let cda = new WindmillCideAliases();
@@ -30,11 +31,14 @@ function onFileChanged(index) {
 
 // !Review:: functionality
 function getUnsavedFiles() {
+	if(!window.checkIfTabIsUnsaved)
+		return [];
+
 	let tabs = TabManager();
 	var files = [];
 	for(var id in tabs)
 		if(tabs[id])
-			if(!checkIfTabIsUnsaved(id))
+			if(checkIfTabIsUnsaved(id))
 				files.push({ filepath: tabs[cda.active_id][cda.path], index: id, module: window });
 
 	return files;

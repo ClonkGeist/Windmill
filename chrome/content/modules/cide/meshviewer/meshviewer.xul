@@ -90,6 +90,7 @@
 	<script type="application/javascript" src="chrome://windmill/content/js/libs/meshviewer.js" />
 	<script type="application/javascript" src="chrome://windmill/content/js/libs/colorpicker.js" />
 	<script type="application/javascript" src="chrome://windmill/content/js/external/webgl-debug.js" />
+	<script type="application/javascript" src="chrome://windmill/content/js/default_cidemodule.js"></script>
 	<script type="application/javascript" src="chrome://windmill/content/modules/cide/meshviewer/js/main.js" />
 	<script type="application/javascript" src="chrome://windmill/content/modules/cide/meshviewer/js/control.js" />
 </window>

@@ -3,6 +3,9 @@
 var md_editor, md_editorframe, deflistitem_keybindings;
 var ctxDeflist, ctxAODeflist;
 
+function TabManager() { return sessions; }
+function alternativeActiveId() { return getCurrentWrapperIndex(); }
+
 $(window).ready(function() {
 	md_editor = createModule("scripteditor", $("#editorframe"));
 	md_editorframe = getModule(md_editor, true);
@@ -236,7 +239,7 @@ function addScript(path, lang, index, path, fShow) {
 		getWrapper(".nav-page-environment", index).mousedown(navbtnfn("page-environment"));
 		getWrapper(".nav-page-code", index).mousedown(navbtnfn("page-code"));
 		getWrapper(".nav-reload", index).mousedown(reloadDefinitions);
-		getWrapper(".nav-save", index).mousedown(function() { return saveFile(index); });
+		getWrapper(".nav-save", index).mousedown(function() { return saveTabContent(index); });
 
 		tooltip(getWrapper(".nav-reload", index), "$TooltipReloadDefs$", "html", 600);
 
@@ -300,7 +303,7 @@ function addScript(path, lang, index, path, fShow) {
 	});
 }
 
-function saveFile(index) {
+function saveTabContent(index) {
 	let promise = OS.File.writeAtomic(sessions[index].path, generateScenarioTxt(index), {encoding: "utf-8"});
 	promise.then(function() {
 		EventInfo("$EI_Saved$", -1);
@@ -943,34 +946,7 @@ function setupNumberInputs() {
 
 /*-- Deck Callbacks --*/
 
-function getUnsavedFiles() {
-	//Aus Testgruenden mach ich hier einfach irgendwas hin.
-	var files = [];
-	for(let index in sessions)
-		if(sessions[index])
-			if(true) //Check ob ungespeicherte Aenderungen vorhanden sind
-				files.push({ filepath: sessions[id].path, index, module: window });
-
-	return files;
-}
-
-function saveFileByPath(path) {
-	for(var id in sessions) {
-		if(sessions[id].path == path)
-			return saveFile(id);
-	}
-
-	return -1;
-}
-
-function fileLoaded(path) {
-	for(var id in sessions) {
-		if(sessions[id].path == path)
-			return id;
-	}
-
-	return -1;
-}
+function checkIfTabIsUnsaved() { return true; }
 
 function showDeckItem(id) {
 	md_editorframe.contentWindow.showDeckItem(id);
@@ -1002,11 +978,6 @@ function removeDeckItem(id) {
 			definitions[def] = undefined;
 	}
 	$("#scensettings-session-"+id).remove();
-}
-
-function frameWindowTitle() { 
-	if(getCurrentWrapperIndex() > -1)
-		return formatPath(sessions[getCurrentWrapperIndex()].path).substr(_sc.workpath(getCurrentWrapperIndex(), true).length+1);
 }
 
 /*-- TabData --*/

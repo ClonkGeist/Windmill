@@ -7,9 +7,12 @@ var defaultTheme = getConfigData("CIDE", "EditorTheme") || "chrome";
 var editors = {},
 	editorData = [],
 	dumpedEditorIds = [],
-	activeId,
+	CM_ACTIVEID,
+	CM_PATHALIAS = "__filePath",
 	a_E;
 
+function TabManager() { return editors; }
+	
 function addScript(text, highlightMode, id, path, fShow) {
 
 	if(!ace)
@@ -82,31 +85,13 @@ function getEditorFilePath(id) {
 	return editors[id].__filePath;
 }
 
-function fileLoaded(path) {
-	for(var id in editors)
-		if(editors[id])
-			if(editors[id].__filePath == path)
-				return id;
-	
-	return -1;
-}
-
-function saveFileByPath(path) {
-	for(var id in editors)
-		if(editors[id])
-			if(editors[id].__filePath == path)
-				return saveDocument(id);
-	
-	return -1;
-}
-
 function showDeckItem(id) {
 	$(".visible").removeClass("visible");
 	$("#editor-"+id).addClass("visible");
-	activeId = id;
+	CM_ACTIVEID = id;
 	
 	// set pointer
-	a_E = editors[activeId];
+	a_E = editors[CM_ACTIVEID];
 	a_E.focus();
 	
 	hideParamlist();
@@ -114,16 +99,11 @@ function showDeckItem(id) {
 	frameUpdateWindmillTitle();	
 }
 
-function frameWindowTitle() {
-	if(editors[activeId])
-		return formatPath(getEditorFilePath(activeId)).substr(_sc.workpath(activeId, true).length+1);
-}
-
 function removeDeckItem(id) {
 	$("#editor-" + id).remove();
 		
-	if(activeId == id)
-		activeId = undefined;
+	if(CM_ACTIVEID == id)
+		CM_ACTIVEID = undefined;
 	
 	editors[id] = null;
 }
@@ -136,9 +116,13 @@ function applyTheme(themeName) {
 		editors[id].setTheme("ace/theme/" + themeName);
 }
 
+function saveTabContent(...pars) {
+	return saveDocument(...pars);
+}
+
 function saveDocument(id) {
 	if(id === -1)
-		id = activeId;
+		id = CM_ACTIVEID;
 	
 	if(!editors[id])
 		return false;
@@ -192,16 +176,7 @@ function initEditorContextMenu(x, y, editorId, fOnSelectionClicked) {
 
 
 // !Review:: functionality
-function getUnsavedFiles() {
-	
-	var files = [];
-	for(var id in editors)
-		if(editors[id])
-			if(!editors[id].getSession().getUndoManager().isClean())
-				files.push({ filepath: editors[id].__filePath, index: id, module: window });
-	
-	return files;
-}
+function checkIfTabIsUnsaved(id) { return !editors[id].getSession().getUndoManager().isClean(); }
 
 function createCideToolbar(startup) {
 	addCideToolbarButton("icon-save", function() { saveDocument(-1); });

@@ -2,6 +2,9 @@ var canvasArray = new Array();
 
 var __iP = new imagePreview(document.getElementById("wrapper"));
 
+function TabManager() { return __iP._sessions; }
+function alternativeActiveId() { return __iP.activeSession.tabId; }
+
 function imagePreview(wrapper) {
 	
 	var _ref = this;
@@ -24,6 +27,7 @@ function imagePreview(wrapper) {
 		
 		this.loadImage = function(file, imageElement) {
 			this.f = file;
+			this.path = file.path;
 			
 			if(!imageElement)
 				return;
@@ -638,14 +642,6 @@ function loadImage(file, tabId, fShow) {
 			showDeckItem(tabId);
 }
 
-function fileLoaded(path) {
-	for(var id in __iP._sessions)
-		if(__iP._sessions[id] &&__iP._sessions[id].f.path == path)
-				return id;
-	
-	return -1;
-}
-
 function showDeckItem(tabId) {
 	$(".visible").removeClass("visible");
 	$("#imgCanvas-"+tabId).addClass("visible");
@@ -653,11 +649,6 @@ function showDeckItem(tabId) {
 	__iP.displaySession(tabId);
 
 	frameUpdateWindmillTitle();
-}
-
-function frameWindowTitle() { 
-	if(__iP)
-		return formatPath(__iP.activeSession.f.path).substr(_sc.workpath(__iP.activeSession.f.path, true).length+1);
 }
 
 function removeDeckItem(tabId) {
