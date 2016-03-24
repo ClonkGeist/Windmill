@@ -16,7 +16,9 @@ var _inheritableObjects = [];
 //Zum vererben diverser Objekte (Funktionen, Klassen, Objekte wie _sc etc.) -- Die Variablennamen sollen angegeben werden!
 function registerInheritableObject(obj) { _inheritableObjects.push(obj); }
 
-var OS_TARGET = Cc["@mozilla.org/xre/app-info;1"].getService(Components.interfaces.nsIXULRuntime).OS;
+let XULRuntime = Cc["@mozilla.org/xre/app-info;1"].getService(Components.interfaces.nsIXULRuntime);
+XULRuntime.logConsoleErrors = true;
+var OS_TARGET = XULRuntime.OS;
 
 function formatPath(path) {
 	if(!path)
@@ -34,7 +36,6 @@ function formatPath(path) {
 function log(str) {
 	dump(str + "\n");
 }
-
 
 try {
 	var {devtools} = Cu.import("resource://gre/modules/devtools/Loader.jsm", {});
