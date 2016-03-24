@@ -946,7 +946,7 @@ function setupNumberInputs() {
 
 /*-- Deck Callbacks --*/
 
-function checkIfTabIsUnsaved() { return true; }
+function checkIfTabIsUnsaved() { return false; }
 
 function showDeckItem(id) {
 	md_editorframe.contentWindow.showDeckItem(id);
