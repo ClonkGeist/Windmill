@@ -661,7 +661,7 @@ function Meshviewer() {
 				var currentShaderFlags = _session.currentShader.flags;
 				
 				// clear color and depth buffer
-				gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+				//gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 				gl.enable(gl.DEPTH_TEST);
 				
 				gl.depthFunc(gl.LEQUAL);

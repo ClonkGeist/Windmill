@@ -355,7 +355,9 @@ button {
   color: #505050; }
 
 row:hover {
-  background-color: whitesmoke; }
+  background-color: rgba(0, 165, 207, 0.15);
+  outline: 1px solid rgba(0, 165, 207, 0.3);
+  outline-offset: -1px; }
 
 row.header {
   background-color: #ebebeb;

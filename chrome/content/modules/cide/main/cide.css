@@ -321,9 +321,8 @@
   content: "?"; }
 
 window {
-  background-color: whitesmoke;
   font-family: "Segoe UI", "Trebuchet MS", sans-serif;
-  background-color: #e1e1e1; }
+  background-color: #ebebeb; }
 
 splitter {
   -moz-appearance: none;
@@ -338,9 +337,6 @@ splitter * {
   -moz-appearance: none;
   outline: none; }
 
-splitter[state=dragged] {
-  background-color: #d7d7d7; }
-
 /** Audioplayer **/
 #audioplayer {
   transition: height 0.3s; }
@@ -350,18 +346,11 @@ splitter[state=dragged] {
 
 /** Navigation **/
 .modules-nav,
-toolbar {
-  -moz-appearance: none;
-  border: none;
-  background: none; }
-
+toolbar,
 toolbox {
   -moz-appearance: none;
   border: none;
-  background: none;
-  border-bottom: 1px solid #d7d7d7;
-  border-bottom: 1px solid #e1e1e1;
-  border: none; }
+  background: none; }
 
 .modules-nav {
   overflow: hidden; }
@@ -377,12 +366,10 @@ toolbox {
 .deck-nav-elm.active,
 .deck-nav-elm.active:hover {
   color: #505050;
-  background-color: #fafafa;
-  background-color: #f0f0f0; }
+  background-color: whitesmoke; }
 
 .deck-nav-elm:hover {
-  background-color: #fafafa;
-  outline: 1px solid #ebebeb; }
+  background-color: #fafafa; }
 
 .close-button {
   width: 14px;
@@ -393,10 +380,12 @@ toolbox {
   margin: 0;
   margin-left: 0.3em;
   border-radius: 14px;
-  -moz-box-align: center; }
+  -moz-box-align: center;
+  font-size: 12px; }
 
 .close-button:hover {
-  color: black; }
+  color: #fafafa;
+  background-color: #dc4632; }
 
 .deck-desc {
   color: #b4b4b4;
@@ -488,21 +477,19 @@ toolbarbutton:focus * {
     transition: box-shadow 0.3s;
 }*/
 .dragover-sidedeck-right {
-  border-right: 3px solid orange;
-  box-shadow: inset -7px 9px 7px rgba(252, 163, 2, 0.7); }
+  box-shadow: inset 5px 0 0 0 rgba(250, 169, 0, 0.7); }
 
 .dragover-sidedeck-bottom {
-  border-bottom: 3px solid orange;
-  box-shadow: inset -7px 9px 7px rgba(252, 163, 2, 0.7);
-  box-shadow: inset 7px -9px 7px rgba(252, 163, 2, 0.7); }
+  box-shadow: inset 0 5px 0 0 rgba(250, 169, 0, 0.7); }
 
 .dragover-sidedeck-left {
-  border-left: 3px solid orange; }
+  box-shadow: inset 5px 0 0 0 rgba(250, 169, 0, 0.7); }
 
 .dragover-sidedeck-top {
-  border-top: 3px solid orange; }
+  box-shadow: inset 0 -5px 0 0 rgba(250, 169, 0, 0.7); }
 
 .dragover-deck {
-  outline: 3px solid orange; }
+  outline: 5px solid rgba(250, 169, 0, 0.7);
+  outline-offset: -5px; }
 
 /*	need some space	*/

@@ -434,17 +434,21 @@ li:focus *, li:focus {
 
 .toolbar {
   height: 24px;
-  background-color: #ebebeb; }
+  background-color: whitesmoke;
+  border-bottom: 1px solid #ebebeb;
+  color: #505050;
+  padding-left: 10px;
+  box-shadow: 0 3px 3px -2px gainsboro; }
 
 .toolbar-option {
   width: 60px;
   text-align: center;
   line-height: 24px;
   cursor: pointer;
-  transition: background-color 0.5s; }
+  transition: background-color 0.3s; }
 
 .toolbar-option:hover {
-  background-color: #eee;
+  background-color: #ebebeb;
   transition: background-color 0s; }
 
 .nav-image:hover {

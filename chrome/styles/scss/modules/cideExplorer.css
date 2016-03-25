@@ -1,6 +1,10 @@
 .toolbar { 
 	height: 24px;
-	background-color: rgb(235, 235, 235);
+	background-color: $clr-base;
+	border-bottom: 1px solid $clr-empty;
+	color: $ui-text-clr;
+	padding-left: 10px;
+	box-shadow: 0 3px 3px -2px gainsboro;
 } 
 
 .toolbar-option {
@@ -9,11 +13,11 @@
 	line-height: 24px;
 	cursor: pointer;
 	
-	transition: background-color 0.5s;
+	transition: background-color 0.3s;
 }
 
 .toolbar-option:hover { 
-	background-color: #eee;
+	background-color: $clr-empty;
 	transition: background-color 0s;
 }
 

@@ -29,7 +29,7 @@ button {
 }
 
 row:hover {
-	@include: hover_blue;
+	@include hover_blue;
 }
 
 row.header {
