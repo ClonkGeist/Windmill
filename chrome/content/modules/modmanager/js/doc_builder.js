@@ -35,6 +35,13 @@ function buildDoc(path = _sc.chpath + "/docs/docs", __rec) {
 		}
 		iterator.close();
 		if(!__rec) {
+			/*let frame = $("#docbuilderframe")[0];
+			log(frame.contentWindow.document + " / " + $("#content", frame.contentWindow.document)[0]);
+			if(!frame || !frame.contentWindow || !frame.contentWindow.readyState) {
+				throw "DocBuilder Frame not loaded";
+			}
+
+			let wdw = frame.contentWindow;*/
 			log("Preparing information (" + md_files.length + " files)");
 			let lang_md_files = [], files_by_path = {};
 			for(var i = 0; i < md_files.length; i++) {
@@ -69,6 +76,7 @@ function buildDoc(path = _sc.chpath + "/docs/docs", __rec) {
 				lang_md_files[lang].push(file_obj);
 				files_by_path[file_obj.path] = file_obj;
 			}
+			let worker = new Worker('chrome://windmill/content/modules/modmanager/js/highlight.worker.js');
 			for(var lang in lang_md_files) {
 				log("Language: " + lang);
 				log("Building html files (" + lang_md_files[lang].length + ")");
@@ -116,6 +124,28 @@ function buildDoc(path = _sc.chpath + "/docs/docs", __rec) {
 					while(ulstack--)
 						navigation += "</ul>\r\n";
 					let output = html_template;
+					
+					//$("#content", wdw.document).html(file.content);
+					let codeblocks = file.content.match(/<code class="lang-.+?">(.|\n)+?<\/code>/g)
+					if(codeblocks) {
+						log("Creating Syntax Highlighting...");
+						let promise = new Promise(function(resolve, reject) {
+							worker.onmessage = function(event) {
+								let result = event.data;
+								let i = 0;
+								file.content = file.content.replace(/<code class="lang-.+?">(.|\n)+?<\/code>/g, function() { 
+									return result[i];
+								});
+								resolve();
+							}
+							worker.onerror = function(e) {
+								throw e.message + "("+e.filename+":"+e.lineno+")";
+							}
+							worker.postMessage(codeblocks);
+						});
+						yield promise;
+					}
+
 					output = output.replace(/\${PAGE_TITLE}/g, file.title);
 					output = output.replace(/\${PAGE_NAVIGATION}/g, navigation);
 					output = output.replace(/\${PAGE_CONTENT}/g, file.content);
@@ -131,6 +161,7 @@ function buildDoc(path = _sc.chpath + "/docs/docs", __rec) {
 					}
 					
 					output = output.replace(/\${STYLESHEET}/g, "../"+relpath.join("/").replace(/(.+?)(\/|$)/g, "../")+"windmill_doc.css");
+					output = output.replace(/\${STYLESHEET_PRISM}/g, "../"+relpath.join("/").replace(/(.+?)(\/|$)/g, "../")+"prism.css");
 
 					let htmlfile = yield OS.File.open(dest.substr(0, dest.length-2)+"html", { truncate: true });
 					yield htmlfile.write(encoder.encode(output));

@@ -147,7 +147,7 @@ if(top != window) {
 		var jQuery = _mainwindow.jQuery;
 
 		try {
-			var $ = function (selector) { return jQuery(selector, iframeBody); };
+			var $ = function(selector, context = iframeBody) { return jQuery(selector, context); };
 		}
 		catch(e) { }
 	}
