@@ -75,8 +75,9 @@ function buildDoc(path = _sc.chpath + "/docs/docs", __rec) {
 				let encoder = new TextEncoder();
 				let definitely_exists = {};
 				yield OS.File.makeDir(_sc.chpath+"/docs/build");
+				yield OS.File.makeDir(_sc.chpath+"/docs/build/"+lang);
 				for(var i = 0; i < lang_md_files[lang].length; i++) {
-					let file = lang_md_files[lang][i], dest = _sc.chpath + "/docs/build" + file.path;
+					let file = lang_md_files[lang][i], dest = _sc.chpath + "/docs/build/" + lang + "/" + file.path;
 					log("build " + file.path + " at " + dest);
 					
 					let navigation = "", ulstack = 0;
@@ -118,7 +119,7 @@ function buildDoc(path = _sc.chpath + "/docs/docs", __rec) {
 					output = output.replace(/\${PAGE_TITLE}/g, file.title);
 					output = output.replace(/\${PAGE_NAVIGATION}/g, navigation);
 					output = output.replace(/\${PAGE_CONTENT}/g, file.content);
-					let from = _sc.chpath + "/docs/build/";
+					let from = _sc.chpath + "/docs/build/" + lang + "/";
 					relpath = file.parent_path.replace(_sc.chpath+"/docs/docs/", "").split("/");
 					for(var j = 0; j < relpath.length; j++) {
 						from += relpath[j];
@@ -129,7 +130,7 @@ function buildDoc(path = _sc.chpath + "/docs/docs", __rec) {
 						from += "/";
 					}
 					
-					output = output.replace(/\${STYLESHEET}/g, relpath.join("/").replace(/(.+?)(\/|$)/g, "../")+"windmill_doc.css");
+					output = output.replace(/\${STYLESHEET}/g, "../"+relpath.join("/").replace(/(.+?)(\/|$)/g, "../")+"windmill_doc.css");
 
 					let htmlfile = yield OS.File.open(dest.substr(0, dest.length-2)+"html", { truncate: true });
 					yield htmlfile.write(encoder.encode(output));
