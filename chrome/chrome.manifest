@@ -2,6 +2,7 @@ content windmill content/
 skin windmill default styles/
 
 resource ctypes content/js/ctypes/
+resource docs docs/
 
 override chrome://global/skin/scrollbars.css chrome://windmill/skin/overrides/scrollbars.css
 override chrome://global/content/viewSource.xul chrome://windmill/skin/overrides/viewSource.xul

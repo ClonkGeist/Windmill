@@ -1,0 +1,34 @@
+body, html, document {
+	background: rgb(250, 250, 250);
+	margin: 0;
+	font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+	height: 100%;
+}
+
+#header {
+	background: rgb(45, 45, 45);
+	padding: 6px 15px;
+	font-size: 1.4em;
+	color: white;
+	text-align: right;
+}
+
+#wrapper {
+	display: flex;
+}
+
+#content {
+	padding: 15px;
+	flex: 1;
+}
+
+#navigation {
+	background: rgb(200, 200, 200);
+	padding-right: 25px;
+}
+
+h1 {
+	font-size: 1.5em;
+	border-bottom: 1px solid gainsboro;
+	margin: 1em 0;
+}

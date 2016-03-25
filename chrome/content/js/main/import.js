@@ -95,10 +95,7 @@ var _sc = {
 	//Chrome-Pfad
 	chpath : (function() { 
 		var ds = Cc["@mozilla.org/file/directory_service;1"].getService(Ci.nsIProperties);
-		if(OS_TARGET == "WINNT")
-			return ds.get("AChrom", Ci.nsIFile).path.replace(/\\/, "/");
-
-		return ds.get("AChrom", Ci.nsIFile).path;
+		return formatPath(ds.get("AChrom", Ci.nsIFile).path);
 	}()),
 	//Profile-Pfad
 	profd : (function() {

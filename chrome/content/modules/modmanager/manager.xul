@@ -10,12 +10,14 @@
 	<script type="application/javascript" src="chrome://windmill/content/js/libs/deck.js"/>
 	<script type="application/javascript" src="chrome://windmill/content/modules/modmanager/js/manager.js"/>
 	<script type="application/javascript" src="chrome://windmill/content/modules/modmanager/js/sass_observer.js"/>
+	<script type="application/javascript" src="chrome://windmill/content/modules/modmanager/js/doc_builder.js"/>
 	
 	<hbox style="padding-left: 20px; padding-right: 20px;">
 		<button label="Modules" onclick="$('#switch-overview').attr('selectedIndex', 0);" /> |
 		<button label="Config" onclick="$('#switch-overview').attr('selectedIndex', 1);" /> |
 		<button label="DOM Viewer" onclick="$('#switch-overview').attr('selectedIndex', 2);" /> |
-		<button label="Sass" onclick="$('#switch-overview').attr('selectedIndex', 3);" />
+		<button label="Sass" onclick="$('#switch-overview').attr('selectedIndex', 3);" /> |
+		<button label="Build Doc" onclick="buildDoc();" />
 	</hbox>
 
 	<hbox flex="1" id="wrapper">
