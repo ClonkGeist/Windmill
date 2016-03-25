@@ -1,7 +1,6 @@
 window {
-	background-color: rgb(245, 245, 245);
 	font-family: $font-stack;
-	background-color: rgb(225, 225, 225);
+	background-color: $clr-empty;
 }
 
 splitter {
@@ -12,16 +11,12 @@ splitter {
 	outline: 1px solid gainsboro;
 	outline-offset: -1px;
 	width: 3px;
-	background-color: rgb(245, 245, 245);
+	background-color: $clr-base;
 }
 
 splitter * {
 	-moz-appearance: none;
 	outline: none;
-}
-
-splitter[state=dragged] {
-	background-color: rgb(215, 215, 215);
 }
 
 /** Audioplayer **/
@@ -37,19 +32,11 @@ splitter[state=dragged] {
 /** Navigation **/
 
 .modules-nav,
-toolbar {
-	-moz-appearance: none;
-	border: none;
-	background: none;
-}
-
+toolbar,
 toolbox {
 	-moz-appearance: none;
 	border: none;
 	background: none;
-	border-bottom: 1px solid rgb(215, 215, 215);
-	border-bottom: 1px solid rgb(225, 225, 225);
-	border: none;
 }
 
 .modules-nav {
@@ -62,19 +49,17 @@ toolbox {
 	transition: background-color 0.15s;
 	cursor: pointer;
 	box-sizing: border-box;
-	color: rgb(80, 80, 80);
+	color: $ui-text-clr;
 }
 
 .deck-nav-elm.active,
 .deck-nav-elm.active:hover {
-	color: rgb(80, 80, 80);
-	background-color: rgb(250, 250, 250);
-	background-color: rgb(240, 240, 240);
+	color: $ui-text-clr;
+	background-color: $clr-base;
 }
 
 .deck-nav-elm:hover {
-	background-color: rgb(250, 250, 250);
-	outline: 1px solid rgb(235, 235, 235);
+	background-color: $clr-paper;
 }
 
 .close-button {
@@ -90,10 +75,12 @@ toolbox {
 	border-radius: 14px;
 	
 	-moz-box-align: center;
+	font-size: 12px;
 }
 
 .close-button:hover {
-	color: black;
+	color: $clr-paper;
+	background-color: $interact_red;
 }
 
 .deck-desc {
@@ -165,7 +152,7 @@ toolbarbutton:focus  *{
 
 .deckbtn-scrollLeft:hover ,
 .deckbtn-scrollRight:hover {
-	color: rgb(80, 80, 80);
+	color: $ui-text-clr;
 }
 
 .deckbtn-scrollLeft.deckbtn-scrollDisabled,
@@ -184,7 +171,7 @@ toolbarbutton:focus  *{
 	box-shadow: none;
 	-moz-appearance: none;
 	
-	color: rgb(80, 80, 80);
+	color: $ui-text-clr;
 	border: none;
 }
 
@@ -196,7 +183,7 @@ toolbarbutton:focus  *{
 
 .tooltip-tabbutton > * {
 	padding: 2px 5px;
-	background-color: rgb(235,235,235);
+	background-color: $clr-empty;
 	border: 1px solid gainsboro;
 	margin: 0;
 }
@@ -206,26 +193,24 @@ toolbarbutton:focus  *{
 }*/
  
 .dragover-sidedeck-right {
-	border-right: 3px solid orange;
-    box-shadow: inset -7px 9px 7px rgba(252,163,2,0.7);
+    box-shadow: inset 5px 0 0 0 $interact_orange;
 }
  
 .dragover-sidedeck-bottom {
-	border-bottom: 3px solid orange;
-    box-shadow: inset -7px 9px 7px rgba(252,163,2,0.7);
-	box-shadow: inset 7px -9px 7px rgba(252,163,2,0.7);
+	box-shadow: inset 0 5px 0 0 $interact_orange;
 }
 
 .dragover-sidedeck-left {
-	border-left: 3px solid orange;
+	box-shadow: inset 5px 0 0 0 $interact_orange;
 }
 
 .dragover-sidedeck-top {
-	border-top: 3px solid orange;
+	box-shadow: inset 0 -5px 0 0 $interact_orange;
 }
 
 .dragover-deck {
-	outline: 3px solid orange;
+	outline: 5px solid $interact_orange;
+	outline-offset: -5px;
 }
 
 /*	need some space	*/

@@ -5,12 +5,14 @@ $chrome-clr: rgb(45, 45, 45);
 
 $interact_red: rgb(220, 70, 50);
 $interact_blue: rgb(0, 165, 210);
+$interact_orange: rgba(250,169, 0, 0.7);
 
 $clr-paper: rgb(250, 250, 250);
 $clr-base: rgb(245, 245, 245);
 $clr-empty: rgb(235, 235, 235);
 
 $text-clr: rgb(40, 40, 40);
+$ui-text-clr: rgb(80, 80, 80);
 
 $hover-blue-bg: rgba(0, 165, 207, 0.15);
 

@@ -4,7 +4,6 @@ exports.isDark = false;
 exports.cssClass = "ace-rocking-horse";
 exports.cssText = ".ace-rocking-horse .ace_gutter {\
 background: rgb(245, 245, 245);\
-border-right: 1px solid rgb(235, 235, 235);\
 border-right: 1px solid rgb(200, 200, 200);\
 color: rgb(180, 180, 180);\
 overflow : hidden;\
