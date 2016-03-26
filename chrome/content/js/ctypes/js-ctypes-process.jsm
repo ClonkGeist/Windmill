@@ -117,10 +117,10 @@ class wmProcess extends WindmillInterface {
 	}
 
 	createPromise(...pars) {
-		let promise = new Promise(function(success, rejected) {
+		let promise = new Promise((success, rejected) => {
 			this.create(...pars);
+			this.promises.push(success);
 		});
-		this.promises.push(promise);
 	}
 	
 	routine() {
@@ -197,7 +197,7 @@ class wmProcess extends WindmillInterface {
 
 		for(var i = 0; i < this.promises; i++)
 			if(this.promises[i])
-				this.promises[i].resolve(this.full_output_buffer, this.exitCode, this);
+				this.promises[i](this.full_output_buffer, this.exitCode, this);
 		this.promises = [];
 
 		this.status = 2;

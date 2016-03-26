@@ -652,6 +652,40 @@ function initializeContextMenu() {
 			EventInfo("$EI_Exploded$");
 		});
 	}, 0, { identifier: 'ctxExplode' });
+	//Exportieren
+	treeContextMenu.addEntry("$ctxexport$", 0, 0, (new ContextMenu(function(by_obj) {
+		this.clearEntries();
+		let i = 0, path;
+		function* exportToWorkEnv(workenv) {
+			if(workenv.type != _mainwindow.WORKENV_TYPE_ClonkPath)
+				return; //Atm. nur fuer Clonkpfade
+
+			let treepath = _sc.workpath(by_obj)+"/"+getTreeObjPath(by_obj);
+			let filename = treepath.split("/").pop();
+			let destination = workenv.path+"/"+filename;
+			yield OSFileRecursive(treepath, destination);
+
+			let fileext = filename.split(".").pop();
+			if(!workenv.alwaysexplode && filename.split(".").length > 1 && OCGRP_FILEEXTENSIONS.indexOf(fileext) != -1) {
+				let c4group = _sc.file(getC4GroupPath());
+				let process = _ws.pr(c4group);
+				yield process.createPromise([destination, "-p"], 0x1);
+			}
+		}
+		while(path = _sc.clonkpath(i)) {
+			if(i > 0 && path == _sc.clonkpath(0))
+				break;
+			let workenv = getWorkEnvironmentByPath(path);
+			if(!path || !workenv)
+				break;
+
+			this.addEntry(workenv.title, 0, function*(target, menuitemobj, menuitem) {
+				yield* exportToWorkEnv(workenv);
+			});
+			i++;
+			//TODO: Eintrag: "In alle Clonkverzeichnisse"
+		}
+	}, [], MODULE_LPRE)), { identifier: "ctxExport" });
 
 	treeContextMenu.addSeperator();
 
@@ -1050,6 +1084,7 @@ function treeHideContextItems(by_obj, identifier) {
 	if((tagName == "vbox" || tagName == "html:ul") && ["ctxCopy","ctxCut","ctxRename","ctxDelete","ctxPack","ctxExplode","ctxOpen"].indexOf(identifier) >= 0)
 		return 1;
 
+	let workenv = getWorkEnvironmentByPath(_sc.workpath(by_obj));
 	switch(identifier) {
 		//Einfügen nur sichtbar bei gültigem Clipboard-Inhalt
 		case "ctxPaste":
@@ -1085,14 +1120,15 @@ function treeHideContextItems(by_obj, identifier) {
 			break;
 		
 		case "ctxGit":
-			var workenv;
-			if(!(workenv = getWorkEnvironmentByPath(_sc.workpath(by_obj))))
-				return 2;
 			if(!workenv.repository)
 				return 2;
 				
 			if(!getAppByID("git").isAvailable())
 				return 1;
+
+		case "ctxExport":
+			if(workenv.type == _mainwindow.WORKENV_TYPE_ClonkPath)
+				return 2;
 	}
 
 	return 0;
