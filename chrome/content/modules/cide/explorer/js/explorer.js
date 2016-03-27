@@ -663,13 +663,18 @@ function initializeContextMenu() {
 			let treepath = _sc.workpath(by_obj)+"/"+getTreeObjPath(by_obj);
 			let filename = treepath.split("/").pop();
 			let destination = workenv.path+"/"+filename;
-			yield OSFileRecursive(treepath, destination);
+			destination = (yield OSFileRecursive(treepath, destination, null, "copy", true, { checkIfFileExist: true })).path;
 
 			let fileext = filename.split(".").pop();
 			if(!workenv.alwaysexplode && filename.split(".").length > 1 && OCGRP_FILEEXTENSIONS.indexOf(fileext) != -1) {
 				let c4group = _sc.file(getC4GroupPath());
 				let process = _ws.pr(c4group);
 				yield process.createPromise([destination, "-p"], 0x1);
+				let fileobj = { 
+					leafName: destination.split("/").pop(), 
+					isDirectory: function() { return false; } 
+				};
+				addFileTreeEntry(fileobj, $('.workenvironment[workpath="'+workenv.path+'"]')[1], true);
 			}
 		}
 		while(path = _sc.clonkpath(i)) {
@@ -685,6 +690,18 @@ function initializeContextMenu() {
 			i++;
 			//TODO: Eintrag: "In alle Clonkverzeichnisse"
 		}
+		this.addEntry("$ctxexport_allclonkdirs$", 0, function*() {
+			i = 0;
+			while(path = _sc.clonkpath(i)) {
+				if(i > 0 && path == _sc.clonkpath(0))
+					break;
+				let workenv = getWorkEnvironmentByPath(path);
+				if(!path || !workenv)
+					break;
+				yield* exportToWorkEnv(workenv);
+				i++;
+			}
+		});
 	}, [], MODULE_LPRE)), { identifier: "ctxExport" });
 
 	treeContextMenu.addSeperator();

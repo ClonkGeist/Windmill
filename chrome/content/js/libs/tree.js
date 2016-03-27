@@ -154,7 +154,7 @@ function createTreeElement(tree, label, container, open, img, filename, special,
 			//Nicht in sich selbst oder in Child-Elements von sich selbst
 			if(e_id == data || $(d_cnt).find("#treeelm-"+e_id)[0] || getTreeObjId($(d_obj).parent()) == e_id)
 				return false;
-			
+
 			//Pfad vorher
 			var d_path = _sc.workpath(d_obj) + getTreeObjPath(d_obj);
 			var e_path = _sc.workpath(getTreeCntById(e_id)) + getTreeObjPath(getTreeCntById(e_id));

@@ -542,67 +542,69 @@ function writeFile(path, text, fCreateIfNonexistent) {
 	fstr.close();
 }
 
-function OSFileRecursive(sourcepath, destpath, callback, operation = "copy", noOverwrite = (operation == "copy"), __rec) {
+function OSFileRecursive(sourcepath, destpath, callback, operation = "copy", noOverwrite = (operation == "copy"), options = { checkIfFileExist: true }, __rec) {
 	//TODO: Overwrite vorschlagen
 	let task = Task.spawn(function*() {
 		let f = new _sc.file(sourcepath), extra = "", file;
-		if(!f.isDirectory()) {
-			try { yield OS.File[operation](sourcepath, destpath, {noOverwrite}); }
+		let counter = 0;
+		//Dateinamen aufspalten um passenden Alternativen Namen generieren zu koennen (Dabei Dateierweiterungen beruecksichtigen)
+		let tpath = destpath.split("/");
+		let tname = tpath.pop().split(".");
+		tpath = tpath.join("/")+"/";
+		let fext = "";
+		if(tname.length > 1)
+			fext = "."+tname.pop();
+
+		tname = tname.join(".");
+		let toperation = operation;
+		if(f.isDirectory())
+			toperation = "makeDir";
+
+		while(true) {
+			try {
+				if(toperation == "makeDir" && options.checkIfFileExist && noOverwrite)
+					if(yield OS.File.exists(tpath+tname+extra+fext))
+						throw { becauseExists: true, becauseFileExists: true };
+
+				if(toperation == "makeDir")
+					yield OS.File.makeDir(tpath+tname+extra+fext, {ignoreExisting: !noOverwrite});
+				else
+					yield OS.File[toperation](sourcepath, tpath+tname+extra+fext, {noOverwrite});
+			}
 			catch(e) {
+				if(!e.becauseExists)
+					throw e;
+				if(e.becauseFileExists && !noOverwrite)
+					return {path: tpath+tname+extra+fext, file: f};
 				if(noOverwrite == 2)
 					throw e;
-				file = yield OS.File.openUnique(destpath, { humanReadable: true });
-				destpath = file.path;
-				yield OS.File[operation](sourcepath, destpath);
+				if(counter > 99)
+					throw "Could not create an alternative name";
+				extra = " - " + (++counter);
+				continue;
 			}
-			return {path: destpath, file: f};
+			destpath = tpath+tname+extra+fext;
+			break;
 		}
-		else {
-			let counter = 0;
 
-			//Verzeichnisnamen aufspalten um passenden Alternativen Namen generieren zu koennen (Dabei Dateierweiterungen beruecksichtigen)
-			let dirpath = destpath.split("/");
-			let dirname = dirpath.pop().split(".");
-			dirpath = dirpath.join("/")+"/";
-			let fext = "";
-			if(dirname.length > 1)
-				fext = "."+dirname.pop();
+		if(f.isDirectory()) {
+			let entries = f.directoryEntries;
+			while(entries.hasMoreElements()) {
+				let entry = entries.getNext().QueryInterface(Ci.nsIFile);
 
-			dirname = dirname.join(".");
+				if(callback)
+					callback(entry.leafName, entry.path);
 
-			while(true) {
-				try { yield OS.File.makeDir(dirpath+dirname+extra+fext, {ignoreExisting: false}); }
-				catch(e) {
-					if(!e.becauseExists)
-						throw e;
-					if(noOverwrite == 2)
-						throw e;
-					if(counter > 99)
-						throw "Could not create an alternative name";
-					extra = " - " + (++counter);
-					continue;
-				}
-				destpath = dirpath+dirname+extra+fext;
-				break;
+				yield OSFileRecursive(entry.path, destpath+"/"+entry.leafName, callback, operation, noOverwrite, options, true);
 			}
-		}
-		
-		let entries = f.directoryEntries;
-		while(entries.hasMoreElements()) {
-			let entry = entries.getNext().QueryInterface(Ci.nsIFile);
 
-			if(callback)
-				callback(entry.leafName, entry.path);
-
-			yield OSFileRecursive(entry.path, destpath+"/"+entry.leafName, callback, operation, noOverwrite, true);
+			//Ggf. nochmal aufraeumen
+			if(f.isDirectory())
+				if(!__rec && operation == "move")
+					yield OS.File.removeDir(sourcepath, {ignoreAbsent: true})
 		}
 
-		//Ggf. nochmal aufraeumen
-		if(f.isDirectory())
-			if(!__rec && operation == "move")
-				yield OS.File.removeDir(sourcepath, {ignoreAbsent: true})
-
-		return {path: destpath+extra, file: f};
+		return {path: destpath, file: f};
 	});
 	task.then(null, function(reason) {
 		log(reason);

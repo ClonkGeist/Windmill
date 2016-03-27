@@ -367,7 +367,6 @@ function addFileTreeEntry(entry, parentobj, sort_container) {
 	//Fileextensions
 	var t = entry.leafName.split("."), fext = t[t.length-1].toLowerCase(), fSpecial = false;
 	var container = false;
-
 	if(hideFileExtension(fext))
 		return false;
 
@@ -397,7 +396,7 @@ function addFileTreeEntry(entry, parentobj, sort_container) {
 		}
 		else if(getConfigData("CIDE", "HideUnsupportedFiles") && !fSpecial)
 			return false;
-		
+
 		if(noContainer(fext))
 			container = false;
 
