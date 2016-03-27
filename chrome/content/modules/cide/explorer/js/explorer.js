@@ -652,6 +652,9 @@ function initializeContextMenu() {
 			EventInfo("$EI_Exploded$");
 		});
 	}, 0, { identifier: 'ctxExplode' });
+
+	treeContextMenu.addSeperator();
+
 	//Exportieren
 	treeContextMenu.addEntry("$ctxexport$", 0, 0, (new ContextMenu(function(by_obj) {
 		this.clearEntries();
@@ -690,6 +693,7 @@ function initializeContextMenu() {
 			i++;
 			//TODO: Eintrag: "In alle Clonkverzeichnisse"
 		}
+		this.addSeperator();
 		this.addEntry("$ctxexport_allclonkdirs$", 0, function*() {
 			i = 0;
 			while(path = _sc.clonkpath(i)) {
@@ -1144,7 +1148,7 @@ function treeHideContextItems(by_obj, identifier) {
 				return 1;
 
 		case "ctxExport":
-			if(workenv.type == _mainwindow.WORKENV_TYPE_ClonkPath)
+			if(!_sc.clonkpath() || workenv.type == _mainwindow.WORKENV_TYPE_ClonkPath)
 				return 2;
 	}
 
