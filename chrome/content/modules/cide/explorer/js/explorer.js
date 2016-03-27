@@ -2,13 +2,7 @@ var treeContextMenu = new ContextMenu(0, 0, MODULE_LPRE, { fnCheckVisibility: tr
 var workenvContextMenu = new ContextMenu(0, 0, MODULE_LPRE, { fnCheckVisibility: workenvHideContextItems });
 
 function initializeDirectory() {
-	var workenvs = getWorkEnvironments();
-	for(var i = 0; i < workenvs.length; i++) {
-		var id = createWorkEnvironmentEntry(workenvs[i], !i);
-
-		//Verzeichnis einlesen und Inhalte auflisten
-		loadDirectory(workenvs[i].path, getTreeCntById(id));
-	}
+	explorerLoadWorkEnvironments();
 }
 
 function createWorkEnvironmentEntry(workenv, first) {
@@ -20,10 +14,12 @@ function createWorkEnvironmentEntry(workenv, first) {
 	}
 	if(workenv.repository)
 		img = "chrome://windmill/content/img/icon-workenvironment-git.png";
-	if(workenv.options.identifier == "UserData")
+	if(workenv.options.identifier == "UserData") {
+		typeclass += " we-userdata";
 		img = "chrome://windmill/content/img/icon-workenvironment-user.png";
+	}
 
-	var id = createTreeElement(MAINTREE_OBJ, title, true, 0, img, 0, "workenvironment"+typeclass, { noSelection: false });
+	var id = createTreeElement(MAINTREE_OBJ, title, true, false, img, 0, "workenvironment"+typeclass, { noSelection: false, isDraggable: workenv.options.identifier != "UserData", index: workenv.index });
 	$(getTreeCntById(id)).attr("workpath", path);
 	$(getTreeObjById(id)).attr("workpath", path);
 	if(first)
@@ -77,6 +73,7 @@ function explorerLoadWorkEnvironments() {
 			});
 		}
 	}
+	treeExpand($(MAINTREE_OBJ).children("ul:not(.we-userdata)")[0]);
 
 	unlockModule();
 }

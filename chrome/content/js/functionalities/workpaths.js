@@ -137,6 +137,7 @@ class WorkEnvironment {
 			this.alwaysexplode = parseINIValue(text["Workspace"]["AlwaysExplode"], "boolean", this.alwaysexplode);
 			this.linkedTo = parseINIValue(text["Workspace"]["LinkedTo"], "string", "");
 			this.fullcopy = parseINIValue(text["Workspace"]["FullCopy"], "boolean", false);
+			this.index = parseINIValue(text["Workspace"]["Index"], "int", -1);
 			if(this.type != WORKENV_TYPE_ClonkPath)
 				this.sourcedir = parseINIValue(text["Workspace"]["SourceDir"], "string", _sc.clonkpath());
 			else
@@ -244,6 +245,8 @@ class WorkEnvironment {
 		return url;
 	}
 	set cloneurl(url) { this.header.Repository.CloneURL = url; }
+	get index() { return this.header.Workspace.Index; }
+	set index(index) { this.header.Workspace.Index = index; }
 }
 
 var WORKENV_List = [], WORKENV_Current;

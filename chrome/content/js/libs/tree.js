@@ -18,14 +18,14 @@ _sc.workpath = function(treeobj) {
 
 function noDragDropItem() {}
 
-function createTreeElement(tree, label, container, open, img, filename, special, options = { noSelection: !!special }) {
+function createTreeElement(tree, label, container, open, img, filename, special, options = { noSelection: !!special, index: -1 }) {
 	if(img)
 		var imgTag = '<image src="'+img+'" width="16" height="16" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" /> ';
 	else
 		var imgTag = "";
 
 	var drag = ' draggable="true"';
-	if(noDragDropItem(label) || special)
+	if(noDragDropItem(label) || special && !options.isDraggable)
 		drag = "";
 
 	if(filename)
@@ -36,12 +36,14 @@ function createTreeElement(tree, label, container, open, img, filename, special,
 	$(tree).append(`<li id="treeelm-${TREE_ELM_ID}" tabindex="0" name="${label.toLowerCase()}" 
 		class="treeobj treeelm${container?' treecontainer':''} ${special}" xmlns="http://www.w3.org/1999/xhtml"
 		${drag}${filename}>${imgTag} <description>${label}</description></li>`);
+	var elm = $("#treeelm-"+TREE_ELM_ID)[0];
+	if(options.index != -1 && $(tree).children("li")[options.index])
+		$(elm).insertBefore($(tree).children("li")[options.index]);
 	if(container)
-		$(tree).append('<ul id="treecnt-'+TREE_ELM_ID+'" class="treeobj treecnt '+special+'" xmlns="http://www.w3.org/1999/xhtml"></ul>');
+		$('<ul id="treecnt-'+TREE_ELM_ID+'" class="treeobj treecnt '+special+'" xmlns="http://www.w3.org/1999/xhtml"></ul>').insertAfter(elm);
 	if(!special)
 		$(tree).children(".treeelm-container-empty").remove();
-	var elm = $("#treeelm-"+TREE_ELM_ID)[0],
-		cnt = $("#treecnt-"+TREE_ELM_ID)[0];
+	var cnt = $("#treecnt-"+TREE_ELM_ID)[0];
 	
 	if(!elm)
 		return log("Tree error: Tree element with id " + TREE_ELM_ID + " (label: " + label + ") was not created.", true);
@@ -115,130 +117,163 @@ function createTreeElement(tree, label, container, open, img, filename, special,
 	});
 
 	var id = TREE_ELM_ID;
-	//Drag and Drop
-	if(drag) {
-		elm.addEventListener("dragstart", function(e) {
-			//Ggf. Fileinformationen mitreinpasten für Drag außerhalb der Application
-			e.dataTransfer.setData('text/cideexplorer', id);
-			e.dataTransfer.mozSetDataAt('application/x-moz-file', _sc.file(_sc.workpath(elm)+getTreeObjPath(elm)), 0);
-			e.dataTransfer.setData("text/uri-list", _sc.workpath(elm)+getTreeObjPath(elm));
+	if(special && special.search(/workenvironment/) != -1) {
+		//Drag and Drop
+		if(options.isDraggable) {
+			elm.addEventListener("dragstart", function(e) {
+				//Ggf. Fileinformationen mitreinpasten für Drag außerhalb der Application
+				e.dataTransfer.setData('text/cideexplorer', id);
+				e.dataTransfer.mozSetDataAt('application/x-moz-file', _sc.file(_sc.workpath(elm)), 0);
+				e.dataTransfer.setData("text/uri-list", _sc.workpath(elm));
 
-			e.dataTransfer.effectAllowed = "copyMove";
-			e.dataTransfer.dropEffect = "copy"; //Damit Objekte auch in Enginefenster reingezogen werden können
+				e.dataTransfer.effectAllowed = "copyMove";
+				e.dataTransfer.dropEffect = "copy";
+			});
+		}
+		$([elm, cnt]).on("drop", function(e) {
+			let data = parseInt(e.originalEvent.dataTransfer.getData("text/cideexplorer"));
+			let d_obj = getTreeObjById(data), d_cnt = getTreeCntById(data); //data_object
+			if(!d_obj.hasClass("workenvironment"))
+				return;
+
+			$([d_obj[0], d_cnt[0]]).insertAfter(cnt);
+			for(var i = 0; i < $("li.workenvironment", MAINTREE_OBJ).length; i++) {
+				let we_elm = $("li.workenvironment", MAINTREE_OBJ)[i];
+				let workenv = getWorkEnvironmentByPath(_sc.workpath(we_elm));
+				workenv.index = $(MAINTREE_OBJ).children("li").index(we_elm);
+				workenv.saveHeader();
+			}
 		});
 	}
-	elm.addEventListener("drop", function(e) {
-		var data = parseInt(e.dataTransfer.getData("text/cideexplorer"));
-		var d_obj = getTreeObjById(data), d_cnt = getTreeCntById(data); //data_object
-		var e_id = -1; //destination
+	else {
+		//Drag and Drop
+		if(drag) {
+			elm.addEventListener("dragstart", function(e) {
+				//Ggf. Fileinformationen mitreinpasten für Drag außerhalb der Application
+				e.dataTransfer.setData('text/cideexplorer', id);
+				e.dataTransfer.mozSetDataAt('application/x-moz-file', _sc.file(_sc.workpath(elm)+getTreeObjPath(elm)), 0);
+				e.dataTransfer.setData("text/uri-list", _sc.workpath(elm)+getTreeObjPath(elm));
 
-		//DragDrop von ausserhalb?
-		if(!d_obj[0])
-			return;
-
-		//Verschieben ins Rootverzeichnis
-		if($(e.target).attr("id") == "maintree" || $(e.target).prop("tagName") == "li") {
-			//Objekt befindet sich bereits im root
-			if($(d_obj).parent()[0] == $(MAINTREE_OBJ)[0])
-				return false;
-
-			//Pfad vorher
-			var d_path = _sc.workpath(d_obj) + getTreeObjPath(d_obj);
-			var e_path = _sc.workpath(e.target);
+				e.dataTransfer.effectAllowed = "copyMove";
+				e.dataTransfer.dropEffect = "copy"; //Damit Objekte auch ins Enginefenster reingezogen werden können
+			});
 		}
-		else {
-			e_id = getTreeObjId($(e.target).parent()); //Target ID
-			if(!getTreeCntById(e_id)[0])
-				e_id = getTreeObjId($(e.target).parents("ul")[0]);
+		elm.addEventListener("drop", function(e) {
+			var data = parseInt(e.dataTransfer.getData("text/cideexplorer"));
+			var d_obj = getTreeObjById(data), d_cnt = getTreeCntById(data); //data_object
+			var e_id = -1; //destination
 
-			//Nicht in sich selbst oder in Child-Elements von sich selbst
-			if(e_id == data || $(d_cnt).find("#treeelm-"+e_id)[0] || getTreeObjId($(d_obj).parent()) == e_id)
-				return false;
+			//DragDrop von ausserhalb?
+			if(!d_obj[0])
+				return;
 
-			//Pfad vorher
-			var d_path = _sc.workpath(d_obj) + getTreeObjPath(d_obj);
-			var e_path = _sc.workpath(getTreeCntById(e_id)) + getTreeObjPath(getTreeCntById(e_id));
-		}
+			if($(d_obj).hasClass("workenvironment"))
+				return;
 
-		var containerloaded = !!getTreeCntById(e_id).children("li")[0], fname = d_path.split("/").pop();
-		e_path += "/"+fname;
+			//Verschieben ins Rootverzeichnis
+			if($(e.target).attr("id") == "maintree" || $(e.target).prop("tagName") == "li") {
+				//Objekt befindet sich bereits im root
+				if($(d_obj).parent()[0] == $(MAINTREE_OBJ)[0])
+					return false;
 
-		//Container öffnen
-		if(e_id >= 0)
-			treeExpand(getTreeCntById(e_id));
-		
-		//Bei Druck der Steuerungstaste kopieren
-		if(e.ctrlKey || getConfigData("Explorer", "CopyOnDragDrop")) {
-			var t = fname.split("."), fext = "."+t[t.length-1];
-			t.pop();
-			if(t.length)
-				var nofext = t.join(".");
+				//Pfad vorher
+				var d_path = _sc.workpath(d_obj) + getTreeObjPath(d_obj);
+				var e_path = _sc.workpath(e.target);
+			}
 			else {
-				var nofext = fname;
-				fext = "";
-			} 
+				e_id = getTreeObjId($(e.target).parent()); //Target ID
+				if(!getTreeCntById(e_id)[0])
+					e_id = getTreeObjId($(e.target).parents("ul")[0]);
 
-			lockModule();
-			let fpath;
-			let task = Task.spawn(function*() {
-				fpath = (yield OSFileRecursive(d_path, e_path)).path;
-			});
-			task.then(function() {
-				var img = $(d_obj).find("image").attr("src");
-				var cont;
-				
-				if(e_id >= 0)
-					cont = getTreeCntById(e_id);
-				else
-					cont = MAINTREE_OBJ;
-				
-				fname = fpath.split("/").pop();
-				if(containerloaded)
-					createTreeElement(cont, fname, !!d_cnt[0], false, img, fname);
-				sortTreeContainerElements(cont);
-				unlockModule();
-			}, function(reason) {
-				EventInfo("An error occured while trying to copy the file.");
-				log(reason);
-				unlockModule();
-			});
-		}
-		else {
-			//Datei verschieben
-			let promise = OSFileRecursive(d_path, e_path, null, "move");
-			lockModule();
-			promise.then(function() {
-				//Elemente verschieben
-				if(containerloaded) {
-					if(e_id >= 0) {
-						$(d_obj).detach().appendTo(getTreeCntById(e_id));
-						if(d_cnt[0])
-							$(d_cnt).detach().appendTo(getTreeCntById(e_id));
-						sortTreeContainerElements(getTreeCntById(e_id));
+				//Nicht in sich selbst oder in Child-Elements von sich selbst
+				if(e_id == data || $(d_cnt).find("#treeelm-"+e_id)[0] || getTreeObjId($(d_obj).parent()) == e_id)
+					return false;
+
+				//Pfad vorher
+				var d_path = _sc.workpath(d_obj) + getTreeObjPath(d_obj);
+				var e_path = _sc.workpath(getTreeCntById(e_id)) + getTreeObjPath(getTreeCntById(e_id));
+			}
+
+			var containerloaded = !!getTreeCntById(e_id).children("li")[0], fname = d_path.split("/").pop();
+			e_path += "/"+fname;
+
+			//Container öffnen
+			if(e_id >= 0)
+				treeExpand(getTreeCntById(e_id));
+			
+			//Bei Druck der Steuerungstaste kopieren
+			if(e.ctrlKey || getConfigData("Explorer", "CopyOnDragDrop")) {
+				var t = fname.split("."), fext = "."+t[t.length-1];
+				t.pop();
+				if(t.length)
+					var nofext = t.join(".");
+				else {
+					var nofext = fname;
+					fext = "";
+				} 
+
+				lockModule();
+				let fpath;
+				let task = Task.spawn(function*() {
+					fpath = (yield OSFileRecursive(d_path, e_path)).path;
+				});
+				task.then(function() {
+					var img = $(d_obj).find("image").attr("src");
+					var cont;
+					
+					if(e_id >= 0)
+						cont = getTreeCntById(e_id);
+					else
+						cont = MAINTREE_OBJ;
+					
+					fname = fpath.split("/").pop();
+					if(containerloaded)
+						createTreeElement(cont, fname, !!d_cnt[0], false, img, fname);
+					sortTreeContainerElements(cont);
+					unlockModule();
+				}, function(reason) {
+					EventInfo("An error occured while trying to copy the file.");
+					log(reason);
+					unlockModule();
+				});
+			}
+			else {
+				//Datei verschieben
+				let promise = OSFileRecursive(d_path, e_path, null, "move");
+				lockModule();
+				promise.then(function() {
+					//Elemente verschieben
+					if(containerloaded) {
+						if(e_id >= 0) {
+							$(d_obj).detach().appendTo(getTreeCntById(e_id));
+							if(d_cnt[0])
+								$(d_cnt).detach().appendTo(getTreeCntById(e_id));
+							sortTreeContainerElements(getTreeCntById(e_id));
+						}
+						else {
+							$(d_obj).detach().appendTo(MAINTREE_OBJ);
+							if(d_cnt[0])
+								$(d_cnt).detach().appendTo(MAINTREE_OBJ);
+							sortTreeContainerElements(MAINTREE_OBJ);
+						}
 					}
-					else {
-						$(d_obj).detach().appendTo(MAINTREE_OBJ);
-						if(d_cnt[0])
-							$(d_cnt).detach().appendTo(MAINTREE_OBJ);
-						sortTreeContainerElements(MAINTREE_OBJ);
-					}
-				}
-				else
-					$(d_obj).remove();
-				unlockModule();
-			}, function(reason) {
-				EventInfo("An error occured while trying to move the file.");
-				log(reason);
-				unlockModule();
-			});
+					else
+						$(d_obj).remove();
+					unlockModule();
+				}, function(reason) {
+					EventInfo("An error occured while trying to move the file.");
+					log(reason);
+					unlockModule();
+				});
 
-		}
-		
-		return;
-	});
-	elm.addEventListener("dragend", function(e) {
+			}
+			
+			return;
+		});
+		elm.addEventListener("dragend", function(e) {
 
-	});
+		});
+	}
 
 	//Listitemfunktionen initialisieren
 	setupTreeObj($("#treeelm-"+TREE_ELM_ID));
@@ -855,7 +890,7 @@ function searchTreeEntry(chr) {
 function treeExpand(obj, no_calls) {
 	if(!$(obj).hasClass("tree-collapsed"))
 		return;
-	
+
 	toggleOpenState(obj, no_calls);
 	return true;
 }
