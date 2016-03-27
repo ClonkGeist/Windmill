@@ -24,7 +24,7 @@ class WorkEnvironment {
 		this.header.Workspace.Unloaded = unloaded;
 		this.options = options;
 	}
-	isValid(path = this.path) {
+	isValid(path = this.path, options = {}) {
 		path = formatPath(path);
 		if(path.search(_sc.clonkpath()) != -1)
 			return false;
@@ -35,16 +35,22 @@ class WorkEnvironment {
 				continue;
 
 			if(env[i].path && (env[i].path.search(path) != -1 || path.search(env[i].path) != -1))
-				return false;
+				if(env[i] != options.parent)
+					return false;
 		}
 
 		return true;
 	}
 
 	setupWorkEnvironment(filelist, options = {}) {
-		if(!this.isValid())
+		if(!this.isValid(undefined, options))
 			return;
 
+		if(options.parent) {
+			this.parent = options.parent;
+			this.isChildWorkEnv = true;
+			this.parent.addChildWorkEnv(this);
+		}
 		if(this.type == WORKENV_TYPE_Workspace) {
 			let _this = this;
 			return Task.spawn(function*() {
@@ -398,14 +404,16 @@ _sc.workpath = function(by) {
 	//Raw Path
 	if(typeof by == "string") {
 		by = formatPath(by);
-		
+		let match = "";
+
 		for(var i = 0; i < WORKENV_List.length; i++) {
 			if(!WORKENV_List[i])
 				continue;
 
-			if(by.search(RegExp("^"+WORKENV_List[i].path+"(\/|$)")) != -1)
-				return WORKENV_List[i].path;
+			if(by.search(RegExp("^"+WORKENV_List[i].path+"(\/|$)")) != -1 && WORKENV_List[i].path.length > match.length)
+				match = WORKENV_List[i].path;
 		}
+		return match;
 	}
 	else if(getCurrentWorkEnvironment && getCurrentWorkEnvironment())
 		return getCurrentWorkEnvironment().path;

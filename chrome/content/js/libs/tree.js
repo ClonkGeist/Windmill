@@ -10,7 +10,7 @@ _sc.workpath = function(treeobj) {
 	if(typeof treeobj == "object" && $(treeobj).hasClass("treeobj")) {
 		if($(treeobj).hasClass("workenvironment"))
 			return $(treeobj).attr("workpath");
-		treeobj = $(treeobj).parents(".workenvironment").attr("workpath");
+		treeobj = $(treeobj).parents(".workenvironment").first().attr("workpath");
 	}
 
 	return workpathov(treeobj);
@@ -610,6 +610,13 @@ function sortTreeContainerElements(obj) {
 	
 	aContElm = $(cont).children("li:not(.no-selection)").toArray();
 	aContElm.sort(function(a,b) {
+		if($(a).hasClass("workenvironment") && !$(b).hasClass("workenvironment"))
+			return -1;
+		if(!$(a).hasClass("workenvironment") && $(b).hasClass("workenvironment"))
+			return +1;
+		if($(a).hasClass("workenvironment") && $(b).hasClass("workenvironment"))
+			return 0;
+
 		//Fileextensions nehmen
 		var t = getTreeItemFilename(a).split("."), fexta = t[t.length-1].toLowerCase();
 			t2 = getTreeItemFilename(b).split("."), fextb = t2[t2.length-1].toLowerCase();

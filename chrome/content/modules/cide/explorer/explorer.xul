@@ -17,7 +17,7 @@
 		<hbox>
 			<description>$DlgNewWorkEnvironmentDesc$</description>
 		</hbox>
-		<hbox>
+		<hbox id="dex_dlg_workenv_type_selection">
 			<label value="$DlgLblType$:" control="dex_dlg_workenv_type" flex="1" />
 			<menulist id="dex_dlg_workenv_type" flex="1">
 				<menupopup>
