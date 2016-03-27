@@ -281,11 +281,11 @@ function getFunctionDetection(id, session) {
 						fBreak = true;
 						break;
 					
-					case "paren.rparen": // ) or ]}))...
+					case "paren.rparen.rparenround":
 						level += pos.column - token.start;
 						break;
 					
-					case "paren.lparen": // ( or ({[...
+					case "paren.lparen.lparenround":
 						level -= pos.column - token.start;
 						break;
 					

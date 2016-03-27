@@ -71,10 +71,16 @@ var OC_HiglightRules = function() {
 					regex: /--|\+\+|==|=|!=|!=|<=|>=|<<|>>|<|>|!|&&|\|\||\?\?|[!%&*+\-~\/^]=?/,
 				},	{
 					token: "paren.lparen",
-					regex: /[\[({]/,
+					regex: /[\[{]/,
 				},	{
 					token: "paren.rparen",
-					regex: /[\])}]/
+					regex: /[\]}]/
+				},	{
+					token: "paren.lparen.lparenround",
+					regex: /[(]/,
+				},	{
+					token: "paren.rparen.rparenround",
+					regex: /[)]/
 				},	{
 					token: "statement-ending",
 					regex: /\;/
