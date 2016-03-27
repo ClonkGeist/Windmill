@@ -136,8 +136,14 @@ function getDocumentValue(id) {
 	return editors[id].getSession().getDocument().getValue();
 }
 
-function setDocumentValue(id, text) {
-	return editors[id].getSession().getDocument().setValue(text);
+function setDocumentValue(id, text, fRestoreScrollPos) {
+	var s = editors[id].getSession(),
+		scrollTop = s.getScrollTop();
+	
+	var r = s.getDocument().setValue(text);
+	if(fRestoreScrollPos)
+		s.setScrollTop(scrollTop);
+	return r;
 }
 
 function getTabData(tabid) {
