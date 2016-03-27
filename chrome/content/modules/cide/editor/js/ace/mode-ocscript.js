@@ -128,6 +128,10 @@ var OC_HiglightRules = function() {
 					next: "start",
 					
 				}, {
+					token : "string", 
+					regex : "$|^", 
+					next : "start"
+				},	{
 					token: "string.placeholder",
 					regex: "\%(?:d|x|X|i|v|s)",
 				}, {
