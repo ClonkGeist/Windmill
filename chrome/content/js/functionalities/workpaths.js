@@ -16,6 +16,7 @@ class WorkEnvironment {
 			Type,
 			Unloaded: false
 		}};
+		this.workEnvChildren = [];
 	}
 	
 	setOptions(options) {
@@ -189,6 +190,18 @@ class WorkEnvironment {
 		execHook("onWorkenvUnloaded", this);
 	}
 
+	addChildWorkEnv(workenv) {
+		this.workEnvChildren.push(workenv);
+	}
+
+	getWorkEnvChildren() {
+		let children = [];
+		for(var i = 0; i < this.workEnvChildren.length; i++)
+			if(this.workEnvChildren[i])
+				children.push(this.workEnvChildren[i]);
+		return children;
+	}
+
 	set path(path) {
 		if(this.type == WORKENV_TYPE_ClonkPath) { 
 			var dirs = JSON.parse(getConfigData("Global", "ClonkDirectories")) || [];
@@ -251,7 +264,7 @@ class WorkEnvironment {
 
 var WORKENV_List = [], WORKENV_Current;
 
-function loadWorkEnvironment(id) {
+function loadWorkEnvironment() {
 	if(OS_TARGET == "WINNT")
 		createWorkEnvironment(formatPath(_sc.env.get("APPDATA")+"/OpenClonk"), WORKENV_TYPE_Workspace, 0,
 		{readOnly: true, unloaded: false, secured: true, alternativeTitle: "$WEUserData$", identifier: "UserData"});
@@ -275,6 +288,27 @@ function loadWorkEnvironment(id) {
 	if(!wsdir)
 		return;
 
+	function* loadWorkEnvironmentChildren(workenv) {
+		let childiterator = new OS.File.DirectoryIterator(workenv.path);
+		while(true) {
+			let entry;
+			try { entry = yield childiterator.next(); } catch(e) { break; }
+			if(!entry.isDir) //Unterverzeichnisse untersuchen
+				continue;
+
+			if(!(yield OS.File.exists(entry.path+"/.windmillheader")))
+				continue;
+
+			let subworkenv = createWorkEnvironment(entry.path, WORKENV_TYPE_Workspace);
+			if(!subworkenv)
+				continue;
+
+			workenv.addChildWorkEnv(subworkenv);
+			subworkenv.parentWorkEnv = workenv;
+			subworkenv.isChildWorkEnv = true;
+		}
+		childiterator.close();
+	}
 	var iterator;
 	let task = Task.spawn(function*() {
 		iterator = new OS.File.DirectoryIterator(wsdir);
@@ -286,7 +320,9 @@ function loadWorkEnvironment(id) {
 			if(!(yield OS.File.exists(entry.path+"/.windmillheader")))
 				continue;
 
-			createWorkEnvironment(entry.path, WORKENV_TYPE_Workspace);
+			let workenv = createWorkEnvironment(entry.path, WORKENV_TYPE_Workspace);
+			if(workenv)
+				yield* (loadWorkEnvironmentChildren(workenv));
 		}
 	});
 	task.then(null, function(reason) {

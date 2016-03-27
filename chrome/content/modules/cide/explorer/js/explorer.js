@@ -5,7 +5,7 @@ function initializeDirectory() {
 	explorerLoadWorkEnvironments();
 }
 
-function createWorkEnvironmentEntry(workenv, first) {
+function createWorkEnvironmentEntry(workenv, first, container = MAINTREE_OBJ) {
 	var {type, path, title} = workenv;
 	var img = "chrome://windmill/content/img/icon-workenvironment-ws.png", typeclass = " we-workspace";
 	if(type == _mainwindow.WORKENV_TYPE_ClonkPath) {
@@ -19,7 +19,7 @@ function createWorkEnvironmentEntry(workenv, first) {
 		img = "chrome://windmill/content/img/icon-workenvironment-user.png";
 	}
 
-	var id = createTreeElement(MAINTREE_OBJ, title, true, false, img, 0, "workenvironment"+typeclass, { noSelection: false, isDraggable: workenv.options.identifier != "UserData", index: workenv.index });
+	var id = createTreeElement(container, title, true, false, img, 0, "workenvironment"+typeclass, { noSelection: false, isDraggable: workenv.options.identifier != "UserData", index: workenv.index });
 	$(getTreeCntById(id)).attr("workpath", path);
 	$(getTreeObjById(id)).attr("workpath", path);
 	if(first)
@@ -43,17 +43,31 @@ function createWorkEnvironmentEntry(workenv, first) {
 	return id;
 }
 
-function explorerLoadWorkEnvironments() {
+function explorerLoadWorkEnvironments(parentWorkEnv, container) {
 	//Arbeitsumgebungen laden
 	var workenvs = _mainwindow.getWorkEnvironments();
-	for(var i = 0, first = true; i < workenvs.length; i++) {
+	if(parentWorkEnv)
+		workenvs = parentWorkEnv.getWorkEnvChildren();
+
+	if(!workenvs || !workenvs.length)
+		return;
+
+	let we_namelist = [];
+	for(var i = 0, first = !parentWorkEnv; i < workenvs.length; i++) {
+		if(!parentWorkEnv && workenvs[i].isChildWorkEnv)
+			continue;
+		if(parentWorkEnv && workenvs[i].type != _mainwindow.WORKENV_TYPE_Workspace)
+			continue;
+
+		we_namelist.push(workenvs[i].title);
 		let id;
 		if(workenvs[i].options.identifier == "UserData")
 			id = createWorkEnvironmentEntry(workenvs[i]);
 		else {
-			id = createWorkEnvironmentEntry(workenvs[i], first);
+			id = createWorkEnvironmentEntry(workenvs[i], first, container);
 			first = false;
 		}
+		let blacklist = explorerLoadWorkEnvironments(workenvs[i], getTreeCntById(id));
 
 		let c = i;
 		//Falls Clonkverzeichnis, dann direkt laden. (Ausnahme: AlwaysExplode = true)
@@ -61,7 +75,7 @@ function explorerLoadWorkEnvironments() {
 			$("#msg-loading").remove();
 
 			//Verzeichnis einlesen und Inhalte auflisten
-			loadDirectory(workenvs[c].path, getTreeCntById(id));
+			loadDirectory(workenvs[c].path, getTreeCntById(id), false, false, blacklist);
 		}
 		//Ansonsten vorher Verzeichnis vorbereiten (c4group-explodes)
 		else {
@@ -69,13 +83,15 @@ function explorerLoadWorkEnvironments() {
 				$("#msg-loading").remove();
 
 				//Verzeichnis einlesen und Inhalte auflisten
-				loadDirectory(workenvs[c].path, getTreeCntById(id));
+				loadDirectory(workenvs[c].path, getTreeCntById(id), false, false, blacklist);
 			});
 		}
 	}
-	treeExpand($(MAINTREE_OBJ).children("ul:not(.we-userdata)")[0]);
+	if(!parentWorkEnv)
+		treeExpand($(container).children("ul.workenvironment:not(.we-userdata)")[0]);
 
 	unlockModule();
+	return we_namelist;
 }
 
 function updateCreateWorkEnvInfo(title, content) {
