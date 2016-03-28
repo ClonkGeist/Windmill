@@ -135,12 +135,16 @@ function createTreeElement(tree, label, container, open, img, filename, special,
 			let d_obj = getTreeObjById(data), d_cnt = getTreeCntById(data); //data_object
 			if(!d_obj.hasClass("workenvironment"))
 				return;
+			if($(this).siblings().index(d_obj) == -1)
+				return;
 
 			$([d_obj[0], d_cnt[0]]).insertAfter(cnt);
-			for(var i = 0; i < $("li.workenvironment", MAINTREE_OBJ).length; i++) {
-				let we_elm = $("li.workenvironment", MAINTREE_OBJ)[i];
+			let parent = $(this).parent()[0];
+			for(var i = 0; i < $(parent).children("li.workenvironment").length; i++) {
+				let we_elm = $(parent).children("li.workenvironment")[i];
 				let workenv = getWorkEnvironmentByPath(_sc.workpath(we_elm));
-				workenv.index = $(MAINTREE_OBJ).children("li").index(we_elm);
+				workenv.index = $(parent).children("li").index(we_elm);
+				log("workenv: " + workenv + " / " + workenv.index);
 				workenv.saveHeader();
 			}
 		});
@@ -614,8 +618,14 @@ function sortTreeContainerElements(obj) {
 			return -1;
 		if(!$(a).hasClass("workenvironment") && $(b).hasClass("workenvironment"))
 			return +1;
-		if($(a).hasClass("workenvironment") && $(b).hasClass("workenvironment"))
+		if($(a).hasClass("workenvironment") && $(b).hasClass("workenvironment")) {
+			let we_a = getWorkEnvironmentByPath(_sc.workpath(a)), we_b = getWorkEnvironmentByPath(_sc.workpath(b));
+			if(we_a.index < we_b.index)
+				return -1;
+			else if(we_a.index > we_b.index)
+				return +1;
 			return 0;
+		}
 
 		//Fileextensions nehmen
 		var t = getTreeItemFilename(a).split("."), fexta = t[t.length-1].toLowerCase();
