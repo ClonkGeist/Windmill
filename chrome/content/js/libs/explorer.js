@@ -228,7 +228,7 @@ function fileSorting(t, t2, fexta, fextb) {
 	else { return 0; }
 }
 
-function loadDirectory(path, parentobj, autosearch_parent, no_async) {
+function loadDirectory(path, parentobj, autosearch_parent, no_async, blacklist) {
 	if(!parentobj)
 		parentobj = MAINTREE_OBJ;
 	
@@ -330,6 +330,8 @@ function loadDirectory(path, parentobj, autosearch_parent, no_async) {
 
 					break;
 				}
+				if(blacklist && blacklist.indexOf(entry.name) != -1)
+					continue;
 
 				//Ins nsIFile-Format uebersetzen
 				entry.leafName = entry.name;

@@ -33,7 +33,7 @@
 {
 	"name": "cideExplorer",
 	"scss": "modules/cideExplorer.scss",
-	"cssTarget": "content/modules/cide/explorer/explorer.css",
+	"cssTarget": "content/modules/cide/explorer/cideexplorer.css",
 	"observe": "cide-explorer",
 	"require": "global|explorer|icons"
 },

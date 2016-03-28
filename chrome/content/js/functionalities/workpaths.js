@@ -16,6 +16,7 @@ class WorkEnvironment {
 			Type,
 			Unloaded: false
 		}};
+		this.workEnvChildren = [];
 	}
 	
 	setOptions(options) {
@@ -23,7 +24,7 @@ class WorkEnvironment {
 		this.header.Workspace.Unloaded = unloaded;
 		this.options = options;
 	}
-	isValid(path = this.path) {
+	isValid(path = this.path, options = {}) {
 		path = formatPath(path);
 		if(path.search(_sc.clonkpath()) != -1)
 			return false;
@@ -34,16 +35,22 @@ class WorkEnvironment {
 				continue;
 
 			if(env[i].path && (env[i].path.search(path) != -1 || path.search(env[i].path) != -1))
-				return false;
+				if(env[i] != options.parent)
+					return false;
 		}
 
 		return true;
 	}
 
 	setupWorkEnvironment(filelist, options = {}) {
-		if(!this.isValid())
+		if(!this.isValid(undefined, options))
 			return;
 
+		if(options.parent) {
+			this.parent = options.parent;
+			this.isChildWorkEnv = true;
+			this.parent.addChildWorkEnv(this);
+		}
 		if(this.type == WORKENV_TYPE_Workspace) {
 			let _this = this;
 			return Task.spawn(function*() {
@@ -189,6 +196,18 @@ class WorkEnvironment {
 		execHook("onWorkenvUnloaded", this);
 	}
 
+	addChildWorkEnv(workenv) {
+		this.workEnvChildren.push(workenv);
+	}
+
+	getWorkEnvChildren() {
+		let children = [];
+		for(var i = 0; i < this.workEnvChildren.length; i++)
+			if(this.workEnvChildren[i])
+				children.push(this.workEnvChildren[i]);
+		return children;
+	}
+
 	set path(path) {
 		if(this.type == WORKENV_TYPE_ClonkPath) { 
 			var dirs = JSON.parse(getConfigData("Global", "ClonkDirectories")) || [];
@@ -247,11 +266,22 @@ class WorkEnvironment {
 	set cloneurl(url) { this.header.Repository.CloneURL = url; }
 	get index() { return this.header.Workspace.Index; }
 	set index(index) { this.header.Workspace.Index = index; }
+	
+	get icon() {
+		let img = "chrome://windmill/content/img/icon-workenvironment-ws.png";
+		if(this.type == WORKENV_TYPE_ClonkPath)
+			img = "chrome://windmill/content/img/icon-workenvironment-clonkdir.png";
+		if(this.repository)
+			img = "chrome://windmill/content/img/icon-workenvironment-git.png";
+		if(this.options.identifier == "UserData")
+			img = "chrome://windmill/content/img/icon-workenvironment-user.png";
+		return img;
+	}
 }
 
 var WORKENV_List = [], WORKENV_Current;
 
-function loadWorkEnvironment(id) {
+function loadWorkEnvironment() {
 	if(OS_TARGET == "WINNT")
 		createWorkEnvironment(formatPath(_sc.env.get("APPDATA")+"/OpenClonk"), WORKENV_TYPE_Workspace, 0,
 		{readOnly: true, unloaded: false, secured: true, alternativeTitle: "$WEUserData$", identifier: "UserData"});
@@ -275,6 +305,27 @@ function loadWorkEnvironment(id) {
 	if(!wsdir)
 		return;
 
+	function* loadWorkEnvironmentChildren(workenv) {
+		let childiterator = new OS.File.DirectoryIterator(workenv.path);
+		while(true) {
+			let entry;
+			try { entry = yield childiterator.next(); } catch(e) { break; }
+			if(!entry.isDir) //Unterverzeichnisse untersuchen
+				continue;
+
+			if(!(yield OS.File.exists(entry.path+"/.windmillheader")))
+				continue;
+
+			let subworkenv = createWorkEnvironment(entry.path, WORKENV_TYPE_Workspace);
+			if(!subworkenv)
+				continue;
+
+			workenv.addChildWorkEnv(subworkenv);
+			subworkenv.parentWorkEnv = workenv;
+			subworkenv.isChildWorkEnv = true;
+		}
+		childiterator.close();
+	}
 	var iterator;
 	let task = Task.spawn(function*() {
 		iterator = new OS.File.DirectoryIterator(wsdir);
@@ -286,7 +337,9 @@ function loadWorkEnvironment(id) {
 			if(!(yield OS.File.exists(entry.path+"/.windmillheader")))
 				continue;
 
-			createWorkEnvironment(entry.path, WORKENV_TYPE_Workspace);
+			let workenv = createWorkEnvironment(entry.path, WORKENV_TYPE_Workspace);
+			if(workenv)
+				yield* (loadWorkEnvironmentChildren(workenv));
 		}
 	});
 	task.then(null, function(reason) {
@@ -362,14 +415,16 @@ _sc.workpath = function(by) {
 	//Raw Path
 	if(typeof by == "string") {
 		by = formatPath(by);
-		
+		let match = "";
+
 		for(var i = 0; i < WORKENV_List.length; i++) {
 			if(!WORKENV_List[i])
 				continue;
 
-			if(by.search(RegExp("^"+WORKENV_List[i].path+"(\/|$)")) != -1)
-				return WORKENV_List[i].path;
+			if(by.search(RegExp("^"+WORKENV_List[i].path+"(\/|$)")) != -1 && WORKENV_List[i].path.length > match.length)
+				match = WORKENV_List[i].path;
 		}
+		return match;
 	}
 	else if(getCurrentWorkEnvironment && getCurrentWorkEnvironment())
 		return getCurrentWorkEnvironment().path;

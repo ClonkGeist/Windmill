@@ -5,23 +5,18 @@ function initializeDirectory() {
 	explorerLoadWorkEnvironments();
 }
 
-function createWorkEnvironmentEntry(workenv, first) {
+function createWorkEnvironmentEntry(workenv, first, container = MAINTREE_OBJ) {
 	var {type, path, title} = workenv;
-	var img = "chrome://windmill/content/img/icon-workenvironment-ws.png", typeclass = " we-workspace";
-	if(type == _mainwindow.WORKENV_TYPE_ClonkPath) {
-		img = "chrome://windmill/content/img/icon-workenvironment-clonkdir.png";
+	var typeclass = " we-workspace", img = workenv.icon;
+	if(type == _mainwindow.WORKENV_TYPE_ClonkPath)
 		typeclass = " we-clonkdir";
-	}
-	if(workenv.repository)
-		img = "chrome://windmill/content/img/icon-workenvironment-git.png";
-	if(workenv.options.identifier == "UserData") {
+	if(workenv.options.identifier == "UserData")
 		typeclass += " we-userdata";
-		img = "chrome://windmill/content/img/icon-workenvironment-user.png";
-	}
 
-	var id = createTreeElement(MAINTREE_OBJ, title, true, false, img, 0, "workenvironment"+typeclass, { noSelection: false, isDraggable: workenv.options.identifier != "UserData", index: workenv.index });
+	var id = createTreeElement(container, title, true, false, img, 0, "workenvironment"+typeclass, { noSelection: false, isDraggable: workenv.options.identifier != "UserData", index: workenv.index });
 	$(getTreeCntById(id)).attr("workpath", path);
 	$(getTreeObjById(id)).attr("workpath", path);
+	sortTreeContainerElements(container);
 	if(first)
 		treeExpand(getTreeCntById(id), true);
 
@@ -43,17 +38,31 @@ function createWorkEnvironmentEntry(workenv, first) {
 	return id;
 }
 
-function explorerLoadWorkEnvironments() {
+function explorerLoadWorkEnvironments(parentWorkEnv, container) {
 	//Arbeitsumgebungen laden
 	var workenvs = _mainwindow.getWorkEnvironments();
-	for(var i = 0, first = true; i < workenvs.length; i++) {
+	if(parentWorkEnv)
+		workenvs = parentWorkEnv.getWorkEnvChildren();
+
+	if(!workenvs || !workenvs.length)
+		return;
+
+	let we_namelist = [];
+	for(var i = 0, first = !parentWorkEnv; i < workenvs.length; i++) {
+		if(!parentWorkEnv && workenvs[i].isChildWorkEnv)
+			continue;
+		if(parentWorkEnv && workenvs[i].type != _mainwindow.WORKENV_TYPE_Workspace)
+			continue;
+
+		we_namelist.push(workenvs[i].title);
 		let id;
 		if(workenvs[i].options.identifier == "UserData")
 			id = createWorkEnvironmentEntry(workenvs[i]);
 		else {
-			id = createWorkEnvironmentEntry(workenvs[i], first);
+			id = createWorkEnvironmentEntry(workenvs[i], first, container);
 			first = false;
 		}
+		let blacklist = explorerLoadWorkEnvironments(workenvs[i], getTreeCntById(id));
 
 		let c = i;
 		//Falls Clonkverzeichnis, dann direkt laden. (Ausnahme: AlwaysExplode = true)
@@ -61,7 +70,7 @@ function explorerLoadWorkEnvironments() {
 			$("#msg-loading").remove();
 
 			//Verzeichnis einlesen und Inhalte auflisten
-			loadDirectory(workenvs[c].path, getTreeCntById(id));
+			loadDirectory(workenvs[c].path, getTreeCntById(id), false, false, blacklist);
 		}
 		//Ansonsten vorher Verzeichnis vorbereiten (c4group-explodes)
 		else {
@@ -69,13 +78,15 @@ function explorerLoadWorkEnvironments() {
 				$("#msg-loading").remove();
 
 				//Verzeichnis einlesen und Inhalte auflisten
-				loadDirectory(workenvs[c].path, getTreeCntById(id));
+				loadDirectory(workenvs[c].path, getTreeCntById(id), false, false, blacklist);
 			});
 		}
 	}
-	treeExpand($(MAINTREE_OBJ).children("ul:not(.we-userdata)")[0]);
+	if(!parentWorkEnv)
+		treeExpand($(container).children("ul.workenvironment:not(.we-userdata)")[0]);
 
 	unlockModule();
+	return we_namelist;
 }
 
 function updateCreateWorkEnvInfo(title, content) {
@@ -88,6 +99,8 @@ function updateCreateWorkEnvInfo(title, content) {
 	else
 		$("#workenv-creating-info").css("height", "");
 }
+
+var dlgcontent;
 
 $(window).load(function() {
 	_mainwindow.triggerModeButtonIcon();
@@ -103,287 +116,11 @@ $(window).load(function() {
 		bindKeyToObj(keyb_opensidedeck, obj);
 	});
 
-	var dlgcontent = $("#dlg_workenvironment").html();
+	dlgcontent = $("#dlg_workenvironment").html();
 	$("#dlg_workenvironment").remove();
 
 	//Erstellungsdialog fuer Arbeitsumgebungen
-	$("#newWorkEnvironment").mousedown(function() {
-		var dlg = new WDialog("$DlgNewWorkEnvironment$", MODULE_LPRE, { modal: true, css: { "width": "600px" }, btnright: [{ preset: "accept",
-			onclick: function*(e, btn, _self) {
-				let error = (str) => { return $(_self.element).find("#dex_dlg_workenv_errorbox").text(Locale(str)); }
-
-				let type = parseInt($(_self.element).find("#dex_dlg_workenv_type").val()), file;
-				if(type == _mainwindow.WORKENV_TYPE_ClonkPath) {
-					//Checken ob der angegebene Pfad existiert/valide ist
-					let path = $(_self.element).find("#dex_dlg_workenv_ocpath").text();
-					let info;
-					try { info = yield OS.File.stat(path); }
-					catch(err) {
-						if(err.becauseNoSuchFile) {
-							error("$DlgErrWEPathDoesNotExist$");
-							return e.stopImmediatePropagation();
-						}
-						else {
-							error("<hbox>The following error occured while trying to create the work environment:</hbox><hbox>"+err+"</hbox>");
-							return e.stopImmediatePropagation();
-						}
-					}
-					if(!info.isDir) {						
-						error("$DlgErrWEPathDoesNotExist$");
-						return e.stopImmediatePropagation();
-					}
-
-					let cdirs = JSON.parse(getConfigData("Global", "ClonkDirectories")) || [];
-
-					//Ueberpruefen ob Pfad bereits vorhanden ist
-					if(cdirs.indexOf(path) != -1) {
-						error("$DlgErrWEAlreadyLoaded$");
-						return e.stopImmediatePropagation();
-					}
-
-					//Ansonsten der Liste hinzufuegen und speichern
-					cdirs.push(path);
-					setConfigData("Global", "ClonkDirectories", cdirs, true);
-
-					let workenv = createWorkEnvironment(path, _mainwindow.WORKENV_TYPE_ClonkPath);
-					workenv.alwaysexplode = $(_self.element).find("#dex_dlg_workenv_explodecdir").attr("checked") || false;
-					workenv.saveHeader();
-
-					//Ggf. neu laden wenn kein Clonkverzeichnis vorher vorhanden war. (Da wichtige Sachen beim Laden des Explorers erledigt werden muessen)
-					if(cdirs.length == 1) {
-						window.location.reload();
-
-						//iframe vom HostGame-Modul auch neuladen
-						if(getModuleByName("cbexplorer") && getModuleByName("cbexplorer").contentWindow)
-							getModuleByName("cbexplorer").contentWindow.location.replace(getModuleByName("cbexplorer").contentWindow.location.pathname);
-					}
-					else
-						createWorkEnvironmentEntry(workenv);
-
-					return true;
-				}
-
-				//Checken ob es ueberhaupt ein Workspace-Hauptverzeichnis gibt
-				var path = getConfigData("CIDE", "WorkspaceParentDirectory");
-				if(!path) {
-					error("$DlgErrWENoWorkspaceDir$");
-					return e.stopImmediatePropagation();
-				}
-
-				//Workspaceverzeichnis erstellen und ggf. Error zurueckwerfen
-				try { yield OS.File.makeDir(path); }
-				catch(err) {
-					if(err.becauseNoSuchFile) {
-						error("$DlgErrWEInvalidPath$");
-						return e.stopImmediatePropagation();
-					}
-					else {
-						error("<hbox>The following error occured while trying to create the work environment:</hbox><hbox>"+err+"</hbox>");
-						return e.stopImmediatePropagation();
-					}
-				}
-
-				//Namen ueberpruefen
-				var name = $(_self.element).find("#dex_dlg_workenv_name").val();
-				if(type == 3) //Repository
-					name = $(_self.element).find("#dex_dlg_workenv_destname").val();
-				if(!name) {
-					error("$DlgErrWENoName$");
-					return e.stopImmediatePropagation();
-				}
-
-				//Ggf. Dateiliste generieren (Checklistbox)
-				var options = {};
-
-				if($(_self.element).find("#dex_dlg_workenv_fullcopy").attr("checked"))
-					options.fullcopy = true;
-
-				if(type == _mainwindow.WORKENV_TYPE_Workspace) {
-					options.migrate_files = [];
-					$(_self.element).find("#dex_dlg_workenv_filelist > .dlg-checklistitem").each(function() {
-						if($(this).hasClass("hidden") && !options.fullcopy)
-							return;
-						if(!$(this).hasClass("selected") && !options.fullcopy)
-							return;
-
-						options.migrate_files.push($(this).text());
-					});
-					options.sourcedir = _sc.clonkpath(parseInt($(dlg.element).find("#dex_dlg_workenv_source_clonkdir").prop("value")));
-				}
-				else if(type == 3) {
-					options.repository = _mainwindow.WORKENV_Repository_Git;
-					options.cloneurl = $(_self.element).find("#dex_dlg_workenv_cloneurl").val();
-					if($(_self.element).find("#dex_dlg_workenv_username").val()) {
-						options.userinfo = { username: $(_self.element).find("#dex_dlg_workenv_username").val(),
-											 password: $(_self.element).find("#dex_dlg_workenv_password").val(),
-											 saveinfo: $(_self.element).find("#dex_dlg_workenv_saveuserinfo").attr("checked") };
-					}
-
-					//TODO: Auf Validitaet ueberpruefen
-					if(!options.cloneurl) {
-						error("$DlgErrWENoCloneURL$");
-						return e.stopImmediatePropagation();
-					}
-					if(!$(_self.element).find("#dex_dlg_workenv_cfgusername").val()) {
-						error("$DlgErrWERepositoryNoUserName$");
-						return e.stopImmediatePropagation();
-					}
-					if(!$(_self.element).find("#dex_dlg_workenv_cfgemail").val()) {
-						error("$DlgErrWERepositoryNoEmail$");
-						return e.stopImmediatePropagation();
-					}
-					
-					options.userconfig = { username: $(_self.element).find("#dex_dlg_workenv_cfgusername").val(), 
-										   email: $(_self.element).find("#dex_dlg_workenv_cfgemail").val() };
-
-					//Sonst wie ein normales Workspace behandeln...
-					type = _mainwindow.WORKENV_TYPE_Workspace;
-				}
-
-				if($(_self.element).find("#dex_dlg_workenv_debug").attr("checked"))
-					options.debug = true;
-				if($(_self.element).find("#dex_dlg_workenv_nooperations").attr("checked"))
-					options.no_file_operations = true;
-
-				options.success = function(workenv) {
-					getModuleByName("cide").contentWindow.unlockModule();
-					createWorkEnvironmentEntry(workenv);
-					showNotification(undefined, Locale("$WESuccessfullyCreated$"), sprintf(Locale("$WESuccessfullyCreatedDesc$"), workenv.title));
-				}
-				options.rejected = function(err) {
-					getModuleByName("cide").contentWindow.unlockModule();
-					EventInfo("An error occured while creating the work environment.");
-				}
-
-				//getModuleByName("cide").contentWindow.lockModule("Copying files to new directory. This may take a while.", true);
-				createNewWorkEnvironment(path+"/"+name, type, options);
-				_self.hide();
-			}
-		}, "cancel"]});
-
-		dlg.setContent(dlgcontent);
-		dlg.show();
-
-		//Bei Auswahl von Checklistitems die Selection-Checkboxen aktualisieren
-		$(dlg.element).find(".dlg-checklistitem").click(function() {
-			if($(dlg.element).find("#dex_dlg_workenv_select_all").attr("checked"))
-				$(dlg.element).find("#dex_dlg_workenv_select_all").attr("checked", false);
-			if($(dlg.element).find("#dex_dlg_workenv_select_ocfiles").attr("checked"))
-				if($(this).text().search(/\.oc.$/i) != -1)
-					$(dlg.element).find("#dex_dlg_workenv_select_ocfiles").attr("checked", false);
-		});
-		//Dropdownmenue: Je nach Auswahl Inhalt anzeigen
-		$(dlg.element).find("#dex_dlg_workenv_type").on("command", function() {
-			$(dlg.element).find('.dex_dlg_workenv_content').css("display", "none");
-			$(dlg.element).find('.dex_dlg_workenv_content[data-settingsgroup="'+$(this).find(":selected").attr("id")+'"]').css("display", "");
-			if($(this).find(":selected").attr("id") == "dex_dlg_workenv_type_repository") {
-				if(!getAppByID("git").isAvailable())
-					$(dlg.element).find("#dex_dlg_workenv_errorbox").text(Locale("$DlgErrWEGitNotAvailable$"));
-				else
-					$(dlg.element).find("#dex_dlg_workenv_errorbox").text("");
-			}
-			else
-				$(dlg.element).find("#dex_dlg_workenv_errorbox").text("");
-
-			//Damit die Groesse der Checklistbox neu berechnet wird: (Da diese, solange versteckt, nicht korrekt berechnet wird)
-			$(dlg.element).find("#dex_dlg_workenv_source_clonkdir").trigger("command");
-		}).trigger("command");
-		//Dateiliste ausblenden bei FullCopy
-		$(dlg.element).find("#dex_dlg_workenv_fullcopy").on("command", function() {
-			if($(this).attr("checked"))
-				$(dlg.element).find('#dex_dlg_workenv_filelist,#dex_dlg_workenv_filelist_ctrls').css("display", "none");
-			else
-				$(dlg.element).find('#dex_dlg_workenv_filelist,#dex_dlg_workenv_filelist_ctrls').css("display", "");
-		});
-		//Alle auswaehlen
-		$(dlg.element).find("#dex_dlg_workenv_select_all").on("command", function() {
-			if($(this).attr("checked"))
-				$(dlg.element).find(".dlg-checklistitem").addClass("selected");
-			else
-				$(dlg.element).find(".dlg-checklistitem").removeClass("selected");
-		});
-		//.oc? Dateien auswaehlen
-		$(dlg.element).find("#dex_dlg_workenv_select_ocfiles").on("command", function() {
-			var _this = this;
-			$(dlg.element).find(".dlg-checklistitem").each(function() {
-				if($(_this).attr("checked") && $(this).text().search(/\.oc.$/i) != -1)
-					$(this).addClass("selected");
-				else
-					$(this).removeClass("selected");
-			});
-		});
-		//Nur .oc? Dateien anzeigen
-		$(dlg.element).find("#dex_dlg_workenv_showonlyocfiles").on("command", function() {
-			if($(this).attr("checked")) {
-				$(dlg.element).find(".dlg-checklistitem").each(function() {
-					if($(this).text().search(/\.oc.$/i) == -1)
-						$(this).addClass("hidden");
-				});
-			}
-			else
-				$(dlg.element).find(".dlg-checklistitem").removeClass("hidden");
-		});
-		//Auswahl des Clonkverzeichnisses
-		$(dlg.element).find("#dex_dlg_workenv_ocpath_button").on("command", function() {
-			//Filepicker offnen
-			var fp = _sc.filepicker();
-			fp.init(window, Locale("$DlgWEChooseOCDir$"), Ci.nsIFilePicker.modeGetFolder);
-
-			var current_path = JSON.parse(getConfigData("Global", "ClonkDirectories"));
-			if(current_path && current_path[0]) {
-				var dir = new _sc.file(current_path[0]);
-				if(dir.exists())
-					fp.displayDirectory = dir;
-			}
-
-			var rv = fp.show();
-			if(rv == Ci.nsIFilePicker.returnOK) {
-				var ocexec = new _sc.file(fp.file.path+"/"+getClonkExecutablePath(true));
-				if(!ocexec.exists()) {
-					warn("$err_ocexecutable_not_found$", "STG");
-					return $(this).trigger("command");
-				}
-
-				$(dlg.element).find("#dex_dlg_workenv_ocpath").text(fp.file.path);
-			}
-		});
-		var clonkdirs = JSON.parse(getConfigData("Global", "ClonkDirectories"));
-		if(clonkdirs.length < 1)
-			$(dlg.element).find("#dex_dlg_workenv_clonkdirset").css("display", "none");
-		else {
-			$(dlg.element).find("#dex_dlg_workenv_clonkdirset").css("display", "");
-
-			for(var i = 0; i < clonkdirs.length; i++) {
-				var workenv = getWorkEnvironmentByPath(clonkdirs[i]);
-				$(dlg.element).find("#dex_dlg_workenv_source_clonkdir > menupopup").append('<menuitem label="'+workenv.title+'" value="'+i+'"/>');
-			}
-			$(dlg.element).find("#dex_dlg_workenv_source_clonkdir").prop("selectedIndex", 0).prop("value", "0").on("command", function() {
-				//Auflisten
-				var entries = (new _sc.file(_sc.clonkpath(this.value))).directoryEntries, list = "";
-				while(entries.hasMoreElements()) {
-					var entry = entries.getNext().QueryInterface(Ci.nsIFile);
-					if(entry.leafName == ".windmillheader")
-						continue;
-
-					var additionalclasses = '';
-					if($(dlg.element).find("#dex_dlg_workenv_select_all").attr("checked"))
-						additionalclasses = ' selected';
-					else if($(dlg.element).find("#dex_dlg_workenv_select_ocfiles").attr("checked")) {
-						if(entry.path.search(/\.oc.$/i) != -1)
-							additionalclasses = ' selected';
-					}
-					if($(dlg.element).find("#dex_dlg_workenv_showonlyocfiles").attr("checked"))
-						if(entry.path.search(/\.oc.$/i) == -1)
-							additionalclasses = ' hidden';
-
-					list += `<hbox class="dlg-checklistitem${additionalclasses}">${entry.leafName}</hbox>`;
-				}
-
-				$(dlg.element).find("#dex_dlg_workenv_filelist").empty().html(list);
-				dlg.updatePseudoElements();
-			}).trigger("command");
-		}
-	});
+	$("#newWorkEnvironment").mousedown(createNewWorkEnvironmentDlg);
 	//Importieren von Arbeitsumgebungen
 	$("#importWorkEnvironment").mousedown(function() {
 		current_path = getConfigData("CIDE", "WorkspaceParentDirectory");
@@ -472,6 +209,294 @@ $(window).load(function() {
 	$("#showClonkDirs").click(function() { $(".we-clonkdir").css("display", $(this).hasClass("deselected")?"none":""); });
 	$("#showWorkspaces").click(function() { $(".we-workspace").css("display", $(this).hasClass("deselected")?"none":""); });
 });
+
+function createNewWorkEnvironmentDlg(parentWorkEnv, parentContainer) {
+	var dlg = new WDialog("$DlgNewWorkEnvironment$", MODULE_LPRE, { modal: true, css: { "width": "600px" }, btnright: [{ preset: "accept",
+		onclick: function*(e, btn, _self) {
+			let error = (str) => { return $(_self.element).find("#dex_dlg_workenv_errorbox").text(Locale(str)); }
+
+			let type = parseInt($(_self.element).find("#dex_dlg_workenv_type").val()), file;
+			if(type == _mainwindow.WORKENV_TYPE_ClonkPath) {
+				//Checken ob der angegebene Pfad existiert/valide ist
+				let path = $(_self.element).find("#dex_dlg_workenv_ocpath").text();
+				let info;
+				try { info = yield OS.File.stat(path); }
+				catch(err) {
+					if(err.becauseNoSuchFile) {
+						error("$DlgErrWEPathDoesNotExist$");
+						return e.stopImmediatePropagation();
+					}
+					else {
+						error("<hbox>The following error occured while trying to create the work environment:</hbox><hbox>"+err+"</hbox>");
+						return e.stopImmediatePropagation();
+					}
+				}
+				if(!info.isDir) {						
+					error("$DlgErrWEPathDoesNotExist$");
+					return e.stopImmediatePropagation();
+				}
+
+				let cdirs = JSON.parse(getConfigData("Global", "ClonkDirectories")) || [];
+
+				//Ueberpruefen ob Pfad bereits vorhanden ist
+				if(cdirs.indexOf(path) != -1) {
+					error("$DlgErrWEAlreadyLoaded$");
+					return e.stopImmediatePropagation();
+				}
+
+				//Ansonsten der Liste hinzufuegen und speichern
+				cdirs.push(path);
+				setConfigData("Global", "ClonkDirectories", cdirs, true);
+
+				let workenv = createWorkEnvironment(path, _mainwindow.WORKENV_TYPE_ClonkPath);
+				workenv.alwaysexplode = $(_self.element).find("#dex_dlg_workenv_explodecdir").attr("checked") || false;
+				workenv.saveHeader();
+
+				//Ggf. neu laden wenn kein Clonkverzeichnis vorher vorhanden war. (Da wichtige Sachen beim Laden des Explorers erledigt werden muessen)
+				if(cdirs.length == 1) {
+					window.location.reload();
+
+					//iframe vom HostGame-Modul auch neuladen
+					if(getModuleByName("cbexplorer") && getModuleByName("cbexplorer").contentWindow)
+						getModuleByName("cbexplorer").contentWindow.location.replace(getModuleByName("cbexplorer").contentWindow.location.pathname);
+				}
+				else
+					createWorkEnvironmentEntry(workenv);
+
+				return true;
+			}
+
+			//Checken ob es ueberhaupt ein Workspace-Hauptverzeichnis gibt
+			var path = getConfigData("CIDE", "WorkspaceParentDirectory");
+			if(parentWorkEnv)
+				path = parentWorkEnv.path;
+			if(!path) {
+				error("$DlgErrWENoWorkspaceDir$");
+				return e.stopImmediatePropagation();
+			}
+
+			//Workspaceverzeichnis erstellen und ggf. Error zurueckwerfen
+			try { yield OS.File.makeDir(path); }
+			catch(err) {
+				if(err.becauseNoSuchFile) {
+					error("$DlgErrWEInvalidPath$");
+					return e.stopImmediatePropagation();
+				}
+				else {
+					error("<hbox>The following error occured while trying to create the work environment:</hbox><hbox>"+err+"</hbox>");
+					return e.stopImmediatePropagation();
+				}
+			}
+
+			//Namen ueberpruefen
+			var name = $(_self.element).find("#dex_dlg_workenv_name").val();
+			if(type == 3) //Repository
+				name = $(_self.element).find("#dex_dlg_workenv_destname").val();
+			if(!name) {
+				error("$DlgErrWENoName$");
+				return e.stopImmediatePropagation();
+			}
+
+			//Ggf. Dateiliste generieren (Checklistbox)
+			var options = {};
+
+			if($(_self.element).find("#dex_dlg_workenv_fullcopy").attr("checked"))
+				options.fullcopy = true;
+
+			if(type == _mainwindow.WORKENV_TYPE_Workspace) {
+				options.migrate_files = [];
+				$(_self.element).find("#dex_dlg_workenv_filelist > .dlg-checklistitem").each(function() {
+					if($(this).hasClass("hidden") && !options.fullcopy)
+						return;
+					if(!$(this).hasClass("selected") && !options.fullcopy)
+						return;
+
+					options.migrate_files.push($(this).text());
+				});
+				options.sourcedir = _sc.clonkpath(parseInt($(dlg.element).find("#dex_dlg_workenv_source_clonkdir").prop("value")));
+			}
+			else if(type == 3) {
+				options.repository = _mainwindow.WORKENV_Repository_Git;
+				options.cloneurl = $(_self.element).find("#dex_dlg_workenv_cloneurl").val();
+				if($(_self.element).find("#dex_dlg_workenv_username").val()) {
+					options.userinfo = { username: $(_self.element).find("#dex_dlg_workenv_username").val(),
+										 password: $(_self.element).find("#dex_dlg_workenv_password").val(),
+										 saveinfo: $(_self.element).find("#dex_dlg_workenv_saveuserinfo").attr("checked") };
+				}
+
+				//TODO: Auf Validitaet ueberpruefen
+				if(!options.cloneurl) {
+					error("$DlgErrWENoCloneURL$");
+					return e.stopImmediatePropagation();
+				}
+				if(!$(_self.element).find("#dex_dlg_workenv_cfgusername").val()) {
+					error("$DlgErrWERepositoryNoUserName$");
+					return e.stopImmediatePropagation();
+				}
+				if(!$(_self.element).find("#dex_dlg_workenv_cfgemail").val()) {
+					error("$DlgErrWERepositoryNoEmail$");
+					return e.stopImmediatePropagation();
+				}
+				
+				options.userconfig = { username: $(_self.element).find("#dex_dlg_workenv_cfgusername").val(), 
+									   email: $(_self.element).find("#dex_dlg_workenv_cfgemail").val() };
+
+				//Sonst wie ein normales Workspace behandeln...
+				type = _mainwindow.WORKENV_TYPE_Workspace;
+			}
+
+			if($(_self.element).find("#dex_dlg_workenv_debug").attr("checked"))
+				options.debug = true;
+			if($(_self.element).find("#dex_dlg_workenv_nooperations").attr("checked"))
+				options.no_file_operations = true;
+
+			options.success = function(workenv) {
+				getModuleByName("cide").contentWindow.unlockModule();
+				createWorkEnvironmentEntry(workenv, null, parentContainer);
+				showNotification(undefined, Locale("$WESuccessfullyCreated$"), sprintf(Locale("$WESuccessfullyCreatedDesc$"), workenv.title));
+			}
+			options.rejected = function(err) {
+				getModuleByName("cide").contentWindow.unlockModule();
+				EventInfo("An error occured while creating the work environment.");
+			}
+			options.parent = parentWorkEnv;
+
+			//getModuleByName("cide").contentWindow.lockModule("Copying files to new directory. This may take a while.", true);
+			createNewWorkEnvironment(path+"/"+name, type, options);
+			_self.hide();
+		}
+	}, "cancel"]});
+
+	dlg.setContent(dlgcontent);
+	dlg.show();
+	
+	//Ggf. Elemente ausblenden wenn Elternworkenvironment vorhanden ist:
+	if(parentWorkEnv) {
+		$(dlg.element).find("#dex_dlg_workenv_type_clonkdir,#dex_dlg_workenv_type_repository").remove();
+		$(dlg.element).find("#dex_dlg_workenv_type_selection").hide();
+		$(dlg.element).find("#dex_dlg_workenv_type").val(2);
+	}
+
+	//Bei Auswahl von Checklistitems die Selection-Checkboxen aktualisieren
+	$(dlg.element).find(".dlg-checklistitem").click(function() {
+		if($(dlg.element).find("#dex_dlg_workenv_select_all").attr("checked"))
+			$(dlg.element).find("#dex_dlg_workenv_select_all").attr("checked", false);
+		if($(dlg.element).find("#dex_dlg_workenv_select_ocfiles").attr("checked"))
+			if($(this).text().search(/\.oc.$/i) != -1)
+				$(dlg.element).find("#dex_dlg_workenv_select_ocfiles").attr("checked", false);
+	});
+	//Dropdownmenue: Je nach Auswahl Inhalt anzeigen
+	$(dlg.element).find("#dex_dlg_workenv_type").on("command", function() {
+		$(dlg.element).find('.dex_dlg_workenv_content').css("display", "none");
+		$(dlg.element).find('.dex_dlg_workenv_content[data-settingsgroup="'+$(this).find(":selected").attr("id")+'"]').css("display", "");
+		if($(this).find(":selected").attr("id") == "dex_dlg_workenv_type_repository") {
+			if(!getAppByID("git").isAvailable())
+				$(dlg.element).find("#dex_dlg_workenv_errorbox").text(Locale("$DlgErrWEGitNotAvailable$"));
+			else
+				$(dlg.element).find("#dex_dlg_workenv_errorbox").text("");
+		}
+		else
+			$(dlg.element).find("#dex_dlg_workenv_errorbox").text("");
+
+		//Damit die Groesse der Checklistbox neu berechnet wird: (Da diese, solange versteckt, nicht korrekt berechnet wird)
+		$(dlg.element).find("#dex_dlg_workenv_source_clonkdir").trigger("command");
+	}).trigger("command");
+	//Dateiliste ausblenden bei FullCopy
+	$(dlg.element).find("#dex_dlg_workenv_fullcopy").on("command", function() {
+		if($(this).attr("checked"))
+			$(dlg.element).find('#dex_dlg_workenv_filelist,#dex_dlg_workenv_filelist_ctrls').css("display", "none");
+		else
+			$(dlg.element).find('#dex_dlg_workenv_filelist,#dex_dlg_workenv_filelist_ctrls').css("display", "");
+	});
+	//Alle auswaehlen
+	$(dlg.element).find("#dex_dlg_workenv_select_all").on("command", function() {
+		if($(this).attr("checked"))
+			$(dlg.element).find(".dlg-checklistitem").addClass("selected");
+		else
+			$(dlg.element).find(".dlg-checklistitem").removeClass("selected");
+	});
+	//.oc? Dateien auswaehlen
+	$(dlg.element).find("#dex_dlg_workenv_select_ocfiles").on("command", function() {
+		var _this = this;
+		$(dlg.element).find(".dlg-checklistitem").each(function() {
+			if($(_this).attr("checked") && $(this).text().search(/\.oc.$/i) != -1)
+				$(this).addClass("selected");
+			else
+				$(this).removeClass("selected");
+		});
+	});
+	//Nur .oc? Dateien anzeigen
+	$(dlg.element).find("#dex_dlg_workenv_showonlyocfiles").on("command", function() {
+		if($(this).attr("checked")) {
+			$(dlg.element).find(".dlg-checklistitem").each(function() {
+				if($(this).text().search(/\.oc.$/i) == -1)
+					$(this).addClass("hidden");
+			});
+		}
+		else
+			$(dlg.element).find(".dlg-checklistitem").removeClass("hidden");
+	});
+	//Auswahl des Clonkverzeichnisses
+	$(dlg.element).find("#dex_dlg_workenv_ocpath_button").on("command", function() {
+		//Filepicker offnen
+		var fp = _sc.filepicker();
+		fp.init(window, Locale("$DlgWEChooseOCDir$"), Ci.nsIFilePicker.modeGetFolder);
+
+		var current_path = JSON.parse(getConfigData("Global", "ClonkDirectories"));
+		if(current_path && current_path[0]) {
+			var dir = new _sc.file(current_path[0]);
+			if(dir.exists())
+				fp.displayDirectory = dir;
+		}
+
+		var rv = fp.show();
+		if(rv == Ci.nsIFilePicker.returnOK) {
+			var ocexec = new _sc.file(fp.file.path+"/"+getClonkExecutablePath(true));
+			if(!ocexec.exists()) {
+				warn("$err_ocexecutable_not_found$", "STG");
+				return $(this).trigger("command");
+			}
+
+			$(dlg.element).find("#dex_dlg_workenv_ocpath").text(fp.file.path);
+		}
+	});
+	var clonkdirs = JSON.parse(getConfigData("Global", "ClonkDirectories"));
+	if(clonkdirs.length < 1)
+		$(dlg.element).find("#dex_dlg_workenv_clonkdirset").css("display", "none");
+	else {
+		$(dlg.element).find("#dex_dlg_workenv_clonkdirset").css("display", "");
+
+		for(var i = 0; i < clonkdirs.length; i++) {
+			var workenv = getWorkEnvironmentByPath(clonkdirs[i].path);
+			$(dlg.element).find("#dex_dlg_workenv_source_clonkdir > menupopup").append('<menuitem label="'+workenv.title+'" value="'+i+'"/>');
+		}
+		$(dlg.element).find("#dex_dlg_workenv_source_clonkdir").prop("selectedIndex", 0).prop("value", "0").on("command", function() {
+			//Auflisten
+			var entries = (new _sc.file(_sc.clonkpath(this.value))).directoryEntries, list = "";
+			while(entries.hasMoreElements()) {
+				var entry = entries.getNext().QueryInterface(Ci.nsIFile);
+				if(entry.leafName == ".windmillheader")
+					continue;
+
+				var additionalclasses = '';
+				if($(dlg.element).find("#dex_dlg_workenv_select_all").attr("checked"))
+					additionalclasses = ' selected';
+				else if($(dlg.element).find("#dex_dlg_workenv_select_ocfiles").attr("checked")) {
+					if(entry.path.search(/\.oc.$/i) != -1)
+						additionalclasses = ' selected';
+				}
+				if($(dlg.element).find("#dex_dlg_workenv_showonlyocfiles").attr("checked"))
+					if(entry.path.search(/\.oc.$/i) == -1)
+						additionalclasses = ' hidden';
+
+				list += `<hbox class="dlg-checklistitem${additionalclasses}">${entry.leafName}</hbox>`;
+			}
+
+			$(dlg.element).find("#dex_dlg_workenv_filelist").empty().html(list);
+			dlg.updatePseudoElements();
+		}).trigger("command");
+	}
+}	
 
 function onTreeItemBlur(obj) {
 	var by = treeContextMenu.opened_by || workenvContextMenu.opened_by;
@@ -657,25 +682,26 @@ function initializeContextMenu() {
 		this.clearEntries();
 		let i = 0, path;
 		function* exportToWorkEnv(workenv) {
-			if(workenv.type != _mainwindow.WORKENV_TYPE_ClonkPath)
-				return; //Atm. nur fuer Clonkpfade
-
 			let treepath = _sc.workpath(by_obj)+"/"+getTreeObjPath(by_obj);
 			let filename = treepath.split("/").pop();
 			let destination = workenv.path+"/"+filename;
 			destination = (yield OSFileRecursive(treepath, destination, null, "copy", true, { checkIfFileExist: true })).path;
 
-			let fileext = filename.split(".").pop();
-			if(!workenv.alwaysexplode && filename.split(".").length > 1 && OCGRP_FILEEXTENSIONS.indexOf(fileext) != -1) {
-				let c4group = _sc.file(getC4GroupPath());
-				let process = _ws.pr(c4group);
-				yield process.createPromise([destination, "-p"], 0x1);
-				let fileobj = { 
-					leafName: destination.split("/").pop(), 
-					isDirectory: function() { return false; } 
-				};
-				addFileTreeEntry(fileobj, $('.workenvironment[workpath="'+workenv.path+'"]')[1], true);
+			let fileext = filename.split(".").pop(), fileobj;
+			if(workenv.type == _mainwindow.WORKENV_TYPE_ClonkPath) {
+				if(!workenv.alwaysexplode && filename.split(".").length > 1 && OCGRP_FILEEXTENSIONS.indexOf(fileext) != -1) {
+					let c4group = _sc.file(getC4GroupPath());
+					let process = _ws.pr(c4group);
+					yield process.createPromise([destination, "-p"], 0x1);
+					fileobj = { 
+						leafName: destination.split("/").pop(), 
+						isDirectory: function() { return false; } 
+					};
+				}
 			}
+			else
+				fileobj = _sc.file(destination);
+			addFileTreeEntry(fileobj, $('.workenvironment[workpath="'+workenv.path+'"]')[1], true);
 		}
 		while(path = _sc.clonkpath(i)) {
 			if(i > 0 && path == _sc.clonkpath(0))
@@ -686,9 +712,16 @@ function initializeContextMenu() {
 
 			this.addEntry(workenv.title, 0, function*(target, menuitemobj, menuitem) {
 				yield* exportToWorkEnv(workenv);
-			});
+			}, 0, { iconsrc: workenv.icon });
 			i++;
-			//TODO: Eintrag: "In alle Clonkverzeichnisse"
+		}
+		this.addSeperator();
+		let obj = $(by_obj).parents(".workenvironment")[0];
+		while((obj = $(obj).parent()) && $(obj).hasClass("workenvironment")) {
+			let workenv = getWorkEnvironmentByPath(_sc.workpath(obj));
+			this.addEntry(workenv.title, 0, function*(target, menuitemobj, menuitem) {
+				yield* exportToWorkEnv(workenv);
+			}, 0, { iconsrc: workenv.icon });
 		}
 		this.addSeperator();
 		this.addEntry("$ctxexport_allclonkdirs$", 0, function*() {
@@ -703,7 +736,7 @@ function initializeContextMenu() {
 				i++;
 			}
 		});
-	}, [], MODULE_LPRE)), { identifier: "ctxExport" });
+	}, [], MODULE_LPRE, { allowIcons: true })), { identifier: "ctxExport" });
 
 	treeContextMenu.addSeperator();
 
@@ -758,6 +791,10 @@ function initializeContextMenu() {
 	
 	/*-- WorkEnvironment ContextMenu --*/
 	workenvContextMenu.addEntry("$ctxnew$", 0, 0, submenu_new);
+	workenvContextMenu.addEntry("$ctxnewworkenv$", 0, function() {
+		let workenv = getWorkEnvironmentByPath(getFullPathForSelection());
+		createNewWorkEnvironmentDlg(workenv, getTreeCntById(getTreeObjId(getCurrentTreeSelection())));
+	});
 	workenvContextMenu.addSeperator();
 	workenvContextMenu.addEntry("$ctxrename$", 0, function() {
 		renameTreeObj($(getCurrentTreeSelection()));
@@ -784,16 +821,6 @@ function initializeContextMenu() {
 			}
 		}, 0);
 	}
-	workenvContextMenu.addEntry("$ctxsettings$", 0, function() {
-		var dlg = new WDialog("$DlgWorkEnvironmentSettings$", MODULE_LPRE, { modal: true, css: { "width": "600px" }, btnright: [{ preset: "accept",
-			onclick: function(e, btn, _self) { }				
-		}, "cancel"]});
-
-		var dlgcontent = $("#dlg_workenvsettings").html();
-		$("#dlg_workenvsettings").remove();
-		dlg.setContent(dlgcontent);
-		dlg.show();
-	}, 0);
 }
 
 //Neue Spieldatei (Objekt/Szenario) erstellen
@@ -1018,13 +1045,25 @@ function getOCStartArguments(path, nextversion) {
 			let scenario = path+"/Scenario.txt";
 			let content = yield OS.File.read(scenario, {encoding: "utf-8"});
 			let data = parseINIArray(content);
+			let sources = [_sc.workpath(path)];
+			let obj = $("li[workpath='"+_sc.workpath(path)+"']");
+			//Elternworkenvironments auch beruecksichtigen
+			while(obj && (obj = obj.parent()) && obj.hasClass("workenvironment"))
+				sources.push(_sc.workpath(obj));
+
 			for(let key in data["Definitions"]) {
 				let def = data["Definitions"][key];
+				let i = 0, source;
 
-				let newpath = _sc.workpath(path)+"/"+def;
-				if(yield OS.File.exists(newpath)) {
-					newpath = newpath.replace(/\//g, "\\");
-					data["Definitions"][key] = newpath;
+				while(source = sources[i++]) {
+					let newpath = source+"/"+def;
+					if(yield OS.File.exists(newpath)) {
+						if(OS_TARGET == "WINNT")
+							newpath = newpath.replace(/\//g, "\\");
+
+						data["Definitions"][key] = newpath;
+						break;
+					}
 				}
 			}
 
