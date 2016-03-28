@@ -344,10 +344,12 @@ button.navigation {
   text-align: left;
   padding: 0.5em 1.5em;
   padding: 0.5em 0;
-  color: grey;
+  color: #505050;
   outline: none !important;
   background-color: #ebebeb;
-  cursor: default; }
+  cursor: default;
+  box-sizing: border-box;
+  border-left: 5px solid transparent; }
 
 button.navigation:hover {
   background-color: whitesmoke; }
@@ -363,13 +365,14 @@ button:focus * {
   border-right: 1px solid #d7d7d7;
   background-color: #ebebeb; }
 
-#settings-nav spacer {
-  border-right: 1px solid #d7d7d7;
-  background-color: #ebebeb; }
-
-#settings-nav .active {
-  background-color: #e6e6e6;
-  color: #505050; }
+#settings-nav {
+  width: 200px;
+  max-width: 200px; }
+  #settings-nav spacer {
+    border-right: 1px solid #d7d7d7;
+    background-color: #ebebeb; }
+  #settings-nav .active {
+    border-left: 5px solid #505050; }
 
 #settings-deck button,
 listbox {
