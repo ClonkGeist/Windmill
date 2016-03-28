@@ -7,17 +7,11 @@ function initializeDirectory() {
 
 function createWorkEnvironmentEntry(workenv, first, container = MAINTREE_OBJ) {
 	var {type, path, title} = workenv;
-	var img = "chrome://windmill/content/img/icon-workenvironment-ws.png", typeclass = " we-workspace";
-	if(type == _mainwindow.WORKENV_TYPE_ClonkPath) {
-		img = "chrome://windmill/content/img/icon-workenvironment-clonkdir.png";
+	var typeclass = " we-workspace", img = workenv.icon;
+	if(type == _mainwindow.WORKENV_TYPE_ClonkPath)
 		typeclass = " we-clonkdir";
-	}
-	if(workenv.repository)
-		img = "chrome://windmill/content/img/icon-workenvironment-git.png";
-	if(workenv.options.identifier == "UserData") {
+	if(workenv.options.identifier == "UserData")
 		typeclass += " we-userdata";
-		img = "chrome://windmill/content/img/icon-workenvironment-user.png";
-	}
 
 	var id = createTreeElement(container, title, true, false, img, 0, "workenvironment"+typeclass, { noSelection: false, isDraggable: workenv.options.identifier != "UserData", index: workenv.index });
 	$(getTreeCntById(id)).attr("workpath", path);
@@ -688,25 +682,26 @@ function initializeContextMenu() {
 		this.clearEntries();
 		let i = 0, path;
 		function* exportToWorkEnv(workenv) {
-			if(workenv.type != _mainwindow.WORKENV_TYPE_ClonkPath)
-				return; //Atm. nur fuer Clonkpfade
-
 			let treepath = _sc.workpath(by_obj)+"/"+getTreeObjPath(by_obj);
 			let filename = treepath.split("/").pop();
 			let destination = workenv.path+"/"+filename;
 			destination = (yield OSFileRecursive(treepath, destination, null, "copy", true, { checkIfFileExist: true })).path;
 
-			let fileext = filename.split(".").pop();
-			if(!workenv.alwaysexplode && filename.split(".").length > 1 && OCGRP_FILEEXTENSIONS.indexOf(fileext) != -1) {
-				let c4group = _sc.file(getC4GroupPath());
-				let process = _ws.pr(c4group);
-				yield process.createPromise([destination, "-p"], 0x1);
-				let fileobj = { 
-					leafName: destination.split("/").pop(), 
-					isDirectory: function() { return false; } 
-				};
-				addFileTreeEntry(fileobj, $('.workenvironment[workpath="'+workenv.path+'"]')[1], true);
+			let fileext = filename.split(".").pop(), fileobj;
+			if(workenv.type == _mainwindow.WORKENV_TYPE_ClonkPath) {
+				if(!workenv.alwaysexplode && filename.split(".").length > 1 && OCGRP_FILEEXTENSIONS.indexOf(fileext) != -1) {
+					let c4group = _sc.file(getC4GroupPath());
+					let process = _ws.pr(c4group);
+					yield process.createPromise([destination, "-p"], 0x1);
+					fileobj = { 
+						leafName: destination.split("/").pop(), 
+						isDirectory: function() { return false; } 
+					};
+				}
 			}
+			else
+				fileobj = _sc.file(destination);
+			addFileTreeEntry(fileobj, $('.workenvironment[workpath="'+workenv.path+'"]')[1], true);
 		}
 		while(path = _sc.clonkpath(i)) {
 			if(i > 0 && path == _sc.clonkpath(0))
@@ -717,9 +712,16 @@ function initializeContextMenu() {
 
 			this.addEntry(workenv.title, 0, function*(target, menuitemobj, menuitem) {
 				yield* exportToWorkEnv(workenv);
-			});
+			}, 0, { iconsrc: workenv.icon });
 			i++;
-			//TODO: Eintrag: "In alle Clonkverzeichnisse"
+		}
+		this.addSeperator();
+		let obj = $(by_obj).parents(".workenvironment")[0];
+		while((obj = $(obj).parent()) && $(obj).hasClass("workenvironment")) {
+			let workenv = getWorkEnvironmentByPath(_sc.workpath(obj));
+			this.addEntry(workenv.title, 0, function*(target, menuitemobj, menuitem) {
+				yield* exportToWorkEnv(workenv);
+			}, 0, { iconsrc: workenv.icon });
 		}
 		this.addSeperator();
 		this.addEntry("$ctxexport_allclonkdirs$", 0, function*() {
@@ -734,7 +736,7 @@ function initializeContextMenu() {
 				i++;
 			}
 		});
-	}, [], MODULE_LPRE)), { identifier: "ctxExport" });
+	}, [], MODULE_LPRE, { allowIcons: true })), { identifier: "ctxExport" });
 
 	treeContextMenu.addSeperator();
 
