@@ -136,8 +136,14 @@ function getDocumentValue(id) {
 	return editors[id].getSession().getDocument().getValue();
 }
 
-function setDocumentValue(id, text) {
-	return editors[id].getSession().getDocument().setValue(text);
+function setDocumentValue(id, text, fRestoreScrollPos) {
+	var s = editors[id].getSession(),
+		scrollTop = s.getScrollTop();
+	
+	var r = s.getDocument().setValue(text);
+	if(fRestoreScrollPos)
+		s.setScrollTop(scrollTop);
+	return r;
 }
 
 function getTabData(tabid) {
@@ -222,21 +228,52 @@ hook("load", function() {
 	bindKeyToObj(new KeyBinding("Redo", "Ctrl-Y", function() { a_E.redo(); }));
 	bindKeyToObj(new KeyBinding("RemoveRight", "Delete", function() { a_E.remove("right"); }));
 	bindKeyToObj(new KeyBinding("RemoveLeft", "Backspace", function() { a_E.remove("left"); }));
-	bindKeyToObj(new KeyBinding("Find", "Ctrl-F", function() { 
-		require("ace/config").loadModule("ace/ext/searchbox", function(e) {
-			e.Search(a_E)
-		});
+	bindKeyToObj(new KeyBinding("Find", "Ctrl-F", function() {
 		
-		var kb = editor.searchBox.$searchBarKb;
-		var command = kb.commands["Ctrl-f|Command-f|Ctrl-H|Command-Option-F"];
-		
-		if(command) {
-			command.bindKey = ""
-            kb.addCommand(command)
-		}
+		if(a_E.SearchBox && a_E.SearchBox.isFocused)
+			a_E.SearchBox.$searchBarKb.execCommand("Ctrl-f|Command-f");
+		else
+			ace.require("ace/config").loadModule("ace/ext/searchbox", function(e) {
+					e.Search(a_E)
+				
+				var kb = a_E.searchBox.$searchBarKb;
+				var command = kb.commands["Ctrl-f|Command-f"]
+				
+				if(command) {
+					command.bindKey = ""
+					kb.addCommand(command)
+				}
+				
+				command = kb.commands["Ctrl-H|Command-Option-F"]
+				
+				if(command) {
+					command.bindKey = ""
+					kb.addCommand(command)
+				}
+			});
 	}));
-	bindKeyToObj(new KeyBinding("Replace", "Ctrl-H", function() { require("ace/config").loadModule("ace/ext/searchbox", function(e) {
-			e.Search(a_E, true); }); 
+	bindKeyToObj(new KeyBinding("Replace", "Ctrl-H", function() { 
+		if(a_E.SearchBox && a_E.SearchBox.isFocused)
+			a_E.SearchBox.$searchBarKb.execCommand("Ctrl-H|Command-Option-F");
+		else
+			ace.require("ace/config").loadModule("ace/ext/searchbox", function(e) {
+					e.Search(a_E, true)
+				
+				var kb = a_E.searchBox.$searchBarKb;
+				var command = kb.commands["Ctrl-f|Command-f"]
+				
+				if(command) {
+					command.bindKey = ""
+					kb.addCommand(command)
+				}
+				
+				command = kb.commands["Ctrl-H|Command-Option-F"]
+				
+				if(command) {
+					command.bindKey = ""
+					kb.addCommand(command)
+				}
+			});
 	}));
 	
 	bindKeyToObj(new KeyBinding("GoToLine", "Ctrl-L", function() {
@@ -255,7 +292,7 @@ hook("load", function() {
 				dlg.hide();
 				dlg = null;
 			}
-		});
+		}).focus();
 		
 	}));
 });
