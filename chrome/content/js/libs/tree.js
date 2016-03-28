@@ -144,7 +144,6 @@ function createTreeElement(tree, label, container, open, img, filename, special,
 				let we_elm = $(parent).children("li.workenvironment")[i];
 				let workenv = getWorkEnvironmentByPath(_sc.workpath(we_elm));
 				workenv.index = $(parent).children("li").index(we_elm);
-				log("workenv: " + workenv + " / " + workenv.index);
 				workenv.saveHeader();
 			}
 		});

@@ -227,7 +227,7 @@ function addScript(path, lang, index, path, fShow) {
 			closeAddingOverlay(index);
 
 			if(identifier == "page-code") {
-				md_editorframe.contentWindow.setDocumentValue(index, generateScenarioTxt(index));
+				md_editorframe.contentWindow.setDocumentValue(index, generateScenarioTxt(index), true);
 				$("#editorframe").addClass("visible");
 			}
 			else
