@@ -1053,13 +1053,25 @@ function getOCStartArguments(path, nextversion) {
 			let scenario = path+"/Scenario.txt";
 			let content = yield OS.File.read(scenario, {encoding: "utf-8"});
 			let data = parseINIArray(content);
+			let sources = [_sc.workpath(path)];
+			let obj = $("li[workpath='"+_sc.workpath(path)+"']");
+			//Elternworkenvironments auch beruecksichtigen
+			while(obj && (obj = obj.parent()) && obj.hasClass("workenvironment"))
+				sources.push(_sc.workpath(obj));
+
 			for(let key in data["Definitions"]) {
 				let def = data["Definitions"][key];
+				let i = 0, source;
 
-				let newpath = _sc.workpath(path)+"/"+def;
-				if(yield OS.File.exists(newpath)) {
-					newpath = newpath.replace(/\//g, "\\");
-					data["Definitions"][key] = newpath;
+				while(source = sources[i++]) {
+					let newpath = source+"/"+def;
+					if(yield OS.File.exists(newpath)) {
+						if(OS_TARGET == "WINNT")
+							newpath = newpath.replace(/\//g, "\\");
+
+						data["Definitions"][key] = newpath;
+						break;
+					}
 				}
 			}
 
