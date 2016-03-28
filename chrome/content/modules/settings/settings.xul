@@ -11,14 +11,13 @@
 	<hbox id="settings" flex="1">
 		<vbox id="settings-nav" flex="1">
 			<!-- preference sections -->
-			<!--<button class=" navigation" label="General" oncommand="togglePage('settings-page-general', 'settings-pages', this)" />-->
 			<button class="active navigation" label="$General$" oncommand="togglePage('settings-page-general', 'settings-pages', this)" />
 			<button class="navigation" label="Open Clonk" oncommand="togglePage('settings-page-oc', 'settings-pages', this)" />
 			<button class="navigation" label="$Modules$" oncommand="togglePage('settings-page-modules', 'settings-pages', this)" />
 			<button class="navigation" label="$KeyBindings$" oncommand="togglePage('settings-page-keybindings', 'settings-pages', this);" />
 			<button class="navigation" label="$ExternalApplications$" oncommand="togglePage('settings-page-extapp', 'settings-pages', this);" />
-			<button class="navigation" label="$Save$" oncommand="saveSettings();"  />
 			<spacer flex="1" />
+			<button class="navigation" label="$Save$" oncommand="saveSettings();"  />
 		</vbox>
 		
 		<vbox flex="4">

@@ -336,24 +336,18 @@ caption.big {
   margin: 1em 0; }
 
 /*		preferences		*/
-#settings-deck > box,
-#settings-deck > hbox,
-#settings-deck > vbox {
-  background-color: white; }
-
 button.navigation {
   -moz-appearance: none;
   border: none;
-  border-right: 1px solid gainsboro;
+  border-right: 1px solid #d7d7d7;
   margin: 0;
   text-align: left;
   padding: 0.5em 1.5em;
   padding: 0.5em 0;
-  color: #2d2d2d;
+  color: grey;
   outline: none !important;
-  background-color: #fafafa;
-  transition: background-color 0.3s;
-  cursor: pointer; }
+  background-color: #ebebeb;
+  cursor: default; }
 
 button.navigation:hover {
   background-color: whitesmoke; }
@@ -361,6 +355,21 @@ button.navigation:hover {
 button *,
 button:focus * {
   border: 0; }
+
+#settings-deck > hbox, #settings-deck > vbox, #settings-deckbox {
+  background-color: #fafafa; }
+
+#settings-deck spacer {
+  border-right: 1px solid #d7d7d7;
+  background-color: #ebebeb; }
+
+#settings-nav spacer {
+  border-right: 1px solid #d7d7d7;
+  background-color: #ebebeb; }
+
+#settings-nav .active {
+  background-color: #e6e6e6;
+  color: #505050; }
 
 #settings-deck button,
 listbox {
@@ -453,17 +462,11 @@ listitem:focus {
 .view-directory-path.deniedAccess:before {
   content: '<!>  '; }
 
-/* nav and page style */
-#settings-nav spacer {
-  border-right: 1px solid gainsboro; }
-
-#settings-nav .active {
-  font-weight: bold; }
-
+/* page style */
 .settings-page {
   padding: 2em 3em;
   overflow-y: auto;
-  background-color: white; }
+  background-color: #fafafa; }
 
 .settings-page > *:first-child {
   margin-top: 0; }

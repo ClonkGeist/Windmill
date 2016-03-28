@@ -403,7 +403,7 @@ img {
 #toolbar {
   display: flex;
   align-items: center;
-  background-color: #f0f0f0;
+  background-color: whitesmoke;
   color: grey;
   border-bottom: 1px solid gainsboro;
   padding: 3px 10px; }
@@ -438,7 +438,8 @@ img {
 
 #grid-sizes {
   clear: right;
-  display: flex; }
+  display: flex;
+  padding: 4px; }
 
 #grid-buttons {
   display: flex; }
@@ -451,7 +452,7 @@ img {
   color: #b4b4b4; }
 
 #expand-grid-options:hover {
-  color: grey; }
+  color: #505050; }
 
 #hide-grid-options {
   float: right;
@@ -465,9 +466,7 @@ img {
   color: grey; }
 
 .number-input {
-  display: flex;
-  padding: 2px 0;
-  margin: 0 3px; }
+  display: flex; }
 
 .number-input input {
   width: 40px;
@@ -493,7 +492,7 @@ img {
   width: 14px; }
 
 .number-input .arrow:hover {
-  color: grey; }
+  color: #505050; }
 
 #snap-to-grid {
   cursor: default;
@@ -507,7 +506,7 @@ img {
   background-color: #fafafa; }
 
 #snap-to-grid.enabled {
-  color: grey; }
+  color: #505050; }
 
 /* background selection */
 #background-selection > * {
@@ -515,7 +514,7 @@ img {
   margin-left: 3px; }
 
 #bg-light {
-  color: #ebebeb; }
+  color: whitesmoke; }
 
 #bg-dark,
 #bg-transparent {

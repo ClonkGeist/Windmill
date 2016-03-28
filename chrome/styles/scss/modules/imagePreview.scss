@@ -90,14 +90,14 @@ img {
 #toolbar {
 	display: flex;
 	align-items: center;
-	background-color: rgb(240, 240, 240);
+	background-color: $clr-base;
 	color: grey;
-	border-bottom: 1px solid gainsboro;
+	border-bottom: 1px solid rgb(220, 220, 220);
 	padding: 3px 10px;
 }
 
 .icon-16 {
-	color: rgb(180, 180, 180);
+	color: $ui-light-clr;
 }
 
 .icon-16:hover {
@@ -115,7 +115,7 @@ img {
 }
 
 #grid-options {
-	background-color: rgb(235, 235, 235);
+	background-color: $clr-empty;
 	outline: 1px solid rgb(220, 220, 220);
 	position: absolute;
 	right: 16px; /* 16px grid icon 10px expand icon */
@@ -134,6 +134,7 @@ img {
 #grid-sizes {
 	clear: right;
 	display: flex;
+	padding: 4px;
 }
 
 #grid-buttons {
@@ -145,11 +146,11 @@ img {
 	cursor: default;
 	font-size: 8px;
 	align-items: center;
-	color: rgb(180, 180, 180);
+	color: $ui-light-clr;
 }
 
 #expand-grid-options:hover {
-	color: grey;
+	color: $ui-text-clr;
 }
 
 #hide-grid-options {
@@ -158,7 +159,7 @@ img {
 	cursor: default;
 	padding: 2px;
 	margin: 2px;
-	color: rgb(180, 180, 180);
+	color: $ui-light-clr;
 }
 
 #hide-grid-options:hover {
@@ -167,8 +168,6 @@ img {
 
 .number-input {
 	display: flex;
-	padding: 2px 0;
-	margin: 0 3px;
 }
 
 .number-input input {
@@ -185,7 +184,7 @@ img {
 	cursor: default;
 	font-size: 8px;
 	
-	color: rgb(180, 180, 180);
+	color: $ui-light-clr;
 	
 	flex-grow: 1;
 	vertical-align: middle;
@@ -201,24 +200,24 @@ img {
 }
 
 .number-input .arrow:hover {
-	color: grey;
+	color: $ui-text-clr;
 }
 
 #snap-to-grid {
 	cursor: default;
-	color: rgb(180, 180, 180);
+	color: $ui-light-clr;
 	padding-left: 5px;
 	padding-right: 5px;
-	background-color: rgb(245, 245, 245);
+	background-color: $clr-base;
 	border-top: 1px solid rgb(220, 220, 220);
 }
 
 #snap-to-grid:hover {
-	background-color: rgb(250, 250, 250);
+	background-color: $clr-paper;
 }
 
 #snap-to-grid.enabled {
-	color: grey;
+	color: $ui-text-clr;
 }
 
 /* background selection */
@@ -229,7 +228,7 @@ img {
 }
 
 #bg-light {
-	color: rgb(235, 235, 235);
+	color: $clr-base;
 }
 
 #bg-dark,

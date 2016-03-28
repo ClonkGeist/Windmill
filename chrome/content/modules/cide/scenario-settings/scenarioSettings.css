@@ -431,11 +431,11 @@ section:last-child {
   display: block; }
 
 .loadingPage {
-  position: absolute;
+  position: absolute !important;
   top: 0;
-  left: 0;
   right: 0;
   bottom: 0;
+  left: 0;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -620,7 +620,7 @@ section:last-child {
 .deflist-ao-searchinput {
   flex: 1;
   border: 0;
-  border-bottom: 1px solid gainsboro;
+  border-bottom: 1px solid #d7d7d7;
   padding: 4px 6px; }
 
 .deflist-ao-hidesearch {
@@ -654,13 +654,21 @@ section:last-child {
 
 /*-- Number inputs --*/
 .sp-number-input {
+  padding: 5px 10px;
+  padding-right: 3px;
+  /* -2px padding from spinners */
+  display: inline-flex;
   background-color: gainsboro;
   border-bottom: 1px solid #b4b4b4;
   padding: 5px 10px;
   padding-right: 3px;
   /* -2px padding from spinners */
   color: #505050;
-  display: inline-flex; }
+  display: inline-flex;
+  outline: none; }
+  .sp-number-input:hover {
+    background-color: #b4b4b4;
+    outline: none; }
 
 .sp-number-input label {
   margin-right: 5px; }
@@ -723,7 +731,7 @@ section:last-child {
   padding: 3px 8px; }
 
 .sp-settingsgroup-header:hover {
-  color: gainsboro; }
+  color: #d7d7d7; }
 
 .sp-settingsgroup-caption {
   flex: 1; }
@@ -781,7 +789,7 @@ h2 {
 h1 {
   font-size: 1.5em;
   font-weight: normal;
-  border-bottom: 1px solid gainsboro;
+  border-bottom: 1px solid #d7d7d7;
   margin: 1em 0; }
 
 .flex-wrapper {

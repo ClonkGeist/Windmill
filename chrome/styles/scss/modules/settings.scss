@@ -1,7 +1,7 @@
 window
 {
-	background-color: rgb(250, 250, 250);
-	font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+	background-color: $clr-paper;
+	font-family: $font-stack;
 }
 
 caption
@@ -9,7 +9,7 @@ caption
 	margin: 0.7em 0;
 	background-color: inherit;
 	font-size: 1em;
-	color: rgb(80, 80, 80);
+	color: $ui-text-clr;
 }
 
 caption.big
@@ -21,30 +21,23 @@ caption.big
 
 /*		preferences		*/
 
-#settings-deck > box,
-#settings-deck > hbox,
-#settings-deck > vbox
-{
-	background-color: white;
-}
 
 button.navigation
 {
 	-moz-appearance: none;
 	border: none;
 	
-	border-right: 1px solid gainsboro;
+	border-right: 1px solid $clr-border;
 	margin: 0;
 	text-align: left;
 	padding: 0.5em 1.5em;
 	padding: 0.5em 0;
 	
-	color: rgb(45,45,45);
+	color: grey;
 	outline: none !important;
 	
-	background-color: rgb(250, 250, 250);
-	transition: background-color 0.3s;
-	cursor: pointer;
+	background-color: $clr-empty;
+	cursor: default;
 }
 
 button.navigation:hover
@@ -58,11 +51,35 @@ button:focus *
 	border: 0;
 }
 
+#settings-deck {
+	& > hbox, & > vbox, &box {
+		background-color: $clr-paper;
+	}
+	
+	spacer {
+		border-right: 1px solid $clr-border;
+		background-color: $clr-empty;
+	}
+}
+
+#settings-nav spacer
+{
+	border-right: 1px solid $clr-border;
+	background-color: $clr-empty;
+}
+
+#settings-nav .active
+{
+	background-color: rgb(230, 230, 230);
+	color: $ui-text-clr;
+}
+
+
 #settings-deck button,
 listbox
 {
 	-moz-appearance: none;
-	border: 1px solid rgb(215, 215, 215);
+	border: 1px solid $clr-border;
 	transition: border 0.3s;
 }
 
@@ -177,23 +194,13 @@ listitem:focus
 	content: '<!>  ';
 }
 
-/* nav and page style */
-
-#settings-nav spacer
-{
-	border-right: 1px solid gainsboro;
-}
-
-#settings-nav .active
-{
-	font-weight: bold;
-}
-
+/* page style */
+ 
 .settings-page
 {
 	padding: 2em 3em;
 	overflow-y: auto;
-	background-color: white;
+	background-color: $clr-paper;
 }
 
 .settings-page > *:first-child

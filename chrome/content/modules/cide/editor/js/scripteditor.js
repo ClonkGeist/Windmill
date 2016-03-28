@@ -186,7 +186,7 @@ function checkIfTabIsUnsaved(id) { return !editors[id].getSession().getUndoManag
 
 function createCideToolbar(startup) {
 	addCideToolbarButton("icon-save", function() { saveDocument(-1); });
-	addCideToolbarButton("icon-search", function() {  a_E.execCommand("search"); });
+	addCideToolbarButton("icon-search", function() {  a_E.execCommand("find"); });
 	addCideToolbarButton("icon-snippet", function() { showSnippetDialog(a_E.__scope); });
 	
 	return true;
