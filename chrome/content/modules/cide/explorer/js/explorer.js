@@ -821,16 +821,6 @@ function initializeContextMenu() {
 			}
 		}, 0);
 	}
-	workenvContextMenu.addEntry("$ctxsettings$", 0, function() {
-		var dlg = new WDialog("$DlgWorkEnvironmentSettings$", MODULE_LPRE, { modal: true, css: { "width": "600px" }, btnright: [{ preset: "accept",
-			onclick: function(e, btn, _self) { }				
-		}, "cancel"]});
-
-		var dlgcontent = $("#dlg_workenvsettings").html();
-		$("#dlg_workenvsettings").remove();
-		dlg.setContent(dlgcontent);
-		dlg.show();
-	}, 0);
 }
 
 //Neue Spieldatei (Objekt/Szenario) erstellen

@@ -115,16 +115,7 @@
 			<checkbox label="No file operations" id="dex_dlg_workenv_nooperations" class="devmode-elm" />
 		</vbox>
 	</windmilldialog>
-	<windmilldialog id="dlg_workenvsettings" style="display: none">
-		<description>$DlgWESettingsDesc$</description>
-		<hbox flex="1" data-settingsgroup="dex_dlg_workenv_type_clonkdir">
-			<checkbox label="$DlgWEExplodeClonkDir$" id="dex_dlg_workenvsettings_explodecdir" flex="1" />
-		</hbox>
-		<hbox flex="1" data-settingsgroup="dex_dlg_workenv_type_workspace">
-			<checkbox label="$DlgWESyncAddedFiles$" id="dex_dlg_workenvsettings_sync_addedfiles" flex="1" />
-		</hbox>
-	</windmilldialog>
-	
+
 	<hbox class="toolbar">
 		<box class="nav-image icon-clonkpath icon-24" height="24" width="24" id="showClonkDirs"></box>
 		<box class="nav-image icon-workspace icon-24" height="24" width="24" id="showWorkspaces"></box>
