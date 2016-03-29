@@ -11,9 +11,11 @@ $(window).ready(function() {
 		loadEditorThemes(_sc.chpath + "/content/modules/cide/editor/js/ace");
 
 		$(".extprogram").each(function() {
-			var type = $(this).attr("id").replace(/row-/, "");
+			let type = $(this).attr("id").replace(/row-/, "");
 			if(getConfigData("CIDE", "ExtProg_"+type))
 				$(this).find(".view-directory-path").text(getConfigData("CIDE", "ExtProg_"+type));
+			if(getConfigData("CIDE", "AU_"+type))
+				$(this).find(".extprogram-always-use").prop("checked", true);
 		});
 
 		let iterator;
@@ -209,6 +211,16 @@ $(window).ready(function() {
 					$(this).val(val);
 					break;
 			}
+		});
+
+		$(".extprogram-always-use").on("command", function() {
+			let id = $(this).parent().attr("id").replace(/row-/, "");
+			setConfigData("CIDE", "AU_"+id, $(this).prop("checked"));
+		});
+		$(".extprogram-clear").click(function() {
+			let id = $(this).parent().attr("id").replace(/row-/, "");
+			setConfigData("CIDE", "ExtProg_"+id, "");
+			$(this).parent().find(".view-directory-path").text(Locale("$pathempty$"));
 		});
 	}, 1);
 });
