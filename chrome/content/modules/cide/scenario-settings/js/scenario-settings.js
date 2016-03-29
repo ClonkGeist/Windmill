@@ -197,6 +197,7 @@ function addScript(path, lang, index, path, fShow) {
 		let relpath = temp.join("/").replace(_sc.workpath(index)+"/", "");
 		loadingdefs.push(relpath);
 		scenariodefs.push(relpath);
+		sessions[index].relpath = relpath;
 		sessions[index].loadingdefs = loadingdefs;
 		sessions[index].scenariodefs = scenariodefs;
 
@@ -214,6 +215,7 @@ function addScript(path, lang, index, path, fShow) {
 		getWrapper(".navigation, .settings-page-container", index).addClass("ready");
 		getWrapper(".loadingPage", index).fadeOut(200);
 
+		let prev_page;
 		var navbtnfn = function(identifier) { return function() {
 			if($(this).hasClass("nav-page-code") && identifier != "page-code") {
 				//TODO: Auf Changes ueberpruefen und an dieser Stelle ueberarbeiten
@@ -231,8 +233,41 @@ function addScript(path, lang, index, path, fShow) {
 				md_editorframe.contentWindow.setDocumentValue(index, generateScenarioTxt(index), true);
 				$("#editorframe").addClass("visible");
 			}
-			else
-				$("#editorframe").removeClass("visible")
+			else if(prev_page == "page-code") {
+				let scendata = sessions[index].scendata, deflist_changed;
+				sessions[index].scendata = parseINIArray(md_editorframe.contentWindow.getDocumentValue(index));
+				let scendefs = [];
+				for(var key in sessions[index].scendata["Definitions"]) {
+					def = sessions[index].scendata["Definitions"][key];
+
+					if(def)
+						scendefs.push(def);
+
+					if(!definitions[def])
+						definitions[def] = true;
+				}
+				if(!scendata["Definitions"])
+					scendefs = ["Objects.ocd"];
+				scendefs.push(sessions[index].relpath);
+				sessions[index].scendata["PlayerX"] = sessions[index].scendata["Player1"];
+				if(scendefs.length != sessions[index].scenariodefs.length)
+					deflist_changed = true;
+				else
+					for(var i = 0; i < scendata.length; i++)
+						if(sessions[index].scenariodefs.indexOf(scendefs[i]) == -1)
+							deflist_changed = true;
+
+				sessions[index].scenariodefs = scendefs;
+				Task.spawn(function*() {
+					if(deflist_changed)
+						yield reloadDefinitions();
+
+					loadScenarioContentToElements(index);
+
+					$("#editorframe").removeClass("visible");
+				});
+			}
+			prev_page = identifier;
 		};};
 		getWrapper(".nav-page-general", index).mousedown(navbtnfn("page-general")).trigger("mousedown");
 		getWrapper(".nav-page-objects", index).mousedown(navbtnfn("page-objects"));
@@ -265,34 +300,7 @@ function addScript(path, lang, index, path, fShow) {
 				$(this).parents(".deflist-ao-listwrapper").find(".definition-selection-item:not(.definition-selection-item[data-displayname*='"+$(this).val().toUpperCase()+"'])").addClass("deflist-ao-hidesearch");
 		});
 
-		//Sonstige Eintraege fuellen
-		getWrapper("[data-scenario-sect!='']").each(function() {
-			if(!$(this).attr("data-scenario-key"))
-				return;
-
-			var sect = $(this).attr("data-scenario-sect"), key = $(this).attr("data-scenario-key"), val;
-			if(!sessions[index].scendata[sect] || sessions[index].scendata[sect][key] === undefined) {
-				if(!$(this).attr("data-defaultvalue"))
-					return;
-
-				val = $(this).attr("data-defaultvalue");
-			}
-			else
-				val = sessions[index].scendata[sect][key];
-
-			if($(this).prop("tagName").toLowerCase() == "input") {
-				switch($(this).attr("type").toLowerCase()) {
-					case "checkbox":
-						$(this).prop("checked", val == "1");
-						break;
-
-					default:
-						val = val.split(",")[0];
-						$(this).val(val);
-						break;
-				}
-			}
-		});
+		loadScenarioContentToElements(index, true);
 
 		if(!md_editorframe.contentWindow.readyState) {
 			md_editorframe.contentWindow.addEventListener("load", function(){
@@ -301,6 +309,44 @@ function addScript(path, lang, index, path, fShow) {
 		}
 		else
 			md_editorframe.contentWindow.addScript(text, lang, index, path, true);
+	});
+}
+
+function loadScenarioContentToElements(index, skipDefsel) {
+	if(!skipDefsel) {
+		getWrapper(".definition-selection-wrapper", index).each(function() {
+			loadDefinitionSelectionData(this);
+			loadDefinitionSelection(this);
+		});
+	}
+
+	//Sonstige Eintraege fuellen
+	getWrapper("[data-scenario-sect!='']", index).each(function() {
+		if(!$(this).attr("data-scenario-key"))
+			return;
+
+		var sect = $(this).attr("data-scenario-sect"), key = $(this).attr("data-scenario-key"), val;
+		if(!sessions[index].scendata[sect] || sessions[index].scendata[sect][key] === undefined) {
+			if(!$(this).attr("data-defaultvalue"))
+				return;
+
+			val = $(this).attr("data-defaultvalue");
+		}
+		else
+			val = sessions[index].scendata[sect][key];
+
+		if($(this).prop("tagName").toLowerCase() == "input") {
+			switch($(this).attr("type").toLowerCase()) {
+				case "checkbox":
+					$(this).prop("checked", val == "1");
+					break;
+
+				default:
+					val = val.split(",")[0];
+					$(this).val(val);
+					break;
+			}
+		}
 	});
 }
 
@@ -575,65 +621,7 @@ function preparePseudoElements(index) {
 		else
 			clone.find(".definition-selection-header").remove();
 
-		var category = $(this).attr("data-category") || "C4D_Object|C4D_Living|C4D_Goal|C4D_Rule|C4D_Structure|C4D_Vehicle|C4D_Environment",
-			sect = $(this).attr("data-scenario-sect").replace(/PlayerX/, "Player1") || "", //TODO: Replace fuer PlayerX richtig machen
-			key = $(this).attr("data-scenario-key") || "",
-			flaglist = $(this).attr("data-defflags") || "";
-
-		if(!sessions[index].deflist)
-			sessions[index].deflist = [];
-		if(!sessions[index].deflist[sect+"_"+key])
-			sessions[index].deflist[sect+"_"+key] = [];
-
-		clone.attr({ "data-category": category, "data-scenario-sect": sect, "data-scenario-key": key, "data-defflags": flaglist});
-
-		//C4ID-Liste aus Scenario.txt
-		var c4idlist = sessions[index].scendata[sect];
-		if(!c4idlist || !(c4idlist = c4idlist[key]))
-			c4idlist = "";
-
-		c4idlist = c4idlist.split(";");
-		//Listenelemente laden (Rueckwaerts, um die Ladereihenfolge zu beruecksichtigen)
-		var listelements = [];
-		for(var i = sessions[index].scenariodefs.length-1; i >= 0 && c4idlist.length; i--) {
-			var deff = sessions[index].scenariodefs[i];
-			for(var j = 0; j < c4idlist.length; j++) {
-				var listentry = c4idlist[j].split("=");
-				listentry[1] = parseInt(listentry[1]);
-				if(listentry[0] == "")
-					continue;
-
-				var def = definitions[deff].ids[listentry[0]];
-				if(!def || !def.defcore["DefCore"])
-					continue;
-
-				c4idlist.splice(j, 1);
-				j--;
-
-				sessions[index].deflist[sect+"_"+key].push([def, listentry[1]]);
-			}
-		}
-
-		//Uebrige Eintraege als fehlerhaft markieren (da nicht (in den geladenen Definitionen) vorhanden)
-		if(!getConfigData("ScenarioSettings", "HideInvalidDefs")) {
-			for(var i = 0; i < c4idlist.length; i++) {
-				var listentry = c4idlist[i].split("=");
-				listentry[1] = parseInt(listentry[1]);
-				if(listentry[0] == "")
-					continue;
-
-				def = new OCDefinition(listentry[0]);
-				def.invalid = true;
-				def.defcore = { DefCore: { id: listentry[0] } };
-				def.title = listentry[0];
-				def.desc = Locale("$DefInvalid$");
-				definitions[deff].ids[listentry[0]] = def;
-				definitions[deff].d.push(def);
-
-				sessions[index].deflist[sect+"_"+key].push([def, listentry[1]]);
-			}
-		}
-
+		loadDefinitionSelectionData(this, clone, index);
 		loadDefinitionSelection(clone);
 
 		$(this).replaceWith(clone);
@@ -688,10 +676,73 @@ function preparePseudoElements(index) {
 	return true;
 }
 
+function loadDefinitionSelectionData(infosource, dest = infosource, index = getCurrentWrapperIndex()) {
+	var category = $(infosource).attr("data-category") || "C4D_Object|C4D_Living|C4D_Goal|C4D_Rule|C4D_Structure|C4D_Vehicle|C4D_Environment",
+		sect = $(infosource).attr("data-scenario-sect").replace(/PlayerX/, "Player1") || "", //TODO: Replace fuer PlayerX richtig machen
+		key = $(infosource).attr("data-scenario-key") || "",
+		flaglist = $(infosource).attr("data-defflags") || "";
+
+	if(!sessions[index].deflist)
+		sessions[index].deflist = [];
+	sessions[index].deflist[sect+"_"+key] = [];
+
+	$(dest).attr({ "data-category": category, "data-scenario-sect": sect, "data-scenario-key": key, "data-defflags": flaglist});
+
+	//C4ID-Liste aus Scenario.txt
+	var c4idlist = sessions[index].scendata[sect];
+	if(!c4idlist || !(c4idlist = c4idlist[key]))
+		c4idlist = "";
+
+	c4idlist = c4idlist.split(";");
+	//Listenelemente laden (Rueckwaerts, um die Ladereihenfolge zu beruecksichtigen)
+	var listelements = [];
+	for(var i = sessions[index].scenariodefs.length-1; i >= 0 && c4idlist.length; i--) {
+		var deff = sessions[index].scenariodefs[i];
+		for(var j = 0; j < c4idlist.length; j++) {
+			var listentry = c4idlist[j].split("=");
+			listentry[1] = parseInt(listentry[1]);
+			if(listentry[0] == "")
+				continue;
+
+			var def = definitions[deff].ids[listentry[0]];
+			if(!def || !def.defcore["DefCore"])
+				continue;
+
+			c4idlist.splice(j, 1);
+			j--;
+
+			sessions[index].deflist[sect+"_"+key].push([def, listentry[1]]);
+		}
+	}
+
+	//Uebrige Eintraege als fehlerhaft markieren (da nicht (in den geladenen Definitionen) vorhanden)
+	if(!getConfigData("ScenarioSettings", "HideInvalidDefs")) {
+		for(var i = 0; i < c4idlist.length; i++) {
+			var listentry = c4idlist[i].split("=");
+			listentry[1] = parseInt(listentry[1]);
+			if(listentry[0] == "")
+				continue;
+
+			def = new OCDefinition(listentry[0]);
+			def.invalid = true;
+			def.defcore = { DefCore: { id: listentry[0] } };
+			def.title = listentry[0];
+			def.desc = Locale("$DefInvalid$");
+			definitions[deff].ids[listentry[0]] = def;
+			definitions[deff].d.push(def);
+
+			sessions[index].deflist[sect+"_"+key].push([def, listentry[1]]);
+		}
+	}
+
+	return true;
+}
+
 function loadDefinitionSelection(defsel) {
-	var category = $(defsel).attr("data-category") || "C4D_Object|C4D_Living|C4D_Goal|C4D_Rule|C4D_Structure|C4D_Vehicle|C4D_Environment",
-		sect = $(defsel).attr("data-scenario-sect").replace(/PlayerX/, "Player1") || "", //TODO: Replace fuer PlayerX richtig machen
-		key = $(defsel).attr("data-scenario-key") || "";
+	defsel = $(defsel);
+	var category = defsel.attr("data-category") || "C4D_Object|C4D_Living|C4D_Goal|C4D_Rule|C4D_Structure|C4D_Vehicle|C4D_Environment",
+		sect = defsel.attr("data-scenario-sect").replace(/PlayerX/, "Player1") || "", //TODO: Replace fuer PlayerX richtig machen
+		key = defsel.attr("data-scenario-key") || "";
 
 	defsel.find(".definition-selection-new").unbind("click").click(function() {
 		getWrapper(".deflist-adding-overlay").fadeIn(250);
@@ -743,6 +794,7 @@ function loadDefinitionSelection(defsel) {
 
 	//TODO: Listenelemente vorher sortieren
 	var deflist = sessions[getCurrentWrapperIndex()].deflist[sect+"_"+key];
+	$(defsel).find(".definition-selection-list").empty();
 	if(deflist)
 		for(var i = 0; i < deflist.length; i++)
 			addDeflistEntry(defsel.find(".definition-selection-list"), deflist[i][0], 0, {counter: deflist[i][1]});

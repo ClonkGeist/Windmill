@@ -864,7 +864,7 @@ function lockModule(message, nofadein) {
 	}
 
 	if(MODULE_LANG == "html") {
-		var modal = $('<div class="windmill-modal"></div>');
+		var modal = $('<div class="windmill-modal" style="z-index: 10000"></div>');
 		modal.html(Locale(message));
 		$("body").append(modal);
 		/*if(!nofadein)

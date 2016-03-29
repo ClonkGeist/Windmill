@@ -78,6 +78,8 @@ function _createCideToolbar(...pars) {
 }
 
 function getExtProgId(id = cda.active_id) {
+	if(!TabManager()[id])
+		return;
 	let path = TabManager()[id][cda.path], extprogid;
 	if(window.GetExternalProgramId)
 		extprogid = window.GetExternalProgramId(TabManager()[id]);
