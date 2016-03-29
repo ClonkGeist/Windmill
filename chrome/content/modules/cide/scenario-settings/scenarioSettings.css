@@ -666,15 +666,10 @@ section:last-child {
   color: #505050;
   display: inline-flex;
   outline: none; }
-  .sp-number-input:hover {
-    background-color: #b4b4b4;
-    outline: none; }
-
-.sp-number-input label {
-  margin-right: 5px; }
-
-.sp-number-input * {
-  background-color: transparent; }
+  .sp-number-input label {
+    margin-right: 5px; }
+  .sp-number-input * {
+    background-color: inherit; }
 
 .sp-number-input input {
   background-color: transparent;
@@ -682,7 +677,9 @@ section:last-child {
   border-bottom: 1px solid grey;
   -moz-appearance: textfield;
   color: #505050;
-  text-align: right; }
+  text-align: right;
+  padding-left: 2px;
+  padding-right: 2px; }
 
 .input-spinners {
   display: inline-flex;

@@ -197,11 +197,15 @@ function remapKeybindings(editor) {
 	var commandsToRemove = [
 		"selectall",
 		"showSettingsMenu",
-		"centerselection",
+		//"centerselection",
 		"gotoline",
 		"undo",
 		"redo",
-		"find"
+		"find",
+		"removeline",
+		"duplicateSelection",
+		"backspace",
+		"del"
 	];
 	
 	
@@ -222,8 +226,11 @@ function remapKeybindings(editor) {
 hook("load", function() {
 	
 	bindKeyToObj(new KeyBinding("Save", "Ctrl-S", function() { saveDocument(-1); }));
-	bindKeyToObj(new KeyBinding("OpenSnippetDialog", "Ctrl-Alt-S", function() { showSnippetDialog(a_E.__scope); }));
-	bindKeyToObj(new KeyBinding("Select All", "Ctrl-A", function() { a_E.selectAll(); }));
+	bindKeyToObj(new KeyBinding("DuplicateSel", "Ctrl-Shift-D", function() { a_E.execCommand("duplicateSelection"); }));
+	bindKeyToObj(new KeyBinding("Paste", "Ctrl-V", function() { a_E.execCommand("paste"); }));
+	bindKeyToObj(new KeyBinding("RemoveLine", "Ctrl-D", function() { a_E.execCommand("removeline"); }));
+	bindKeyToObj(new KeyBinding("OpenSnippetDialog", "Ctrl-Alt-S", function() { err("ES"); showSnippetDialog(a_E.__scope); }));
+	bindKeyToObj(new KeyBinding("SelectAll", "Ctrl-A", function() { a_E.selectAll(); }));
 	bindKeyToObj(new KeyBinding("Undo", "Ctrl-Z", function() { a_E.undo(); }));
 	bindKeyToObj(new KeyBinding("Redo", "Ctrl-Y", function() { a_E.redo(); }));
 	bindKeyToObj(new KeyBinding("RemoveRight", "Delete", function() { a_E.remove("right"); }));
@@ -279,7 +286,7 @@ hook("load", function() {
 	bindKeyToObj(new KeyBinding("GoToLine", "Ctrl-L", function() {
 		var dlg = new WDialog("$DlgGoToLine$", MODULE_LPRE, { modal: true, css: { "width": "400px" }, btnright: ["cancel"]});
 		
-		dlg.setContent("<textbox id=\"dlg-gotoline-input\" />");
+		dlg.setContent("<textbox id=\"dlg-gotoline-input\" placeholder=\"$DlgGoToLineDefault$\"/>");
 		dlg.show();
 		
 		$(dlg.element).find("#dlg-gotoline-input").keypress(function(e) {

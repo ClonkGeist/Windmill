@@ -384,15 +384,7 @@ section:last-child {
 	padding-right: 3px; /* -2px padding from spinners */
 	display: inline-flex;
 	
-	@include text_button;
-}
-
-.sp-number-input label{
-	margin-right: 5px;
-}
-
-.sp-number-input * {
-	background-color: transparent;
+	@include number_input;
 }
 
 .sp-number-input input{
@@ -402,6 +394,8 @@ section:last-child {
 	-moz-appearance: textfield;
 	color: $ui-text-clr;
 	text-align: right;
+	padding-left: 2px;
+	padding-right: 2px;
 }
 
 .input-spinners {
