@@ -389,23 +389,24 @@ function openProgramDialog(obj, extApp) {
 
 	var rv = fp.show();
 	if(rv == Ci.nsIFilePicker.returnOK) {
+		let path = formatPath(fp.file.path);
 		if(extApp) {
 			if(fp.file.leafName != extApp.needed_file) {
 				warn(extApp.needed_file + " was not found.");
 				return openProgramDialog(obj, extApp);
 			}
 			else
-				extApp.path = fp.file.path;
+				extApp.path = path;
 		}
 		else
-			setConfigData("CIDE", "ExtProg_"+type, fp.file.path);
+			setConfigData("CIDE", "ExtProg_"+type, path);
 
 		saveConfig();
 
 		if(extApp)
-			$('[default-appid="'+extApp.identifier+'"]').find(".applist_path").text(fp.file.path);
+			$('[default-appid="'+extApp.identifier+'"]').find(".applist_path").text(path);
 		else
-			$(obj).parent().find(".view-directory-path").text(fp.file.path);
+			$(obj).parent().find(".view-directory-path").text(path);
 	}
 
 	return true;

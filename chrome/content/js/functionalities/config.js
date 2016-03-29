@@ -196,11 +196,11 @@ function initializeConfig() {
 	//CIDE
 	addConfigString("CIDE", "HideUnsupportedFiles", true);
 	addConfigString("CIDE", "AlwaysUseExternalProg", false);
-	addConfigString("CIDE", "ExtProg_Script", false);
-	addConfigString("CIDE", "ExtProg_Text", false);
-	addConfigString("CIDE", "ExtProg_GraphicsPNG", false);
-	addConfigString("CIDE", "ExtProg_GraphicsBMP", false);
-	addConfigString("CIDE", "ExtProg_Audio", false);
+	addConfigString("CIDE", "ExtProg_Script", "");
+	addConfigString("CIDE", "ExtProg_Text", "");
+	addConfigString("CIDE", "ExtProg_GraphicsPNG", "");
+	addConfigString("CIDE", "ExtProg_GraphicsBMP", "");
+	addConfigString("CIDE", "ExtProg_Audio", "");
 	addConfigString("CIDE", "AU_Script", false);
 	addConfigString("CIDE", "AU_Text", false);
 	addConfigString("CIDE", "AU_GraphicsPNG", false);
