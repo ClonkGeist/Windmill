@@ -214,6 +214,14 @@ listitem:focus
 	margin-top: 0;
 }
 
+.nav-image {
+	color: black;
+}
+
+.nav-image:hover {
+	color: #999;
+}
+
 /* external applications */
 
 #application_list {
@@ -234,14 +242,6 @@ listitem:focus
 
 .applist_path {
 	font-style: italic;
-}
-
-.applist_controls > .nav-image {
-	color: black;
-}
-
-.applist_controls > .nav-image:hover {
-	color: #999;
 }
 
 

@@ -31,13 +31,13 @@ window.addEventListener("load", function(){
 
 	maindeck.hook("preShowItem", function(deck, itemid) {
 		clearCideToolbar();
-		if(deck.items[itemid] && deck.items[itemid].contentWindow.createCideToolbar)
-			deck.items[itemid].contentWindow.createCideToolbar();
+		if(deck.items[itemid] && deck.items[itemid].contentWindow._createCideToolbar)
+			deck.items[itemid].contentWindow._createCideToolbar();
 	});
 	sidedeck.hook("preShowItem", function(deck, itemid) {
 		clearCideToolbar();
-		if(deck.items[itemid] && deck.items[itemid].contentWindow.createCideToolbar)
-			deck.items[itemid].contentWindow.createCideToolbar();
+		if(deck.items[itemid] && deck.items[itemid].contentWindow._createCideToolbar)
+			deck.items[itemid].contentWindow._createCideToolbar();
 	});
 
 	$(window).resize(function() {

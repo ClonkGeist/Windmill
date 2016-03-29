@@ -273,9 +273,9 @@ if(top != window) {
 	hook("load", localizeModule);
 
 	$(window).focus(function() {
-		if(window.createCideToolbar) {
+		if(window._createCideToolbar && (!parent || (parent != window && !parent._createCideToolbar))) {
 			window.clearCideToolbar();
-			window.createCideToolbar();
+			window._createCideToolbar();
 		}
 
 		if(parent && parent.updateChildFrameWindowFocus)
@@ -319,7 +319,7 @@ function Locale(str, prefix) {
 		var str2 = __l[prefix+"_"+id.match(/\$([a-zA-Z0-9_]+?)\$/)[1]];
 		
 		if(str2)
-			str = str.replace(RegExp(id.replace(/\$/g, "\\$")), str2);
+			str = str.replace(RegExp(id.replace(/\$/g, "\\$")), str2.replace(/\\n/, "\n"));
 	}
 	
 	return str;
@@ -329,7 +329,11 @@ function localizeModule() {
 	let rgx = /\$[a-zA-Z0-9_]+?\$/g;
 
 	function getReplacement(lgreplace) {
-		return __l[MODULE_LPRE+"_"+lgreplace.replace(/\$/g, "")];
+		let replacement = __l[MODULE_LPRE+"_"+lgreplace.replace(/\$/g, "")];
+		if(replacement)
+			replacement.replace(/\\n/, "\n");
+
+		return replacement;
 	}
 
 	function fnLocale(i, obj) {
@@ -542,7 +546,7 @@ function writeFile(path, text, fCreateIfNonexistent) {
 	fstr.close();
 }
 
-function OSFileRecursive(sourcepath, destpath, callback, operation = "copy", noOverwrite = (operation == "copy"), options = { checkIfFileExist: true }, __rec) {
+function OSFileRecursive(sourcepath, destpath, callback, operation = "copy", noOverwrite = true, options = { checkIfFileExist: true }, __rec) {
 	//TODO: Overwrite vorschlagen
 	let task = Task.spawn(function*() {
 		let f = new _sc.file(sourcepath), extra = "", file;
@@ -587,7 +591,7 @@ function OSFileRecursive(sourcepath, destpath, callback, operation = "copy", noO
 			break;
 		}
 
-		if(f.isDirectory()) {
+		if(toperation == "makeDir") {
 			let entries = f.directoryEntries;
 			while(entries.hasMoreElements()) {
 				let entry = entries.getNext().QueryInterface(Ci.nsIFile);
@@ -599,9 +603,8 @@ function OSFileRecursive(sourcepath, destpath, callback, operation = "copy", noO
 			}
 
 			//Ggf. nochmal aufraeumen
-			if(f.isDirectory())
-				if(!__rec && operation == "move")
-					yield OS.File.removeDir(sourcepath, {ignoreAbsent: true})
+			if(!__rec && operation == "move")
+				yield OS.File.removeDir(sourcepath, {ignoreAbsent: true})
 		}
 
 		return {path: destpath, file: f};
@@ -864,7 +867,7 @@ function lockModule(message, nofadein) {
 	}
 
 	if(MODULE_LANG == "html") {
-		var modal = $('<div class="windmill-modal"></div>');
+		var modal = $('<div class="windmill-modal" style="z-index: 10000"></div>');
 		modal.html(Locale(message));
 		$("body").append(modal);
 		/*if(!nofadein)

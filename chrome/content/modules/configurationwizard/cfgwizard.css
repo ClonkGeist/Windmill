@@ -320,6 +320,9 @@
 .icon-git-untracked:before {
   content: "?"; }
 
+.icon-open-external:before {
+  content: "E"; }
+
 body {
   background-color: #fafafa;
   font-family: "Segoe UI", "Trebuchet MS", sans-serif;

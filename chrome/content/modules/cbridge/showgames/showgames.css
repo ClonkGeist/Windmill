@@ -320,6 +320,9 @@
 .icon-git-untracked:before {
   content: "?"; }
 
+.icon-open-external:before {
+  content: "E"; }
+
 html, body {
   background-color: whitesmoke;
   font-family: "Segoe UI", Verdana, sans-serif;

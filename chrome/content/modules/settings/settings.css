@@ -320,6 +320,9 @@
 .icon-git-untracked:before {
   content: "?"; }
 
+.icon-open-external:before {
+  content: "E"; }
+
 window {
   background-color: #fafafa;
   font-family: "Segoe UI", "Trebuchet MS", sans-serif; }
@@ -474,6 +477,12 @@ listitem:focus {
 .settings-page > *:first-child {
   margin-top: 0; }
 
+.nav-image {
+  color: black; }
+
+.nav-image:hover {
+  color: #999; }
+
 /* external applications */
 #application_list {
   -moz-user-select: none;
@@ -490,11 +499,5 @@ listitem:focus {
 
 .applist_path {
   font-style: italic; }
-
-.applist_controls > .nav-image {
-  color: black; }
-
-.applist_controls > .nav-image:hover {
-  color: #999; }
 
 /*	need some space	*/

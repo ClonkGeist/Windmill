@@ -320,6 +320,9 @@
 .icon-git-untracked:before {
   content: "?"; }
 
+.icon-open-external:before {
+  content: "E"; }
+
 .clrpckr-wrapper {
   flex-direction: column; }
 

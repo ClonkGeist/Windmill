@@ -11,9 +11,11 @@ $(window).ready(function() {
 		loadEditorThemes(_sc.chpath + "/content/modules/cide/editor/js/ace");
 
 		$(".extprogram").each(function() {
-			var type = $(this).attr("id").replace(/row-/, "");
+			let type = $(this).attr("id").replace(/row-/, "");
 			if(getConfigData("CIDE", "ExtProg_"+type))
 				$(this).find(".view-directory-path").text(getConfigData("CIDE", "ExtProg_"+type));
+			if(getConfigData("CIDE", "AU_"+type))
+				$(this).find(".extprogram-always-use").prop("checked", true);
 		});
 
 		let iterator;
@@ -210,6 +212,16 @@ $(window).ready(function() {
 					break;
 			}
 		});
+
+		$(".extprogram-always-use").on("command", function() {
+			let id = $(this).parent().attr("id").replace(/row-/, "");
+			setConfigData("CIDE", "AU_"+id, $(this).prop("checked"));
+		});
+		$(".extprogram-clear").click(function() {
+			let id = $(this).parent().attr("id").replace(/row-/, "");
+			setConfigData("CIDE", "ExtProg_"+id, "");
+			$(this).parent().find(".view-directory-path").text(Locale("$pathempty$"));
+		});
 	}, 1);
 });
 
@@ -389,23 +401,24 @@ function openProgramDialog(obj, extApp) {
 
 	var rv = fp.show();
 	if(rv == Ci.nsIFilePicker.returnOK) {
+		let path = formatPath(fp.file.path);
 		if(extApp) {
 			if(fp.file.leafName != extApp.needed_file) {
 				warn(extApp.needed_file + " was not found.");
 				return openProgramDialog(obj, extApp);
 			}
 			else
-				extApp.path = fp.file.path;
+				extApp.path = path;
 		}
 		else
-			setConfigData("CIDE", "ExtProg_"+type, fp.file.path);
+			setConfigData("CIDE", "ExtProg_"+type, path);
 
 		saveConfig();
 
 		if(extApp)
-			$('[default-appid="'+extApp.identifier+'"]').find(".applist_path").text(fp.file.path);
+			$('[default-appid="'+extApp.identifier+'"]').find(".applist_path").text(path);
 		else
-			$(obj).parent().find(".view-directory-path").text(fp.file.path);
+			$(obj).parent().find(".view-directory-path").text(path);
 	}
 
 	return true;

@@ -432,6 +432,9 @@ li:focus *, li:focus {
 .icon-git-untracked:before {
   content: "?"; }
 
+.icon-open-external:before {
+  content: "E"; }
+
 .toolbar {
   height: 24px;
   background-color: whitesmoke;
