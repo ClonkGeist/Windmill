@@ -232,6 +232,7 @@ function addScript(path, lang, index, path, fShow) {
 			if(identifier == "page-code") {
 				md_editorframe.contentWindow.setDocumentValue(index, generateScenarioTxt(index), true);
 				$("#editorframe").addClass("visible");
+				createCideToolbar();
 			}
 			else if(prev_page == "page-code") {
 				let scendata = sessions[index].scendata, deflist_changed;
@@ -493,7 +494,11 @@ function reloadDefinitions() {
 	return task;
 }
 
-function createCideToolbar() {}
+function createCideToolbar(...pars) {
+	if(md_editorframe && md_editorframe.contentWindow)
+		if($("#editorframe").hasClass("visible"))
+			md_editorframe.contentWindow._createCideToolbar(...pars);
+}
 
 function getDeflistEntryValue(entry) { return parseInt($(entry).find(".definition-selection-item-counter").text()) || 0; }
 
@@ -977,7 +982,7 @@ class OCDefinition {
 	}
 }
 
-/*-- Number unputs --*/
+/*-- Number inputs --*/
 
 function setupNumberInputs() {
 	$(".input-spinners").each(function() {
@@ -1010,6 +1015,8 @@ function showDeckItem(id) {
 		$("#editorframe").addClass("visible");
 	else
 		$("#editorframe").removeClass("visible");
+	clearCideToolbar();
+	createCideToolbar();
 	frameUpdateWindmillTitle();
 }
 
