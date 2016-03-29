@@ -319,7 +319,7 @@ function Locale(str, prefix) {
 		var str2 = __l[prefix+"_"+id.match(/\$([a-zA-Z0-9_]+?)\$/)[1]];
 		
 		if(str2)
-			str = str.replace(RegExp(id.replace(/\$/g, "\\$")), str2);
+			str = str.replace(RegExp(id.replace(/\$/g, "\\$")), str2.replace(/\\n/, "\n"));
 	}
 	
 	return str;
@@ -329,7 +329,11 @@ function localizeModule() {
 	let rgx = /\$[a-zA-Z0-9_]+?\$/g;
 
 	function getReplacement(lgreplace) {
-		return __l[MODULE_LPRE+"_"+lgreplace.replace(/\$/g, "")];
+		let replacement = __l[MODULE_LPRE+"_"+lgreplace.replace(/\$/g, "")];
+		if(replacement)
+			replacement.replace(/\\n/, "\n");
+
+		return replacement;
 	}
 
 	function fnLocale(i, obj) {
