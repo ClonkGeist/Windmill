@@ -542,7 +542,7 @@ function writeFile(path, text, fCreateIfNonexistent) {
 	fstr.close();
 }
 
-function OSFileRecursive(sourcepath, destpath, callback, operation = "copy", noOverwrite = (operation == "copy"), options = { checkIfFileExist: true }, __rec) {
+function OSFileRecursive(sourcepath, destpath, callback, operation = "copy", noOverwrite = true, options = { checkIfFileExist: true }, __rec) {
 	//TODO: Overwrite vorschlagen
 	let task = Task.spawn(function*() {
 		let f = new _sc.file(sourcepath), extra = "", file;
@@ -587,7 +587,7 @@ function OSFileRecursive(sourcepath, destpath, callback, operation = "copy", noO
 			break;
 		}
 
-		if(f.isDirectory()) {
+		if(toperation == "makeDir") {
 			let entries = f.directoryEntries;
 			while(entries.hasMoreElements()) {
 				let entry = entries.getNext().QueryInterface(Ci.nsIFile);
@@ -599,9 +599,8 @@ function OSFileRecursive(sourcepath, destpath, callback, operation = "copy", noO
 			}
 
 			//Ggf. nochmal aufraeumen
-			if(f.isDirectory())
-				if(!__rec && operation == "move")
-					yield OS.File.removeDir(sourcepath, {ignoreAbsent: true})
+			if(!__rec && operation == "move")
+				yield OS.File.removeDir(sourcepath, {ignoreAbsent: true})
 		}
 
 		return {path: destpath, file: f};
