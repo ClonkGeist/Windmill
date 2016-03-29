@@ -320,6 +320,9 @@
 .icon-git-untracked:before {
   content: "?"; }
 
+.icon-open-external:before {
+  content: "E"; }
+
 body, html {
   width: 100%;
   height: 100%;
