@@ -273,7 +273,7 @@ if(top != window) {
 	hook("load", localizeModule);
 
 	$(window).focus(function() {
-		if(window._createCideToolbar) {
+		if(window._createCideToolbar && (!parent || (parent != window && !parent._createCideToolbar))) {
 			window.clearCideToolbar();
 			window._createCideToolbar();
 		}

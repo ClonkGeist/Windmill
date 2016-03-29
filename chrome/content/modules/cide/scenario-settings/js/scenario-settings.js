@@ -164,6 +164,7 @@ function addScript(path, lang, index, path, fShow) {
 	if(fShow) {
 		$(".scenario-settings.visible").removeClass("visible");
 		clone.addClass("visible");
+		$("#editorframe").removeClass("visible");
 	}
 
 	setLoadingCaption("$LoadingReadScenarioData$", index);
@@ -952,6 +953,10 @@ function showDeckItem(id) {
 	md_editorframe.contentWindow.showDeckItem(id);
 	$(".scenario-settings.visible").removeClass("visible");
 	$("#scensettings-session-"+id).addClass("visible");
+	if(getWrapper(".navigation-option.active", id).hasClass("nav-page-code"))
+		$("#editorframe").addClass("visible");
+	else
+		$("#editorframe").removeClass("visible");
 	frameUpdateWindmillTitle();
 }
 
