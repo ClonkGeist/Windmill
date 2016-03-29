@@ -246,7 +246,7 @@ function addScript(path, lang, index, path, fShow) {
 					if(!definitions[def])
 						definitions[def] = true;
 				}
-				if(!scendata["Definitions"])
+				if(!sessions[index].scendata["Definitions"])
 					scendefs = ["Objects.ocd"];
 				scendefs.push(sessions[index].relpath);
 				sessions[index].scendata["PlayerX"] = sessions[index].scendata["Player1"];
@@ -406,7 +406,8 @@ function generateScenarioTxt(index) {
 	//Sonstige Sections
 	for(var key in data)
 		if(data[key] instanceof Array && order.indexOf(key) == -1 && isNaN(parseInt(key)))
-			order.push(key);
+			if(key != "PlayerX")
+				order.push(key);
 
 	//Text generieren
 	for(var i = 0; i < order.length; i++) {
