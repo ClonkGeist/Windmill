@@ -65,7 +65,7 @@ function showSnippetDialog(scope) {
 	content += "</vbox><vbox class=\"dlg-snippet-page\" style=\"display: none\">"+
 					"<hbox class=\"dlg-infobox error\" id=\"dlg-snippet-errorbox\">"+
 					"</hbox>"+
-					"<hbox><label value=\"snippet \" control=\"dlg-snippet-title\"/>"+
+					"<hbox align=\"center\"><label value=\"snippet \" control=\"dlg-snippet-title\"/>"+
 						"<textbox flex=\"1\" id=\"dlg-snippet-title\" placeholder=\"$DlgSnippetManagerTitleInput$\" />"+
 					"</hbox>"+
 					"<textbox id=\"dlg-snippet-body\" placeholder=\"$DlgSnippetManagerBodyInput$\" rows=\"12\" multiline=\"true\"/>"+

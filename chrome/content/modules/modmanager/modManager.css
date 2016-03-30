@@ -334,8 +334,6 @@ button {
   background-color: gainsboro;
   border-bottom: 1px solid #b4b4b4;
   padding: 5px 10px;
-  padding-right: 3px;
-  /* -2px padding from spinners */
   color: #505050;
   display: inline-flex;
   outline: none;

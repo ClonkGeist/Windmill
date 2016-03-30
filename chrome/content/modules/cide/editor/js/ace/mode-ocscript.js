@@ -210,10 +210,6 @@ oop.inherits(FoldMode, BaseFoldMode);
 
 });
 
-function getInlineColorPicker() {
-	return "<span class=\"inline-colorpicker\" style=\"background-color: green\"></span>";
-}
-
 var OC_FN_NAMES = "\
 Anim_AbsX|Anim_AbsY|Anim_Action|Anim_Const|Anim_Dist|Anim_Linear|Anim_X|Anim_XDir|\
 Anim_Y|Anim_YDir|GetAnimationLength|GetAnimationName|GetAnimationPosition|GetAnimationWeight|\
