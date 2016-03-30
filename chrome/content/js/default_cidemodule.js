@@ -41,9 +41,17 @@ function saveTab(index, ...pars) {
 	if(index == -1)
 		index = cda.active_id;
 
+	if(!checkSavingPermissions(index))
+		return warn("Cannot save protected file.");
 	onFileUnchanged(index);
 	saveTabContent(index, ...pars);
 }
+
+function checkSavingPermissions(index) {
+	return parent.onCideModuleSavingPermissions(formatPath(TabManager()[index][cda.path]));
+}
+
+function onCideModuleSavingPermissions(...pars) { parent.onCideModuleSavingPermissions(...pars); }
 
 function getUnsavedFiles() {
 	if(!window.checkIfTabIsUnsaved)

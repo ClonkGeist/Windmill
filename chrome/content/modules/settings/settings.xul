@@ -87,6 +87,10 @@
 			<stack>
 				<vbox id="settings-page-modules" class="settings-page" top="0" bottom="0">
 					<caption class="big" label="$modules$" />
+					<vbox>
+						<checkbox label="$ActivateFileProtection$" id="cide-fileprotection" class="autoinit" flex="1" default-cfgsect="CIDE" default-cfgkey="FileProtection"/>
+					</vbox>
+					
 					<caption class="big" label="$cide$" />
 					<caption label="$acetheme$" class="toggle-contents" onclick="toggleContents(this)"/>
 					<vbox>

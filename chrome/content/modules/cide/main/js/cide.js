@@ -33,6 +33,21 @@ function onFileStatusChange(changed, index, path) {
 	deck.changeTabStatus(changed, index);
 }
 
+function onCideModuleSavingPermissions(path) {
+	let workpath = _sc.workpath(path), workenv = getWorkEnvironmentByPath(workpath);
+
+	if(workenv.readOnly)
+		return false;
+	if(getConfigData("CIDE", "FileProtection") && workenv.type == _mainwindow.WORKENV_TYPE_ClonkPath && !workenv.noFileProtection) {
+		let subdir = path.substr(workpath.length+1).split("/").shift();
+		let protected_files = ["Objects.ocd", "Arena.ocf", "Defense.ocf", "Experimental.ocf", "Missions.ocf", "Parkour.ocf", "Tutorials.ocf",
+							   "Worlds.ocf", "Graphics.ocg", "Material.ocg", "Music.ocg", "Sound.ocg", "System.ocg", "Decoration.ocd", "Experimental.ocd"];
+		if(protected_files.indexOf(subdir) != -1)
+			return false;
+	}
+	return true;
+}
+
 window.addEventListener("load", function(){
 	maindeck = addDeck($("#modules-wrapper-maindeck")[0], $("#modules-nav-maindeck")[0]);
 	sidedeck = addDeck($("#modules-wrapper-sidedeck")[0], $("#modules-nav-sidedeck")[0]);

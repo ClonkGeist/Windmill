@@ -209,6 +209,7 @@ function initializeConfig() {
 	addConfigString("CIDE", "EditorTheme", "chrome");
 	addConfigString("CIDE", "CommandLineParameters", "--editor --nonetwork %SCENARIO%"); 
 	addConfigString("CIDE", "WorkspaceParentDirectory", "", "path");
+	addConfigString("CIDE", "FileProtection", true);
 	
 	//Audiomodule
 	addConfigString("Audiomodule", "Volume", 100);
