@@ -25,6 +25,14 @@ function frameWindowTitle() {
 	return;
 }
 
+function onFileStatusChange(changed, index, path) {
+	let deck = maindeck;
+	if(sidedeck.options[index] && sidedeck.options[index].filepath == path)
+		deck = sidedeck;
+
+	deck.changeTabStatus(changed, index);
+}
+
 window.addEventListener("load", function(){
 	maindeck = addDeck($("#modules-wrapper-maindeck")[0], $("#modules-nav-maindeck")[0]);
 	sidedeck = addDeck($("#modules-wrapper-sidedeck")[0], $("#modules-nav-sidedeck")[0]);

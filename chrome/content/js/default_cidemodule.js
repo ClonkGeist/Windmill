@@ -17,16 +17,32 @@ class WindmillCideAliases {
 		return CM_ACTIVEID;
 	}
 }
-let cda = new WindmillCideAliases();
+let cda = new WindmillCideAliases(), unsavedChanges;
 
 function TabManager() {}
 
 function onFileUnchanged(index) {
-	
+	unsavedChanges = false;
+	if(parent && parent.onFileStatusChange)
+		parent.onFileStatusChange(false, index, TabManager()[index][cda.path]);
+
+	return true;
 }
 
 function onFileChanged(index) {
-	
+	unsavedChanges = true;
+	if(parent && parent.onFileStatusChange)
+		parent.onFileStatusChange(true, index, TabManager()[index][cda.path]);
+
+	return true;
+}
+
+function saveTab(index, ...pars) {
+	if(index == -1)
+		index = cda.active_id;
+
+	onFileUnchanged(index);
+	saveTabContent(index, ...pars);
 }
 
 function getUnsavedFiles() {
@@ -37,7 +53,7 @@ function getUnsavedFiles() {
 	var files = [];
 	for(var id in tabs)
 		if(tabs[id])
-			if(checkIfTabIsUnsaved(id))
+			if(checkIfTabIsUnsaved(id) || unsavedChanges)
 				files.push({ filepath: tabs[cda.active_id][cda.path], index: id, module: window });
 
 	return files;
@@ -58,7 +74,7 @@ function saveFileByPath(path) {
 	for(var id in tabs)
 		if(tabs[id])
 			if(tabs[id][cda.path] == path)
-				return saveTabContent(id);
+				return saveTab(id);
 	
 	return -1;
 }

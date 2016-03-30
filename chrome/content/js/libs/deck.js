@@ -393,6 +393,15 @@ class Deck extends WindmillObject {
 			$(this.items[itemId]).focus();
 	}
 
+	getButton(index) { return $(this.buttonContainer).find(".deck-"+this.id+"-button-"+index); }
+
+	changeTabStatus(status, index) {
+		if(!status)
+			this.getButton(index).removeClass("state-unsaved");
+		else if(status == 1)
+			this.getButton(index).addClass("state-unsaved");
+	}
+
 	showDesc() {
 		$(this.element).attr("selectedIndex", 0);
 		this.selectedIndex = 0;

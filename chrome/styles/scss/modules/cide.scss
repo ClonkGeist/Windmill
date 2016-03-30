@@ -46,7 +46,7 @@ toolbox {
 .deck-nav-elm {
 	padding: 5px 5px;
 	height: 1em;
-	transition: background-color 0.15s;
+	transition: background-color 0.15s, color 0.6s;
 	cursor: pointer;
 	box-sizing: border-box;
 	color: $ui-text-clr;
@@ -56,6 +56,10 @@ toolbox {
 .deck-nav-elm.active:hover {
 	color: $ui-text-clr;
 	background-color: $clr-base;
+}
+
+.deck-nav-elm.state-unsaved {
+	color: $interact_red;
 }
 
 .deck-nav-elm:hover {

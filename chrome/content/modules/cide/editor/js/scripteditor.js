@@ -185,7 +185,7 @@ function initEditorContextMenu(x, y, editorId, fOnSelectionClicked) {
 function checkIfTabIsUnsaved(id) { return !editors[id].getSession().getUndoManager().isClean(); }
 
 function createCideToolbar(startup) {
-	addCideToolbarButton("icon-save", function() { saveDocument(-1); });
+	addCideToolbarButton("icon-save", function() { saveTab(-1); });
 	addCideToolbarButton("icon-search", function() {  a_E.execCommand("find"); });
 	addCideToolbarButton("icon-snippet", function() { showSnippetDialog(a_E.__scope); });
 	
@@ -225,7 +225,7 @@ function remapKeybindings(editor) {
 
 hook("load", function() {
 	
-	bindKeyToObj(new KeyBinding("Save", "Ctrl-S", function() { saveDocument(-1); }));
+	bindKeyToObj(new KeyBinding("Save", "Ctrl-S", function() { saveTab(-1); }));
 	bindKeyToObj(new KeyBinding("DuplicateSel", "Ctrl-Shift-D", function() { a_E.execCommand("duplicateSelection"); }));
 	bindKeyToObj(new KeyBinding("Paste", "Ctrl-V", function() { a_E.execCommand("paste"); }));
 	bindKeyToObj(new KeyBinding("RemoveLine", "Ctrl-D", function() { a_E.execCommand("removeline"); }));
