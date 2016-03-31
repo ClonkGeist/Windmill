@@ -93,7 +93,7 @@ function buildDoc(path = _sc.chpath + "/docs/docs", __rec) {
 						let linkedfile = lang_md_files[lang][j];
 						if(relpath && linkedfile.filepath.search(relpath) == -1) {
 							let splitted = relpath.split("/");
-							while(splitted.pop() && linkedfile.filepath.search(splittet.join("/")) == -1 && ulstack) {
+							while(splitted.pop() && linkedfile.filepath.search(splitted.join("/")) == -1 && ulstack) {
 								navigation += "</ul>\r\n";
 								ulstack--;
 							}
@@ -131,16 +131,17 @@ function buildDoc(path = _sc.chpath + "/docs/docs", __rec) {
 						log("Creating Syntax Highlighting...");
 						let promise = new Promise(function(resolve, reject) {
 							worker.onmessage = function(event) {
-								let result = event.data;
-								let i = 0;
+								let result = event.data, i = 0;
 								file.content = file.content.replace(/<code class="lang-.+?">(.|\n)+?<\/code>/g, function() { 
-									return result[i];
+									return result[i++];
 								});
 								resolve();
 							}
 							worker.onerror = function(e) {
 								throw e.message + "("+e.filename+":"+e.lineno+")";
 							}
+							for(var i = 0; i < codeblocks.length; i++)
+								codeblocks[i] = codeblocks[i].replace(/&quot;/g, "\"");
 							worker.postMessage(codeblocks);
 						});
 						yield promise;
