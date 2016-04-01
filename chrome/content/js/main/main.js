@@ -95,7 +95,7 @@ hook("load", function() {
 			if(!$(".togglemode-img").hasClass("invisible"))
 				return;
 
-			if(mainDeck.selectedId != mainDeck.getModuleId("settings") && mainDeck.selectedId != mainDeck.getModuleId("modmanager")) {
+			if(mainDeck.selectedId == mainDeck.getModuleId("cbridge") || mainDeck.selectedId == mainDeck.getModuleId("cide")) {
 				if($(this).hasClass("cBridge")) {
 					$(this).removeClass("cBridge");
 					navigation.hideGroups();
