@@ -323,6 +323,9 @@
 .icon-open-external:before {
   content: "E"; }
 
+.icon-documentation:before {
+  content: "?"; }
+
 html, body {
   height: 100%;
   width: 100%;

@@ -185,6 +185,13 @@ hook("load", function() {
 			$("#developerlog").addClass("invisible");
 			$("#gitlog").toggleClass("invisible");
 		});
+		let frame = $('<iframe src="resource://docs/build/de/_home/__head_de.html" flex="1"></iframe>');
+		frame.appendTo($(mainDeck.element));
+		let docFrameID = mainDeck.add(frame[0], 0, false, false, true);
+		//Docs
+		$("#showDocs").click(function() {
+			togglePage(mainDeck.id, docFrameID);
+		});
 
 		//Neustart
 		$("#restartWindmill").click(function() { restartWindmill(); });

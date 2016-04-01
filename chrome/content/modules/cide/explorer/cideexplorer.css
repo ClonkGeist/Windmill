@@ -435,6 +435,9 @@ li:focus *, li:focus {
 .icon-open-external:before {
   content: "E"; }
 
+.icon-documentation:before {
+  content: "?"; }
+
 .toolbar {
   height: 24px;
   background-color: whitesmoke;

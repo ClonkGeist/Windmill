@@ -435,6 +435,9 @@ li:focus *, li:focus {
 .icon-open-external:before {
   content: "E"; }
 
+.icon-documentation:before {
+  content: "?"; }
+
 splitter {
   -moz-appearance: none;
   background-color: #fafafa;
