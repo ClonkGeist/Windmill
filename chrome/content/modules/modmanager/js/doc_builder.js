@@ -181,6 +181,7 @@ function buildDoc(path = _sc.chpath + "/docs/docs", __rec) {
 		if(!__rec) {
 			log("***********************************");
 			log("Building process finished.");
+			_mainwindow.$("#docFrame")[0].contentWindow.location.reload();
 		}
 	}, function(reason) {
 		log("***********************************");

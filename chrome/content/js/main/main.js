@@ -185,7 +185,7 @@ hook("load", function() {
 			$("#developerlog").addClass("invisible");
 			$("#gitlog").toggleClass("invisible");
 		});
-		let frame = $('<iframe src="resource://docs/build/de/_home/__head_de.html" flex="1"></iframe>');
+		let frame = $('<iframe src="resource://docs/build/de/_home/__head_de.html" flex="1" id="docFrame"></iframe>');
 		frame.appendTo($(mainDeck.element));
 		let docFrameID = mainDeck.add(frame[0], 0, false, false, true);
 		//Docs
