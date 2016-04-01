@@ -1,5 +1,6 @@
 
 let marked = Cu.import("resource://docs/marked.jsm").export_marked;
+let {he} = Cu.import("resource://docs/he.jsm");
 marked.setOptions({
 	renderer: new marked.Renderer(),
 	gfm: true,
@@ -146,7 +147,10 @@ function buildDoc(path = _sc.chpath + "/docs/docs", __rec) {
 								throw e.message + "("+e.filename+":"+e.lineno+")";
 							}
 							for(var i = 0; i < codeblocks.length; i++)
-								codeblocks[i] = codeblocks[i].replace(/&quot;/g, "\"");
+								codeblocks[i] = he.decode(codeblocks[i]);
+							/*codeblocks[i] = codeblocks[i].replace(/&.+?;/g, function(match) {
+									
+								});*/
 							worker.postMessage(codeblocks);
 						});
 						yield promise;

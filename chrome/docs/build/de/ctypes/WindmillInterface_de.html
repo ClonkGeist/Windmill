@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Windmill Documentation - CTypes / Windmill Interface</title>
+		<title>Windmill Documentation - Windmill Interface</title>
 		<link href="../../windmill_doc.css" rel="stylesheet">
 		<link href="../../prism.css" rel="stylesheet">
 		<meta charset="UTF-8">
@@ -45,11 +45,11 @@
 				</ul>
 			</nav>
 			<div id="content">
-				<h1 id="ctypes">CTypes</h1>
-<p>Um Windmill um Funktionen erweitern zu können, die standardmäßig durch Mozillas Libraries nicht (vollständig) bereitgestellt werden, kann die JS-Ctypes Library verwendet werden, womit sich C-Libraries einlesen lassen und somit über JavaScript C-Funktionen zur Verfügung stehen.</p>
-<p>Link zur offiziellen Dokumentation von JS-CTypes: <a href="https://developer.mozilla.org/en-US/docs/Mozilla/js-ctypes">https://developer.mozilla.org/en-US/docs/Mozilla/js-ctypes</a></p>
-<p>Die einzelnen Scripts werden über JavaScript Module geladen, die sich in den jeweiligen Unterverzeichnissen für das entsprechende Betriebssystem befinden.</p>
-<p><strong>Achtung:</strong> Geladene JavaScript Module werden gecachet, was dazu führen kann, dass die Modulscripts (zumindest unter Windows-Betriebssysteme) während der Entwicklung manchmal nicht neu geladen werden.<br>Um den Cache manuell zu leeren kann man die Datei <code>C:\Users\[Username]\AppData\Local\Windmill\windmill\Profiles\[Profilname]\startupCache\startupCache.4.little</code> löschen oder alternativ durch eine schreibgeschützte, leere Datei ersetzen um das Caching komplett zu deaktivieren.</p>
+				<h1 id="windmill-interface">Windmill Interface</h1>
+<p>Das Windmill Interface liefert grundlegende Funktionalitäten zu allen Interface-Klassen.</p>
+<h3 id="class-windmillinterface">class WindmillInterface</h3>
+<p><strong>void</strong> hook(<strong>string</strong> eventName, <strong>function</strong> fn);<br>Bindet eine Funktion <code>fn</code> an ein Event <code>eventName</code>.</p>
+<p><strong>void</strong> execHook(<strong>string</strong> eventName, ...);<br>Führt alle mit <code>hook</code> an das Event <code>eventName</code> gebindete Funktionen aus.</p>
 
 			</div>
 		</div>
