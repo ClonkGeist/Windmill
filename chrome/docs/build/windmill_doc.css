@@ -32,3 +32,36 @@ h1 {
 	border-bottom: 1px solid gainsboro;
 	margin: 1em 0;
 }
+
+table {
+	border-collapse: collapse;
+}
+
+thead {
+	background: gainsboro;
+}
+
+tbody {
+	background: #ececec;
+}
+
+th,td {
+	padding: 2px 5px;
+}
+
+td {
+	border-right: 1px solid whitesmoke;
+}
+
+pre {
+	background: hsl(0, 0%, 95%);
+	padding: 10px;
+	border: 1px dashed #a8a8a8;
+}
+
+code.lang-javascript:before {
+	content: "<JavaScript>";
+	float: right;
+	color: #8F8F8F;
+	font-size: 0.9em;
+}

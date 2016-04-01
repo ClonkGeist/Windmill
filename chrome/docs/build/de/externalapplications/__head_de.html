@@ -32,7 +32,15 @@
 </ul>
 <li class="navigation-elm"><a href="../functionalities/__head_de.html">Funktionalitäten</a></li><ul class="navigation-sublist">
 <li class="navigation-elm"><a href="../functionalities/config/__head_de.html">config.js</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../functionalities/config/setConfigData_de.html">setConfigData</a></li>
+<li class="navigation-elm"><a href="../functionalities/config/setClonkPath_de.html">setClonkPath</a></li>
+<li class="navigation-elm"><a href="../functionalities/config/sc.clonkpath_de.html">_sc.clonkpath</a></li>
+<li class="navigation-elm"><a href="../functionalities/config/saveConfig_de.html">saveConfig</a></li>
+<li class="navigation-elm"><a href="../functionalities/config/loadConfig_de.html">loadConfig</a></li>
+<li class="navigation-elm"><a href="../functionalities/config/getConfig_de.html">getConfig</a></li>
+<li class="navigation-elm"><a href="../functionalities/config/getConfigData_de.html">getConfigData</a></li>
 <li class="navigation-elm"><a href="../functionalities/config/class_ConfigEntry_de.html">class ConfigEntry</a></li>
+<li class="navigation-elm"><a href="../functionalities/config/addConfigString_de.html">addConfigString</a></li>
 </ul>
 </ul>
 <li class="navigation-elm"><a href="__head_de.html">Externe Anwendungen</a></li><ul class="navigation-sublist">
@@ -160,21 +168,26 @@
 <p>Erstellt eine Prozessinstanz zur jeweiligen Anwedung, allerdings mit vorheriger Prüfungen auf die Richtigkeit der Angaben und entsprechender Fehlermeldungsausgabe.<br>Die Parameter werden direkt an die <code>create</code>-Funktion des erstellten <code>wmIProcess</code>-Objekts weitergegeben, sind somit die gleichen.</p>
 <h2 id="beispiel">Beispiel</h2>
 <pre><code class="lang-javascript"><span class="token keyword" >let</span> git <span class="token operator" >=</span> <span class="token function" >getAppByID</span><span class="token punctuation" >(</span><span class="token string" >"git"</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+<span class="token comment" spellcheck="true">//Prüfen ob Git verfügbar ist</span>
 <span class="token keyword" >if</span><span class="token punctuation" >(</span>git<span class="token punctuation" >.</span><span class="token function" >isAvailable</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >)</span>
+    <span class="token comment" spellcheck="true">//Falls ja, Prozess erstellen und clonen</span>
     git<span class="token punctuation" >.</span><span class="token function" >create</span><span class="token punctuation" >(</span><span class="token punctuation" >[</span><span class="token string" >"clone"</span><span class="token punctuation" >,</span> <span class="token keyword" >this</span><span class="token punctuation" >.</span>cloneurl<span class="token punctuation" >,</span> <span class="token keyword" >this</span><span class="token punctuation" >.</span>path<span class="token punctuation" >]</span><span class="token punctuation" >,</span> <span class="token number" >0x1</span><span class="token punctuation" >,</span> <span class="token punctuation" >(</span>exitCode<span class="token punctuation" >)</span> <span class="token operator" >=</span><span class="token operator" >></span> <span class="token punctuation" >{</span> 
+        <span class="token comment" spellcheck="true">//Wenn kein Fehler aufgetreten ist, Erstellungsprozess abschließen und Git Configwerte für Usename und Email setzen.</span>
         <span class="token keyword" >if</span><span class="token punctuation" >(</span><span class="token operator" >!</span>exitCode<span class="token punctuation" >)</span> <span class="token punctuation" >{</span>
             <span class="token keyword" >if</span><span class="token punctuation" >(</span>options<span class="token punctuation" >.</span>success<span class="token punctuation" >)</span>
-                options<span class="token punctuation" >.</span><span class="token function" >success</span><span class="token punctuation" >(</span>_this<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+                options<span class="token punctuation" >.</span><span class="token function" >success</span><span class="token punctuation" >(</span><span class="token keyword" >this</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 
             <span class="token function" >unlockModule</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
             git<span class="token punctuation" >.</span><span class="token function" >create</span><span class="token punctuation" >(</span><span class="token punctuation" >[</span><span class="token string" >"config"</span><span class="token punctuation" >,</span> <span class="token string" >"-f"</span><span class="token punctuation" >,</span> _this<span class="token punctuation" >.</span>path<span class="token operator" >+</span><span class="token string" >"/.git/config"</span><span class="token punctuation" >,</span> <span class="token string" >"user.name"</span><span class="token punctuation" >,</span> options<span class="token punctuation" >.</span>userconfig<span class="token punctuation" >.</span>username<span class="token punctuation" >]</span><span class="token punctuation" >,</span> <span class="token number" >0x2</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
             git<span class="token punctuation" >.</span><span class="token function" >create</span><span class="token punctuation" >(</span><span class="token punctuation" >[</span><span class="token string" >"config"</span><span class="token punctuation" >,</span> <span class="token string" >"-f"</span><span class="token punctuation" >,</span> _this<span class="token punctuation" >.</span>path<span class="token operator" >+</span><span class="token string" >"/.git/config"</span><span class="token punctuation" >,</span> <span class="token string" >"user.email"</span><span class="token punctuation" >,</span> options<span class="token punctuation" >.</span>userconfig<span class="token punctuation" >.</span>email<span class="token punctuation" >]</span><span class="token punctuation" >,</span> <span class="token number" >0x2</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 
-            _this<span class="token punctuation" >.</span><span class="token function" >saveHeader</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+            <span class="token operator" >/</span>Header speichern
+            <span class="token keyword" >this</span><span class="token punctuation" >.</span><span class="token function" >saveHeader</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
         <span class="token punctuation" >}</span>
-        <span class="token keyword" >else</span> <span class="token comment" spellcheck="true">//TODO: ExitValue-Verarbeitung</span>
+        <span class="token keyword" >else</span>
             options<span class="token punctuation" >.</span><span class="token function" >rejected</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
     <span class="token punctuation" >}</span><span class="token punctuation" >,</span> <span class="token keyword" >function</span><span class="token punctuation" >(</span>data<span class="token punctuation" >)</span> <span class="token punctuation" >{</span>
+        <span class="token comment" spellcheck="true">//Ausgabe von Git in die Git Konsole loggen</span>
         <span class="token function" >logToGitConsole</span><span class="token punctuation" >(</span>data<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
     <span class="token punctuation" >}</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 </code></pre>

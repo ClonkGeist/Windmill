@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Windmill Documentation - class ConfigEntry</title>
+		<title>Windmill Documentation - saveConfig</title>
 		<link href="../../../windmill_doc.css" rel="stylesheet">
 		<link href="../../../prism.css" rel="stylesheet">
 		<meta charset="UTF-8">
@@ -53,48 +53,15 @@
 				</ul>
 			</nav>
 			<div id="content">
-				<h1 id="class-configentry">class ConfigEntry</h1>
-<p><strong>extends</strong> <a href="">WindmillObject</a></p>
-<p><strong>constructor</strong> ConfigEntry(<strong>string</strong> section, <strong>string</strong> key, <strong>any</strong> value, [opt] <strong>string</strong> type, [opt] <strong>object</strong> options);</p>
+				<h1 id="saveconfig">saveConfig</h1>
+<p><strong>&lt;Promise&gt;</strong> saveConfig([opt] <strong>array</strong> special);<br>Speichert die Konfigurationsdatei. Falls <code>special</code> angegeben ist, werden nur Veränderungen der angegebenen Einträgen gespeichert.</p>
 <ul>
-<li><strong>section</strong>:<br>Section des Config-Eintrags</li>
-<li><strong>key</strong>:<br>Key des Config-Eintrags</li>
-<li><strong>value</strong>:<br>Wert der in den Config-Eintrag gespeichert wird und als Standardwert genommen wird.</li>
-<li><strong>[opt] type</strong>:<br>Datentyp des Config-Eintrags. Übernimmt standardmäßig den Datentyp von <strong>value</strong>, kann für Pseudo-Datentypen jedoch notwendig werden. (s. Path)</li>
-<li><strong>[opt] options:</strong><br>Kann folgende Optionen enthalten:<ul>
-<li><strong>readOnly:</strong> Setzt den Config-Eintrag <strong>readOnly</strong>.</li>
-<li><strong>alwaysSave:</strong> Der Config-Eintrag speichert Änderungen am Wert nicht nur temporär sondern als tatsächlichen Wert. (Damit ist kein Schreiben auf der Festplatte verbunden)</li>
-<li><strong>runTimeOnly:</strong> Falls <code>true</code>, wird der Config-Eintrag nie in der Config-Datei gespeichert sondern existiert nur zur Laufzeit.</li>
+<li>[opt] <strong>special:</strong><br>Ein Array welches Sektionsnamen oder Arrays mit Sektions- und Keynamen enthalten kann. Letztere wären im Format [&quot;Sektion&quot;, &quot;Key1&quot;, &quot;Key2&quot;, ...].<br>Falls gesetzt, werden nur die betroffenen Sektionen/Keys gespeichert. Arrays und Strings können auch gemischt angegeben werden.</li>
 </ul>
-</li>
-</ul>
-<p><strong>function</strong> apply(<strong>void</strong>);<br>Setzt den temporär gespeicherten Wert als festen Wert. (Ohne auf die Festplatte zu schreiben)</p>
-<p><strong>function</strong> reset(<strong>bool</strong> apply);<br>Setzt den Wert auf den Standardwert zurück.</p>
-<ul>
-<li><strong>apply:</strong><br>Falls <code>true</code> wird <code>apply()</code> anschließend aufgerufen.</li>
-</ul>
-<h3 id="attribute">Attribute</h3>
-<table>
-<thead>
-<tr>
-<th>Attribute</th>
-<th>Typ</th>
-<th>Beschreibung</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>type:</strong></td>
-<td>string</td>
-<td>Gibt den Datentyp des Config-Eintrags (in LowerCase) wieder.</td>
-</tr>
-<tr>
-<td><strong>value:</strong></td>
-<td>any</td>
-<td>Gibt den gespeicherten Wert zurück und wandelt diesen - falls es sich um ein Objekt handelt - in einen JSON-konformen-String um.</td>
-</tr>
-</tbody>
-</table>
+<h2 id="beispiel">Beispiel</h2>
+<pre><code class="lang-javascript"><span class="token function" >saveConfig</span><span class="token punctuation" >(</span><span class="token punctuation" >[</span><span class="token string" >"HostGame"</span><span class="token punctuation" >,</span> <span class="token punctuation" >[</span><span class="token string" >"StartGame"</span><span class="token punctuation" >,</span> <span class="token string" >"Record"</span><span class="token punctuation" >]</span><span class="token punctuation" >]</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Speichert alle Einträge unter <code>HostGame</code>, allerdings nur den Eintrag <code>Record</code> unter <code>StartGame</code>.</p>
 
 			</div>
 		</div>
