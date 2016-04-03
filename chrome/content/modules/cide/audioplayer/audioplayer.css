@@ -350,13 +350,30 @@ body {
 #progressneedle {
   background-color: #dc4632;
   height: 100%;
-  width: 0%; }
+  width: 0%;
+  transition: width 1s; }
+
+#progressneedle.no-update {
+  transition: width 0s; }
 
 #interface {
   flex: 1;
   display: flex;
   padding: 3px 5px 0 5px;
   align-items: center; }
+
+#time-tooltip {
+  position: absolute;
+  font-size: 0.6em;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  opacity: 0;
+  transition: opacity 0.4s;
+  padding: 0 2px;
+  pointer-events: none; }
+
+#time-tooltip.active {
+  opacity: 1; }
 
 #button-wrapper {
   display: flex;
@@ -369,6 +386,11 @@ body {
 
 .button:hover {
   color: #505050; }
+
+.button.active {
+  color: #dc4632; }
+  .button.active:hover {
+    color: #dc4632; }
 
 #button-play.pause:before {
   content: "\e619"; }
@@ -396,7 +418,8 @@ body {
   flex: 1;
   display: flex;
   align-items: center;
-  padding: 0 5px; }
+  padding: 0 5px;
+  height: 100%; }
 
 #currentvolume {
   height: 5px;
