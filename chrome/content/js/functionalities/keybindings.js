@@ -6,14 +6,20 @@
 var customKeyBindings = [];
 
 function loadKeyBindings() {
-	return OS.File.read(_sc.profd+"/keybinding.ini", {encoding: "utf-8"}).then(function(text) {
-		let kbini = parseINI2(text), elm;
-		while(elm = kbini.next().value) {
-			if(typeof elm != "string")
-				customKeyBindings[elm.key] = elm.val;
-			else if(elm != "KeyBindings")
-				return;
-		}
+	return Task.spawn(function*() {
+		let path = _sc.profd+"/keybinding.ini";
+		if(!(yield OS.File.exists(path)))
+			yield OS.File.copy(_sc.chpath+"/content/defaultfiles/keybinding.ini", path);
+
+		yield OS.File.read(path, {encoding: "utf-8"}).then(function(text) {
+			let kbini = parseINI2(text), elm;
+			while(elm = kbini.next().value) {
+				if(typeof elm != "string")
+					customKeyBindings[elm.key] = elm.val;
+				else if(elm != "KeyBindings")
+					return;
+			}
+		});
 	});
 }
 

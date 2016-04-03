@@ -52,7 +52,7 @@ hook("load", function() {
 		yield loadKeyBindings();
 		//Informationen zu externen Anwendungen einlesen
 		$("#startup-loading").text("Loading External Application Definitions");
-		try { yield loadExternalApplicationDefs(_sc.chpath + "/content"); } catch(e) {}
+		try { yield loadExternalApplicationDefs(_sc.chpath + "/content"); } catch(e) { }
 		//Modulinformationen einlesen
 		$("#startup-loading").text("Loading Module Information");
 		try { yield loadModules(_sc.chpath + "/content/modules"); } catch(e) {}
