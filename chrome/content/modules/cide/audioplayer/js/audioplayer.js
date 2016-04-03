@@ -23,6 +23,64 @@ hook("load", function() {
 	}
 
 	initiliazePlayer();
+	function updateProgress(e) {
+		let wdt = $(this).outerWidth(), p = e.pageX/wdt;
+		if(audioobj)
+			audioobj.currentTime = Math.round(audioobj.duration*p);
+		$(this).find("#progressneedle").css("width", p*100+"%")
+	}
+	let lmbdown;
+	$("#progressmeter").mousedown(function(e) {
+		if(e.button == 0) {
+			lmbdown = true;
+			$(this).find("#progressneedle").addClass("no-update");
+			updateProgress.call(this, e);
+		}
+	}).mousemove(function(e) {
+		if(lmbdown)
+			updateProgress.call(this, e);
+		$("#time-tooltip").addClass("active");
+		let wdt = $(this).outerWidth(), p = e.pageX/wdt;
+		let time = Math.floor(audioobj.duration*p);
+		$("#time-tooltip").text(pad(Math.floor(time/60),2) + ":" + pad((time%60), 2));
+
+		let ttpwdt = $("#time-tooltip").outerWidth();
+		$("#time-tooltip").css("left", Math.max(Math.min(e.pageX-ttpwdt/2, $(this).outerWidth()-ttpwdt), 0)+"px");
+		e.stopImmediatePropagation();
+	}).mouseup(function(e) {
+		if(e.button == 0) {
+			lmbdown = false;
+			$(this).find("#progressneedle").removeClass("no-update");
+		}
+	}).mouseout(function(e) {
+		$("#time-tooltip").removeClass("active");
+	});
+	$("body").mousemove(function(e) {
+		//Da mouseout/mouseleave nicht immer alles mitbekommen nochmal doppelt.
+		if(!$(e.relatedTarget).parents("#progressmeter")[0])
+			$("#time-tooltip").removeClass("active");
+	});
+
+	function updateVolume(e) {
+		let wdt = $(this).outerWidth()-10, p = Math.min(Math.max((e.pageX-$(this).offset().left)/wdt, 0), 1);
+		if(audioobj)
+			audioobj.volume = p;
+	}
+
+	$("#currentvolume-wrapper").mousedown(function(e) {
+		if(e.button == 0) {
+			lmbdown = true;
+			updateVolume.call(this, e);
+		}
+	}).mousemove(function(e) {
+		if(lmbdown)
+			updateVolume.call(this, e);
+	}).mouseup(function(e) {
+		if(e.button == 0) {
+			lmbdown = false;
+			saveConfig(["Audiomodule"]);
+		}
+	});
 	return true;
 });
 
@@ -57,19 +115,22 @@ function initializeAudiofile() {
 		btn.removeClass("pause");
 	});
 	audioobj.addEventListener("timeupdate", function() {
+		if($("#progressneedle").hasClass("no-update"))
+			return;
+
 		var s = Math.floor(this.currentTime);
 		var p = Math.floor(this.currentTime/this.duration * 100);
 		$("#timecurrent").text(pad(Math.floor(s/60),2) + ":" + pad((s % 60), 2));
 		$("#progressneedle").css("width", p+"%");
 	});
 	audioobj.addEventListener("ended", function() {
-		audioobj.currentTime = 0;
+		//Soll am Ende der Audiodatei die gleiche Zeit anzeigen wie der angezeigt Endzeitpunkt
+		var dur = Math.round(this.duration);
+		$("#timecurrent").text(pad(Math.floor(dur/60), 2) + ":" + pad((dur % 60), 2));
 	});
 	audioobj.addEventListener("volumechange", function() {
 		setConfigData("Audiomodule", "Volume", audioobj.volume*100);
 		$("#currentvolume").css("width", audioobj.volume*100+"%");
-
-		saveConfig();
 	});
 	audioobj.addEventListener("error", function(e) {	
 		var error = e.target.error;
@@ -176,6 +237,15 @@ function fileLoaded(path) {
 /*-- Current Audio Controls --*/
 
 function playAudio() {
+	if(audioobj.currentTime == audioobj.duration) {
+		$("#progressneedle").addClass("no-update");
+		$("#progressneedle").css("width", "0px");
+		setTimeout(function() {
+			//Muss um ein Frame verzoegert werden, da CSS spaeter als Javascript ausgefuehrt wird (und die Transitions dann wieder aktiv waeren)
+			$("#progressneedle").removeClass("no-update");
+		}, 1);
+		audioobj.currentTime = 0;
+	}
 	audioobj.play();
 
 	return true;
