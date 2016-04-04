@@ -433,7 +433,9 @@ window.maximized .restore-window {
   display: initial; }
 
 #window-title {
-  text-align: center; }
+  text-align: center;
+  font-smooth: always;
+  -moz-osx-font-smoothing: greyscale; }
 
 .window-buttons-container > * {
   pointer-events: auto; }
@@ -469,7 +471,8 @@ resizer {
   padding: 3px;
   border-radius: 38px;
   background-color: #191919;
-  border: 1px solid #0f0f0f; }
+  border: 1px solid #0f0f0f;
+  color: whitesmoke; }
 
 .icon-the-mill {
   -moz-animation: windmill 2s infinite;
