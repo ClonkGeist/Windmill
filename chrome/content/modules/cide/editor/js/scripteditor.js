@@ -233,8 +233,8 @@ hook("load", function() {
 	bindKeyToObj(new KeyBinding("SelectAll", "Ctrl-A", function() { a_E.selectAll(); }));
 	bindKeyToObj(new KeyBinding("Undo", "Ctrl-Z", function() { a_E.undo(); }));
 	bindKeyToObj(new KeyBinding("Redo", "Ctrl-Y", function() { a_E.redo(); }));
-	bindKeyToObj(new KeyBinding("RemoveRight", "Delete", function() { a_E.remove("right"); }));
-	bindKeyToObj(new KeyBinding("RemoveLeft", "Backspace", function() { a_E.remove("left"); }));
+	bindKeyToObj(new KeyBinding("RemoveRight", "DELETE", function() { a_E.remove(); }));
+	bindKeyToObj(new KeyBinding("RemoveLeft", "BACK_SPACE", function() { a_E.remove("left"); }));
 	bindKeyToObj(new KeyBinding("Find", "Ctrl-F", function() {
 		
 		if(a_E.SearchBox && a_E.SearchBox.isFocused)
