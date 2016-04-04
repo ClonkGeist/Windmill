@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Windmill Documentation - Externe Anwendungen</title>
+		<link href="../../windmill_doc.css" rel="stylesheet">
+		<link href="../../prism.css" rel="stylesheet">
+		<meta charset="UTF-8">
+		<script>
+			//Windmillinterner Workaround: Da Windmill das Oeffnen externer Links sperrt (sodass diese in einem externen Browser geoffnet werden koennen)
+			//wird hier fuer Windmill das anders geloest.
+			if(navigator.userAgent.search(/\bwindmill\b/) != -1) {
+				window.addEventListener("load", function() {
+					let elements = document.getElementsByTagName("a");
+					for(var i = 0; i < elements.length; i++) {
+						elements[i].onclick = function(e) {
+							window.location.href = this.href;
+							e.preventDefault();
+						};
+					}
+				});
+			}
+		</script>
+	</head>
+	<body>
+		<div id="header">
+			Windmill Documentation
+		</div>
+		<div id="wrapper">
+			<nav id="navigation">
+				<ul>
+					<li class="navigation-elm"><a href="../_home/__head_de.html">Startseite</a></li><ul class="navigation-sublist">
+</ul>
+<li class="navigation-elm"><a href="../functionalities/__head_de.html">Funktionalitäten</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../functionalities/config/__head_de.html">config.js</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../functionalities/config/setConfigData_de.html">setConfigData</a></li>
+<li class="navigation-elm"><a href="../functionalities/config/setClonkPath_de.html">setClonkPath</a></li>
+<li class="navigation-elm"><a href="../functionalities/config/sc.clonkpath_de.html">_sc.clonkpath</a></li>
+<li class="navigation-elm"><a href="../functionalities/config/saveConfig_de.html">saveConfig</a></li>
+<li class="navigation-elm"><a href="../functionalities/config/loadConfig_de.html">loadConfig</a></li>
+<li class="navigation-elm"><a href="../functionalities/config/getConfig_de.html">getConfig</a></li>
+<li class="navigation-elm"><a href="../functionalities/config/getConfigData_de.html">getConfigData</a></li>
+<li class="navigation-elm"><a href="../functionalities/config/class_ConfigEntry_de.html">class ConfigEntry</a></li>
+<li class="navigation-elm"><a href="../functionalities/config/addConfigString_de.html">addConfigString</a></li>
+</ul>
+</ul>
+<li class="navigation-elm"><a href="__head_de.html">Externe Anwendungen</a></li><ul class="navigation-sublist">
+</ul>
+<li class="navigation-elm"><a href="../ctypes/__head_de.html">CTypes / Windmill Interface</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../ctypes/wmIProcess_de.html">wmIProcess</a></li>
+<li class="navigation-elm"><a href="../ctypes/WindmillInterface_de.html">Windmill Interface</a></li>
+</ul>
+
+				</ul>
+			</nav>
+			<div id="content">
+				<h1 id="externe-anwendungen">Externe Anwendungen</h1>
+<p>Um Windmill an manchen Stellen um Funktionalitäten zu erweitern, sind gegebenenfalls externe Anwendungen von Nöten, die der Benutzer ggf. vorher erst installieren und Windmill zur Verfügung stellen muss. Ein Beispiel dafür ist die Git Implementation in Windmill.</p>
+<h2 id="definitionen">Definitionen</h2>
+<p>Um Windmill mit Informationen über externe Anwendungen zu füttern, die es benutzen soll, müssen Definitionen zu diesen externen Anwendungen erstellt werden. Da alle Unterverzeichnisse von Windmill danach abgesucht werden, dürfen diese sich überall in den Unterverzeichnissen von Windmill befinden, sofern es Sinn macht. (Diese Funktion ist ggf. für mögliche Modding-Implementationen in der Zukunft so offengehalten) Bevorzugterweise sollten diese allerdings im Unterordner &quot;external_applications&quot; befinden.</p>
+<p>Bei den Definitionen handelt es sich um JSON-Objekte die im Format <strong>appdef_</strong>Name<strong>.json</strong> abgespeichert werden.</p>
+<p><strong>Unterstützte Keys</strong></p>
+<p>Erforderliche Keys sind fett markiert.</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Typ</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>identifier</strong></td>
+<td>string</td>
+<td>Einzigartige ID für die externe Anwendung, über die mittels Script auf die tatsächliche Anwendung zugegriffen werden kann</td>
+</tr>
+<tr>
+<td><strong>cfgidentifier</strong></td>
+<td>string</td>
+<td>ID-Erweiterung für die zugehörigen Config-Werte (zur Speicherung)</td>
+</tr>
+<tr>
+<td><strong>needed_file_win</strong></td>
+<td>string</td>
+<td>Dateiname der gesuchten Datei für Windows-Betriebssysteme. Andere Dateien werden abgelehnt.</td>
+</tr>
+<tr>
+<td><strong>needed_file_osx</strong></td>
+<td>string</td>
+<td>Dateiname der gesuchten Datei für OSX-Betriebssysteme. Andere Dateien werden abgelehnt.</td>
+</tr>
+<tr>
+<td><strong>needed_file_linux</strong></td>
+<td>string</td>
+<td>Dateiname der gesuchten Datei für Linux-Betriebssysteme. Andere Dateien werden abgelehnt.</td>
+</tr>
+<tr>
+<td>name</td>
+<td>string</td>
+<td>Lokalisierter Name der Applikation</td>
+</tr>
+<tr>
+<td>description</td>
+<td>string</td>
+<td>Lokalisierte Beschreibung der Applikation</td>
+</tr>
+<tr>
+<td>icon</td>
+<td>string</td>
+<td>Pfad zu einem Icon dass in den Einstellungen angezeigt wird</td>
+</tr>
+</tbody>
+</table>
+<p>String-Werte dürfen auch auf Lokalisierungen zugreifen. (Globaler Namespace)</p>
+<p><strong>Beispiel:</strong></p>
+<pre><code class="lang-javascript"><span class="token punctuation" >{</span>
+    <span class="token string" >"name"</span><span class="token punctuation" >:</span> <span class="token string" >"Git"</span><span class="token punctuation" >,</span>
+    <span class="token string" >"identifier"</span><span class="token punctuation" >:</span> <span class="token string" >"git"</span><span class="token punctuation" >,</span>
+    <span class="token string" >"cfgidentifier"</span><span class="token punctuation" >:</span> <span class="token string" >"Git"</span><span class="token punctuation" >,</span>
+    <span class="token string" >"description"</span><span class="token punctuation" >:</span> <span class="token string" >"$ExtApp_GitDescription$"</span><span class="token punctuation" >,</span>
+    <span class="token string" >"howto_info"</span><span class="token punctuation" >:</span> <span class="token string" >"$ExtApp_HowToGetGit$"</span><span class="token punctuation" >,</span>
+    <span class="token string" >"icon"</span><span class="token punctuation" >:</span> <span class="token string" >"chrome://windmill/content/img/applicationicon-git.png"</span><span class="token punctuation" >,</span>
+    <span class="token string" >"needed_file_win"</span><span class="token punctuation" >:</span> <span class="token string" >"git.exe"</span>
+<span class="token punctuation" >}</span>
+</code></pre>
+<h2 id="funktionsreferenz">Funktionsreferenz</h2>
+<p><strong>[ExtApplication]</strong> getAppById(<strong>string</strong> identifier);</p>
+<p>Gibt ein ExtApplication-Objekt der jeweiligen Anwendung zurück.</p>
+<ul>
+<li><strong>identifier:</strong><br>ID der Anwendung aus der JSON-Definition.</li>
+</ul>
+<p><strong>void</strong> registerNewApplication(<strong>string</strong> application_obj);</p>
+<p>Lädt eine als String übergebene JSON-Definition zu einer externen Anwendung in die interne Liste.</p>
+<ul>
+<li><strong>application_obj:</strong><br>Als String übergebene JSON-Definition.</li>
+</ul>
+<h3 id="class-extapplication">class ExtApplication</h3>
+<h3 id="attribute">Attribute</h3>
+<table>
+<thead>
+<tr>
+<th>Attribut</th>
+<th>Typ</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>path</td>
+<td>string</td>
+<td>Der in den Einstellungen eingestellte Dateipfad zur Anwendung.</td>
+</tr>
+<tr>
+<td>needed_file</td>
+<td>string</td>
+<td>Dateiname der auf dem aktuellen Betriebssystem auszuführenden Datei, der in der JSON-Definition eingestellt wird. <strong>Read-only.</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="funktionen">Funktionen</h3>
+<p><strong>constructor</strong> ExtApplication(<strong>object</strong> data);</p>
+<p><strong>data:</strong><br>  JSON-Objekt mit den o.g. Werten.</p>
+<p><strong>bool</strong> isAvailable();</p>
+<p>Gibt <code>true</code> zurück, wenn ein gültiger Programmpfad zu einer existierenden Datei angegeben worden ist und die Anwendung somit verfügbar ist.</p>
+<p><strong>void</strong> showError();</p>
+<p>Gibt eine formatierte und lokalisierte Fehlermeldung mit Informationen zur Beschaffung der jeweiligen Anwendung aus.</p>
+<p><strong>[wmIProcess]</strong> create(...pars);</p>
+<p>Erstellt eine Prozessinstanz zur jeweiligen Anwedung, allerdings mit vorheriger Prüfungen auf die Richtigkeit der Angaben und entsprechender Fehlermeldungsausgabe.<br>Die Parameter werden direkt an die <code>create</code>-Funktion des erstellten <code>wmIProcess</code>-Objekts weitergegeben, sind somit die gleichen.</p>
+<h2 id="beispiel">Beispiel</h2>
+<pre><code class="lang-javascript"><span class="token keyword" >let</span> git <span class="token operator" >=</span> <span class="token function" >getAppByID</span><span class="token punctuation" >(</span><span class="token string" >"git"</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+<span class="token comment" spellcheck="true">//Prüfen ob Git verfügbar ist</span>
+<span class="token keyword" >if</span><span class="token punctuation" >(</span>git<span class="token punctuation" >.</span><span class="token function" >isAvailable</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >)</span>
+    <span class="token comment" spellcheck="true">//Falls ja, Prozess erstellen und clonen</span>
+    git<span class="token punctuation" >.</span><span class="token function" >create</span><span class="token punctuation" >(</span><span class="token punctuation" >[</span><span class="token string" >"clone"</span><span class="token punctuation" >,</span> <span class="token keyword" >this</span><span class="token punctuation" >.</span>cloneurl<span class="token punctuation" >,</span> <span class="token keyword" >this</span><span class="token punctuation" >.</span>path<span class="token punctuation" >]</span><span class="token punctuation" >,</span> <span class="token number" >0x1</span><span class="token punctuation" >,</span> <span class="token punctuation" >(</span>exitCode<span class="token punctuation" >)</span> <span class="token operator" >=</span><span class="token operator" >></span> <span class="token punctuation" >{</span> 
+        <span class="token comment" spellcheck="true">//Wenn kein Fehler aufgetreten ist, Erstellungsprozess abschließen und Git Configwerte für Usename und Email setzen.</span>
+        <span class="token keyword" >if</span><span class="token punctuation" >(</span><span class="token operator" >!</span>exitCode<span class="token punctuation" >)</span> <span class="token punctuation" >{</span>
+            <span class="token keyword" >if</span><span class="token punctuation" >(</span>options<span class="token punctuation" >.</span>success<span class="token punctuation" >)</span>
+                options<span class="token punctuation" >.</span><span class="token function" >success</span><span class="token punctuation" >(</span><span class="token keyword" >this</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+
+            <span class="token function" >unlockModule</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+            git<span class="token punctuation" >.</span><span class="token function" >create</span><span class="token punctuation" >(</span><span class="token punctuation" >[</span><span class="token string" >"config"</span><span class="token punctuation" >,</span> <span class="token string" >"-f"</span><span class="token punctuation" >,</span> _this<span class="token punctuation" >.</span>path<span class="token operator" >+</span><span class="token string" >"/.git/config"</span><span class="token punctuation" >,</span> <span class="token string" >"user.name"</span><span class="token punctuation" >,</span> options<span class="token punctuation" >.</span>userconfig<span class="token punctuation" >.</span>username<span class="token punctuation" >]</span><span class="token punctuation" >,</span> <span class="token number" >0x2</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+            git<span class="token punctuation" >.</span><span class="token function" >create</span><span class="token punctuation" >(</span><span class="token punctuation" >[</span><span class="token string" >"config"</span><span class="token punctuation" >,</span> <span class="token string" >"-f"</span><span class="token punctuation" >,</span> _this<span class="token punctuation" >.</span>path<span class="token operator" >+</span><span class="token string" >"/.git/config"</span><span class="token punctuation" >,</span> <span class="token string" >"user.email"</span><span class="token punctuation" >,</span> options<span class="token punctuation" >.</span>userconfig<span class="token punctuation" >.</span>email<span class="token punctuation" >]</span><span class="token punctuation" >,</span> <span class="token number" >0x2</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+
+            <span class="token operator" >/</span>Header speichern
+            <span class="token keyword" >this</span><span class="token punctuation" >.</span><span class="token function" >saveHeader</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+        <span class="token punctuation" >}</span>
+        <span class="token keyword" >else</span>
+            options<span class="token punctuation" >.</span><span class="token function" >rejected</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+    <span class="token punctuation" >}</span><span class="token punctuation" >,</span> <span class="token keyword" >function</span><span class="token punctuation" >(</span>data<span class="token punctuation" >)</span> <span class="token punctuation" >{</span>
+        <span class="token comment" spellcheck="true">//Ausgabe von Git in die Git Konsole loggen</span>
+        <span class="token function" >logToGitConsole</span><span class="token punctuation" >(</span>data<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+    <span class="token punctuation" >}</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Führt, falls Git verfügbar ist, einen Repository-Clone-Prozess durch.</p>
+
+			</div>
+		</div>
+	</body>
+</html>

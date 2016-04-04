@@ -96,7 +96,7 @@ li:focus *, li:focus {
 
 .maintree {
   transition: background-color 0.4s;
-  padding-right: 1.5em; }
+  padding-right: 0.5em; }
 
 .maintree.dragover {
   transition: background-color 0.4s;
@@ -434,6 +434,9 @@ li:focus *, li:focus {
 
 .icon-open-external:before {
   content: "E"; }
+
+.icon-documentation:before {
+  content: "?"; }
 
 .toolbar {
   height: 24px;

@@ -30,6 +30,10 @@ body {
 	background-color: $interact_red;
 	height: 100%;
 	width: 0%;
+	transition: width 1s;
+}
+#progressneedle.no-update {
+	transition: width 0s;
 }
 
 
@@ -41,6 +45,21 @@ body {
 }
 
 .time-display {
+}
+
+#time-tooltip {
+	position: absolute;
+	font-size: 0.6em;
+	background-color: rgba(0, 0, 0, 0.8);
+	color: white;
+	opacity: 0;
+	
+	transition: opacity 0.4s;
+	padding: 0 2px;
+	pointer-events: none;
+}
+#time-tooltip.active {
+	opacity: 1;
 }
 
 #button-wrapper {
@@ -56,6 +75,14 @@ body {
 
 .button:hover {
 	color: rgb(80, 80, 80);
+}
+
+.button.active {
+	color: $interact_red;
+	
+	&:hover {
+		color: $interact_red;
+	}
 }
 
 #button-play.pause:before {
@@ -90,6 +117,7 @@ body {
 	display: flex;
 	align-items: center;
 	padding: 0 5px;
+	height: 100%;
 }
 
 #currentvolume {

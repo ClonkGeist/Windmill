@@ -323,6 +323,9 @@
 .icon-open-external:before {
   content: "E"; }
 
+.icon-documentation:before {
+  content: "?"; }
+
 window {
   background-color: #fafafa;
   font-family: "Segoe UI", "Trebuchet MS", sans-serif;

@@ -53,7 +53,7 @@ function initializeContextMenu() {
 			removeDeflistEntry(obj_by);
 		}, 0, { identifier: "normal" }],
 		["$ctxAddItem$", 0, function(obj_by) {
-			addDeflistEntry(getWrapper(".deflist-current > .deflist-ao-list-content"), $(obj_by).attr("data-defid"), 0, { nodragdrop: true });
+			addDeflistEntry(getWrapper(".deflist-current > .deflist-ao-list-content"), $(obj_by).attr("data-defid"), 0, { nodragdrop: true, trackchange: true });
 		}, 0, { identifier: "selection" }],
 		"seperator",
 		["$ctxNavigateInExplorer$", 0, function(obj_by) { //Definition im Explorer navigieren/auswaehlen
@@ -276,7 +276,7 @@ function addScript(path, lang, index, path, fShow) {
 		getWrapper(".nav-page-environment", index).mousedown(navbtnfn("page-environment"));
 		getWrapper(".nav-page-code", index).mousedown(navbtnfn("page-code"));
 		getWrapper(".nav-reload", index).mousedown(reloadDefinitions);
-		getWrapper(".nav-save", index).mousedown(function() { return saveTabContent(index); });
+		getWrapper(".nav-save", index).mousedown(function() { return saveTab(index); });
 
 		tooltip(getWrapper(".nav-reload", index), "$TooltipReloadDefs$", "html", 600);
 
@@ -292,7 +292,7 @@ function addScript(path, lang, index, path, fShow) {
 			e = e.originalEvent;
 			e.preventDefault();
 			var data = e.dataTransfer.getData("cide/deflistitem");
-			addDeflistEntry($(this).find(".deflist-ao-list-content"), data, 0, { nodragdrop: true });
+			addDeflistEntry($(this).find(".deflist-ao-list-content"), data, 0, { nodragdrop: true, trackchange: true });
 		});
 
 		getWrapper(".deflist-ao-searchinput").keyup(function(e) {
@@ -348,6 +348,9 @@ function loadScenarioContentToElements(index, skipDefsel) {
 					break;
 			}
 		}
+		$(this).unbind("change").change(function() {
+			onFileChanged(getCurrentWrapperIndex());
+		});
 	});
 }
 
@@ -512,6 +515,7 @@ function changeDeflistEntryValue(entry, change) {
 
 	var val = Math.max(Math.min(getDeflistEntryValue(entry)+change, maxval), 1);
 	$(entry).find(".definition-selection-item-counter").text(val);
+	onFileChanged(getCurrentWrapperIndex());
 	return;
 }
 
@@ -594,6 +598,9 @@ function addDeflistEntry(deflist, def, deflistitem, options = {}) {
 	if(ctxDeflist)
 		ctxDeflist.bindToObj(deflistitem[0]);
 
+	if(options.trackchange)
+		onFileChanged(getCurrentWrapperIndex());
+
 	return;
 }
 
@@ -606,6 +613,7 @@ function removeDeflistEntry(target) {
 	else if($(target).prev()[0])
 		$(target).prev().trigger("mousedown").focus();
 	$(target).remove();
+	onFileChanged(getCurrentWrapperIndex());
 	return;
 }
 
@@ -1004,6 +1012,11 @@ function setupNumberInputs() {
 }
 
 /*-- Deck Callbacks --*/
+
+function onFileStatusChange(changed, index) {
+	changed?onFileChanged(index):onFileUnchanged(index);
+	return true;
+}
 
 function checkIfTabIsUnsaved() { return false; }
 

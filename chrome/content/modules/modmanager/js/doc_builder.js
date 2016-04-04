@@ -1,5 +1,6 @@
 
 let marked = Cu.import("resource://docs/marked.jsm").export_marked;
+let {he} = Cu.import("resource://docs/he.jsm");
 marked.setOptions({
 	renderer: new marked.Renderer(),
 	gfm: true,
@@ -88,12 +89,16 @@ function buildDoc(path = _sc.chpath + "/docs/docs", __rec) {
 					let file = lang_md_files[lang][i], dest = _sc.chpath + "/docs/build/" + lang + "/" + file.path;
 					log("build " + file.path + " at " + dest);
 					
-					let navigation = "", ulstack = 0;
+					let navigation = "", ulstack = 0, extradepth = false;
 					for(var j = lang_md_files[lang].length-1, relpath = undefined; j >= 0; j--) {
 						let linkedfile = lang_md_files[lang][j];
 						if(relpath && linkedfile.filepath.search(relpath) == -1) {
 							let splitted = relpath.split("/");
-							while(splitted.pop() && linkedfile.filepath.search(splittet.join("/")) == -1 && ulstack) {
+							while(splitted.pop() && linkedfile.filepath.search(splitted.join("/")) == -1 && ulstack) {
+								navigation += "</ul>\r\n";
+								ulstack--;
+							}
+							if(extradepth) {
 								navigation += "</ul>\r\n";
 								ulstack--;
 							}
@@ -117,6 +122,7 @@ function buildDoc(path = _sc.chpath + "/docs/docs", __rec) {
 							relpath = linkedfile.parent_path;
 							navigation += `<li class="navigation-elm"><a href="${path}">${linkedfile.title}</a></li><ul class="navigation-sublist">\r\n`;
 							ulstack++;
+							extradepth = true;
 						}
 						else
 							navigation += `<li class="navigation-elm"><a href="${path}">${linkedfile.title}</a></li>\r\n`;
@@ -131,16 +137,20 @@ function buildDoc(path = _sc.chpath + "/docs/docs", __rec) {
 						log("Creating Syntax Highlighting...");
 						let promise = new Promise(function(resolve, reject) {
 							worker.onmessage = function(event) {
-								let result = event.data;
-								let i = 0;
+								let result = event.data, i = 0;
 								file.content = file.content.replace(/<code class="lang-.+?">(.|\n)+?<\/code>/g, function() { 
-									return result[i];
+									return result[i++];
 								});
 								resolve();
 							}
 							worker.onerror = function(e) {
 								throw e.message + "("+e.filename+":"+e.lineno+")";
 							}
+							for(var i = 0; i < codeblocks.length; i++)
+								codeblocks[i] = he.decode(codeblocks[i]);
+							/*codeblocks[i] = codeblocks[i].replace(/&.+?;/g, function(match) {
+									
+								});*/
 							worker.postMessage(codeblocks);
 						});
 						yield promise;
@@ -175,6 +185,7 @@ function buildDoc(path = _sc.chpath + "/docs/docs", __rec) {
 		if(!__rec) {
 			log("***********************************");
 			log("Building process finished.");
+			_mainwindow.$("#docFrame")[0].contentWindow.location.reload();
 		}
 	}, function(reason) {
 		log("***********************************");

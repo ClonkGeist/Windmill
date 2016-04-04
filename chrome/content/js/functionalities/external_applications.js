@@ -13,7 +13,7 @@ function loadExternalApplicationDefs(path) {
 		while(true) {
 			let entry = yield iterator.next();
 			if(entry.isDir) //Unterverzeichnisse untersuchen
-				yield loadExternalApplicationDefs(entry.path);
+				try { yield loadExternalApplicationDefs(entry.path); } catch(e) {}
 			else if(entry.name.search(/^appdef_.+\.json$/i) != -1) {//Applikationdefinition einlesen
 				let extapp = yield OS.File.read(entry.path, {encoding: "utf-8"});
 				registerNewApplication(extapp);
