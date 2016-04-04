@@ -2,28 +2,30 @@ html, body {
 	height: 100%;
 	width: 100%;
 	margin: 0;
-	color: rgb(80, 80, 80);
+	color: $ui-text-clr;
 }
 
 body {
 	display: flex;
 	align-items: center;
-	background-color: rgb(245, 245, 245);
+	background-color: $clr-module-bg;
 	font-family: $font-stack;
 }
 
 #progressmeter {
 	position: absolute;
-	height: 3px;
+	height: 10px;
 	background-color: rgb(180, 180, 180);
 	top: 0;
 	left: 0;
 	right: 0;
-	transition: height 0.3s;
+	border-bottom: 7px solid $clr-module-bg;
+	transition: border-bottom-width 0.3s;
+	box-sizing: border-box;
 }
 
 #progressmeter:hover {
-	height: 10px;
+	border-bottom-width: 0px;
 }
 
 #progressneedle {
