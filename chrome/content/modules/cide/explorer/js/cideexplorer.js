@@ -120,7 +120,7 @@ $(window).load(function() {
 	$("#dlg_workenvironment").remove();
 
 	//Erstellungsdialog fuer Arbeitsumgebungen
-	$("#newWorkEnvironment").mousedown(createNewWorkEnvironmentDlg);
+	$("#newWorkEnvironment").mousedown(function() { createNewWorkEnvironmentDlg(); });
 	//Importieren von Arbeitsumgebungen
 	$("#importWorkEnvironment").mousedown(function() {
 		current_path = getConfigData("CIDE", "WorkspaceParentDirectory");
@@ -218,8 +218,7 @@ function createNewWorkEnvironmentDlg(parentWorkEnv, parentContainer) {
 			let type = parseInt($(_self.element).find("#dex_dlg_workenv_type").val()), file;
 			if(type == _mainwindow.WORKENV_TYPE_ClonkPath) {
 				//Checken ob der angegebene Pfad existiert/valide ist
-				let path = $(_self.element).find("#dex_dlg_workenv_ocpath").text();
-				let info;
+				let path = $(_self.element).find("#dex_dlg_workenv_ocpath").text(), info;
 				try { info = yield OS.File.stat(path); }
 				catch(err) {
 					if(err.becauseNoSuchFile) {

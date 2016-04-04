@@ -76,7 +76,47 @@ function openGitResetDialog() {
 }
 
 function openGitSettingsDialog() {
-	
+	let path = getFullPathForSelection(), workenv = getWorkEnvironmentByPath(path);
+	let cloneurl = workenv.rawCloneUrl;
+
+	var dlg = new WDialog("$DlgGitSettings$", MODULE_LPRE, { btnright: [{ preset: "accept",
+			onclick: function(e, btn, _self) {
+				let newUsername = $(_self.element).find("#git-changeusername").val(),
+					newPassword = $(_self.element).find("#git-changepassword").val()
+					oldUsername = $(_self.element).find("#git-changeusername").attr("data-default"),
+					oldPassword = $(_self.element).find("#git-changepassword").attr("data-default");
+				if(newUsername == oldUsername && newPassword == oldPassword)
+					return;
+				if(newUsername)
+					workenv.userinfo = {username: newUsername, password: newPassword};
+				else
+					workenv.userinfo = null;
+				getAppByID("git").create(["-C", path, "remote", "set-url", "origin", workenv.cloneurl], 0x1, function() {
+					EventInfo("$EI_SettingsChanged$");
+				}, function(data) {
+					logToGitConsole(data);
+				});
+			}
+		}, "cancel"]});
+
+	let content = "";
+	let {username, password} = workenv.userinfo || {username:"", password:""};
+
+	content += `<hbox style="margin-bottom: 10px">
+					<label value="$DlgGitSourceURL$:" flex="1" />
+					<label value="${cloneurl}" flex="1" />
+				</hbox>
+				<hbox>
+					<label value="$DlgWERepositoryUserName$:" flex="1" />
+					<textbox id="git-changeusername" placeholder="$DlgInputUserName$" flex="1" value="${username}" data-default="${username}" />
+				</hbox>
+				<hbox>
+					<label value="$DlgWERepositoryPassword$:" flex="1" />
+					<textbox id="git-changepassword" placeholder="$DlgInputPassword$" flex="1" type="password" value="${password}" data-default="${password}" />
+				</hbox>`;
+
+	dlg.setContent(content);
+	dlg.show();
 }
 
 function openGitAddDialog() {
@@ -490,7 +530,7 @@ function openGitCommitLogDialog(path, callback) {
 /*-- Sichtbarkeit --*/
 
 function gitHideContextItems(by_obj, identifier) {
-	var workenv = $(by_obj).hasClass("workenvironment");
+	let isWorkEnv = $(by_obj).hasClass("workenvironment");
 	switch(identifier) {
 		//Eintraege die nur fuer WorkEnvironments angezeigt werden
 		case "ctxGitRevert":
@@ -498,12 +538,12 @@ function gitHideContextItems(by_obj, identifier) {
 		case "ctxGitMerge":
 		case "ctxGitReset":
 		case "ctxGitSettings":
-			return workenv?0:2;
+			return isWorkEnv?0:2;
 		//Eintraege die nicht fuer WorkEnvironments angezeigt werden
 		case "ctxGitRemove":
 		case "ctxGitMove":
 		case "ctxGitIgnore":
-			return workenv?2:0;
+			return isWorkEnv?2:0;
 	}
 }
 
