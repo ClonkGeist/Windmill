@@ -150,6 +150,19 @@ class WorkEnvironment {
 			else
 				this.sourcedir = this.path;
 		}
+
+		if(this.repository) {
+			let git = getAppByID("git");
+			git.create(["config", "-f", this.path+"/.git/config", "--get", "remote.origin.url"], 0x2, null, (data) => {
+				let matches = data.match(/https:\/\/(.+?):(.+?)@/);
+				if(!matches)
+					return;
+
+				let username = matches[1], password = matches[2];
+				this.userinfo = { username, password };
+			});
+			
+		}
 	}
 
 	saveHeader() {
@@ -264,6 +277,7 @@ class WorkEnvironment {
 		return url;
 	}
 	set cloneurl(url) { this.header.Repository.CloneURL = url; }
+	get rawCloneUrl() { return this.header.Repository.CloneURL; }
 	get index() { return this.header.Workspace.Index; }
 	set index(index) { this.header.Workspace.Index = index; }
 	
