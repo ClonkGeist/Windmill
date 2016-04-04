@@ -249,7 +249,7 @@
 							<vbox id="gitlog-entrylist" flex="1">
 								<hbox class="log-listitem draft">
 									<vbox class="log-listitem-type"></vbox>
-									<description class="log-listitem-content" flex="1"></description>
+									<vbox class="log-listitem-content" flex="1"></vbox>
 								</hbox>
 							</vbox>
 						</vbox>
@@ -270,7 +270,7 @@
 							<vbox id="log-entrylist" flex="1">
 								<hbox class="log-listitem draft">
 									<vbox class="log-listitem-type"></vbox>
-									<description class="log-listitem-content" flex="1"></description>
+									<vbox class="log-listitem-content" flex="1"></vbox>
 								</hbox>
 							</vbox>
 						</vbox>
