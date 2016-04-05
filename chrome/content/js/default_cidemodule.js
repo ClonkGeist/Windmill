@@ -67,6 +67,16 @@ function getUnsavedFiles() {
 	return files;
 }
 
+function saveFileByPath(path) {
+	let tabs = TabManager();
+	for(var id in tabs)
+		if(tabs[id])
+			if(tabs[id][cda.path] == path)
+				return saveTab(id);
+	
+	return -1;
+}
+
 function fileLoaded(path) {
 	let tabs = TabManager();
 	for(var id in tabs)
@@ -77,14 +87,12 @@ function fileLoaded(path) {
 	return -1;
 }
 
-function saveFileByPath(path) {
-	let tabs = TabManager();
+function hasOpenedSessions() {
+	let tabs = TabManager()
 	for(var id in tabs)
 		if(tabs[id])
-			if(tabs[id][cda.path] == path)
-				return saveTab(id);
-	
-	return -1;
+			return true;
+	return false;
 }
 
 function frameWindowTitle() {
