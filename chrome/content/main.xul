@@ -62,10 +62,10 @@
 		<stack id="titlestack">
 			<box id="header" class="header-ctrl">
 				<description id="window-title" value="Windmill" style="pointer-events: none;" flex="1" />
-				<!-- the classico of three buttons-->
 			</box>
 			<vbox style="pointer-events: none;">
 				<hbox class="window-buttons-container" pack="end">
+					<!-- the classico of three buttons-->
 					<box class="window-button icon-minimize" onclick="window.minimize()"/>
 					<box class="maximize-window window-button icon-maximize" onclick="maximizeWindow()"/>
 					<box class="restore-window window-button icon-restore" onclick="restoreWindow()"/>
@@ -279,10 +279,10 @@
 			</hbox>
 			
 			<box top="-10" left="50">
-				<image class="overallmode togglemode-img activated invisible" id="toggle-cbridge" src="chrome://windmill/content/img/mode-code.png"/>
+				<box class="overallmode togglemode-img activated invisible icon-controller icon-24" id="toggle-cbridge"></box>
 			</box>
 			<box top="-10" left="90">
-				<image class="overallmode togglemode-img activated invisible" id="toggle-cide" src="chrome://windmill/content/img/mode-play.png"/>
+				<box class="overallmode togglemode-img activated invisible icon-brackets icon-24" id="toggle-cide"></box>
 			</box>
 		</stack>
 	</vbox>

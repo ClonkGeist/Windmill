@@ -340,15 +340,17 @@ body {
 
 #progressmeter {
   position: absolute;
-  height: 3px;
+  height: 10px;
   background-color: #b4b4b4;
   top: 0;
   left: 0;
   right: 0;
-  transition: height 0.3s; }
+  border-bottom: 7px solid whitesmoke;
+  transition: border-bottom-width 0.3s;
+  box-sizing: border-box; }
 
 #progressmeter:hover {
-  height: 10px; }
+  border-bottom-width: 0px; }
 
 #progressneedle {
   background-color: #dc4632;
