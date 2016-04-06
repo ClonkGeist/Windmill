@@ -553,4 +553,17 @@ textbox.deactivated {
 #previewdesc {
   /*white-space: pre-wrap;*/ }
 
+.tree-splitter {
+  height: 1px;
+  width: 140px;
+  background-color: #c8c8c8;
+  margin: 4px 20px; }
+  .tree-splitter description, .tree-splitter image {
+    display: none; }
+  .tree-splitter .tree-selected {
+    outline-offset: 0;
+    background-color: #c8c8c8;
+    outline: none;
+    border: none; }
+
 /*	need some space	*/

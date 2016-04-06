@@ -152,6 +152,8 @@ function getTreeEntryData(entry, fext) {
 			else
 				data.icon = "file:///"+iconpath;
 		}
+		if(entry.leafName.split(".").pop() == "ocs" && !(yield OS.File.exists(formatPath(entry.path)+"/Script.c")))
+			data.special = "tree-splitter";
 
 		return data;
 	});

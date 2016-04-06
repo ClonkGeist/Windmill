@@ -142,4 +142,22 @@ textbox.deactivated {
 	/*white-space: pre-wrap;*/
 }
 
+.tree-splitter {
+	height: 1px;
+	width: 140px;
+	background-color: rgb(200, 200, 200);
+	margin: 4px 20px;
+
+	description, image {
+		display: none;
+	}
+	
+	.tree-selected {
+		outline-offset: 0;
+		background-color: rgb(200, 200, 200);
+		outline: none;
+		border: none;
+	}
+}
+
 /*	need some space	*/

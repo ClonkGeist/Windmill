@@ -373,7 +373,7 @@ function addFileTreeEntry(entry, parentobj, sort_container) {
 		return false;
 
 	let task = Task.spawn(function*() {
-		let {title, icon} = yield getTreeEntryData(entry, fext)||{};
+		let {title, icon, special} = yield getTreeEntryData(entry, fext)||{};
 		if(!title)
 			title = entry.leafName;
 
@@ -406,7 +406,7 @@ function addFileTreeEntry(entry, parentobj, sort_container) {
 			icon = "chrome://windmill/content/img/icon-fileext-other.png";
 		
 		//Baumelement erzeugen
-		createTreeElement(parentobj, title, container, 0, icon, entry.leafName, 0);
+		createTreeElement(parentobj, title, container, 0, icon, entry.leafName, special);
 		if(sort_container)
 			sortTreeContainerElements(parentobj);
 		return true;
