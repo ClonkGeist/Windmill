@@ -116,8 +116,9 @@ function getTreeEntryData(entry, fext) {
 		return false;
 
 	let task = Task.spawn(function*() {
-		let data = {};
-		let title = yield OS.File.read(entry.path+"/Title.txt", {encoding: "utf-8"});
+		let data = {}, title;
+		try { title = yield OS.File.read(entry.path+"/Title.txt", {encoding: "utf-8"}); }
+		catch(e) { log(e, true); }
 		if(title) {
 			lines = title.split('\n');
 			let titleUS;
@@ -134,12 +135,13 @@ function getTreeEntryData(entry, fext) {
 			if(!data.title && titleUS)
 				data.title = titleUS;
 		}
-		let iconpath = entry.path+"/Icon.png";
+		let iconpath = formatPath(entry.path)+"/Icon.png";
 		if(yield OS.File.exists(iconpath)) {
+			iconpath = encodeURI(iconpath).replace(/#/g, "%23");
 			if(OS_TARGET == "WINNT")
-				data.icon = "file://"+iconpath.replace(/\\\\/, "/");
+				data.icon = "file:///"+iconpath.replace(/^(.):\\\//, "$1:/");
 			else
-				data.icon = "file://"+iconpath;
+				data.icon = "file:///"+iconpath;
 		}
 
 		return data;

@@ -259,7 +259,7 @@
 				<!-- Log -->
 
 				<vbox id="developerlog" class="sidebar invisible">
-					<vbox id="page-log" class="cds-page" flex="1">
+					<vbox id="page-log" class="cds-page" flex="1" tabindex="0">
 						<hbox class="ps-h cds-h">
 							<caption>Log</caption>
 							<spacer flex="1" />
