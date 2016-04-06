@@ -1,3 +1,12 @@
+let marked = Cu.import("resource://docs/marked.jsm").export_marked;
+
+marked.setOptions({
+	renderer: new marked.Renderer(),
+	gfm: true,
+	breaks: true,
+	sanitize: true
+});
+
 function initializeDirectory() {
 	//Verzeichnis einlesen und Inhalte auflisten
 	loadDirectory(_sc.clonkpath());
@@ -186,7 +195,11 @@ function onTreeSelect(obj) {
 		}
 
 		//HTML/XUL in Beschreibungen deaktivieren
-		$("#previewdesc").text(text);
+		let splittedtext = text.split("\n");
+		if(/^ .+?$/.test(splittedtext[0]))
+			splittedtext[0] = "##"+splittedtext[0];
+		text = splittedtext.join("\n");
+		$("#previewdesc").html(marked(text).replace(/(<[^\/]+?)>/g, '$1 xmlns="http://www.w3.org/1999/xhtml">'));
 	});
 	return true;
 }

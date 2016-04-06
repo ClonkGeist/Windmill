@@ -339,8 +339,8 @@ function selectTreeItem(obj, openParents) {
 		$(obj).focus().addClass("tree-selected");
 	
 	onTreeDeselect(lastobj);
-	
-	if(obj && obj[0]) {
+
+	if($(obj)[0]) {
 		onTreeSelect(obj);
 		
 		//Scrolling
