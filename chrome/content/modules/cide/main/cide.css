@@ -1,3 +1,4 @@
+/* deprecated */
 /*-- Sammelstyles fuer Inhalte der default_module.js --*/
 .eventinfo {
   background-color: black;
@@ -385,16 +386,16 @@ toolbox {
   height: 14px;
   max-height: 14px;
   color: grey;
-  padding: 0;
-  margin: 0;
-  margin-left: 0.3em;
+  padding: 0 0 0 2px;
+  margin: 0 0 0 .3em;
   border-radius: 14px;
   -moz-box-align: center;
-  font-size: 12px; }
+  font-size: 10px; }
 
 .close-button:hover {
   color: #fafafa;
-  background-color: #dc4632; }
+  background-color: #dc4632;
+  outline: 2px solid #dc4632; }
 
 .deck-desc {
   color: #b4b4b4;

@@ -1,3 +1,4 @@
+/* deprecated */
 /*-- Sammelstyles fuer Inhalte der default_module.js --*/
 .eventinfo {
   background-color: black;
@@ -326,6 +327,15 @@
 .icon-documentation:before {
   content: "?"; }
 
+/*
+@structure:
+
+<div class="special-cb">
+	<input id="<id"> type="checkbox"/>
+	<label for="<id>"><text></label>
+</div>
+
+*/
 window {
   background-color: #fafafa;
   font-family: "Segoe UI", "Trebuchet MS", sans-serif;
@@ -340,6 +350,7 @@ button {
   color: #505050;
   display: inline-flex;
   outline: none;
+  border-radius: 2px;
   text-align: center; }
   button:hover {
     background-color: #b4b4b4;

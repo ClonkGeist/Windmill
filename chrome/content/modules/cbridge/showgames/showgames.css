@@ -1,3 +1,4 @@
+/* deprecated */
 /*-- Sammelstyles fuer Inhalte der default_module.js --*/
 .eventinfo {
   background-color: black;
@@ -328,7 +329,7 @@
 
 html, body {
   background-color: whitesmoke;
-  font-family: "Segoe UI", Verdana, sans-serif;
+  font-family: "Segoe UI", "Trebuchet MS", sans-serif;
   color: #282828;
   padding: 0;
   margin: 0; }
@@ -388,8 +389,8 @@ html, body, #wrapper {
 #ref-layout-list > *:first-child {
   display: inline-block; }
 
-#ref-toggle-update.activated {
-  color: #0876BA; }
+#ref-toggle-update.enabled {
+  color: #00a5d2; }
 
 /*	references 	*/
 #reference-list {
@@ -398,11 +399,12 @@ html, body, #wrapper {
   display: table;
   padding: 0;
   border-collapse: collapse !important; }
+  #reference-list .reference.runtimejoin {
+    color: #282828; }
 
 .reference {
-  /*background-color: rgb(250, 250, 250);*/
   background-color: white;
-  /*border: 1px solid rgb(230, 230, 230);*/
+  background-color: #fafafa;
   width: 33.3%;
   height: 6em;
   float: left;
@@ -416,10 +418,37 @@ html, body, #wrapper {
   /*  workaround ... */
   border: none;
   box-shadow: 1px 0 0 0 #e6e6e6, 0 1px 0 0 #e6e6e6, 1px 1px 0 0 #e6e6e6, 1px 0 0 0 #e6e6e6 inset, 0 1px 0 0 #e6e6e6 inset;
-  background-image: repeating-linear-gradient(-45deg, transparent, transparent 4px, #f0f0f0 4px, #f0f0f0 5px); }
+  background-image: repeating-linear-gradient(-45deg, transparent, transparent 4px, #f0f0f0 4px, #f0f0f0 5px);
+  /* reference classes to control their appearence:
 
-.reference p {
-  margin: 0; }
+		reference-
+			draft
+			running
+			runtimejoin
+			password
+			league
+			portsopen
+	*/ }
+  .reference p {
+    margin: 0; }
+  .reference:hover {
+    outline: 3px solid #d7d7d7;
+    outline-offset: -3px; }
+  .reference.running {
+    color: grey; }
+  .reference.running .ref-titleimage {
+    filter: grayscale(100%); }
+  .reference .password-icon,
+  .reference .league-icon {
+    display: none; }
+  .reference.password .password-icon,
+  .reference.league .league-icon {
+    display: inline-block; }
+  .reference.ref-selected {
+    outline: 3px solid rgba(250, 169, 0, 0.7);
+    outline-offset: -3px; }
+  .reference.reference-draft {
+    display: none; }
 
 .ref-flexwrapper {
   display: flex; }
@@ -468,36 +497,6 @@ html, body, #wrapper {
 
 .ref-titleimage {
   height: 6em; }
-
-/* reference classes to control their appearence:
-
-	reference-
-		draft
-		running
-		runtimejoin
-		password
-		league
-		portsopen
-*/
-.reference-draft {
-  display: none; }
-
-.reference.running {
-  color: grey; }
-
-.reference.running .ref-titleimage {
-  filter: grayscale(100%); }
-
-#reference-list .reference.runtimejoin {
-  color: #282828; }
-
-.password-icon,
-.league-icon {
-  display: none; }
-
-.reference.password .password-icon,
-.reference.league .league-icon {
-  display: inline-block; }
 
 .portsopen {
   background-image: none; }
@@ -610,21 +609,23 @@ h2 {
 /* button */
 #ressavemode-btn {
   display: none; }
-
-#ressavemode-btn.ressavemode {
-  display: block;
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  width: 32px;
-  height: 32px;
-  background-color: black;
-  opacity: 0.5;
-  transition: opacity 0.3s, background-color 0.3s;
-  z-index: 1; }
-
-#ressavemode-btn:hover {
-  opacity: 1;
-  background-color: #db4631; }
+  #ressavemode-btn.ressavemode {
+    display: block;
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 32px;
+    height: 32px;
+    background-color: #ebebeb;
+    z-index: 1;
+    border-bottom: 2px solid #d7d7d7;
+    border-radius: 3px;
+    color: #505050;
+    background-color: #dc4632;
+    color: whitesmoke;
+    border-bottom: 3px solid #c8321e; }
+  #ressavemode-btn:hover {
+    background-color: #c8321e;
+    text-shadow: 0 0 3px whitesmoke; }
 
 /*	need some space	*/

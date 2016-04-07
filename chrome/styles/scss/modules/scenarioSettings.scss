@@ -1,6 +1,6 @@
 body
 {
-	background-color: $clr-paper;
+	background-color: $clr-base;
 	font-family: $font-stack;
 	color: $text-clr;
 }
@@ -17,7 +17,7 @@ scrollbar {
 .scenario-settings {
 	@include absolute_fill;
 	display: none;
-	background-color: $clr-paper;
+	background-color: $clr-base;
 }
 
 .scenario-settings.visible { display: flex; }
@@ -109,6 +109,7 @@ section:last-child {
 	opacity: 0;
 	
 	transition: opacity 1s;
+	max-height: 100%;
 }
 
 .settings-page-container.ready {
@@ -195,8 +196,10 @@ section:last-child {
 	flex-direction: column;
 }
 
-.definition-selection-header, .deflist-ao-header, .deflist-ao-list-header {
-	background-color: #333;
+.definition-selection-header,
+.deflist-ao-header,
+.deflist-ao-list-header {
+	background-color: $chrome-clr;
 	color: rgb(250, 250, 250);
 	height: 14px;
 
@@ -210,9 +213,10 @@ section:last-child {
 	width: 240px;
 	overflow-y: auto;
 	
-	background-color: white;
+	background-color: $clr-paper;
 	box-sizing: border-box;
 	border: 1px solid rgb(220, 220, 220);
+	border-bottom-width: 0;
 	color: $ui-text-clr;
 }
 
@@ -249,13 +253,13 @@ section:last-child {
 	float: right;
 	text-align: center;
 	
-	background-color: #ccc;
-	transition: background-color 0.5s;
+	background-color: rgb(220, 220, 220);
+	color: $ui-text-clr;
+	border-bottom: 1px solid rgb(180, 180, 180);
 }
 
 .definition-selection-btn:hover {
-	background-color: rgb(160, 160, 160);
-	transition: background-color 0s;
+	background-color: rgb(180, 180, 180);
 }
 
 .definition-selection-controls {
@@ -268,13 +272,13 @@ section:last-child {
 /*-- Deflist Adding Overlay --*/
 
 .deflist-adding-overlay {
-	position: absolute;
+	position: fixed;
 	top: 0;
 	left: 70px;
 	bottom: 0;
 	right: 0;
 	
-	background-color: #fff;
+	background-color: $clr-paper;
 	display: flex;
 	flex-direction: column;
 }
@@ -327,6 +331,17 @@ section:last-child {
 	flex: 1;
 }
 
+.deflist-ao-list-content > *,
+.definition-selection-item {
+	&:hover {
+		@include hover-blue;
+	}
+	
+	&.selected {
+		@include hover-blue-selected;
+	}
+}
+
 .deflist-ao-search,
 .deflist-ao-list-content {
 	box-sizing: border-box;
@@ -347,7 +362,8 @@ section:last-child {
 
 .deflist-ao-hidesearch { display: none; }
 
-.deflist-ao-header, .deflist-ao-list-header { 
+.deflist-ao-header,
+.deflist-ao-list-header { 
 	display: flex;
 	flex-direction: row;
 	padding: 0px;
@@ -359,7 +375,8 @@ section:last-child {
 	box-sizing: border-box;
 }
 
-.deflist-ao-header-caption, .deflist-ao-listheader-caption { 
+.deflist-ao-header-caption,
+.deflist-ao-listheader-caption { 
 	flex: 1; 
 	padding: 3px 8px;
 }
@@ -378,13 +395,19 @@ section:last-child {
 	transition: background-color 0s, color 0s;
 }
 
+/* special check boxes /big buttons/ */
+
+.special-cb {
+	@include ui-text-checkbox();
+}
+
 /*-- Number inputs --*/
 .sp-number-input {
 	padding: 5px 10px;
 	padding-right: 3px; /* -2px padding from spinners */
 	display: inline-flex;
 	
-	@include number_input;
+	@include ui-number-input;
 }
 
 .sp-number-input input{

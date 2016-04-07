@@ -1,3 +1,4 @@
+/* deprecated */
 /*-- Sammelstyles fuer Inhalte der default_module.js --*/
 .eventinfo {
   background-color: black;
@@ -541,15 +542,13 @@ canvas {
   color: grey;
   padding: 2px;
   margin-right: 2px;
-  margin-left: 2px; }
-
-.vo-button:hover {
-  background-color: gainsboro; }
-
-.vo-button.enabled:hover,
-.vo-button.enabled {
-  background-color: gainsboro;
-  outline: 1px solid #b4b4b4; }
+  margin-left: 2px;
+  border-radius: 2px; }
+  .vo-button:hover {
+    background-color: gainsboro; }
+  .vo-button.enabled:hover, .vo-button.enabled {
+    background-color: gainsboro;
+    outline: 1px solid #b4b4b4; }
 
 .draft {
   display: none; }

@@ -1,3 +1,4 @@
+/* deprecated */
 /*-- Sammelstyles fuer Inhalte der default_module.js --*/
 .eventinfo {
   background-color: black;
@@ -339,8 +340,7 @@
 
 #editor-container {
   -moz-box-flex: 1;
-  flex: 1;
-  possition: relative; }
+  flex: 1; }
 
 #searchBar > * {
   display: inline-block; }

@@ -1,7 +1,7 @@
 html, body {
 	background-color: rgb(245, 245, 245);
-	font-family: "Segoe UI", Verdana, sans-serif;
-	color: rgb(40, 40, 40);
+	font-family: $font-stack;
+	color: $text-clr;
 	padding: 0;
 	margin: 0;
 }
@@ -77,8 +77,8 @@ html, body, #wrapper {
 	display: inline-block;
 }
 
-#ref-toggle-update.activated {
-	color: #0876BA;
+#ref-toggle-update.enabled {
+	color: $interact-blue;
 }
 
 /*	references 	*/
@@ -89,12 +89,16 @@ html, body, #wrapper {
 	display: table;
 	padding: 0;
 	border-collapse: collapse !important;
+	
+	
+	.reference.runtimejoin {
+		color: rgb(40, 40, 40);
+	}
 }
 
 .reference {
-	/*background-color: rgb(250, 250, 250);*/
 	background-color: white;
-	/*border: 1px solid rgb(230, 230, 230);*/
+	background-color: rgb(250, 250, 250);
 	width: 33.3%;
 	height: 6em;
 	float: left;
@@ -122,10 +126,54 @@ html, body, #wrapper {
 		transparent 4px, 
 		rgb(240, 240, 240) 4px, 
 		rgb(240, 240, 240) 5px);
-}
+	
+	p {
+		margin: 0;
+	}
+	
+	&:hover {
+		outline: 3px solid $clr-border;
+		outline-offset: -3px;
+	}
+	
+		
+	/* reference classes to control their appearence:
 
-.reference p {
-	margin: 0;
+		reference-
+			draft
+			running
+			runtimejoin
+			password
+			league
+			portsopen
+	*/
+
+	&.running {
+		color: grey;
+	}
+
+	&.running .ref-titleimage {
+		filter: grayscale(100%);
+	}
+
+	.password-icon,
+	.league-icon {
+		display: none;
+	}
+
+	&.password .password-icon,
+	&.league .league-icon {
+		display: inline-block;
+	}
+	
+	&.ref-selected {
+		outline: 3px solid $interact-orange;
+		outline-offset: -3px;
+	}
+	
+	&.reference-draft {
+		display: none;
+	}
 }
 
 .ref-flexwrapper {
@@ -187,43 +235,6 @@ html, body, #wrapper {
 	height: 6em;
 }
 
-/* reference classes to control their appearence:
-
-	reference-
-		draft
-		running
-		runtimejoin
-		password
-		league
-		portsopen
-*/
-
-.reference-draft {
-	display: none;
-}
-
-.reference.running {
-	color: grey;
-}
-
-.reference.running .ref-titleimage {
-	filter: grayscale(100%);
-}
-
-#reference-list .reference.runtimejoin {
-	color: rgb(40, 40, 40);
-}
-
-.password-icon,
-.league-icon {
-	display: none;
-}
-
-.reference.password .password-icon,
-.reference.league .league-icon {
-	display: inline-block;
-}
-
 .portsopen {
 	background-image: none;
 }
@@ -248,50 +259,54 @@ html, body, #wrapper {
 #ports-tooltip.visible { opacity: 0.5; display: block;}
 /*	layout specifics	*/
 
-#reference-list.ref-layout-shortinfo .reference:nth-child(3n+2) {
-	clear: left;
+#reference-list {
+	
+	&.ref-layout-shortinfo .reference:nth-child(3n+2) {
+		clear: left;
+	}
+
+	&.ref-layout-shortinfo .ref-playernames {
+		display: none;
+	}
+
+	&.ref-layout-shortinfo .ref-comment {
+		display: none;
+	}
+
+	&.ref-layout-classic .ref-playerinfo,
+	&.ref-layout-longinfo .ref-playerinfo {
+		display: none;
+	}
+
+	&.ref-layout-classic .ref-content {
+		position: relative;
+	}
+
+	&.ref-layout-shortinfo .ref-titleimage,
+	&.ref-layout-longinfo .ref-titleimage {
+		display: none;
+	}
+
+	&.ref-layout-classic .ref-icons,
+	&.ref-layout-longinfo .ref-icons {
+		float: right;
+		clear: none;
+	}
+
+	&.ref-layout-longinfo .reference {
+		width: 50%;
+	}
+
+	&.ref-layout-longinfo .reference:nth-child(2n) {
+		clear: left;
+	}
+
+	&.ref-layout-classic .reference {
+		clear: left;
+		width: 100%;
+	}
 }
 
-#reference-list.ref-layout-shortinfo .ref-playernames {
-	display: none;
-}
-
-#reference-list.ref-layout-shortinfo .ref-comment {
-	display: none;
-}
-
-#reference-list.ref-layout-classic .ref-playerinfo,
-#reference-list.ref-layout-longinfo .ref-playerinfo {
-	display: none;
-}
-
-#reference-list.ref-layout-classic .ref-content {
-	position: relative;
-}
-
-#reference-list.ref-layout-shortinfo .ref-titleimage,
-#reference-list.ref-layout-longinfo .ref-titleimage {
-	display: none;
-}
-
-#reference-list.ref-layout-classic .ref-icons,
-#reference-list.ref-layout-longinfo .ref-icons {
-	float: right;
-	clear: none;
-}
-
-#reference-list.ref-layout-longinfo .reference {
-	width: 50%;
-}
-
-#reference-list.ref-layout-longinfo .reference:nth-child(2n) {
-	clear: left;
-}
-
-#reference-list.ref-layout-classic .reference {
-	clear: left;
-	width: 100%;
-}
 
 /* description */
 
@@ -362,26 +377,32 @@ h2 {
 
 #ressavemode-btn {
 	display: none;
-}
-#ressavemode-btn.ressavemode {
-	display: block;
-	position: absolute;
-	top: 0px;
-	right: 0px;
 
-	width: 32px;
-	height: 32px;
+	&.ressavemode {
+		display: block;
+		position: absolute;
+		top: 4px;
+		right: 4px;
 
-	background-color: black;	
-	opacity: 0.5;
-	
-	transition: opacity 0.3s, background-color 0.3s;
-	z-index: 1;
-}
+		width: 32px;
+		height: 32px;
 
-#ressavemode-btn:hover {
-	opacity: 1;
-	background-color: rgb(219, 70, 49);
+		background-color: $clr-empty;
+		z-index: 1;
+		
+		border-bottom: 2px solid $clr-border;
+		border-radius: 3px;
+		color: $ui-text-clr;
+		
+		background-color: $interact-red;
+		color: whitesmoke;
+		border-bottom: 3px solid $interact-red-dark;
+	}
+
+	&:hover {
+		background-color: $interact-red-dark;
+		text-shadow: 0 0 3px whitesmoke;
+	}
 }
 
 /*	need some space	*/
