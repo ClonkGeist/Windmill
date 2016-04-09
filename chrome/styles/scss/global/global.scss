@@ -79,7 +79,7 @@ $hover-blue-bg: rgba(0, 165, 207, 0.15);
 	bottom: 0;
 
 	background-color: #000;
-	opacity: 0.5;
+	opacity: 0;
 	font-size: 16pt;
 
 	color: white;
@@ -87,6 +87,11 @@ $hover-blue-bg: rgba(0, 165, 207, 0.15);
 	flex-direction: column;
 	align-items: center; 
 	justify-content: center;
+}
+
+.windmill-modal.modal-enabled {
+	opacity: 0.5;
+	transition: opacity 0.5s;
 }
 
 .modal-big {

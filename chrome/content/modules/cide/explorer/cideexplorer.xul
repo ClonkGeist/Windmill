@@ -116,32 +116,34 @@
 		</vbox>
 	</windmilldialog>
 
-	<hbox class="toolbar">
-		<box class="nav-image icon-clonkpath icon-24" height="24" width="24" id="showClonkDirs"></box>
-		<box class="nav-image icon-workspace icon-24" height="24" width="24" id="showWorkspaces"></box>
-		<spacer flex="1" />
-		<vbox class="toolbar-option" id="importWorkEnvironment">$WEToolbarImport$</vbox>
-		<vbox class="toolbar-option" id="newWorkEnvironment">$WEToolbarNew$</vbox>
-	</hbox>
-	<vbox class="searchbox">
-		<textbox id="searchinput" class="hidden"/>
-	</vbox>
-	<vbox flex="1">
-		<box flex="1">
-			<vbox id="filecontainer" flex="1">
-				<html:ul id="maintree" flex="1">
-					
-				</html:ul>
-			</vbox>
-			<!-- build explorer here -->
-		</box>
-	</vbox>
-	<vbox id="workenv-creating-info">
-		<hbox id="workenv-creating-info-title">
-			
+	<vbox id="wrapper" flex="1">
+		<hbox class="toolbar">
+			<box class="nav-image icon-clonkpath icon-24" height="24" width="24" id="showClonkDirs"></box>
+			<box class="nav-image icon-workspace icon-24" height="24" width="24" id="showWorkspaces"></box>
+			<spacer flex="1" />
+			<vbox class="toolbar-option" id="importWorkEnvironment">$WEToolbarImport$</vbox>
+			<vbox class="toolbar-option" id="newWorkEnvironment">$WEToolbarNew$</vbox>
 		</hbox>
-		<hbox id="workenv-creating-info-body">
-			
-		</hbox>
+		<vbox class="searchbox">
+			<textbox id="searchinput" class="hidden"/>
+		</vbox>
+		<vbox flex="1">
+			<box flex="1">
+				<vbox id="filecontainer" flex="1">
+					<html:ul id="maintree" flex="1">
+						
+					</html:ul>
+				</vbox>
+				<!-- build explorer here -->
+			</box>
+		</vbox>
+		<vbox id="workenv-creating-info">
+			<hbox id="workenv-creating-info-title">
+				
+			</hbox>
+			<hbox id="workenv-creating-info-body">
+				
+			</hbox>
+		</vbox>
 	</vbox>
 </window>
