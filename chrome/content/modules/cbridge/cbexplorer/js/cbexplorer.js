@@ -125,8 +125,8 @@ function getTreeEntryData(entry, fext) {
 		return false;
 
 	let task = Task.spawn(function*() {
-		let data = {}, title;
-		try { title = yield OS.File.read(entry.path+"/Title.txt", {encoding: "utf-8"}); }
+		let data = {}, title, entrypath = formatPath(entry.path);
+		try { title = yield OS.File.read(entrypath+"/Title.txt", {encoding: "utf-8"}); }
 		catch(e) { log(e, true); }
 		if(title) {
 			lines = title.split('\n');
@@ -144,7 +144,7 @@ function getTreeEntryData(entry, fext) {
 			if(!data.title && titleUS)
 				data.title = titleUS;
 		}
-		let iconpath = formatPath(entry.path)+"/Icon.png";
+		let iconpath = entrypath+"/Icon.png";
 		if(yield OS.File.exists(iconpath)) {
 			iconpath = encodeURI(iconpath).replace(/#/g, "%23");
 			if(OS_TARGET == "WINNT")
@@ -152,8 +152,21 @@ function getTreeEntryData(entry, fext) {
 			else
 				data.icon = "file:///"+iconpath;
 		}
-		if(entry.leafName.split(".").pop() == "ocs" && !(yield OS.File.exists(formatPath(entry.path)+"/Script.c")))
-			data.special = "tree-splitter";
+		let fileext = entry.leafName.split(".").pop();
+		if(fileext == "ocs") {
+			if(!(yield OS.File.exists(entrypath+"/Script.c")))
+				data.special = "tree-splitter";
+
+			let scenario = parseINIArray(yield OS.File.read(entrypath+"/Scenario.txt", {encoding: "utf-8"}));
+			data.index = parseInt(scenario["Head"]["Difficulty"]);
+		}
+		else if(fileext == "ocf") {
+			try {
+				let folder = parseINIArray(yield OS.File.read(entrypath+"/Folder.txt", {encoding: "utf-8"}));
+				data.index = parseInt(folder["Head"]["Index"]);
+			}
+			catch(e) {}
+		}
 
 		return data;
 	});

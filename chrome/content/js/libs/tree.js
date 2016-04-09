@@ -33,12 +33,30 @@ function createTreeElement(tree, label, container, open, img, filename, special,
 	else
 		filename = '';
 	
-	$(tree).append(`<li id="treeelm-${TREE_ELM_ID}" tabindex="0" name="${label.toLowerCase()}" 
+	$(tree).append(`<li id="treeelm-${TREE_ELM_ID}" tabindex="0" name="${label.toLowerCase()}" data-index='${options.index}'
 		class="treeobj treeelm${container?' treecontainer':''} ${special}" xmlns="http://www.w3.org/1999/xhtml"
 		${drag}${filename}>${imgTag} <description>${label}</description></li>`);
 	var elm = $("#treeelm-"+TREE_ELM_ID)[0];
-	if(options.index != -1 && $(tree).children("li")[options.index])
-		$(elm).insertBefore($(tree).children("li")[options.index]);
+	if(options.index != -1) {
+		//&& $(tree).children("li")[options.index])
+		let indexed_elements = $(tree).children("li[data-index!='-1']"), inserted;
+		//let indices = $(indexed_elements).map(function() { return parseInt($(this).attr("data-index")); });
+		for(var i = 0; i < indexed_elements.length; i++) {
+			if(parseInt($(indexed_elements[i]).attr("data-index")) > options.index) {
+				$(elm).insertBefore(indexed_elements[i]);
+				inserted = true;
+				break;
+			}
+		}
+		if(!inserted){ 
+			if(indexed_elements.length)
+				$(elm).insertAfter($(indexed_elements[i]));
+			else if($(tree).children("li[data-index='-1']").length)
+				$(elm).insertBefore($(tree).children("li[data-index='-1']")[0]);
+			else
+				$(elm).appendTo(tree);
+		}
+	}
 	if(container)
 		$('<ul id="treecnt-'+TREE_ELM_ID+'" class="treeobj treecnt '+special+'" xmlns="http://www.w3.org/1999/xhtml"></ul>').insertAfter(elm);
 	if(!special)
