@@ -50,9 +50,13 @@ function createTreeElement(tree, label, container, open, img, filename, special,
 				break;
 			}
 		}
-		if(!inserted){ 
-			if(indexed_elements.length)
-				$(elm).insertAfter($(indexed_elements[i]));
+		if(!inserted) { 
+			if(indexed_elements.length) {
+				let lastelm = indexed_elements[indexed_elements.length-1];
+				if(getTreeCntById(getTreeObjId(lastelm)))
+					lastelm = getTreeCntById(getTreeObjId(lastelm));
+				$(elm).insertAfter(lastelm);
+			}
 			else if($(tree).children("li[data-index='-1']").length)
 				$(elm).insertBefore($(tree).children("li[data-index='-1']")[0]);
 			else
