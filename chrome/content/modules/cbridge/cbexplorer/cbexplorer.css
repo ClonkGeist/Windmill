@@ -560,7 +560,7 @@ textbox.deactivated {
   margin: 4px 20px; }
   .tree-splitter description, .tree-splitter image {
     display: none; }
-  .tree-splitter .tree-selected {
+  .tree-splitter.tree-selected {
     outline-offset: 0;
     background-color: #c8c8c8;
     outline: none;

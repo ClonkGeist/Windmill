@@ -152,7 +152,7 @@ textbox.deactivated {
 		display: none;
 	}
 	
-	.tree-selected {
+	&.tree-selected {
 		outline-offset: 0;
 		background-color: rgb(200, 200, 200);
 		outline: none;
