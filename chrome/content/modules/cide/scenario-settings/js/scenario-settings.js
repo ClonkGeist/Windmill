@@ -12,7 +12,6 @@ $(window).ready(function() {
 
 	setupDeflistKeybindings();
 	initializeContextMenu();
-	setupNumberInputs();
 });
 
 function setupDeflistKeybindings() {
@@ -687,6 +686,8 @@ function preparePseudoElements(index) {
 		$(this).addClass("active");
 	});
 
+	setupNumberInputs(index);
+
 	return true;
 }
 
@@ -992,10 +993,9 @@ class OCDefinition {
 
 /*-- Number inputs --*/
 
-function setupNumberInputs() {
-	$(".input-spinners").each(function() {
-		var tId = this.getAttribute("data-input-id");
-		var tEl = document.getElementById(tId);
+function setupNumberInputs(index) {
+	getWrapper(".input-spinners", index).each(function() {
+		var tEl = $(this).siblings("input[type='number']")[0];
 		if(!tEl)
 			return err("Input with id " + tId + " hasn't been found. Custom spinners couldn't be created.");
 
