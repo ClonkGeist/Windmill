@@ -37,6 +37,8 @@ function createTreeElement(tree, label, container, open, img, filename, special,
 		class="treeobj treeelm${container?' treecontainer':''} ${special}" xmlns="http://www.w3.org/1999/xhtml"
 		${drag}${filename}>${imgTag} <description>${label}</description></li>`);
 	var elm = $("#treeelm-"+TREE_ELM_ID)[0];
+	if(options.additional_data)
+		$(elm).attr(options.additional_data);
 	if(options.index != -1) {
 		//&& $(tree).children("li")[options.index])
 		let indexed_elements = $(tree).children("li[data-index!='-1']"), inserted;

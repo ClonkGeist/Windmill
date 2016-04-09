@@ -565,4 +565,7 @@ textbox.deactivated {
     outline: none;
     border: none; }
 
+.tree-no-access {
+  color: #7f7f7f; }
+
 /*	need some space	*/

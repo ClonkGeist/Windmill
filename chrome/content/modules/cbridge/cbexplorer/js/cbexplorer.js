@@ -8,6 +8,8 @@ marked.setOptions({
 });
 
 function initializeDirectory() {
+	loadMissionAccessPasswords();
+
 	//Verzeichnis einlesen und Inhalte auflisten
 	loadDirectory(_sc.clonkpath());
 	unlockModule();
@@ -120,6 +122,18 @@ function hideFileExtension(fext) {
 	return true;
 }
 
+let mission_access = [];
+
+function loadMissionAccessPasswords() {
+	if(OS_TARGET == "WINNT") {
+		let wrk = _sc.wregkey();
+		wrk.open(wrk.ROOT_KEY_CURRENT_USER, "Software\\OpenClonk Project\\OpenClonk\\General", wrk.ACCESS_READ);
+		let passwordlist = wrk.readStringValue("MissionAccess").split(",");
+		wrk.close();
+		mission_access = passwordlist;
+	}
+}
+
 function getTreeEntryData(entry, fext) {
 	if(!entry.isDirectory())
 		return false;
@@ -159,6 +173,10 @@ function getTreeEntryData(entry, fext) {
 
 			let scenario = parseINIArray(yield OS.File.read(entrypath+"/Scenario.txt", {encoding: "utf-8"}));
 			data.index = parseInt(scenario["Head"]["Difficulty"]);
+			if(!data.special && scenario["Head"]["MissionAccess"] && mission_access.indexOf(scenario["Head"]["MissionAccess"]) == -1) {
+				data.special = "tree-no-access";
+				data.additional_data = { "data-mission-access-password": scenario["Head"]["MissionAccess"] };
+			}
 		}
 		else if(fileext == "ocf") {
 			try {
