@@ -1,0 +1,96 @@
+/* deprecated */
+/*-- Sammelstyles fuer Inhalte der default_module.js --*/
+.eventinfo {
+  background-color: black;
+  opacity: 0.6;
+  font-size: 9pt;
+  color: white;
+  width: 100px;
+  position: fixed;
+  z-index: 100;
+  padding: 2px 7px;
+  pointer-events: none; }
+
+/* Windmill Modal */
+.windmill-modal {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #000;
+  opacity: 0;
+  font-size: 16pt;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; }
+
+.windmill-modal.modal-enabled {
+  opacity: 0.5;
+  transition: opacity 0.5s; }
+
+.modal-big {
+  font-size: 24pt; }
+
+body, html, document {
+  background: #fafafa;
+  margin: 0;
+  font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+  height: 100%; }
+
+#header {
+  background: #2d2d2d;
+  padding: 6px 15px;
+  font-size: 1.4em;
+  color: white;
+  text-align: right; }
+
+#wrapper {
+  display: flex; }
+
+#content {
+  padding: 15px;
+  flex: 1; }
+
+#navigation {
+  background: #c8c8c8;
+  padding-right: 25px; }
+
+h1 {
+  font-size: 1.5em;
+  border-bottom: 1px solid gainsboro;
+  margin: 1em 0; }
+
+table {
+  border-collapse: collapse; }
+
+thead {
+  background: gainsboro; }
+
+tbody {
+  background: #ececec; }
+
+th, td {
+  padding: 2px 5px; }
+
+td {
+  border-right: 1px solid whitesmoke; }
+
+pre {
+  background: #f2f2f2;
+  padding: 10px;
+  border: 1px dashed #a8a8a8; }
+
+:not(pre) > code {
+  background: #e0e0e0;
+  padding: 1px 2px;
+  border: 1px solid #bfbfbf;
+  border-radius: 4px; }
+
+code.lang-javascript:before {
+  content: "<JavaScript>";
+  float: right;
+  color: #8F8F8F;
+  font-size: 0.9em; }
