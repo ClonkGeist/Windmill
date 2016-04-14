@@ -789,7 +789,8 @@ caption {
 
 /*-- Developer Log --*/
 #developerlog, #gitlog {
-  width: 800px; }
+  width: 800px;
+  -moz-user-focus: normal; }
 
 #developerlog .ps-h {
   background-color: #333; }
