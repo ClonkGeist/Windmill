@@ -792,8 +792,9 @@ function renameTreeObj(obj) {
 			if(drag)
 				$(obj).attr("draggable", "true");
 			$(obj).css("text-overflow", "");
-			$(obj).children("description").css("display", "initial");
+			$(obj).children("description").css("display", "");
 			$("#edit-filename").remove();
+			selectTreeItem(obj);
 		}
 
 		let val = $(this).val();
