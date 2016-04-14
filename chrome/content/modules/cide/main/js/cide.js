@@ -720,9 +720,6 @@ function addTexteditor(file, lang, deck) {
 
 	// load text
 	var txt = loadFile(file.path);
-	if(!txt)
-		return false;
-
 	var modulename = "scripteditor";
 	//TODO: In Einstellungen verstellbar
 	if(file.leafName.toUpperCase() == "SCENARIO.TXT" && getConfigData("ScenarioSettings", "AlwaysUseScenarioSettings"))

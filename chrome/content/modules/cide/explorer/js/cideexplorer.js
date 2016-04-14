@@ -926,19 +926,20 @@ function CreateNewGamefile(type, treeobj) {
 function getFullPathForSelection() { return _sc.workpath() + getTreeObjPath(getCurrentTreeSelection()); }
 
 //Neue Datei erstellen
-function createNewFile(is_dir, name, container, image, content) {
+function createNewFile(is_dir, name, container, image, content = "") {
 	let cntpath = _sc.workpath() + getTreeObjPath(getCurrentTreeSelection()), path = cntpath + "/" + Locale(name);
 	let cnt = getTreeCntById(getTreeObjId(getCurrentTreeSelection()));
 	let task = Task.spawn(function*() {
 		if(!is_dir) {
-			let fileinfo = yield OS.File.openUnique(path, {humanReadable: true});
-			if(content && typeof content == "string")
-				yield OS.File.writeAtomic(fileinfo.path, content, {encoding: "utf-8"});
+			let new_fname = yield* UniqueFilename(path, true);
+			let file = yield OS.File.open(new_fname, {write: true, create: true});
+			if(typeof content == "string")
+				yield OS.File.writeAtomic(new_fname, content, {encoding: "utf-8"});
 			else
-				yield fileinfo.file.write(content);
+				yield file.write(content);
 
-			fileinfo.file.close();
-			path = fileinfo.path;
+			file.close();
+			path = new_fname;
 		}
 		else {
 			let counter = 0, extra = "";
@@ -989,6 +990,7 @@ function createNewFile(is_dir, name, container, image, content) {
 	}, function(e) {
 		EventInfo("An error occured while trying to create a new file");
 		log(e);
+		log(e.reason);
 	});
 	return task;
 }

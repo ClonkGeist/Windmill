@@ -616,6 +616,22 @@ function OSFileRecursive(sourcepath, destpath, callback, operation = "copy", noO
 	return task;
 }
 
+function* UniqueFilename(path, throwError, maxAttempts = 100) {
+	let splitpath = path.split("/"), filename = splitpath.pop(), splitted = filename.split(".");
+	path = splitpath.join("/");
+	let	fext = splitted.pop(), fname = splitted.join("."), counter = 0, checkname = fname;
+	while(counter < maxAttempts && (yield OS.File.exists(path+"/"+checkname+"."+fext))) {
+		counter++;
+		checkname = fname+"-"+counter;
+	}
+	if(counter >= maxAttempts) {
+		if(throwError)
+			throw "Too many attempts.";
+		return;
+	}
+	return path+"/"+checkname+"."+fext;
+}
+
 function removeSubFrames() {
 	if($("iframe").get(0)) {
 		$("iframe").each(function(a, wdw) {
