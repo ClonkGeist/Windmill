@@ -12,6 +12,10 @@ class _WDialog extends WindmillObject {
 			this.options.modal = true;
 		if(this.options.css == undefined)
 			this.options.css = { width: "450px" };
+		if(this.options.btnleft == undefined)
+			this.options.btnleft = [];
+		if(this.options.btnright == undefined)
+			this.options.btnright = [];
 	
 		this.element = 0;
 	}
@@ -30,7 +34,7 @@ class _WDialog extends WindmillObject {
 		this.options.btnleft = btns;
 	
 		for(var i = 0; i < btns.length; i++)
-			this.addButtons(btns[i], true);
+			this.options.btnleft[i] = this.addButtons(btns[i], true);
 		
 		return true;
 	}
@@ -38,7 +42,7 @@ class _WDialog extends WindmillObject {
 		this.options.btnright = btns;
 		
 		for(var i = 0; i < btns.length; i++)
-			this.addButtons(btns[i]);
+			this.options.btnright[i] = this.addButtons(btns[i]);
 
 		return true;
 	}
@@ -60,6 +64,7 @@ class _WDialog extends WindmillObject {
 					temp = {
 						label: "$DlgBtn_Cancel$",
 						langpre: "",
+						preset: "cancel",
 						onclick: function(e, btn, dialog) { dialog.hide(); } 
 					}
 					break;
@@ -69,6 +74,7 @@ class _WDialog extends WindmillObject {
 					temp = {
 						label: "$DlgBtn_Accept$",
 						langpre: "",
+						preset: "accept",
 						onclick: function(e, btn, dialog) { dialog.hide(); }
 					}
 					break;
@@ -134,13 +140,13 @@ class _WDialog extends WindmillObject {
 		if(btnobj.clickhandler)
 			bindfunc(btnobj.clickhandler, btnobj.onclick);
 		if(btnobj.onclick && (!btnobj.clickhandler || !btnobj.clickhandler.isGenerator()))
-			bindfunc(btnobj.onclick);	
+			bindfunc(btnobj.onclick);
 
 		//Butonn hinzufEen
 		btn.appendTo(elm);
-		
+
 		btnobj.element = btn;
-		return btn;
+		return btnobj;
 	}
 
 	lock() {
@@ -209,12 +215,21 @@ class _WDialog extends WindmillObject {
 				if(this.options.btnright)
 					this.setBtnRight(this.options.btnright);
 			}
-			
+
 			this.updatePseudoElements();
 		}
 		
 		clone.appendTo($("#mainstack"));
 		$(this.element).focus();
+		
+		let buttons = this.options.btnleft.concat(this.options.btnright);
+		if(buttons.length) {
+			$(buttons[0].element).focus();
+			if(buttons.length > 1)
+				for(var i = 0; i < buttons.length; i++)
+					if(buttons[i] && buttons[i].preset == "cancel")
+						$(buttons[i].element).focus();
+		}
 		
 		//Modal setzen
 		if(this.options.modal) {

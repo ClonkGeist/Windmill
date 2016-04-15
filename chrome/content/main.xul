@@ -238,7 +238,7 @@
 				
 				<!-- Gitlog -->
 
-				<vbox id="gitlog" class="sidebar invisible" tabindex="0">
+				<vbox id="gitlog" class="sidebar invisible" tabindex="-1">
 					<vbox id="page-gitlog" class="cds-page" flex="1">
 						<hbox class="ps-h cds-h">
 							<caption>Git Log</caption>
@@ -258,7 +258,7 @@
 
 				<!-- Log -->
 
-				<vbox id="developerlog" class="sidebar invisible" tabindex="0">
+				<vbox id="developerlog" class="sidebar invisible" tabindex="-1">
 					<vbox id="page-log" class="cds-page" flex="1">
 						<hbox class="ps-h cds-h">
 							<caption>Log</caption>
