@@ -10,109 +10,109 @@
 	<script type="application/javascript" src="chrome://windmill/content/js/libs/explorer.js"/>
 	<script type="application/javascript" src="chrome://windmill/content/modules/cide/explorer/js/git.js"/>
 	
-	<windmilldialog id="dlg_workenvironment" style="display: none">
-		<hbox class="dlg_infobox error" id="dex_dlg_workenv_errorbox">
+	<windmilldialog id="dlg-workenvironment" style="display: none">
+		<hbox class="dlg-infobox error" id="dex-dlg-workenv-errorbox">
 			<description></description>
 		</hbox>
 		<hbox>
 			<description>$DlgNewWorkEnvironmentDesc$</description>
 		</hbox>
-		<hbox id="dex_dlg_workenv_type_selection">
-			<label value="$DlgLblType$:" control="dex_dlg_workenv_type" flex="1" />
-			<menulist id="dex_dlg_workenv_type" flex="1">
+		<hbox id="dex-dlg-workenv-type-selection">
+			<label value="$DlgLblType$:" control="dex-dlg-workenv-type" flex="1" />
+			<menulist id="dex-dlg-workenv-type" flex="1">
 				<menupopup>
-					<menuitem label="$DlgWETypeClonkDir$" id="dex_dlg_workenv_type_clonkdir" value="1" />
-					<menuitem label="$DlgWETypeWorkspace$" id="dex_dlg_workenv_type_workspace" value="2" />
-					<menuitem label="$DlgWETypeRepository$" id="dex_dlg_workenv_type_repository" value="3" />
+					<menuitem label="$DlgWETypeClonkDir$" id="dex-dlg-workenv-type-clonkdir" value="1" />
+					<menuitem label="$DlgWETypeWorkspace$" id="dex-dlg-workenv-type-workspace" value="2" />
+					<menuitem label="$DlgWETypeRepository$" id="dex-dlg-workenv-type-repository" value="3" />
 				</menupopup>
 			</menulist>
 		</hbox>
-		<vbox class="dex_dlg_workenv_content" data-settingsgroup="dex_dlg_workenv_type_clonkdir">
+		<vbox class="dex-dlg-workenv-content" data-settingsgroup="dex-dlg-workenv-type-clonkdir">
 			<hbox>
 				<label value="$DlgWETypeClonkDir$:" style="font-weight: bold"/>
 			</hbox>
-			<hbox class="dlg_infobox">
+			<hbox class="dlg-infobox">
 				<description>$DlgWETypeClonkDirDesc$</description>
 			</hbox>
 			<hbox>
-				<description flex="1" id="dex_dlg_workenv_ocpath" class="view-directory-path">$DlgWEPathEmpty$</description>
-				<button id="dex_dlg_workenv_ocpath_button" label="$DlgWEBrowse$" />
+				<description flex="1" id="dex-dlg-workenv-ocpath" class="view-directory-path">$DlgWEPathEmpty$</description>
+				<button id="dex-dlg-workenv-ocpath-button" label="$DlgWEBrowse$" />
 			</hbox>
 			<hbox>
-				<checkbox label="$DlgWEExplodeClonkDir$" id="dex_dlg_workenv_explodecdir" />
+				<checkbox label="$DlgWEExplodeClonkDir$" id="dex-dlg-workenv-explodecdir" />
 			</hbox>
 		</vbox>
-		<vbox class="dex_dlg_workenv_content" data-settingsgroup="dex_dlg_workenv_type_workspace">
+		<vbox class="dex-dlg-workenv-content" data-settingsgroup="dex-dlg-workenv-type-workspace">
 			<hbox>
 				<label value="$DlgWETypeWorkspace$:" style="font-weight: bold"/>
 			</hbox>
-			<hbox class="dlg_infobox">
+			<hbox class="dlg-infobox">
 				<description>$DlgWETypeWorkspaceDesc$</description>
 			</hbox>
 			<hbox>
-				<label value="$DlgLblName$:" control="dex_dlg_workenv_name" flex="1" />
-				<textbox id="dex_dlg_workenv_name" placeholder="$DlgInputWorkEnvName$" flex="1" />
+				<label value="$DlgLblName$:" control="dex-dlg-workenv-name" flex="1" />
+				<textbox id="dex-dlg-workenv-name" placeholder="$DlgInputWorkEnvName$" flex="1" />
 			</hbox>
-			<vbox id="dex_dlg_workenv_clonkdirset">
+			<vbox id="dex-dlg-workenv-clonkdirset">
 				<hbox>
-					<label value="$DlgWESourceClonkDir$" flex="1" control="dex_dlg_workenv_source_clonkdir" />
-					<menulist id="dex_dlg_workenv_source_clonkdir" flex="1">
+					<label value="$DlgWESourceClonkDir$" flex="1" control="dex-dlg-workenv-source-clonkdir" />
+					<menulist id="dex-dlg-workenv-source-clonkdir" flex="1">
 						<menupopup>
 						</menupopup>
 					</menulist>
 				</hbox>
 				<hbox>
-					<checkbox label="$DlgWECreateFullCopy$" id="dex_dlg_workenv_fullcopy" flex="1"/>
+					<checkbox label="$DlgWECreateFullCopy$" id="dex-dlg-workenv-fullcopy" flex="1"/>
 				</hbox>
-				<vbox id="dex_dlg_workenv_filelist" class="dlg-checklistbox" style="max-height: 120px;"></vbox>
-				<hbox id="dex_dlg_workenv_filelist_ctrls">
-					<checkbox label="$DlgWESelectAll$" id="dex_dlg_workenv_select_all" flex="1"/>
-					<checkbox label="$DlgWESelectAllOC$" id="dex_dlg_workenv_select_ocfiles" flex="1"/>
-					<checkbox label="$DlgWEShowOnlyOC$" id="dex_dlg_workenv_showonlyocfiles" flex="1"/>
+				<vbox id="dex-dlg-workenv-filelist" class="dlg-checklistbox" style="max-height: 120px;"></vbox>
+				<hbox id="dex-dlg-workenv-filelist-ctrls">
+					<checkbox label="$DlgWESelectAll$" id="dex-dlg-workenv-select-all" flex="1"/>
+					<checkbox label="$DlgWESelectAllOC$" id="dex-dlg-workenv-select-ocfiles" flex="1"/>
+					<checkbox label="$DlgWEShowOnlyOC$" id="dex-dlg-workenv-showonlyocfiles" flex="1"/>
 				</hbox>
 			</vbox>
 		</vbox>
-		<vbox class="dex_dlg_workenv_content" data-settingsgroup="dex_dlg_workenv_type_repository">
+		<vbox class="dex-dlg-workenv-content" data-settingsgroup="dex-dlg-workenv-type-repository">
 			<hbox>
 				<label value="$DlgWETypeRepository$:" style="font-weight: bold"/>
 			</hbox>
-			<hbox class="dlg_infobox">
+			<hbox class="dlg-infobox">
 				<description>$DlgWETypeRepositoryDesc$</description>
 			</hbox>
 			<hbox>
 				<label value="$DlgWERepositoryCloneURL$:" flex="1" />
-				<textbox id="dex_dlg_workenv_cloneurl" placeholder="$DlgInputCloneURL$" />
+				<textbox id="dex-dlg-workenv-cloneurl" placeholder="$DlgInputCloneURL$" />
 			</hbox>
 			<hbox>
 				<label value="$DlgLblName$:" flex="1" />
-				<textbox id="dex_dlg_workenv_destname" placeholder="$DlgInputWorkEnvName$" />
+				<textbox id="dex-dlg-workenv-destname" placeholder="$DlgInputWorkEnvName$" />
 			</hbox>
 			<hbox>
 				<label value="$DlgWERepositoryUserConfig$:" style="font-weight: bold"/>
 			</hbox>
 			<hbox>
 				<label value="$DlgWERepositoryUserName$:" flex="1"/>
-				<textbox id="dex_dlg_workenv_cfgusername" placeholder="$DlgInputUserName$" />
+				<textbox id="dex-dlg-workenv-cfgusername" placeholder="$DlgInputUserName$" />
 			</hbox>
 			<hbox>
 				<label value="$DlgWERepositoryEmail$:" flex="1"/>
-				<textbox id="dex_dlg_workenv_cfgemail" placeholder="$DlgInputEmail$" />
+				<textbox id="dex-dlg-workenv-cfgemail" placeholder="$DlgInputEmail$" />
 			</hbox>		
 			<hbox>
 				<label value="$DlgWERepositoryUserInfo$:" style="font-weight: bold"/>
 			</hbox>
 			<hbox>
 				<label value="$DlgWERepositoryUserName$:" flex="1"/>
-				<textbox id="dex_dlg_workenv_username" placeholder="$DlgInputUserName$" />
+				<textbox id="dex-dlg-workenv-username" placeholder="$DlgInputUserName$" />
 			</hbox>
 			<hbox>
 				<label value="$DlgWERepositoryPassword$:" flex="1"/>
-				<textbox id="dex_dlg_workenv_password" placeholder="$DlgInputPassword$" type="password" />
+				<textbox id="dex-dlg-workenv-password" placeholder="$DlgInputPassword$" type="password" />
 			</hbox>
 		</vbox>
 		<vbox>
-			<checkbox label="Debug" id="dex_dlg_workenv_debug" class="devmode-elm" />
-			<checkbox label="No file operations" id="dex_dlg_workenv_nooperations" class="devmode-elm" />
+			<checkbox label="Debug" id="dex-dlg-workenv-debug" class="devmode-elm" />
+			<checkbox label="No file operations" id="dex-dlg-workenv-nooperations" class="devmode-elm" />
 		</vbox>
 	</windmilldialog>
 

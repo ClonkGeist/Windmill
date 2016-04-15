@@ -67,7 +67,6 @@
 
 
 /* y no use consistent seperators */
-.dlg_infobox,
 .dlg-infobox {
 	padding: 5px;
 	border: 1px solid gainsboro;
@@ -76,8 +75,7 @@
 	margin: 5px 0px;
 }
 
-.dlg-infobox.error,
-.dlg_infobox.error {
+.dlg-infobox.error {
 	background-color: #FFB2B2;
 	border-color: #CCB1B1;
 	-moz-user-select: text;

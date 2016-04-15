@@ -294,12 +294,12 @@ class _WDialog extends WindmillObject {
 		});
 
 		//Infobox: Error
-		$(dlgelm).find(".dlg_infobox.error").hide();
+		$(dlgelm).find(".dlg-infobox.error").hide();
 
 		let observer = new MutationObserver(function(mutations) {
 			$(mutations[0].target).show();
 		});
-		$(dlgelm).find(".dlg_infobox.error").each(function() {
+		$(dlgelm).find(".dlg-infobox.error").each(function() {
 			observer.observe(this, { childList: true });
 		});
 

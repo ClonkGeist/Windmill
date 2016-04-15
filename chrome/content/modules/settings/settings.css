@@ -492,20 +492,20 @@ listitem:focus {
   color: #999; }
 
 /* external applications */
-#application_list {
+#application-list {
   -moz-user-select: none;
   cursor: default; }
 
-.applist_img {
+.applist-img {
   width: 64px;
   height: 64px;
   margin-right: 18px; }
 
-.applist_title {
+.applist-title {
   font-weight: bold;
   font-size: 1.6em; }
 
-.applist_path {
+.applist-path {
   font-style: italic; }
 
 /*	need some space	*/
