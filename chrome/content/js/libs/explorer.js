@@ -70,6 +70,8 @@ hook("load", function() {
 	return true;
 });
 
+let explorer_search_info = {};
+
 function searchFile(searchstr, workpath) {
 	var lastmatch = $(".last-search-match");
 	if(!workpath) {
@@ -80,15 +82,17 @@ function searchFile(searchstr, workpath) {
 
 		for(var retv; index < workenvs.length; index++) {
 			if(retv = searchFile(searchstr, workenvs[index])) {
-				if(retv == -1) //HAB DIE MELDUNG SCHON BEIM ERSTEN MAL VERSTANDEN
+				if(retv == -1)
 					return;
 				var treeobj = navigateToPath(retv.path, true);
 				$(treeobj).addClass(".last-search-match");
+				explorer_search_info = {searchstr, path: retv.path};
 			}
 		}
 	}
 	else {
-		warn("Die Suche ist noch nicht voll integriert da vorher ein Code Rework anstehen muss.");
+		
+		warn("Die Suche ist noch nicht voll integriert.");
 		return -1;
 	}
 }
