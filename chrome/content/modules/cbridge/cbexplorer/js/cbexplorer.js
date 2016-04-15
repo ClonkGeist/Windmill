@@ -1,4 +1,15 @@
+let marked = Cu.import("resource://docs/marked.jsm").export_marked;
+
+marked.setOptions({
+	renderer: new marked.Renderer(),
+	gfm: true,
+	breaks: true,
+	sanitize: true
+});
+
 function initializeDirectory() {
+	loadMissionAccessPasswords();
+
 	//Verzeichnis einlesen und Inhalte auflisten
 	loadDirectory(_sc.clonkpath());
 	unlockModule();
@@ -111,13 +122,26 @@ function hideFileExtension(fext) {
 	return true;
 }
 
+let mission_access = [];
+
+function loadMissionAccessPasswords() {
+	if(OS_TARGET == "WINNT") {
+		let wrk = _sc.wregkey();
+		wrk.open(wrk.ROOT_KEY_CURRENT_USER, "Software\\OpenClonk Project\\OpenClonk\\General", wrk.ACCESS_READ);
+		let passwordlist = wrk.readStringValue("MissionAccess").split(",");
+		wrk.close();
+		mission_access = passwordlist;
+	}
+}
+
 function getTreeEntryData(entry, fext) {
 	if(!entry.isDirectory())
 		return false;
 
 	let task = Task.spawn(function*() {
-		let data = {};
-		let title = yield OS.File.read(entry.path+"/Title.txt", {encoding: "utf-8"});
+		let data = {}, title, entrypath = formatPath(entry.path);
+		try { title = yield OS.File.read(entrypath+"/Title.txt", {encoding: "utf-8"}); }
+		catch(e) { log(e, true); }
 		if(title) {
 			lines = title.split('\n');
 			let titleUS;
@@ -134,12 +158,32 @@ function getTreeEntryData(entry, fext) {
 			if(!data.title && titleUS)
 				data.title = titleUS;
 		}
-		let iconpath = entry.path+"/Icon.png";
+		let iconpath = entrypath+"/Icon.png";
 		if(yield OS.File.exists(iconpath)) {
+			iconpath = encodeURI(iconpath).replace(/#/g, "%23");
 			if(OS_TARGET == "WINNT")
-				data.icon = "file://"+iconpath.replace(/\\\\/, "/");
+				data.icon = "file:///"+iconpath.replace(/^(.):\\\//, "$1:/");
 			else
-				data.icon = "file://"+iconpath;
+				data.icon = "file:///"+iconpath;
+		}
+		let fileext = entry.leafName.split(".").pop();
+		if(fileext == "ocs") {
+			if(!(yield OS.File.exists(entrypath+"/Script.c")))
+				data.special = "tree-splitter";
+
+			let scenario = parseINIArray(yield OS.File.read(entrypath+"/Scenario.txt", {encoding: "utf-8"}));
+			data.index = parseInt(scenario["Head"]["Difficulty"]);
+			if(!data.special && scenario["Head"]["MissionAccess"] && mission_access.indexOf(scenario["Head"]["MissionAccess"]) == -1) {
+				data.special = "tree-no-access";
+				data.additional_data = { "data-mission-access-password": scenario["Head"]["MissionAccess"] };
+			}
+		}
+		else if(fileext == "ocf") {
+			try {
+				let folder = parseINIArray(yield OS.File.read(entrypath+"/Folder.txt", {encoding: "utf-8"}));
+				data.index = parseInt(folder["Head"]["Index"]);
+			}
+			catch(e) {}
 		}
 
 		return data;
@@ -184,7 +228,11 @@ function onTreeSelect(obj) {
 		}
 
 		//HTML/XUL in Beschreibungen deaktivieren
-		$("#previewdesc").text(text);
+		let splittedtext = text.split("\n");
+		if(/^ .+?$/.test(splittedtext[0]))
+			splittedtext[0] = "##"+splittedtext[0];
+		text = splittedtext.join("\n");
+		$("#previewdesc").html(marked(text).replace(/(<[^\/]+?)>/g, '$1 xmlns="http://www.w3.org/1999/xhtml">'));
 	});
 	return true;
 }

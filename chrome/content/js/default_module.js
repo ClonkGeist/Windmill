@@ -616,6 +616,22 @@ function OSFileRecursive(sourcepath, destpath, callback, operation = "copy", noO
 	return task;
 }
 
+function* UniqueFilename(path, throwError, maxAttempts = 100) {
+	let splitpath = path.split("/"), filename = splitpath.pop(), splitted = filename.split(".");
+	path = splitpath.join("/");
+	let	fext = splitted.pop(), fname = splitted.join("."), counter = 0, checkname = fname;
+	while(counter < maxAttempts && (yield OS.File.exists(path+"/"+checkname+"."+fext))) {
+		counter++;
+		checkname = fname+"-"+counter;
+	}
+	if(counter >= maxAttempts) {
+		if(throwError)
+			throw "Too many attempts.";
+		return;
+	}
+	return path+"/"+checkname+"."+fext;
+}
+
 function removeSubFrames() {
 	if($("iframe").get(0)) {
 		$("iframe").each(function(a, wdw) {
@@ -859,40 +875,36 @@ function KeyBinding(...pars) { return new _KeyBinding(...pars); }
 
 /*-- Lock Module --*/
 
-function lockModule(message, nofadein) {
+function lockModule(message, nofadein, delay = 200) {
 	if($(".windmill-modal")[0]) {
 		$(".windmill-modal").html(Locale(message));
 	
 		return true;
 	}
 
+	let modal;
 	if(MODULE_LANG == "html") {
-		var modal = $('<div class="windmill-modal" style="z-index: 10000"></div>');
+		modal = $('<div class="windmill-modal'+(nofadein?" modal-enabled":"")+'" style="z-index: 10000"></div>');
 		modal.html(Locale(message));
 		$("body").append(modal);
-		/*if(!nofadein)
-			$(".windmill-modal").fadeIn(400);
-		else
-			$(".windmill-modal").show();*/
 	}
 	else if(MODULE_LANG == "xul") {
-		var modal = $('<box class="windmill-modal"></box>');
+		modal = $('<box class="windmill-modal'+(nofadein?" modal-enabled":"")+'"></box>');
 		modal.html(Locale(message));
 		if(!$("#windmill-modal-wrapper,.windmill-lockmodule-wrapper")[0])
 			$(document.documentElement).children().wrapAll('<stack flex="1" id="windmill-modal-wrapper" class="temporary"></stack>');
 
 		$("#windmill-modal-wrapper,.windmill-lockmodule-wrapper").append(modal);
-		/*if(!nofadein)
-			$(".windmill-modal").fadeIn(400);
-		else
-			$(".windmill-modal").show();*/
 	}
+	if(!nofadein)
+		setTimeout(function() {
+			modal.addClass("modal-enabled");
+		}, delay);
 
 	return true;
 }
 
 function unlockModule() {
-	//$(".windmill-modal").fadeOut(400, function() { $($("#windmill-modal-wrapper.temporary").children()[0]).unwrap(); $(".windmill-modal").remove() });
 	$($("#windmill-modal-wrapper.temporary").children()[0]).unwrap();
 	$(".windmill-modal").remove();
 	return true;

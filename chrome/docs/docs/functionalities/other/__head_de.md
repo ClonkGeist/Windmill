@@ -1,0 +1,3 @@
+﻿<<<Weitere Funktionen
+
+[!INFO]

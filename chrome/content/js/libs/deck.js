@@ -294,7 +294,8 @@ class Deck extends WindmillObject {
 	detachItem(itemId) {
 		// delete button
 		$(".deck-"+this.id+"-button-"+itemId).remove();
-		
+		let frame = this.items[itemId];
+
 		if(this.deligated[itemId]) {
 			if(this.items[itemId].tagName.toLowerCase() != "iframe")
 				Components.utils.reportError("Error: Cannot deligate to non iframe element");
@@ -306,11 +307,11 @@ class Deck extends WindmillObject {
 				log(e, true);
 			}
 		}
-		
+
 		// clean up item-array
 		this.items[itemId] = undefined;
 		this.options[itemId] = {};
-		
+
 		// if actual object is shown we have to set another item to be shown
 		if(itemId == this.selectedId) {
 			var id = itemId - 1;
@@ -318,7 +319,7 @@ class Deck extends WindmillObject {
 				if(--id < 0)
 					break;
 			}
-			
+
 			if(id > -1)
 				this.show(id);
 			else {
@@ -333,9 +334,9 @@ class Deck extends WindmillObject {
 					this.showDesc();
 			}
 		}
-		
-		this.execHook("itemDetached", this, itemId);
-		
+
+		this.execHook("itemDetached", this, itemId, frame);
+
 		this.updateNavigation();
 	}
 	

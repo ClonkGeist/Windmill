@@ -158,6 +158,7 @@ function addConfigString(section, key, defaultval, ...pars) {
 function getConfig() { return CONFIG; }
 
 function initializeConfig() {
+	addConfigString("Global", "DevMode", true);
 	addConfigString("Global", "ClonkDirectories", "[]").hook("onWritingAccess", function(val) {
 		if(this.value == "[]" && val instanceof Array) {
 			for(var i = 0; i < val.length; i++)
@@ -168,7 +169,6 @@ function initializeConfig() {
 	addConfigString("Global", "FirstStartDevTest", false);
 	addConfigString("Global", "Version", "0.2");
 	addConfigString("Global", "Language", "en-US");
-	addConfigString("Global", "DevMode", true);
 	addConfigString("Global", "ShowHiddenLogs", false);
 	
 	//CBridge

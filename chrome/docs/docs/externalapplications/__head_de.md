@@ -88,21 +88,26 @@ Die Parameter werden direkt an die ```create```-Funktion des erstellten ```wmIPr
 
 ```javascript
 let git = getAppByID("git");
+//Prüfen ob Git verfügbar ist
 if(git.isAvailable())
+	//Falls ja, Prozess erstellen und clonen
 	git.create(["clone", this.cloneurl, this.path], 0x1, (exitCode) => { 
+		//Wenn kein Fehler aufgetreten ist, Erstellungsprozess abschließen und Git Configwerte für Usename und Email setzen.
 		if(!exitCode) {
 			if(options.success)
-				options.success(_this);
+				options.success(this);
 
 			unlockModule();
 			git.create(["config", "-f", _this.path+"/.git/config", "user.name", options.userconfig.username], 0x2);
 			git.create(["config", "-f", _this.path+"/.git/config", "user.email", options.userconfig.email], 0x2);
 
-			_this.saveHeader();
+			/Header speichern
+			this.saveHeader();
 		}
-		else //TODO: ExitValue-Verarbeitung
+		else
 			options.rejected();
 	}, function(data) {
+		//Ausgabe von Git in die Git Konsole loggen
 		logToGitConsole(data);
 	});
 ```

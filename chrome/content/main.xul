@@ -62,10 +62,10 @@
 		<stack id="titlestack">
 			<box id="header" class="header-ctrl">
 				<description id="window-title" value="Windmill" style="pointer-events: none;" flex="1" />
-				<!-- the classico of three buttons-->
 			</box>
 			<vbox style="pointer-events: none;">
 				<hbox class="window-buttons-container" pack="end">
+					<!-- the classico of three buttons-->
 					<box class="window-button icon-minimize" onclick="window.minimize()"/>
 					<box class="maximize-window window-button icon-maximize" onclick="maximizeWindow()"/>
 					<box class="restore-window window-button icon-restore" onclick="restoreWindow()"/>
@@ -92,6 +92,7 @@
 							<box class="nav-image icon-git icon-32" height="32" width="32" id="showGitLog"></box>
 							<box class="nav-image icon-console icon-32 devmode-elm" height="32" width="32" id="showLog"></box> <!-- DEVMODE -->
 							<box class="nav-image icon-reload-2 icon-32 devmode-elm" height="32" width="32" id="restartWindmill"></box> <!-- DEVMODE -->
+							<box class="nav-image icon-documentation icon-32 devmode-elm" height="32" width="32" id="showDocs"></box> <!-- DEVMODE -->
 							<box class="nav-image icon-gear icon-32" height="32" width="32" id="showSettings"></box>
 						</toolbar>
 					</toolbox>
@@ -237,7 +238,7 @@
 				
 				<!-- Gitlog -->
 
-				<vbox id="gitlog" class="sidebar invisible">
+				<vbox id="gitlog" class="sidebar invisible" tabindex="0">
 					<vbox id="page-gitlog" class="cds-page" flex="1">
 						<hbox class="ps-h cds-h">
 							<caption>Git Log</caption>
@@ -248,7 +249,7 @@
 							<vbox id="gitlog-entrylist" flex="1">
 								<hbox class="log-listitem draft">
 									<vbox class="log-listitem-type"></vbox>
-									<description class="log-listitem-content" flex="1"></description>
+									<vbox class="log-listitem-content" flex="1"></vbox>
 								</hbox>
 							</vbox>
 						</vbox>
@@ -257,7 +258,7 @@
 
 				<!-- Log -->
 
-				<vbox id="developerlog" class="sidebar invisible">
+				<vbox id="developerlog" class="sidebar invisible" tabindex="0">
 					<vbox id="page-log" class="cds-page" flex="1">
 						<hbox class="ps-h cds-h">
 							<caption>Log</caption>
@@ -269,7 +270,7 @@
 							<vbox id="log-entrylist" flex="1">
 								<hbox class="log-listitem draft">
 									<vbox class="log-listitem-type"></vbox>
-									<description class="log-listitem-content" flex="1"></description>
+									<vbox class="log-listitem-content" flex="1"></vbox>
 								</hbox>
 							</vbox>
 						</vbox>
@@ -278,10 +279,10 @@
 			</hbox>
 			
 			<box top="-10" left="50">
-				<image class="overallmode togglemode-img activated invisible" id="toggle-cbridge" src="chrome://windmill/content/img/mode-code.png"/>
+				<box class="overallmode togglemode-img activated invisible icon-controller icon-24" id="toggle-cbridge"></box>
 			</box>
 			<box top="-10" left="90">
-				<image class="overallmode togglemode-img activated invisible" id="toggle-cide" src="chrome://windmill/content/img/mode-play.png"/>
+				<box class="overallmode togglemode-img activated invisible icon-brackets icon-24" id="toggle-cide"></box>
 			</box>
 		</stack>
 	</vbox>

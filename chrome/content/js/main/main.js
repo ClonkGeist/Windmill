@@ -52,7 +52,7 @@ hook("load", function() {
 		yield loadKeyBindings();
 		//Informationen zu externen Anwendungen einlesen
 		$("#startup-loading").text("Loading External Application Definitions");
-		try { yield loadExternalApplicationDefs(_sc.chpath + "/content"); } catch(e) {}
+		try { yield loadExternalApplicationDefs(_sc.chpath + "/content"); } catch(e) { }
 		//Modulinformationen einlesen
 		$("#startup-loading").text("Loading Module Information");
 		try { yield loadModules(_sc.chpath + "/content/modules"); } catch(e) {}
@@ -95,7 +95,7 @@ hook("load", function() {
 			if(!$(".togglemode-img").hasClass("invisible"))
 				return;
 
-			if(mainDeck.selectedId != mainDeck.getModuleId("settings") && mainDeck.selectedId != mainDeck.getModuleId("modmanager")) {
+			if(mainDeck.selectedId == mainDeck.getModuleId("cbridge") || mainDeck.selectedId == mainDeck.getModuleId("cide")) {
 				if($(this).hasClass("cBridge")) {
 					$(this).removeClass("cBridge");
 					navigation.hideGroups();
@@ -184,6 +184,13 @@ hook("load", function() {
 		$("#showGitLog").click(function() {
 			$("#developerlog").addClass("invisible");
 			$("#gitlog").toggleClass("invisible");
+		});
+		let frame = $('<iframe src="resource://docs/build/de/_home/__head_de.html" flex="1" id="docFrame"></iframe>');
+		frame.appendTo($(mainDeck.element));
+		let docFrameID = mainDeck.add(frame[0], 0, false, false, true);
+		//Docs
+		$("#showDocs").click(function() {
+			togglePage(mainDeck.id, docFrameID);
 		});
 
 		//Neustart

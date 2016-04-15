@@ -1,3 +1,4 @@
+/* deprecated */
 /*-- Sammelstyles fuer Inhalte der default_module.js --*/
 .eventinfo {
   background-color: black;
@@ -18,13 +19,17 @@
   right: 0;
   bottom: 0;
   background-color: #000;
-  opacity: 0.5;
+  opacity: 0;
   font-size: 16pt;
   color: white;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center; }
+
+.windmill-modal.modal-enabled {
+  opacity: 0.5;
+  transition: opacity 0.5s; }
 
 .modal-big {
   font-size: 24pt; }
@@ -323,8 +328,20 @@
 .icon-open-external:before {
   content: "E"; }
 
+.icon-documentation:before {
+  content: "?"; }
+
+/*
+@structure:
+
+<div class="special-cb">
+	<input id="<id"> type="checkbox"/>
+	<label for="<id>"><text></label>
+</div>
+
+*/
 body {
-  background-color: #fafafa;
+  background-color: whitesmoke;
   font-family: "Segoe UI", "Trebuchet MS", sans-serif;
   color: #282828; }
 
@@ -342,7 +359,7 @@ scrollbar {
   bottom: 0;
   left: 0;
   display: none;
-  background-color: #fafafa; }
+  background-color: whitesmoke; }
 
 .scenario-settings.visible {
   display: flex; }
@@ -420,7 +437,8 @@ section:last-child {
   flex: 1;
   padding: 8px;
   opacity: 0;
-  transition: opacity 1s; }
+  transition: opacity 1s;
+  max-height: 100%; }
 
 .settings-page-container.ready {
   display: block;
@@ -499,8 +517,10 @@ section:last-child {
   overflow: hidden;
   flex-direction: column; }
 
-.definition-selection-header, .deflist-ao-header, .deflist-ao-list-header {
-  background-color: #333;
+.definition-selection-header,
+.deflist-ao-header,
+.deflist-ao-list-header {
+  background-color: #2d2d2d;
   color: #fafafa;
   height: 14px;
   font-size: 8pt;
@@ -511,9 +531,10 @@ section:last-child {
   flex: 1;
   width: 240px;
   overflow-y: auto;
-  background-color: white;
+  background-color: #fafafa;
   box-sizing: border-box;
   border: 1px solid gainsboro;
+  border-bottom-width: 0;
   color: #505050; }
 
 /* TODO: overflow...*/
@@ -547,12 +568,12 @@ section:last-child {
   line-height: 18px;
   float: right;
   text-align: center;
-  background-color: #ccc;
-  transition: background-color 0.5s; }
+  background-color: gainsboro;
+  color: #505050;
+  border-bottom: 1px solid #b4b4b4; }
 
 .definition-selection-btn:hover {
-  background-color: #a0a0a0;
-  transition: background-color 0s; }
+  background-color: #b4b4b4; }
 
 .definition-selection-controls {
   height: 20px;
@@ -562,12 +583,12 @@ section:last-child {
 
 /*-- Deflist Adding Overlay --*/
 .deflist-adding-overlay {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 70px;
   bottom: 0;
   right: 0;
-  background-color: #fff;
+  background-color: #fafafa;
   display: flex;
   flex-direction: column; }
 
@@ -612,6 +633,18 @@ section:last-child {
 .deflist-ao-list-content {
   flex: 1; }
 
+.deflist-ao-list-content > *:hover,
+.definition-selection-item:hover {
+  background-color: rgba(0, 165, 207, 0.15);
+  outline: 1px solid rgba(0, 165, 207, 0.3);
+  outline-offset: -1px; }
+
+.deflist-ao-list-content > *.selected,
+.definition-selection-item.selected {
+  outline-offset: -1px;
+  background-color: rgba(0, 165, 207, 0.2);
+  outline: 1px solid rgba(0, 165, 207, 0.5); }
+
 .deflist-ao-search,
 .deflist-ao-list-content {
   box-sizing: border-box;
@@ -629,7 +662,8 @@ section:last-child {
 .deflist-ao-hidesearch {
   display: none; }
 
-.deflist-ao-header, .deflist-ao-list-header {
+.deflist-ao-header,
+.deflist-ao-list-header {
   display: flex;
   flex-direction: row;
   padding: 0px;
@@ -639,7 +673,8 @@ section:last-child {
   border-bottom: 1px solid #141414;
   box-sizing: border-box; }
 
-.deflist-ao-header-caption, .deflist-ao-listheader-caption {
+.deflist-ao-header-caption,
+.deflist-ao-listheader-caption {
   flex: 1;
   padding: 3px 8px; }
 
@@ -654,6 +689,33 @@ section:last-child {
   color: #fafafa;
   background-color: #db4631;
   transition: background-color 0s, color 0s; }
+
+/* special check boxes /big buttons/ */
+.special-cb label {
+  background-color: gainsboro;
+  border-bottom: 1px solid #b4b4b4;
+  padding: 5px 10px;
+  outline: none;
+  color: #505050;
+  border-radius: 2px;
+  pointer-events: auto;
+  -moz-user-select: auto; }
+
+.special-cb label:hover {
+  background-color: #b4b4b4;
+  outline: none; }
+
+.special-cb input:checked + label {
+  background-color: #dc4632;
+  border-bottom-color: #c8321e;
+  color: whitesmoke; }
+
+.special-cb input:checked + label:hover {
+  background-color: #c8321e;
+  border-bottom-color: #c8321e; }
+
+.special-cb input {
+  display: nosne; }
 
 /*-- Number inputs --*/
 .sp-number-input {

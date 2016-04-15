@@ -25,7 +25,7 @@ li.treeelm {
 }
 
 li.treeelm:hover {
-	@include hover_blue;
+	@include hover-blue;
 }
 
 li.treeelm::after {
@@ -36,11 +36,7 @@ li.treeelm::after {
 li.tree-selected,
 li.tree-selected:focus,
 li.tree-selected:hover {
-	/* background-color: #F4FF8E;*/
-	outline-offset: -1px;
-	background-color: rgba(0, 165, 207, 0.2);
-	outline: 1px solid rgba(0, 165, 207, 0.5);
-	border: none;
+	@include hover-blue-selected();
 }
 
 ul.tree-expanded {
@@ -82,7 +78,7 @@ li:focus *, li:focus {
 
 .maintree {
 	transition: background-color 0.4s;
-	padding-right: 1.5em;
+	padding-right: 0.5em;
 }
 
 .maintree.dragover {

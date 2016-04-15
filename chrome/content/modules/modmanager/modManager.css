@@ -1,3 +1,4 @@
+/* deprecated */
 /*-- Sammelstyles fuer Inhalte der default_module.js --*/
 .eventinfo {
   background-color: black;
@@ -18,13 +19,17 @@
   right: 0;
   bottom: 0;
   background-color: #000;
-  opacity: 0.5;
+  opacity: 0;
   font-size: 16pt;
   color: white;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center; }
+
+.windmill-modal.modal-enabled {
+  opacity: 0.5;
+  transition: opacity 0.5s; }
 
 .modal-big {
   font-size: 24pt; }
@@ -323,6 +328,18 @@
 .icon-open-external:before {
   content: "E"; }
 
+.icon-documentation:before {
+  content: "?"; }
+
+/*
+@structure:
+
+<div class="special-cb">
+	<input id="<id"> type="checkbox"/>
+	<label for="<id>"><text></label>
+</div>
+
+*/
 window {
   background-color: #fafafa;
   font-family: "Segoe UI", "Trebuchet MS", sans-serif;
@@ -337,6 +354,7 @@ button {
   color: #505050;
   display: inline-flex;
   outline: none;
+  border-radius: 2px;
   text-align: center; }
   button:hover {
     background-color: #b4b4b4;

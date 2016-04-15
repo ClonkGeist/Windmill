@@ -1,5 +1,6 @@
 
 let marked = Cu.import("resource://docs/marked.jsm").export_marked;
+let {he} = Cu.import("resource://docs/he.jsm");
 marked.setOptions({
 	renderer: new marked.Renderer(),
 	gfm: true,
@@ -146,7 +147,10 @@ function buildDoc(path = _sc.chpath + "/docs/docs", __rec) {
 								throw e.message + "("+e.filename+":"+e.lineno+")";
 							}
 							for(var i = 0; i < codeblocks.length; i++)
-								codeblocks[i] = codeblocks[i].replace(/&quot;/g, "\"");
+								codeblocks[i] = he.decode(codeblocks[i]);
+							/*codeblocks[i] = codeblocks[i].replace(/&.+?;/g, function(match) {
+									
+								});*/
 							worker.postMessage(codeblocks);
 						});
 						yield promise;
@@ -166,7 +170,7 @@ function buildDoc(path = _sc.chpath + "/docs/docs", __rec) {
 						from += "/";
 					}
 					
-					output = output.replace(/\${STYLESHEET}/g, "../"+relpath.join("/").replace(/(.+?)(\/|$)/g, "../")+"windmill_doc.css");
+					output = output.replace(/\${STYLESHEET}/g, "../"+relpath.join("/").replace(/(.+?)(\/|$)/g, "../")+"windmillDocs.css");
 					output = output.replace(/\${STYLESHEET_PRISM}/g, "../"+relpath.join("/").replace(/(.+?)(\/|$)/g, "../")+"prism.css");
 
 					let htmlfile = yield OS.File.open(dest.substr(0, dest.length-2)+"html", { truncate: true });
@@ -181,6 +185,7 @@ function buildDoc(path = _sc.chpath + "/docs/docs", __rec) {
 		if(!__rec) {
 			log("***********************************");
 			log("Building process finished.");
+			_mainwindow.$("#docFrame")[0].contentWindow.location.reload();
 		}
 	}, function(reason) {
 		log("***********************************");

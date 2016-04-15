@@ -488,14 +488,14 @@ function getChildIndex(e) {
     return i;
 }
 
-hook("load", function() {	
+hook("load", function() {
 	$("#ref-toggle-update").click(function() {
-		if($(this).hasClass("activated"))
+		if($(this).hasClass("enabled"))
 			pauseMSRefresh();
 		else
 			startMSRefresh();
 
-		$(this).toggleClass("activated");
+		$(this).toggleClass("enabled");
 	});
 
 	$("#ref-layout-list").click(function() {

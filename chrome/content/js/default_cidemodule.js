@@ -67,16 +67,6 @@ function getUnsavedFiles() {
 	return files;
 }
 
-function fileLoaded(path) {
-	let tabs = TabManager();
-	for(var id in tabs)
-		if(tabs[id])
-			if(tabs[id][cda.path] == path)
-				return id;
-
-	return -1;
-}
-
 function saveFileByPath(path) {
 	let tabs = TabManager();
 	for(var id in tabs)
@@ -87,9 +77,49 @@ function saveFileByPath(path) {
 	return -1;
 }
 
+function fileLoaded(path) {
+	let tabs = TabManager();
+	for(var id in tabs)
+		if(tabs[id])
+			if(tabs[id][cda.path] == path)
+				return id;
+
+	return -1;
+}
+
+function hasOpenedSessions() {
+	let tabs = TabManager()
+	for(var id in tabs)
+		if(tabs[id])
+			return true;
+	return false;
+}
+
 function frameWindowTitle() {
-	if(TabManager()[cda.active_id])
-		return formatPath(TabManager()[cda.active_id][cda.path]).substr(_sc.workpath(cda.active_id, true).length+1);
+	if(TabManager()[cda.active_id]) {
+		let substrlength = _sc.workpath(cda.active_id, true).length;
+		//Um bei externen Dateien den vollen Dateipfad einschliesslich Laufwerk anzuzeigen
+		if(substrlength)
+			substrlength++; //Nimmt das letzte Slash mit
+		let path = formatPath(TabManager()[cda.active_id][cda.path]).substr(substrlength);
+		if(path.length > 100) {
+			let splitted = path.split("/");
+			if(splitted.length > 1) {
+				let beginning = splitted[0]+"/"+splitted[1]+"/";
+				let ending = "";
+				for(var i = splitted.length-1; i > 1; i--) {
+					ending = splitted[i] + (ending?"/":"") + ending;
+					if((beginning+ending).length > 100) {
+						if(i != 2)
+							ending = ".../" + ending;
+						break;
+					}
+				}
+				path = beginning + ending;
+			}
+		}
+		return path;
+	}
 }
 
 function _createCideToolbar(...pars) {

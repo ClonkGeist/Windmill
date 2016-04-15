@@ -18,6 +18,7 @@ function gitContextMenu() {
 			});
 		}, 0, { iconsrc: "chrome://windmill/content/img/git/icon-git-push.png", identifier: "ctxGitPush" }],
 		["$CtxGit_Revert$", 0, openGitRevertDialog, 0, { iconsrc: "chrome://windmill/content/img/git/icon-git-revert.png", identifier: "ctxGitRevert" }],
+		["$CtxGit_Reset$", 0, openGitResetDialog, 0, { iconsrc: "chrome://windmill/content/img/git/icon-git-reset.png", identifier: "ctxGitReset" }],
 		["$CtxGit_FetchRemote$", 0, openGitFetchRemoteDialog, 0, { iconsrc: "chrome://windmill/content/img/git/icon-git-fetchremote.png", identifier: "ctxGitRemote" }],
 		
 		"seperator",
@@ -43,8 +44,79 @@ function gitContextMenu() {
 		"seperator",
 		
 		["$CtxGit_Checkout$", 0, openGitCheckoutDialog, 0, { iconsrc: "chrome://windmill/content/img/git/icon-git-checkout.png", identifier: "ctxGitCheckout" }],
-		["$CtxGit_Merge$", 0, openGitMergeDialog, 0, { iconsrc: "chrome://windmill/content/img/git/icon-git-merge.png", identifier: "ctxGitMerge" }]
+		["$CtxGit_Merge$", 0, openGitMergeDialog, 0, { iconsrc: "chrome://windmill/content/img/git/icon-git-merge.png", identifier: "ctxGitMerge" }],
+		
+		"seperator",
+		
+		["$CtxGit_Settings$", 0, openGitSettingsDialog, 0, { iconsrc: "chrome://windmill/content/img/git/icon-git-settings.png", identifier: "ctxGitSettings" }]
 	], MODULE_LPRE, { allowIcons: true, fnCheckVisibility: gitHideContextItems });
+}
+
+function openGitResetDialog() {
+	let path = getFullPathForSelection(), cnt = getTreeCntById(getTreeObjId(getCurrentTreeSelection()));
+	var dlg = new WDialog("$DlgGitReset$", MODULE_LPRE, { btnright: [{ preset: "accept", title: "$DlgGitResetBtn$",
+			onclick: function(e, btn, _self) {
+				getAppByID("git").create(["-C", path, "reset", $(_self.element).find("radio[selected='true']").val()], 0x1, function() {
+					EventInfo("$EI_ResetCompleted$");
+					$(cnt).empty();
+					loadDirectory(path, cnt);
+				}, function(data) {
+					logToGitConsole(data);
+				});
+			}
+		}, "cancel"]});
+
+	dlg.setContent(`<radiogroup>
+						<radio id="git-reset-hard" label="$DlgGitResetHard$" selected="true" value="--hard" />
+						<radio id="git-reset-soft" label="$DlgGitResetSoft$" value="--soft" />
+						<radio id="git-reset-mixed" label="$DlgGitResetMixed$" value="--mixed" />
+						<radio id="git-reset-keep" label="$DlgGitResetKeep$" value="--keep" />
+					</radiogroup>`);
+	dlg.show();
+}
+
+function openGitSettingsDialog() {
+	let path = getFullPathForSelection(), workenv = getWorkEnvironmentByPath(path);
+	let cloneurl = workenv.rawCloneUrl;
+
+	var dlg = new WDialog("$DlgGitSettings$", MODULE_LPRE, { btnright: [{ preset: "accept",
+			onclick: function(e, btn, _self) {
+				let newUsername = $(_self.element).find("#git-changeusername").val(),
+					newPassword = $(_self.element).find("#git-changepassword").val()
+					oldUsername = $(_self.element).find("#git-changeusername").attr("data-default"),
+					oldPassword = $(_self.element).find("#git-changepassword").attr("data-default");
+				if(newUsername == oldUsername && newPassword == oldPassword)
+					return;
+				if(newUsername)
+					workenv.userinfo = {username: newUsername, password: newPassword};
+				else
+					workenv.userinfo = null;
+				getAppByID("git").create(["-C", path, "remote", "set-url", "origin", workenv.cloneurl], 0x1, function() {
+					EventInfo("$EI_SettingsChanged$");
+				}, function(data) {
+					logToGitConsole(data);
+				});
+			}
+		}, "cancel"]});
+
+	let content = "";
+	let {username, password} = workenv.userinfo || {username:"", password:""};
+
+	content += `<hbox style="margin-bottom: 10px">
+					<label value="$DlgGitSourceURL$:" flex="1" />
+					<label value="${cloneurl}" flex="1" />
+				</hbox>
+				<hbox>
+					<label value="$DlgWERepositoryUserName$:" flex="1" />
+					<textbox id="git-changeusername" placeholder="$DlgInputUserName$" flex="1" value="${username}" data-default="${username}" />
+				</hbox>
+				<hbox>
+					<label value="$DlgWERepositoryPassword$:" flex="1" />
+					<textbox id="git-changepassword" placeholder="$DlgInputPassword$" flex="1" type="password" value="${password}" data-default="${password}" />
+				</hbox>`;
+
+	dlg.setContent(content);
+	dlg.show();
 }
 
 function openGitAddDialog() {
@@ -458,16 +530,20 @@ function openGitCommitLogDialog(path, callback) {
 /*-- Sichtbarkeit --*/
 
 function gitHideContextItems(by_obj, identifier) {
-	var workenv = $(by_obj).hasClass("workenvironment");
+	let isWorkEnv = $(by_obj).hasClass("workenvironment");
 	switch(identifier) {
+		//Eintraege die nur fuer WorkEnvironments angezeigt werden
 		case "ctxGitRevert":
 		case "ctxGitRemote":
 		case "ctxGitMerge":
-			return workenv?0:2;
+		case "ctxGitReset":
+		case "ctxGitSettings":
+			return isWorkEnv?0:2;
+		//Eintraege die nicht fuer WorkEnvironments angezeigt werden
 		case "ctxGitRemove":
 		case "ctxGitMove":
 		case "ctxGitIgnore":
-			return workenv?2:0;
+			return isWorkEnv?2:0;
 	}
 }
 

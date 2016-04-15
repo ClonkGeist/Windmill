@@ -12,55 +12,10 @@ Cu.import("resource://gre/modules/ctypes.jsm");
 Cu.import("resource://ctypes/win/js-ctypes-import-datatypes.jsm");
 Cu.import("resource://ctypes/win/js-ctypes-import-structs.jsm");
 
-var EXPORTED_SYMBOLS = ["WindmillInterface", "sfl", "_WIN64", "GetLastError", "CreateProcess", "WaitForSingleObject", "CloseHandle",
-						"CreatePipe", "ReadFile", "WriteFile", "SetHandleInformation", "GetStdHandle", "PeekNamedPipe", "GetExitCodeProcess"];
+var EXPORTED_SYMBOLS = ["_WIN64", "GetLastError", "CreateProcess", "WaitForSingleObject", "CloseHandle", "CreatePipe", "ReadFile", "WriteFile", 
+						"SetHandleInformation", "GetStdHandle", "PeekNamedPipe", "GetExitCodeProcess"];
 var WINABI = _WIN64?ctypes.default_abi:ctypes.winapi_abi;
 var GetLastError = function() { return ctypes.winLastError; }
-
-function sfl(wmflags, obj, bitrange = 32) { //Wandelt Windmill-Flags in die Betriebssystem-Flags um ueber OSCONST
-	var retflags = 0;
-	if(!obj.OSCONST)
-		return;
-	for(var i = 0; i < bitrange; i++) {
-		if(wmflags & Math.pow(2, i))
-			retflags |= obj.OSCONST(Math.pow(2, i));
-	}
-
-	return retflags;
-}
-
-class WindmillInterface {
-	constructor() {
-		this._HOOKS = [];
-	}
-	
-	hook(eventName, fn) {
-		if(!this._HOOKS)
-			this._HOOKS = [];
-		
-		if(!this._HOOKS[eventName])
-			this._HOOKS[eventName] = [];
-		
-		this._HOOKS[eventName].push(fn);
-	}
-	
-	execHook(eventName, ...args) {
-		if(!this._HOOKS)
-			return;
-
-		var list = this._HOOKS[eventName];
-	
-		if(!list)
-			return;
-		
-		for(var item in list) {
-			if(typeof list[item] === "function")
-				list[item].call(this, ...args);
-			else
-				err("Problem with executing hook: " + list[item]);
-		}
-	}
-}
 
 /*-- kernel32.dll --*/
 

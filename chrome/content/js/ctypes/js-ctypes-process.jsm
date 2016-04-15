@@ -7,6 +7,7 @@ var Cu = Components.utils;
 Cu.unload("resource://ctypes/win/js-ctypes-import.jsm");
 Cu.import("resource://gre/modules/Timer.jsm");
 Cu.import("resource://gre/modules/ctypes.jsm");
+Cu.import("resource://ctypes/js-ctypes-windmillinterface.jsm");
 
 if(OS_TARGET == "WINNT") {
 	Cu.import("resource://ctypes/win/js-ctypes-import-datatypes.jsm");
@@ -51,6 +52,9 @@ class wmProcess extends WindmillInterface {
 	}
 
 	create(args, flags, onProcessClosed, outputListener) {
+		if(this.is_running())
+			return;
+
 		if(outputListener)
 			this.hook("stdout", outputListener);
 		if(onProcessClosed)
@@ -145,6 +149,9 @@ class wmProcess extends WindmillInterface {
 
 	is_running() {
 		if(OS_TARGET == "WINNT") {
+			if(!this.pi || !this.pi.hProcess)
+				return false;
+
 			var dwExitCode = new DWORD;
 			GetExitCodeProcess(this.pi.hProcess, dwExitCode.address());
 			if(dwExitCode.value == 259)

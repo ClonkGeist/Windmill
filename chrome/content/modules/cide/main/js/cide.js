@@ -78,6 +78,7 @@ window.addEventListener("load", function(){
 
 	var btncreatefn = function(deck, btn, id) {
 		$(btn).attr("draggable", "true");
+		$(deck.items[id]).attr("data-lastused", "");
 
 		//Dragdaten setzen
 		btn.addEventListener("dragstart", function(e) {
@@ -191,9 +192,31 @@ window.addEventListener("load", function(){
 	sidedeck.buttonContainer.addEventListener("dragenter", btncnt_dragenterfn(sidedeck));
 
 	//Decks verschwinden lassen, falls leer
-	var detachedfn = function(deck, id) {
+	var detachedfn = function(deck, id, frame) {
 		if(deck.selectedId == undefined)
 			clearCideToolbar();
+
+		//Module loeschen, falls leer
+		if(frame && frame.contentWindow && frame.contentWindow.readyState) {
+			if(!frame.contentWindow.hasOpenedSessions()) {
+				if(frame.contentWindow.rejectFrameRemoval && frame.contentWindow.rejectFrameRemoval())
+					return;
+
+				//Zeitpunkt der letzten Nutzung speichern
+				$(frame).attr("data-lastused", (new Date()).getTime());
+
+				//Vorherige Timeouts loeschen
+				if($(frame).attr("data-timeoutid"))
+					clearTimeout(parseInt($(frame).attr("data-timeoutid")));
+
+				//Frame nach ca. 60 Sekunden loeschen, wenn es solange unbenutzt bleibt.
+				$(frame).attr("data-timeoutid", setTimeout(function() {
+					let time = parseInt($(frame).attr("data-lastused"));
+					if(time && !isNaN(time) && (new Date()).getTime() >= (time+59000))
+						$(frame).remove();
+				}, 60000));
+			}
+		}
 
 		if(sidedeck.isEmpty() && maindeck.isEmpty()) {
 			//Deckverteilung wieder auf Standard umstellen:
@@ -697,9 +720,6 @@ function addTexteditor(file, lang, deck) {
 
 	// load text
 	var txt = loadFile(file.path);
-	if(!txt)
-		return false;
-
 	var modulename = "scripteditor";
 	//TODO: In Einstellungen verstellbar
 	if(file.leafName.toUpperCase() == "SCENARIO.TXT" && getConfigData("ScenarioSettings", "AlwaysUseScenarioSettings"))

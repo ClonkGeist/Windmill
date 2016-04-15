@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Windmill Documentation - wmIProcess</title>
+		<link href="../../windmillDocs.css" rel="stylesheet">
+		<link href="../../prism.css" rel="stylesheet">
+		<meta charset="UTF-8">
+		<script>
+			//Windmillinterner Workaround: Da Windmill das Oeffnen externer Links sperrt (sodass diese in einem externen Browser geoffnet werden koennen)
+			//wird hier fuer Windmill das anders geloest.
+			if(navigator.userAgent.search(/\bwindmill\b/) != -1) {
+				window.addEventListener("load", function() {
+					let elements = document.getElementsByTagName("a");
+					for(var i = 0; i < elements.length; i++) {
+						elements[i].onclick = function(e) {
+							window.location.href = this.href;
+							e.preventDefault();
+						};
+					}
+				});
+			}
+		</script>
+	</head>
+	<body>
+		<div id="header">
+			Windmill Documentation
+		</div>
+		<div id="wrapper">
+			<nav id="navigation">
+				<ul>
+					<li class="navigation-elm"><a href="../_home/__head_de.html">Startseite</a></li><ul class="navigation-sublist">
+</ul>
+<li class="navigation-elm"><a href="../functionalities/__head_de.html">Funktionalitäten</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../functionalities/other/__head_de.html">Weitere Funktionen</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../functionalities/other/showNotification_de.html">showNotification</a></li>
+</ul>
+<li class="navigation-elm"><a href="../functionalities/dialogs/__head_de.html">Dialoge</a></li><ul class="navigation-sublist">
+</ul>
+<li class="navigation-elm"><a href="../functionalities/config/__head_de.html">config.js</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../functionalities/config/setConfigData_de.html">setConfigData</a></li>
+<li class="navigation-elm"><a href="../functionalities/config/setClonkPath_de.html">setClonkPath</a></li>
+<li class="navigation-elm"><a href="../functionalities/config/sc.clonkpath_de.html">_sc.clonkpath</a></li>
+<li class="navigation-elm"><a href="../functionalities/config/saveConfig_de.html">saveConfig</a></li>
+<li class="navigation-elm"><a href="../functionalities/config/loadConfig_de.html">loadConfig</a></li>
+<li class="navigation-elm"><a href="../functionalities/config/getConfig_de.html">getConfig</a></li>
+<li class="navigation-elm"><a href="../functionalities/config/getConfigData_de.html">getConfigData</a></li>
+<li class="navigation-elm"><a href="../functionalities/config/class_ConfigEntry_de.html">class ConfigEntry</a></li>
+<li class="navigation-elm"><a href="../functionalities/config/addConfigString_de.html">addConfigString</a></li>
+</ul>
+</ul>
+<li class="navigation-elm"><a href="../externalapplications/__head_de.html">Externe Anwendungen</a></li><ul class="navigation-sublist">
+</ul>
+<li class="navigation-elm"><a href="__head_de.html">CTypes / Windmill Interface</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="wmIProcess_de.html">wmIProcess</a></li>
+<li class="navigation-elm"><a href="WindmillInterface_de.html">Windmill Interface</a></li>
+</ul>
+
+				</ul>
+			</nav>
+			<div id="content">
+				<h1 id="wmiprocess-prozessinterface">wmIProcess - Prozessinterface</h1>
+<p><strong>Unterstützte Betriebssysteme:</strong> Windows.</p>
+<p>wmIProcess ist das auf js-ctypes basierte, Windmilleigene Prozessinterface welches die Funktionen des XPCOM Prozessinterfaces <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIProcess">nsIProcess</a> um Funktionen wie die Inter Process Communication erweitert.</p>
+<h2 id="class-wmiprocess-extends-windmillinterface-windmillinterface_de-html-">class wmIProcess extends <a href="WindmillInterface_de.html">WindmillInterface</a></h2>
+<h3 id="attribute">Attribute</h3>
+<table>
+<thead>
+<tr>
+<th>Attribut</th>
+<th>Typ</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>path</td>
+<td>string</td>
+<td>Gibt den Dateipfad an.</td>
+</tr>
+<tr>
+<td>name</td>
+<td>string</td>
+<td>Gibt den Dateinamen an. <strong>Read-only.</strong></td>
+</tr>
+<tr>
+<td>exitCode</td>
+<td>int</td>
+<td>Gibt den ExitCode mit der der zuletzt ausgeführte Prozess unter dieser wmIProcess-Instanz geendet hat an.</td>
+</tr>
+<tr>
+<td>status</td>
+<td>int</td>
+<td>Gibt den Status der wmIProcess-Instanz an. 0: Keine offene Prozessinstanz, 1: offene Prozessinstanz, 2: manuell geschlossene Prozessinstanz, bei der noch einmal die Routine durchlaufen wird und die stdout-Pipe eingelesen wird.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="methoden">Methoden</h3>
+<p><strong>constructor</strong> wmIProcess(file);<br>Erstellt eine wmIProcess Instanz.</p>
+<ul>
+<li><strong>file:</strong><br>Kann ein als String übergebener Dateipfad oder eine Instanz von <a href="#">nsIFile</a> sein, die auf die auszuführende Datei zeigt.</li>
+</ul>
+<p><strong>void</strong> create(<strong>array</strong> args, <strong>int</strong> flags, [opt] <strong>function</strong> onProcessClosed, [opt] <strong>function</strong> outputListener);<br>Erstellt die Prozessinstanz mit den übergebenen Argumenten und Flags.</p>
+<ul>
+<li><strong>args:</strong><br>Kommandozeilenargumente die dem auszuführenden Prozess übergeben werden.</li>
+<li><strong>flags:</strong><br>Flags die zusätzliche Einstellungen festlegen:</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Wert</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>wmP_NO_WINDOW</td>
+<td>0x1</td>
+<td>Öffnet das Fenster ohne ein Konsolenfenster anzuzeigen.</td>
+</tr>
+<tr>
+<td>wmP_BLOCKING</td>
+<td>0x2</td>
+<td>Blockt Windmill solange, bis der Prozess geendet hat.</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>[opt] onProcessClosed:</strong><br>Callback-Funktion die an das <code>closed</code> Event gebindet wird. Weitere Informationen in der Event-Liste.</li>
+<li><strong>[opt] outputListener:</strong><br>Callback-Funktion die an das <code>stdout</code> Event gebindet wird. Weitere Informationen in der Event-Liste.</li>
+</ul>
+<p><strong>&lt;Promise&gt;</strong> createPromise(<strong>array</strong> args, <strong>int</strong> flags, [opt] <strong>function</strong> onProcessClosed, [opt] <strong>function</strong> outputListener);<br>Erstellt die Prozessinstanz mit den übergebenen Argumenten und Flags und gibt einen Promise zurück, der gelöst wird sobald der Prozess geendet hat. Dabei wird die komplette Ausgabe des Prozesses einschließlich des ExitCodes und der wmIProcess-Instanz übergeben.</p>
+<pre><code class="lang-javascript"><span class="token keyword" >let</span> process <span class="token operator" >=</span> _ws<span class="token punctuation" >.</span><span class="token function" >pr</span><span class="token punctuation" >(</span><span class="token function" >getC4GroupPath</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+<span class="token keyword" >let</span> promise <span class="token operator" >=</span> process<span class="token punctuation" >.</span><span class="token function" >createPromise</span><span class="token punctuation" >(</span><span class="token punctuation" >[</span><span class="token operator" >-</span>x<span class="token punctuation" >,</span> <span class="token string" >"Objects.ocd"</span><span class="token punctuation" >]</span><span class="token punctuation" >,</span> <span class="token number" >0x1</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+promise<span class="token punctuation" >.</span><span class="token function" >then</span><span class="token punctuation" >(</span><span class="token keyword" >function</span><span class="token punctuation" >(</span>output<span class="token punctuation" >,</span> exitCode<span class="token punctuation" >,</span> process<span class="token punctuation" >)</span> <span class="token punctuation" >{</span>
+  <span class="token function" >log</span><span class="token punctuation" >(</span>output<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+<span class="token punctuation" >}</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Erstellt eine C4Group-Instanz die <code>Objects.ocd</code> exploden soll und gibt dessen Ausgabe in die Konsole aus.</p>
+<p>Für eine Erklärung der Parameter, siehe <code>create</code>.</p>
+<p><strong>bool</strong> is_running();<br>Gibt zurück, ob der Prozess noch am laufen ist oder nicht.</p>
+<p><strong>void</strong> pipe_write(<strong>string</strong> data);<br>Schreibt Daten in die stdin-Pipe des Prozesses.</p>
+<ul>
+<li><strong>data:</strong><br>Daten die zu Schreiben sind.</li>
+</ul>
+<p><strong>void</strong> close();<br>Schließt die offene Prozessinstanz.</p>
+<h3 id="events">Events</h3>
+<p><strong>stdout:</strong> function(data, status);<br>Wird jedes Mal beim Lesen der stdout-Pipe aufgerufen. (alle 250ms)</p>
+<ul>
+<li><strong>data:</strong><br>Gibt den neuen Inhalt der stdout-Pipe an.</li>
+<li><strong>status:</strong><br>Gibt den Status der wmIProcess-Instanz an. Siehe das <code>status</code>-Attribut.</li>
+</ul>
+<p><strong>closed:</strong> function(exitCode);<br>Wird aufgerufen wenn der Prozess geendet hat bzw. manuell beendet worden ist.</p>
+<ul>
+<li><strong>exitCode:</strong><br>Gibt den ExitCode an, mit dem der Prozess beendet worden ist.</li>
+</ul>
+<h2 id="beispiel">Beispiel</h2>
+<pre><code class="lang-javascript"><span class="token function" >getAppByID</span><span class="token punctuation" >(</span><span class="token string" >"git"</span><span class="token punctuation" >)</span><span class="token punctuation" >.</span><span class="token function" >create</span><span class="token punctuation" >(</span><span class="token punctuation" >[</span><span class="token string" >"-C"</span><span class="token punctuation" >,</span> path<span class="token punctuation" >,</span> <span class="token string" >"ls-files"</span><span class="token punctuation" >,</span> <span class="token string" >"--other"</span><span class="token punctuation" >,</span> <span class="token string" >"--exclude=.windmillheader"</span><span class="token punctuation" >]</span><span class="token punctuation" >,</span> <span class="token number" >0x1</span><span class="token punctuation" >,</span> <span class="token keyword" >function</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span> <span class="token punctuation" >{</span>
+    <span class="token keyword" >if</span><span class="token punctuation" >(</span><span class="token operator" >!</span><span class="token function" >$</span><span class="token punctuation" >(</span>dlg<span class="token punctuation" >.</span>element<span class="token punctuation" >)</span><span class="token punctuation" >.</span><span class="token function" >find</span><span class="token punctuation" >(</span><span class="token string" >"#git-addfiles .dlg-checklistitem"</span><span class="token punctuation" >)</span><span class="token punctuation" >[</span><span class="token number" >0</span><span class="token punctuation" >]</span><span class="token punctuation" >)</span>
+        <span class="token function" >$</span><span class="token punctuation" >(</span>dlg<span class="token punctuation" >.</span>element<span class="token punctuation" >)</span><span class="token punctuation" >.</span><span class="token function" >find</span><span class="token punctuation" >(</span><span class="token string" >"#git-addfiles"</span><span class="token punctuation" >)</span><span class="token punctuation" >.</span><span class="token function" >html</span><span class="token punctuation" >(</span><span class="token function" >Locale</span><span class="token punctuation" >(</span><span class="token string" >'$NoUnversionedFilesFound${PAGE_CONTENT}lt;hbox class="dlg-checklistitem" style="visibility: hidden; width: 1px;">&lt;/hbox>'</span><span class="token punctuation" >)</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+<span class="token punctuation" >}</span><span class="token punctuation" >,</span> <span class="token keyword" >function</span><span class="token punctuation" >(</span>data<span class="token punctuation" >)</span> <span class="token punctuation" >{</span>
+    <span class="token function" >$</span><span class="token punctuation" >(</span>dlg<span class="token punctuation" >.</span>element<span class="token punctuation" >)</span><span class="token punctuation" >.</span><span class="token function" >find</span><span class="token punctuation" >(</span><span class="token string" >"#git-addfiles"</span><span class="token punctuation" >)</span><span class="token punctuation" >.</span><span class="token function" >empty</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+    <span class="token keyword" >var</span> lines <span class="token operator" >=</span> data<span class="token punctuation" >.</span><span class="token function" >split</span><span class="token punctuation" >(</span><span class="token string" >"\n"</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+    <span class="token keyword" >for</span><span class="token punctuation" >(</span><span class="token keyword" >var</span> i <span class="token operator" >=</span> <span class="token number" >0</span><span class="token punctuation" >;</span> i <span class="token operator" >&lt;</span> lines<span class="token punctuation" >.</span>length<span class="token punctuation" >;</span> i<span class="token operator" >++</span><span class="token punctuation" >)</span>
+        <span class="token keyword" >if</span><span class="token punctuation" >(</span>lines<span class="token punctuation" >[</span>i<span class="token punctuation" >]</span><span class="token punctuation" >.</span>length<span class="token punctuation" >)</span>
+            <span class="token function" >$</span><span class="token punctuation" >(</span><span class="token string" >'&lt;hbox class="dlg-checklistitem">&lt;/hbox>'</span><span class="token punctuation" >)</span><span class="token punctuation" >.</span><span class="token function" >appendTo</span><span class="token punctuation" >(</span><span class="token function" >$</span><span class="token punctuation" >(</span>dlg<span class="token punctuation" >.</span>element<span class="token punctuation" >)</span><span class="token punctuation" >.</span><span class="token function" >find</span><span class="token punctuation" >(</span><span class="token string" >"#git-addfiles"</span><span class="token punctuation" >)</span><span class="token punctuation" >)</span><span class="token punctuation" >.</span><span class="token function" >text</span><span class="token punctuation" >(</span>lines<span class="token punctuation" >[</span>i<span class="token punctuation" >]</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+
+<span class="token punctuation" >}</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Führt die git-Anwendung mit <code>-C &lt;path&gt; ls-files --other --exclude=.windmillheader</code> aus um eine Liste der nicht versionierten Dateien zu erhalten. Die Ausgabe wird verarbeitet und als Checkliste in einem Dialog dargestellt.</p>
+
+			</div>
+		</div>
+	</body>
+</html>

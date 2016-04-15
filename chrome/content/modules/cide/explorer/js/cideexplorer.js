@@ -120,7 +120,7 @@ $(window).load(function() {
 	$("#dlg_workenvironment").remove();
 
 	//Erstellungsdialog fuer Arbeitsumgebungen
-	$("#newWorkEnvironment").mousedown(createNewWorkEnvironmentDlg);
+	$("#newWorkEnvironment").mousedown(function() { createNewWorkEnvironmentDlg(); });
 	//Importieren von Arbeitsumgebungen
 	$("#importWorkEnvironment").mousedown(function() {
 		current_path = getConfigData("CIDE", "WorkspaceParentDirectory");
@@ -218,8 +218,7 @@ function createNewWorkEnvironmentDlg(parentWorkEnv, parentContainer) {
 			let type = parseInt($(_self.element).find("#dex_dlg_workenv_type").val()), file;
 			if(type == _mainwindow.WORKENV_TYPE_ClonkPath) {
 				//Checken ob der angegebene Pfad existiert/valide ist
-				let path = $(_self.element).find("#dex_dlg_workenv_ocpath").text();
-				let info;
+				let path = $(_self.element).find("#dex_dlg_workenv_ocpath").text(), info;
 				try { info = yield OS.File.stat(path); }
 				catch(err) {
 					if(err.becauseNoSuchFile) {
@@ -927,19 +926,20 @@ function CreateNewGamefile(type, treeobj) {
 function getFullPathForSelection() { return _sc.workpath() + getTreeObjPath(getCurrentTreeSelection()); }
 
 //Neue Datei erstellen
-function createNewFile(is_dir, name, container, image, content) {
+function createNewFile(is_dir, name, container, image, content = "") {
 	let cntpath = _sc.workpath() + getTreeObjPath(getCurrentTreeSelection()), path = cntpath + "/" + Locale(name);
 	let cnt = getTreeCntById(getTreeObjId(getCurrentTreeSelection()));
 	let task = Task.spawn(function*() {
 		if(!is_dir) {
-			let fileinfo = yield OS.File.openUnique(path, {humanReadable: true});
-			if(content && typeof content == "string")
-				yield OS.File.writeAtomic(fileinfo.path, content, {encoding: "utf-8"});
+			let new_fname = yield* UniqueFilename(path, true);
+			let file = yield OS.File.open(new_fname, {write: true, create: true});
+			if(typeof content == "string")
+				yield OS.File.writeAtomic(new_fname, content, {encoding: "utf-8"});
 			else
-				yield fileinfo.file.write(content);
+				yield file.write(content);
 
-			fileinfo.file.close();
-			path = fileinfo.path;
+			file.close();
+			path = new_fname;
 		}
 		else {
 			let counter = 0, extra = "";
@@ -990,6 +990,7 @@ function createNewFile(is_dir, name, container, image, content) {
 	}, function(e) {
 		EventInfo("An error occured while trying to create a new file");
 		log(e);
+		log(e.reason);
 	});
 	return task;
 }

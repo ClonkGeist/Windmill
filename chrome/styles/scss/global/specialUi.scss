@@ -7,6 +7,7 @@
 	color: rgb(80, 80, 80);
 	display: inline-flex;
 	outline: none;
+	border-radius: 2px;
 	
 	&:hover {
 		background-color: rgb(180, 180, 180);
@@ -14,7 +15,7 @@
 	}
 }
 
-@mixin number_input() {
+@mixin ui-number-input() {
 	background-color: rgb(220, 220, 220);
 	border-bottom: 1px solid rgb(180, 180,180);
 	padding: 5px 10px;
@@ -29,5 +30,49 @@
 	
 	* {
 		background-color: inherit;
+	}
+}
+
+
+/*
+@structure:
+
+<div class="special-cb">
+	<input id="<id"> type="checkbox"/>
+	<label for="<id>"><text></label>
+</div>
+
+*/
+
+@mixin ui-text-checkbox() {
+
+	label {
+		background-color: rgb(220, 220, 220);
+		border-bottom: 1px solid rgb(180, 180,180);
+		padding: 5px 10px;
+		outline: none;
+		color: rgb(80, 80, 80);
+		border-radius: 2px;
+		pointer-events: auto;-moz-user-select: auto;
+	}
+	
+	label:hover {
+		background-color: rgb(180, 180, 180);
+		outline: none;
+	}
+	
+	input:checked + label {
+		background-color: $interact-red;
+		border-bottom-color: $interact-red-dark;
+		color: whitesmoke;
+	}
+	
+	input:checked + label:hover {
+		background-color: $interact-red-dark;
+		border-bottom-color: $interact-red-dark;
+	}
+	
+	input {
+		display: nosne;
 	}
 }

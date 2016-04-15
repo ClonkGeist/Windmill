@@ -1,3 +1,4 @@
+/* deprecated */
 /*-- Sammelstyles fuer Inhalte der default_module.js --*/
 .eventinfo {
   background-color: black;
@@ -18,13 +19,17 @@
   right: 0;
   bottom: 0;
   background-color: #000;
-  opacity: 0.5;
+  opacity: 0;
   font-size: 16pt;
   color: white;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center; }
+
+.windmill-modal.modal-enabled {
+  opacity: 0.5;
+  transition: opacity 0.5s; }
 
 .modal-big {
   font-size: 24pt; }
@@ -58,11 +63,9 @@ li.treeelm::after {
 li.tree-selected,
 li.tree-selected:focus,
 li.tree-selected:hover {
-  /* background-color: #F4FF8E;*/
   outline-offset: -1px;
   background-color: rgba(0, 165, 207, 0.2);
-  outline: 1px solid rgba(0, 165, 207, 0.5);
-  border: none; }
+  outline: 1px solid rgba(0, 165, 207, 0.5); }
 
 ul.tree-expanded {
   display: block; }
@@ -96,7 +99,7 @@ li:focus *, li:focus {
 
 .maintree {
   transition: background-color 0.4s;
-  padding-right: 1.5em; }
+  padding-right: 0.5em; }
 
 .maintree.dragover {
   transition: background-color 0.4s;
@@ -435,6 +438,9 @@ li:focus *, li:focus {
 .icon-open-external:before {
   content: "E"; }
 
+.icon-documentation:before {
+  content: "?"; }
+
 splitter {
   -moz-appearance: none;
   background-color: #fafafa;
@@ -548,6 +554,22 @@ textbox.deactivated {
   padding: 40px; }
 
 #previewdesc {
-  white-space: pre-wrap; }
+  /*white-space: pre-wrap;*/ }
+
+.tree-splitter {
+  height: 1px;
+  width: 140px;
+  background-color: #c8c8c8;
+  margin: 4px 20px; }
+  .tree-splitter description, .tree-splitter image {
+    display: none; }
+  .tree-splitter .tree-selected {
+    outline-offset: 0;
+    background-color: #c8c8c8;
+    outline: none;
+    border: none; }
+
+.tree-no-access {
+  color: #7f7f7f; }
 
 /*	need some space	*/
