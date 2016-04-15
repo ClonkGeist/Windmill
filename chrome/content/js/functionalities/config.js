@@ -165,7 +165,7 @@ function initializeConfig() {
 					setClonkPath(i);
 		}
 	});
-	addConfigString("Global", "FirstStartDevTest", "false");
+	addConfigString("Global", "FirstStartDevTest", false);
 	addConfigString("Global", "Version", "0.2");
 	addConfigString("Global", "Language", "en-US");
 	addConfigString("Global", "DevMode", true);
