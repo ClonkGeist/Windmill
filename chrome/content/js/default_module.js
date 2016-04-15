@@ -8,32 +8,30 @@ Components.utils.import("resource://gre/modules/Task.jsm");
 const OCGRP_FILEEXTENSIONS = ["ocd", "ocs","ocg","ocf","ocs", "oci", "ocp"];
 
 //Hilfsfunktion zum loggen
-function log(str, hidden, type) {
-	if(getConfigData("Global", "DevMode")) {
-		var clone = _mainwindow.$("#developerlog .log-listitem.draft").clone();
-		clone.removeClass("draft");
-		clone.appendTo(_mainwindow.$("#log-entrylist"));
+function log(str, hidden, type) {	
+	var clone = _mainwindow.$("#developerlog .log-listitem.draft").clone();
+	clone.removeClass("draft");
+	clone.appendTo(_mainwindow.$("#log-entrylist"));
 
-		if(type)
-			clone.addClass(type);
-		if(hidden)
-			clone.addClass("hidden");
-		if(typeof str == "object") {
-			clone.click(function() {
-				var dlg = new WDialog("Object Information", "DEX", { modal: true, css: { "width": "450px" }, btnright: ["accept"]});
-				dlg.setContent('<box style="word-wrap: break-word; white-space: pre-wrap; overflow-y: scroll; height: 360px" flex="1">'+showObj3(str)+"</box>");
-				dlg.show();
-				dlg = 0;
-			});
-			clone.addClass("object");
-		}
-
-		clone.find(".log-listitem-content").text(str+"\n");
-		_mainwindow.$("#showLog").addClass("flashOnLog").addClass(type);
-		setTimeout(function() {
-			_mainwindow.$("#showLog").removeClass("flashOnLog").removeClass(type);
-		}, 10);
+	if(type)
+		clone.addClass(type);
+	if(hidden)
+		clone.addClass("hidden");
+	if(typeof str == "object") {
+		clone.click(function() {
+			var dlg = new WDialog("Object Information", "DEX", { modal: true, css: { "width": "450px" }, btnright: ["accept"]});
+			dlg.setContent('<box style="word-wrap: break-word; white-space: pre-wrap; overflow-y: scroll; height: 360px" flex="1">'+showObj3(str)+"</box>");
+			dlg.show();
+			dlg = 0;
+		});
+		clone.addClass("object");
 	}
+
+	clone.find(".log-listitem-content").text(str+"\n");
+	_mainwindow.$("#showLog").addClass("flashOnLog").addClass(type);
+	setTimeout(function() {
+		_mainwindow.$("#showLog").removeClass("flashOnLog").removeClass(type);
+	}, 10);
 	if(hidden && !getConfigData("Global", "ShowHiddenLogs"))
 		return;
 

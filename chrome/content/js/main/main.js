@@ -41,7 +41,7 @@ hook("load", function() {
 		initializeConfig();
 
 		//Config einlesen
-		yield loadConfig();
+		try { yield loadConfig(); } catch(e) {}
 		//Config speichern
 		yield saveConfig(); //Configdatei speichern (falls noch nicht existiert)
 		//Sprachpakete einlesen
@@ -204,6 +204,15 @@ hook("load", function() {
 		$("#log-entrylist").on("DOMSubtreeModified", function() {
 			$("#log-entrylist").scrollTop($("#log-entrylist")[0].scrollHeight);
 		});
+		$(window).keydown(function(e) {
+			if(e.keyCode == 68 && e.ctrlKey && e.shiftKey && !getConfigData("Global", "DevMode")) {
+				setConfigData("Global", "DevMode", true, true);
+				$(".devmode-elm").css("display", "");
+				EventInfo("DevMode activated");
+			}
+		});
+		if(!getAppByID("git").isAvailable())
+			$("#showGitLog").css("display", "none");
 	}, function(reason) {
 		$("#startup-loading").remove();
 		$("#startup-errorlog > vbox").append(`

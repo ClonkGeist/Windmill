@@ -158,7 +158,7 @@ function addConfigString(section, key, defaultval, ...pars) {
 function getConfig() { return CONFIG; }
 
 function initializeConfig() {
-	addConfigString("Global", "DevMode", true);
+	addConfigString("Global", "DevMode", false);
 	addConfigString("Global", "ClonkDirectories", "[]").hook("onWritingAccess", function(val) {
 		if(this.value == "[]" && val instanceof Array) {
 			for(var i = 0; i < val.length; i++)

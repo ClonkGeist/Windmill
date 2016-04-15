@@ -39,7 +39,7 @@ $(window).ready(function() {
 						$(this).trigger("click");
 						return;
 					}
-					setConfigData("Global", "ClonkDirectories", [formatPath(fp.file.path)]);
+					setConfigData("Global", "ClonkDirectories", [{ path: formatPath(fp.file.path), active: true }]);
 					break;
 
 				case "WSPath":
@@ -67,7 +67,8 @@ $(window).ready(function() {
 			alert("Kein Clonkverzeichnis angegeben.");
 			return;
 		}
-		var ocfile = _sc.file(clonkdir[0]+"/"+(OS_TARGET=="WINNT"?"openclonk.exe":"openclonk"));
+		clonkdir = clonkdir[0].path;
+		var ocfile = _sc.file(clonkdir+"/"+(OS_TARGET=="WINNT"?"openclonk.exe":"openclonk"));
 		if(!ocfile.exists() || !ocfile.isExecutable()) {
 			alert("openclonk.exe konnte nicht gefunden werden.");
 			return;

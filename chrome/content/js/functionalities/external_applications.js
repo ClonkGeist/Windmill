@@ -39,6 +39,8 @@ function registerNewApplication(application_obj) {
 
 function getAppByID(identifier) { return application_data[identifier]; }
 
+let external_application_warnings = {};
+
 class ExtApplication {
 	constructor(data) {
 		this.identifier = data.identifier;
@@ -67,13 +69,20 @@ class ExtApplication {
 		dlg.show();
 		dlg = 0;
 	}
+	
+	warn(...pars) {
+		if(external_application_warnings[this.identifier])
+			return;
+		warn(...pars);
+		external_application_warnings[this.identifier] = true;
+	}
 
 	create(...pars) {
 		var f = _sc.file(this.path);
 		if(!f.exists())
-			return warn("The application " + this.name + " does not exist.");
+			return this.warn("The application " + this.name + " does not exist.");
 		if(!f.isExecutable())
-			return warn("The application " + this.name + " is not executable.");
+			return this.warn("The application " + this.name + " is not executable.");
 
 		var process = new _ws.pr(f);
 		process.create(...pars);
