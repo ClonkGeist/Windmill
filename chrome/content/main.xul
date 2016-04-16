@@ -291,11 +291,11 @@
 	
 	<!-- Dialogs -->
 	<box id="wdialogmodal"></box>
-	<vbox class="main-wdialog draft" align="center" tabindex="1">
+	<vbox class="main-wdialog draft" align="center" tabindex="-1">
 		<spacer flex="1"/>
 		<stack>
 			<vbox flex="1">
-				<vbox class="main-wdialog-wrapper">
+				<vbox class="main-wdialog-wrapper" data-tabcontext="true">
 					<hbox class="main-wdialog-head">
 						<vbox class="main-wdialog-title"></vbox>
 						<spacer flex="1"/>

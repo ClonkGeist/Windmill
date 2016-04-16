@@ -299,7 +299,7 @@ $(document).keydown(function(e) {
 
 	if(e.keyCode == 9) {
 		let elm = document.activeElement;
-		//Suche nach naechstem Element im DOM (Unter Beruecksichtigung aller Ebenen)
+		//Suche nach naechstem Element im DOM (Unter Beruecksichtigung aller Ebenen im angegebenen Container)
 		function* nextElementInDOM(start, container = $(document.documentElement?document.documentElement:"body"), indent = "  ") {
 			let elements = $(container).children();
 			for(var i = 0; i < elements.length; i++) {
@@ -331,10 +331,10 @@ $(document).keydown(function(e) {
 		}
 
 		//Naechstes fokussierbares Element suche
-		let start = document.activeElement, elmdom = nextElementInDOM(start), result;
+		let start = document.activeElement, container = $(start).parents('[data-tabcontext="true"]')[0], elmdom = nextElementInDOM(start, container), result;
 		while(result = elmdom.next()) {
 			if(result.done && start) {
-				elmdom = nextElementInDOM();
+				elmdom = nextElementInDOM(0, container);
 				continue;
 			}
 			let elm = result.value;
