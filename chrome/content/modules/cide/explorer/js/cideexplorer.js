@@ -443,7 +443,7 @@ function createNewWorkEnvironmentDlg(parentWorkEnv, parentContainer) {
 
 		var current_path = JSON.parse(getConfigData("Global", "ClonkDirectories"));
 		if(current_path && current_path[0]) {
-			var dir = new _sc.file(current_path[0]);
+			var dir = new _sc.file(current_path[0].path);
 			if(dir.exists())
 				fp.displayDirectory = dir;
 		}
