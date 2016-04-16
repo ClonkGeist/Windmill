@@ -341,7 +341,8 @@ $(document).keydown(function(e) {
 			if(start == elm[0])
 				break;
 			elm.focus();
-			if(document.activeElement == elm[0])
+			//Auch auf Parents untersuchen, um Shadow DOM zu beruecksichtigen (XUL Textboxen laden HTML-Inputfelder)
+			if(document.activeElement == elm[0] || $(document.activeElement).parents().index(elm[0]) != -1)
 				break;
 		}
 		e.preventDefault();
