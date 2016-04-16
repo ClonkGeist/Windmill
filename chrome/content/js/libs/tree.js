@@ -250,7 +250,7 @@ function createTreeElement(tree, label, container, open, img, filename, special,
 		
 		return;
 	}
-	
+
 	var id = TREE_ELM_ID;
 	if(special && special.search(/workenvironment/) != -1) {
 		//Drag and Drop
@@ -789,11 +789,11 @@ function renameTreeObj(obj) {
 
 	$("#edit-filename").blur(function(e) {
 		function restoreEntry() {			
+			$("#edit-filename").remove();
 			if(drag)
 				$(obj).attr("draggable", "true");
 			$(obj).css("text-overflow", "");
 			$(obj).children("description").css("display", "");
-			$("#edit-filename").remove();
 			selectTreeItem(obj);
 		}
 

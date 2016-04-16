@@ -40,6 +40,33 @@ hook("load", function() {
 		return;
 	});
 
+	let dragstep;
+	$(document).on("dragover", function(e) {
+		e = e.originalEvent;
+		let start = dragstep;
+
+		if(e.clientY < 150)
+			dragstep = -5;
+		else if(e.clientY > $(window).height()-150)
+			dragstep = 5;
+		else
+			dragstep = 0;
+
+		function scrollDraggableElement() {
+			let scrolltop = $(MAINTREE_OBJ).parent().scrollTop();
+			$(MAINTREE_OBJ).parent().scrollTop(scrolltop+dragstep);
+			if(dragstep)
+				window.requestAnimationFrame(scrollDraggableElement);
+		}
+
+		if(!start)
+			scrollDraggableElement();
+	});
+	//Mousemove wird nur aufgerufen wenn kein Dragevent aktiv ist
+	$(document).mousemove(function(e) {
+		dragstep = 0;
+	});
+
 	return true;
 });
 
