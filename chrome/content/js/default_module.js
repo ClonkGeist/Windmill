@@ -288,6 +288,97 @@ else {
 	var _mainwindow = window;
 }
 
+//Suche nach naechstem Element im DOM (Unter Beruecksichtigung aller Ebenen im angegebenen Container)
+function* nextElementInDOM(start, container = $(document.documentElement?document.documentElement:"body"), indent = "  ") {
+	let elements = $(container).children();
+	for(var i = 0; i < elements.length; i++) {
+		//log(`${indent}[${i}/${elements.length-1}] <${elements[i].tagName}>:${elements[i].id} (${$(elements[i]).attr("tabindex")})`);
+		//ggf. nach Startpunkt suchen
+		if(start) {
+			if($(start)[0] == elements[i]) {
+				if($(elements[i]).children()[0])
+					yield* nextElementInDOM(0, elements[i], indent+"  ");
+				start = false;
+			}
+			else if($(start).parents().index(elements[i]) != -1) {
+				yield* nextElementInDOM(start, elements[i], indent+"  ");
+				start = false;
+			}
+		}
+		else {
+			//Nicht sichtbare Elemente, Frames und Elemente mit Tabindex -1 ueberspringen
+			if($(elements[i]).css("display") == "none" || 
+			   $(elements[i]).css("visibility") == "hidden" || 
+			   $(elements[i]).prop("tagName") == "iframe" ||
+			   $(elements[i]).attr("tabindex") == "-1")
+				continue;
+			yield $(elements[i]);
+			if($(elements[i]).children()[0])
+				yield* nextElementInDOM(0, elements[i], indent+"  ");
+		}
+	}
+}
+
+function* prevElementInDOM(start, container = $(document.documentElement?document.documentElement:"body"), indent = "  ") {
+	let elements = $(container).children();
+	for(var i = elements.length-1; i >= 0; i--) {
+		//log(`${indent}[${i}/${elements.length-1}] <${elements[i].tagName}>:${elements[i].id} (${$(elements[i]).attr("tabindex")})`);
+		//ggf. nach Startpunkt suchen
+		if(start) {
+			if($(start)[0] == elements[i])
+				start = false;
+			else if($(start).parents().index(elements[i]) != -1) {
+				yield* prevElementInDOM(start, elements[i], indent+"  ");
+				start = false;
+			}
+		}
+		else {
+			//Nicht sichtbare Elemente, Frames und Elemente mit Tabindex -1 ueberspringen
+			if($(elements[i]).css("display") == "none" || 
+			   $(elements[i]).css("visibility") == "hidden" || 
+			   $(elements[i]).prop("tagName") == "iframe")
+				continue;
+			if($(elements[i]).children()[0])
+				yield* prevElementInDOM(0, elements[i], indent+"  ");
+			yield $(elements[i]);
+		}
+	}
+}
+
+//Tabfocus
+$(document).keydown(function(e) {
+	//log(showObj2(e, 0, {avoidErr: true}));
+	if(e.currentTarget != document)
+		return;
+	//Nicht auf Event-Bubbling reagieren
+	if(!document.activeElement || $(document.activeElement).prop("tagName") == "iframe")
+		return;
+
+	if(e.keyCode == 9) {
+		let elm = document.activeElement;
+
+		//Naechstes fokussierbares Element suche
+		let search = e.shiftKey?prevElementInDOM:nextElementInDOM;
+		let start = document.activeElement, container = $(start).parents('[data-tabcontext="true"]')[0], elmdom = search(start, container), result;
+		while(result = elmdom.next()) {
+			if(result.done && start) {
+				elmdom = search(0, container);
+				continue;
+			}
+			let elm = result.value;
+			if(start == elm[0])
+				break;
+			if(elm.attr("tabindex") == "-1")
+				continue;
+			elm.focus();
+			//Auch auf Parents untersuchen, um Shadow DOM zu beruecksichtigen (XUL Textboxen laden HTML-Inputfelder)
+			if(document.activeElement == elm[0] || $(document.activeElement).parents().index(elm[0]) != -1)
+				break;
+		}
+		e.preventDefault();
+	}
+});
+
 var domwu = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils) || top.domwu;
 
 function frameUpdateWindmillTitle() {
