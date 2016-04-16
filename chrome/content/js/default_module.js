@@ -288,6 +288,58 @@ else {
 	var _mainwindow = window;
 }
 
+//Tabfocus
+$(document).keydown(function(e) {
+	//log(showObj2(e, 0, {avoidErr: true}));
+	if(e.currentTarget != document)
+		return;
+	if(!document.activeElement || $(document.activeElement).prop("tagName") == "iframe")
+		return;
+
+	if(e.keyCode == 9) {
+		let elm = document.activeElement;
+		function* nextElementInDOM(start, container = $(document.documentElement?document.documentElement:"body"), indent = "  ") {
+			let elements = $(container).children();
+			for(var i = 0; i < elements.length; i++) {
+				//log(`${indent}[${i}/${elements.length-1}] <${elements[i].tagName}>:${elements[i].id} (${$(elements[i]).css("visibility")})`);
+				if(start) {
+					if($(start)[0] == elements[i]) {
+						if($(elements[i]).children()[0])
+							yield* nextElementInDOM(0, elements[i], indent+"  ");
+						start = false;
+					}
+					else if($(start).parents().index(elements[i]) != -1) {
+						yield* nextElementInDOM(start, elements[i], indent+"  ");
+						start = false;
+					}
+				}
+				else {
+					if($(elements[i]).css("display") == "none" || $(elements[i]).css("visibility") == "hidden" || $(elements[i]).prop("tagName") == "iframe")
+						continue;
+					yield $(elements[i]);
+					if($(elements[i]).children()[0])
+						yield* nextElementInDOM(0, elements[i], indent+"  ");
+				}
+			}
+		}
+
+		let start = document.activeElement, elmdom = nextElementInDOM(start), result;
+		while(result = elmdom.next()) {
+			if(result.done && start) {
+				elmdom = nextElementInDOM();
+				continue;
+			}
+			let elm = result.value;
+			if(start == elm[0])
+				break;
+			elm.focus();
+			if(document.activeElement == elm[0])
+				break;
+		}
+		e.preventDefault();
+	}
+});
+
 var domwu = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils) || top.domwu;
 
 function frameUpdateWindmillTitle() {
