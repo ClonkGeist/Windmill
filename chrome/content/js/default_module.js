@@ -293,15 +293,18 @@ $(document).keydown(function(e) {
 	//log(showObj2(e, 0, {avoidErr: true}));
 	if(e.currentTarget != document)
 		return;
+	//Nicht auf Event-Bubbling reagieren
 	if(!document.activeElement || $(document.activeElement).prop("tagName") == "iframe")
 		return;
 
 	if(e.keyCode == 9) {
 		let elm = document.activeElement;
+		//Suche nach naechstem Element im DOM (Unter Beruecksichtigung aller Ebenen)
 		function* nextElementInDOM(start, container = $(document.documentElement?document.documentElement:"body"), indent = "  ") {
 			let elements = $(container).children();
 			for(var i = 0; i < elements.length; i++) {
-				//log(`${indent}[${i}/${elements.length-1}] <${elements[i].tagName}>:${elements[i].id} (${$(elements[i]).css("visibility")})`);
+				//log(`${indent}[${i}/${elements.length-1}] <${elements[i].tagName}>:${elements[i].id} (${$(elements[i]).attr("tabindex")})`);
+				//ggf. nach Startpunkt suchen
 				if(start) {
 					if($(start)[0] == elements[i]) {
 						if($(elements[i]).children()[0])
@@ -314,7 +317,11 @@ $(document).keydown(function(e) {
 					}
 				}
 				else {
-					if($(elements[i]).css("display") == "none" || $(elements[i]).css("visibility") == "hidden" || $(elements[i]).prop("tagName") == "iframe")
+					//Nicht sichtbare Elemente, Frames und Elemente mit Tabindex -1 ueberspringen
+					if($(elements[i]).css("display") == "none" || 
+					   $(elements[i]).css("visibility") == "hidden" || 
+					   $(elements[i]).prop("tagName") == "iframe" ||
+					   $(elements[i]).attr("tabindex") == "-1")
 						continue;
 					yield $(elements[i]);
 					if($(elements[i]).children()[0])
@@ -323,6 +330,7 @@ $(document).keydown(function(e) {
 			}
 		}
 
+		//Naechstes fokussierbares Element suche
 		let start = document.activeElement, elmdom = nextElementInDOM(start), result;
 		while(result = elmdom.next()) {
 			if(result.done && start) {
