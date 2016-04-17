@@ -158,6 +158,16 @@ class _WDialog extends WindmillObject {
 		$(this.element).find(".main-wdialog-lockoverlay").css("background", "rgba(255,255,255,0)");
 		$(this.element).find(".main-wdialog-wrapper").css("pointer-events", "");
 	}
+	
+	submit() {
+		let found, btn = {}, buttons = this.options.btnleft.concat(this.options.btnright);
+		for(var i = 0; i < buttons.length; i++)
+			if((btn = buttons[i]) && btn.preset == "accept")
+				break;
+		try {
+			$(btn.element).trigger("click");
+		} catch(e) { log(e, true); }
+	}
 
 	//Dialog anzeigen
 	show() {
@@ -353,6 +363,15 @@ class _WDialog extends WindmillObject {
 
 			if(preventDefault)
 				e.preventDefault();
+		});
+		$(dlgelm).find("textbox,input").each(function() {
+			if(!$(this).prop("hasWindmillDialogFunctionality")) {
+				$(this).keypress(function(e) {
+					if(e.keyCode == 13)
+						dlg.submit();
+				});
+				$(this).prop("hasWindmillDialogFunctionality", true);
+			}
 		});
 
 		//Infobox: Error
