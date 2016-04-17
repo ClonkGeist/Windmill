@@ -70,11 +70,9 @@ hook("load", function() {
 		$("#startup-loading").text("Creating and Initializing Modules");
 		//Configuration Wizard ggf. starten
 		if(result == -1) {
-			$("#wrapper").css("display", "none");
-			
-			window.outerWidth = 800;
-			window.outerHeight = 600;
-			createModule("configwizard", $("#cfgwizwrapper")[0]);
+			$("#modules-wrapper").removeClass("startup-loading");
+			$("#startup-loading").fadeOut(500);
+			createModule("configwizard", $("#modules-wrapper")[0]);
 			return;
 		}
 

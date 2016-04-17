@@ -56,7 +56,6 @@
 </vbox>
 <!-- end of res save mode content -->
 <stack flex="1" id="mainstack" class="windmill-lockmodule-wrapper" width="1000" height="1000">
-	<vbox flex="1" id="cfgwizwrapper"></vbox>
 	<!-- page -->
 	<vbox flex="1" id="wrapper">
 		<stack id="titlestack">
