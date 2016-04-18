@@ -226,6 +226,20 @@ hook("load", function() {
 		});
 		if(!getAppByID("git").isAvailable())
 			$("#showGitLog").css("display", "none");
+		let searchtask = new FileLoadingTask("Scenario.txt", /\.ocs$/, 0);
+		searchtask.makePromise().then(function(task) {
+			log(">> fulfilled! " + task.matches.length);
+		});
+		startSearchProcess(searchtask);
+		setTimeout(function() {
+			log("------------------------add new task");
+			let newtask = new FileLoadingTask("DefCore.txt", 0, formatPath(_sc.env.get("APPDATA")+"/OpenClonk"));
+			log(newtask.priority);
+			startSearchProcess(newtask);
+			newtask.makePromise().then(function(task) {
+				log("new task fulfilled!! " + task.matches.length)
+			});
+		}, 4000);
 	}, function(reason) {
 		$("#startup-loading").remove();
 		$("#startup-errorlog > vbox").append(`

@@ -52,13 +52,6 @@ function logToGitConsole(data) {
 //Zum vererben diverser Objekte (Funktionen, Klassen, Objekte wie _sc etc.)
 function registerInheritableObject(key) { _inheritableObjects.push(key); }
 
-window.addEventListener("load", function(){
-	// function hook for custom-load
-	// better use this, so afterload really works after all of the hooked functions
-	execHook("load");
-	execHook("afterload");
-});
-
 var err = Components.utils.reportError;
 
 function warn(str, prefix) {
@@ -235,6 +228,13 @@ else {
 	MODULE_LANG = "xul";
 	var _mainwindow = window;
 }
+
+window.addEventListener("load", function(){
+	// function hook for custom-load
+	// better use this, so afterload really works after all of the hooked functions
+	execHook("load");
+	execHook("afterload");
+});
 
 //Suche nach naechstem Element im DOM (Unter Beruecksichtigung aller Ebenen im angegebenen Container)
 function* nextElementInDOM(start, container = $(document.documentElement?document.documentElement:"body"), indent = "  ") {

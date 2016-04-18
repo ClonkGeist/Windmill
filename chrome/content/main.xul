@@ -338,8 +338,8 @@
 	<script type="application/javascript" src="chrome://windmill/content/js/functionalities/modules.js"/>
 	<script type="application/javascript" src="chrome://windmill/content/js/functionalities/notifications.js"/>
 	<script type="application/javascript" src="chrome://windmill/content/js/functionalities/keybindings.js"/>
-	<!--<script type="application/javascript" src="chrome://windmill/content/js/functionalities/fileloader/fileloader.js"/>-->
-	<script type="application/javascript" src="chrome://windmill/content/js/libs/contextmenu.js"/>/
+	<script type="application/javascript" src="chrome://windmill/content/js/functionalities/fileloader/fileloader.js"/>
+	<script type="application/javascript" src="chrome://windmill/content/js/libs/contextmenu.js"/>
 	<script type="application/javascript" src="chrome://windmill/content/js/default_module.js"/>
 	<script type="application/javascript" src="chrome://windmill/content/js/functionalities/dialog.js"/>
 	<script type="application/javascript" src="chrome://windmill/content/js/functionalities/config.js"/>
