@@ -33,12 +33,36 @@ function createTreeElement(tree, label, container, open, img, filename, special,
 	else
 		filename = '';
 	
-	$(tree).append(`<li id="treeelm-${TREE_ELM_ID}" tabindex="0" name="${label.toLowerCase()}" 
+	$(tree).append(`<li id="treeelm-${TREE_ELM_ID}" tabindex="0" name="${label.toLowerCase()}" data-index='${options.index}'
 		class="treeobj treeelm${container?' treecontainer':''} ${special}" xmlns="http://www.w3.org/1999/xhtml"
 		${drag}${filename}>${imgTag} <description>${label}</description></li>`);
 	var elm = $("#treeelm-"+TREE_ELM_ID)[0];
-	if(options.index != -1 && $(tree).children("li")[options.index])
-		$(elm).insertBefore($(tree).children("li")[options.index]);
+	if(options.additional_data)
+		$(elm).attr(options.additional_data);
+	if(options.index != -1) {
+		//&& $(tree).children("li")[options.index])
+		let indexed_elements = $(tree).children("li[data-index!='-1']"), inserted;
+		//let indices = $(indexed_elements).map(function() { return parseInt($(this).attr("data-index")); });
+		for(var i = 0; i < indexed_elements.length; i++) {
+			if(parseInt($(indexed_elements[i]).attr("data-index")) > options.index) {
+				$(elm).insertBefore(indexed_elements[i]);
+				inserted = true;
+				break;
+			}
+		}
+		if(!inserted) { 
+			if(indexed_elements.length) {
+				let lastelm = indexed_elements[indexed_elements.length-1];
+				if(getTreeCntById(getTreeObjId(lastelm)))
+					lastelm = getTreeCntById(getTreeObjId(lastelm));
+				$(elm).insertAfter(lastelm);
+			}
+			else if($(tree).children("li[data-index='-1']").length)
+				$(elm).insertBefore($(tree).children("li[data-index='-1']")[0]);
+			else
+				$(elm).appendTo(tree);
+		}
+	}
 	if(container)
 		$('<ul id="treecnt-'+TREE_ELM_ID+'" class="treeobj treecnt '+special+'" xmlns="http://www.w3.org/1999/xhtml"></ul>').insertAfter(elm);
 	if(!special)
@@ -226,7 +250,7 @@ function createTreeElement(tree, label, container, open, img, filename, special,
 		
 		return;
 	}
-	
+
 	var id = TREE_ELM_ID;
 	if(special && special.search(/workenvironment/) != -1) {
 		//Drag and Drop
@@ -765,11 +789,12 @@ function renameTreeObj(obj) {
 
 	$("#edit-filename").blur(function(e) {
 		function restoreEntry() {			
+			$("#edit-filename").remove();
 			if(drag)
 				$(obj).attr("draggable", "true");
 			$(obj).css("text-overflow", "");
-			$(obj).children("description").css("display", "initial");
-			$("#edit-filename").remove();
+			$(obj).children("description").css("display", "");
+			selectTreeItem(obj);
 		}
 
 		let val = $(this).val();

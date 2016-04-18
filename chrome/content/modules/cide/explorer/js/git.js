@@ -256,10 +256,10 @@ function openGitCommitDialog() {
 	var path = getFullPathForSelection();
 	var dlg = new WDialog("$DlgGitCommit$", MODULE_LPRE, { btnright: [{ preset: "accept", title: "$DlgGitCommitBtn$",
 			onclick: function(e, btn, _self) {
-				if(!$(_self.element).find("#git-files .dlg-list-item").length || !$(_self.element).find("#git_commitmsg").val())
+				if(!$(_self.element).find("#git-files .dlg-list-item").length || !$(_self.element).find("#git-commitmsg").val())
 					return e.stopImmediatePropagation();
 
-				OS.File.writeAtomic(_sc.profd+"/windmilltmpcommit.txt", $(_self.element).find("#git_commitmsg").val(), {encoding: "utf-8"})
+				OS.File.writeAtomic(_sc.profd+"/windmilltmpcommit.txt", $(_self.element).find("#git-commitmsg").val(), {encoding: "utf-8"})
 					.then(function() {
 						var args = ["-C", path, "commit", "-F", _sc.profd+"/windmilltmpcommit.txt"];
 						getAppByID("git").create(args, 0x1, function() {
@@ -271,7 +271,7 @@ function openGitCommitDialog() {
 			}
 		}, "cancel"]});
 	
-	dlg.setContent(`<textbox multiline="true" id="git_commitmsg" flex="1" rows="8" placeholder="$DlgGitCommitMsg$"></textbox>
+	dlg.setContent(`<textbox multiline="true" id="git-commitmsg" flex="1" rows="8" placeholder="$DlgGitCommitMsg$"></textbox>
 	<vbox class="dlg-listbox" id="git-files" data-noselect="true">
 		<hbox class="dlg-list-head">Files:</hbox>
 	</vbox>`);
@@ -315,7 +315,7 @@ function openGitMoveDialog() {
 	var path = _sc.workpath(getCurrentTreeSelection()), relpath = getFullPathForSelection().replace(path+"/", "");
 	var dlg = new WDialog("$DlgGitMove$", MODULE_LPRE, { btnright: [{ preset: "accept",
 			onclick: function(e, btn, _self) {
-				var args = ["-C", path, "mv", relpath, $(_self.element).find("#git_movename").val()];
+				var args = ["-C", path, "mv", relpath, $(_self.element).find("#git-movename").val()];
 				getAppByID("git").create(args, 0x3, 0, function(data) {
 					logToGitConsole(data);
 				});
@@ -325,7 +325,7 @@ function openGitMoveDialog() {
 	
 	var wsname = path.split("/")[path.split("/").length-1];
 	dlg.setContent('<description>$DlgGitMoveDesc$</description><hbox><hbox>'+wsname
-				  +'/</hbox><textbox flex="1" id="git_movename" value="'+relpath+'"></textbox></hbox>');
+				  +'/</hbox><textbox flex="1" id="git-movename" value="'+relpath+'"></textbox></hbox>');
 	
 	dlg.show();
 }

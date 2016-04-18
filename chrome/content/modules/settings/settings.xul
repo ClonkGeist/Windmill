@@ -201,17 +201,17 @@
 					<vbox id="settings-page-extapp" class="settings-page" top="0" bottom="0">
 						<caption class="big" label="$ExternalApplications$" />
 						
-						<vbox id="application_list">
-							<hbox class="applist_item draft">
-								<box style="-moz-box-align:center"><image class="applist_img"/></box>
+						<vbox id="application-list">
+							<hbox class="applist-item draft">
+								<box style="-moz-box-align:center"><image class="applist-img"/></box>
 								<vbox flex="1">
-									<label class="applist_title" value="TITLE"/>
-									<description class="applist_desc">DESCRIPTION</description>
-									<label class="applist_path" value="C:/EXAMPLE/PATH"/>
+									<label class="applist-title" value="TITLE"/>
+									<description class="applist-desc">DESCRIPTION</description>
+									<label class="applist-path" value="C:/EXAMPLE/PATH"/>
 								</vbox>
-								<vbox class="applist_status"></vbox>
-								<vbox class="applist_controls">
-									<box class="applist_browse nav-image icon-update icon-32" height="32" width="32"></box>
+								<vbox class="applist-status"></vbox>
+								<vbox class="applist-controls">
+									<box class="applist-browse nav-image icon-update icon-32" height="32" width="32"></box>
 								</vbox>
 							</hbox>
 						</vbox>

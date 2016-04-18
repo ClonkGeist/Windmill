@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Windmill Documentation - Dialoge</title>
+		<link href="../../../windmillDocs.css" rel="stylesheet">
+		<link href="../../../prism.css" rel="stylesheet">
+		<meta charset="UTF-8">
+		<script>
+			//Windmillinterner Workaround: Da Windmill das Oeffnen externer Links sperrt (sodass diese in einem externen Browser geoffnet werden koennen)
+			//wird hier fuer Windmill das anders geloest.
+			if(navigator.userAgent.search(/\bwindmill\b/) != -1) {
+				window.addEventListener("load", function() {
+					let elements = document.getElementsByTagName("a");
+					for(var i = 0; i < elements.length; i++) {
+						elements[i].onclick = function(e) {
+							window.location.href = this.href;
+							e.preventDefault();
+						};
+					}
+				});
+			}
+		</script>
+	</head>
+	<body>
+		<div id="header">
+			Windmill Documentation
+		</div>
+		<div id="wrapper">
+			<nav id="navigation">
+				<ul>
+					<li class="navigation-elm"><a href="../../_home/__head_de.html">Startseite</a></li><ul class="navigation-sublist">
+</ul>
+<li class="navigation-elm"><a href="../__head_de.html">Funktionalitäten</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../other/__head_de.html">Weitere Funktionen</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../other/showNotification_de.html">showNotification</a></li>
+</ul>
+<li class="navigation-elm"><a href="__head_de.html">Dialoge</a></li><ul class="navigation-sublist">
+</ul>
+<li class="navigation-elm"><a href="../config/__head_de.html">config.js</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../config/setConfigData_de.html">setConfigData</a></li>
+<li class="navigation-elm"><a href="../config/setClonkPath_de.html">setClonkPath</a></li>
+<li class="navigation-elm"><a href="../config/sc.clonkpath_de.html">_sc.clonkpath</a></li>
+<li class="navigation-elm"><a href="../config/saveConfig_de.html">saveConfig</a></li>
+<li class="navigation-elm"><a href="../config/loadConfig_de.html">loadConfig</a></li>
+<li class="navigation-elm"><a href="../config/getConfig_de.html">getConfig</a></li>
+<li class="navigation-elm"><a href="../config/getConfigData_de.html">getConfigData</a></li>
+<li class="navigation-elm"><a href="../config/class_ConfigEntry_de.html">class ConfigEntry</a></li>
+<li class="navigation-elm"><a href="../config/addConfigString_de.html">addConfigString</a></li>
+</ul>
+</ul>
+<li class="navigation-elm"><a href="../../externalapplications/__head_de.html">Externe Anwendungen</a></li><ul class="navigation-sublist">
+</ul>
+<li class="navigation-elm"><a href="../../ctypes/__head_de.html">CTypes / Windmill Interface</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../ctypes/wmIProcess_de.html">wmIProcess</a></li>
+<li class="navigation-elm"><a href="../../ctypes/WindmillInterface_de.html">Windmill Interface</a></li>
+</ul>
+
+				</ul>
+			</nav>
+			<div id="content">
+				<h1 id="dialoge">Dialoge</h1>
+<p>Dialoge können von jedem Modul einfach mittels <code>WDialog</code> erstellt werden. Das Anzeigen der Dialoge passiert dabei im Mainwindow weshalb die Inhalte, auch aus HTML5-basierten Modulen heraus, XUL-Elemente sein sollten bzw. den HTML-Namespace mitbringen sollten.</p>
+<h2 id="erstellen-eines-dialogs">Erstellen eines Dialogs</h2>
+<p>Dialoge lassen sich einfach über das <code>WDialog</code>-Objekt erstellen. Dabei können auch Angaben zur Erscheinung des Dialogs wie bspw. die Breite und auch zu den Buttons und dem Verhalten nach Klick auf einen Button mitgeliefert werden. Hier ein Testdialog das nach Klick auf den &quot;OK&quot;-Button &quot;Testlog&quot; logt:</p>
+<pre><code class="lang-javascript"><span class="token keyword" >let</span> dlg <span class="token operator" >=</span> <span class="token keyword" >new</span> <span class="token class-name" >WDialog</span><span class="token punctuation" >(</span><span class="token string" >"TestDialog"</span><span class="token punctuation" >,</span> <span class="token number" >0</span><span class="token punctuation" >,</span> <span class="token punctuation" >{</span> css<span class="token punctuation" >:</span> <span class="token punctuation" >{</span> <span class="token string" >"width"</span><span class="token punctuation" >:</span> <span class="token string" >"450px"</span> <span class="token punctuation" >}</span><span class="token punctuation" >,</span> btnright<span class="token punctuation" >:</span> <span class="token punctuation" >[</span><span class="token punctuation" >{</span> preset<span class="token punctuation" >:</span> <span class="token string" >"accept"</span><span class="token punctuation" >,</span>
+    onclick<span class="token punctuation" >:</span> <span class="token keyword" >function</span><span class="token punctuation" >(</span>e<span class="token punctuation" >,</span> btn<span class="token punctuation" >,</span> dialog<span class="token punctuation" >)</span> <span class="token punctuation" >{</span>
+        <span class="token function" >log</span><span class="token punctuation" >(</span><span class="token string" >"Testlog"</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+    <span class="token punctuation" >}</span>
+<span class="token punctuation" >}</span><span class="token punctuation" >,</span> <span class="token string" >"cancel"</span><span class="token punctuation" >]</span><span class="token punctuation" >}</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Der Inhalt des Dialogs muss über die <code>setContent</code> Funktion aufgerufen werden und um das Dialog letztendlich auch anzuzeigen muss <code>show</code> aufgerufen werden. Das heißt also auch, dass das Dialog nur einmalig definiert werden müsste und wiederverwendet werden kann.</p>
+<p>Für die Buttons der Dialoge kann in den meisten Fällen auf die Presets zurückgegriffen werden, die standardmäßiges Verhalten wie das Schließen des Dialogs und die Labels der Dialoge mitliefert. Die Labels können nachträglich noch angepasst werden. Um die Standardreaktion der Presets auf das Klickevent zu verhindern, kann <code>e.stopImmediatePropagation()</code> genutzt werden.</p>
+<p>Um auf die Elemente des Dialog-Wrappers zugreifen zu können, kann auf die Eigenschaft <code>element</code> des Dialog-Objekts zugegriffen werden, welches das aktuelle Dialog-Element (falls angezeigt) zurückgibt. So lassen sich weitere Funktionalitäten hinzufügen.</p>
+<h3 id="wdialog-konstruktor">WDialog-Konstruktor</h3>
+<p>Hier ein näherer Einblick auf den WDialog-Konstruktor:</p>
+<p><strong>constructor</strong> WDialog(<strong>string</strong> title, [opt] <strong>string</strong> langpre, [opt] <strong>object</strong> options);</p>
+<p>Während die ersten beiden Parameter relativ offensichtlich sein sollten (für <code>langpre</code> gilt wie immer: Falls 0 wird die Moduleigene Lokalisierung geladen, bei -1 die aus dem Mainwindow und ansonsten mit dem angegebenen Präfix), befindet sich in <code>options</code> das eigentlich Interessante.</p>
+<p><code>options</code> kann folgende Werte haben:</p>
+<ul>
+<li><strong>modal:</strong><br>Zeigt das Dialog mit Modal an. Standardwert: <code>true</code>.</li>
+<li><strong>cancelOnModal:</strong><br>Schließt das Dialog nach Klick auf dem Modal.</li>
+<li><strong>css:</strong><br>Gibt weitere Einstellungen für die Anzeige des Dialogs an. Hier werden oft feste Angaben zur Breite des Dialogs festgelegt, es können allerdings auch andere Eigenschaften festgelegt werden. Die CSS-Einstellungen werden dabei an das <code>.main-wdialog-wrapper</code>-Element des Dialogs angewandt. Standardwert: <code>{ width: &quot;450px&quot;; }</code></li>
+<li><strong>noEscape:</strong><br>Falls <code>true</code>, so kann das Dialog nicht per Druck auf die [Esc]-Taste geschlossen werden.</li>
+<li><strong>simple:</strong><br>Blendet footer- und content-Wrapper des Dialogs aus und zeigt nur noch den Header an. Das Dialog besteht also nur aus einem Kasten dessen Text zentriert wird. Ein Beispiel für ein solches Dialog ist das Tasten-Zuweisungsdialog der KeyBindings in den Einstellungen.</li>
+<li><strong>content:</strong><br>Inhalt des Dialogs. Lässt sich auch über <code>setContent</code> setzen.</li>
+<li><strong>footer:</strong><br>Inhalt des Footers des Dialogs. Falls gesetzt, so werden keine Buttons erstellt.</li>
+<li><strong>onshow:</strong><br>Funktion die ausgeführt wird, wenn das Dialog angezeigt wird. Hier sollte allerdings besser der <code>show</code>-Hook verwendet werden.</li>
+<li><strong>btnleft / btnright:</strong><br>Array für die einzelnen Buttons der jeweiligen Seite. Die einzelnen Felder können entweder eigene Button-Objekte enthalten oder einfach nur den Namen eines der Presets weitergeben.</li>
+</ul>
+<p>Die Button-Objekte können folgende Werte annehmen:</p>
+<ul>
+<li><strong>label:</strong><br>Gibt den Buttonlabel an.</li>
+<li><strong>langpre:</strong><br>Gibt den Lokalisierungspräfix an. Falls nicht angegeben, wird der Lokalisierungspräfix des Dialogs verwendet.</li>
+<li><strong>onclick:</strong><br>Gibt die Funktion an, die ausgeführt werden soll wenn auf den Button geklickt wird. Es wird das Eventobjekt, der Button selbst und das Dialogobjekt übergeben. Falls es sich bei der Funktion um einen Generator handelt, so wird ein Task erstellt an welches die Generatorfunktion mittels <code>yield*</code> weitergegeben wird. Während des ganzen Prozesses wird das Dialog gesperrt, sodass keine weitere Benutzerinteraktion möglich ist.</li>
+<li><strong>preset:</strong><br>Lädt für die o.g. Eigenschaften Standardwerte des jeweiligen Presets. Aktuell unterstützte Presets sind <code>accept</code> und <code>cancel</code>. Die Click-Handler der Presets werden dabei seperat geladen, d.h. werden durch das Setzen von <code>onclick</code> nicht überschrieben. Um die Ausführung dieser zu vermeiden, muss im Eventobjekt <code>stopImmediatePropagation</code> aufgerufen werden, da diese Clickhandler erst später ausgeführt werden. Im Falle einer Generatorfunktion muss ein Error geworfen werden um die weitere Ausführung des Tasks zu verhindern. Hier muss ggf. das Dialog wieder mittels <code>dlg.unlock()</code> freigeschalten werden.</li>
+</ul>
+<h2 id="dialog-gui-elemente">Dialog GUI-Elemente</h2>
+<p>Dialoge verfügen über einige weitere standardmäßige GUI-Elemente die genutzt werden können. Falls der Inhalt verändert wird, ist es jedoch ggf. von Nöten, die Darstellung und Funktionalität der GUI-Elemente mittels <code>updatePseudoElements()</code> im Dialogobjekt zu aktualisieren.</p>
+<h3 id="checklistboxen">Checklistboxen</h3>
+<p>Bei Checklistboxen handelt es sich um scrollbare Listen bei denen sich die einzelnen Elemente an- bzw. abwählen lassen, ergo die Funktionalität von Checkboxen und Listboxen vereinen.</p>
+<p>Um eine solche Checklistbox zu verwenden, muss einfach ein vbox-Element mit der <code>dlg-checklistbox</code>-Klasse erstellt werden. Um ein Listitem zu erstellen, muss ein hbox-Element mit der <code>dlg-checklistitem</code>-Klasse erstellt werden.</p>
+<p>Werden Checklistitems ausgewählt, so wird eine <code>selected</code>-Klasse hinzugefügt. Die Checklistitems lassen sich über die Klasse <code>disabled</code> deaktivieren und über die Klasse <code>hidden</code> unsichtbar schalten.</p>
+<pre><code class="lang-javascript"><span class="token keyword" >let</span> dlg <span class="token operator" >=</span> <span class="token keyword" >new</span> <span class="token class-name" >WDialog</span><span class="token punctuation" >(</span><span class="token string" >"Checklistboxen"</span><span class="token punctuation" >,</span> <span class="token number" >0</span><span class="token punctuation" >,</span> <span class="token punctuation" >{</span> css<span class="token punctuation" >:</span> <span class="token punctuation" >{</span> <span class="token string" >"width"</span><span class="token punctuation" >:</span> <span class="token string" >"450px"</span> <span class="token punctuation" >}</span><span class="token punctuation" >,</span> btnright<span class="token punctuation" >:</span> <span class="token punctuation" >[</span><span class="token string" >"accept"</span><span class="token punctuation" >,</span> <span class="token string" >"cancel"</span><span class="token punctuation" >]</span><span class="token punctuation" >}</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+dlg<span class="token punctuation" >.</span><span class="token function" >setContent</span><span class="token punctuation" >(</span>`<span class="token operator" >&lt;</span>vbox <span class="token keyword" >class</span><span class="token operator" >=</span><span class="token string" >"dlg-checklistbox"</span><span class="token operator" >></span>
+                    <span class="token operator" >&lt;</span>hbox <span class="token keyword" >class</span><span class="token operator" >=</span><span class="token string" >"dlg-checklistitem"</span><span class="token operator" >></span>Checklistitem<span class="token operator" >&lt;</span><span class="token operator" >/</span>hbox<span class="token operator" >></span>
+                    <span class="token operator" >&lt;</span>hbox <span class="token keyword" >class</span><span class="token operator" >=</span><span class="token string" >"dlg-checklistitem disabled"</span><span class="token operator" >></span>Deaktiviertes Checklistitem<span class="token operator" >&lt;</span><span class="token operator" >/</span>hbox<span class="token operator" >></span>
+                    <span class="token operator" >&lt;</span>hbox <span class="token keyword" >class</span><span class="token operator" >=</span><span class="token string" >"dlg-checklistitem hidden"</span><span class="token operator" >></span>Verstecktes Checklistitem<span class="token operator" >&lt;</span><span class="token operator" >/</span>hbox<span class="token operator" >></span>
+                <span class="token operator" >&lt;</span><span class="token operator" >/</span>vbox<span class="token operator" >></span>`<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+dlg<span class="token punctuation" >.</span><span class="token function" >show</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<h3 id="listboxen">Listboxen</h3>
+<p>Listboxen zeigen einfach nur einzelne Listenelemente an. Der Vorteil gegenüber den Standard-XUL-Listboxen liegt darin, dass es sich um einfache Container handelt und daher keine Einschränkungen für den Inhalt und der Strukturierung des Inhalts vorliegt.</p>
+<p>Ein Listbox-Container kann mittels eines vbox-Elements mit der Klasse <code>dlg-listbox</code> erstellt werden und mit hbox-Elementen mit der Klasse <code>dlg-list-item</code> gefüllt werden.</p>
+<p>Das Container-Element kann, falls gewünscht, das Attribut <code>data-noselect</code> auf <code>true</code> setzen, um das Auswählen von Elementen zu deaktivieren. Alternativ kann über das Attribut <code>data-multiselect</code> die Auswahl mehrerer Elemente aktiviert werden.</p>
+<p>Auch für Listboxen gilt: Elemente haben eine <code>selected</code>-Klasse wenn ausgewählt und lassen sich über <code>disabled</code> deaktivieren bzw. über <code>hidden</code> unsichtbar schalten.</p>
+<h3 id="infobox">Infobox</h3>
+<p>Es lassen sich auch gestylte Infoboxen über ein hbox-Element mit der Klasse <code>dlg_infobox</code> (soll aus Konsistenzgründen <code>dlg-infobox</code> werden) erstellen und mit zusätzlichen Klassen zur Art der Information ausstatten. Aktuell wird nur die Klasse <code>error</code> unterstützt, um Fehler anzuzeigen.</p>
+<p>Die Infobox wird dabei automatisch sichtbar bzw. unsichtbar, wenn Text hinzugefügt oder entfernt wird.</p>
+<h2 id="funktionsreferenz">Funktionsreferenz</h2>
+<p><strong>constructor</strong> WDialog(<strong>string</strong> title, [opt] <strong>string</strong> langpre, [opt] <strong>object</strong> options);<br>Erstellt ein Dialogobjekt. Fuer genauere Angaben zu den einzelnen Parametern siehe oben.</p>
+<p><strong>void</strong> setContent(<strong>string</strong> content);<br>Setzt den Inhalt der in <code>.main-wdialog-content</code> angezeigt werden soll.</p>
+<p><strong>void</strong> setFooter(<strong>string</strong> content);<br>Setzt den Inhalt der in <code>.main-wdialog-footer</code> angezeigt werden soll. Falls gesetzt, werden die Buttons nicht mehr erstellt.</p>
+<p><strong>&lt;jQueryObject&gt;</strong> getFooterElm();<br>Gibt ein jQueryObject zum <code>.main-wdialog-footer</code>-Element zurück.</p>
+<p><strong>void</strong> setBtnLeft(<strong>array</strong> buttons);<br>Erstellt die im Array übergebenen Button-Definitionen links unten im Dialog.</p>
+<p><strong>void</strong> setBtnRight(<strong>array</strong> buttons);<br>Erstellt die im Array übergebenen Button-Definitionen rechts unten im Dialog.</p>
+<p><strong>&lt;XULElement&gt;</strong> addButtons(<strong>string/object</strong> btnobj, [opt] <strong>bool</strong> left);<br>Erstellt den angegebenen Button im Dialog und gibt diesen zurück.</p>
+<ul>
+<li><strong>btnobj:</strong><br>Button-Definition des zu erstellenden Buttons. Kann alternativ auch ein String zu einem Preset sein.</li>
+<li><strong>left:</strong><br>Erstellt den Button links unten im Dialog.</li>
+</ul>
+<p><strong>void</strong> lock();<br>Sperrt das Dialog.</p>
+<p><strong>void</strong> unlock();<br>Entsperrt das Dialog.</p>
+<p><strong>void</strong> show();<br>Erstellt das Dialog-Element im Mainwindow.</p>
+<p><strong>void</strong> updatePseudoElements();<br>Aktualisiert die Dialog-GUI-Elemente in der Funktionsweise. Dies kann nötig sein, falls neue Dialog-GUI-Elemente während das Dialog-Element aktiv ist, hinzugefügt werden. GUI-Elemente wie die Listen und die Infobox aktualisieren allerdings ihren eigenen Inhalt automatisch.</p>
+<p><strong>void</strong> updateTextNodes(<strong>&lt;jQueryObject&gt;</strong> objects);<br>Passt die Breite der angegebenen Elemente an das Dialog an. Dies kann insbesondere im Zusammenhang mit den <code>description</code>-Elementen von Nöten sein, da sie teilweise aus dem Dialog herausragen und das Dialog dadurch falsch dargestellt wird.</p>
+<p><strong>bool</strong> hide();<br>Schließt das Dialog-Element und gibt, falls erfolgreich, <code>true</code> zurück.</p>
+
+			</div>
+		</div>
+	</body>
+</html>

@@ -12,6 +12,10 @@ class _WDialog extends WindmillObject {
 			this.options.modal = true;
 		if(this.options.css == undefined)
 			this.options.css = { width: "450px" };
+		if(this.options.btnleft == undefined)
+			this.options.btnleft = [];
+		if(this.options.btnright == undefined)
+			this.options.btnright = [];
 	
 		this.element = 0;
 	}
@@ -30,7 +34,7 @@ class _WDialog extends WindmillObject {
 		this.options.btnleft = btns;
 	
 		for(var i = 0; i < btns.length; i++)
-			this.addButtons(btns[i], true);
+			this.options.btnleft[i] = this.addButtons(btns[i], true);
 		
 		return true;
 	}
@@ -38,7 +42,7 @@ class _WDialog extends WindmillObject {
 		this.options.btnright = btns;
 		
 		for(var i = 0; i < btns.length; i++)
-			this.addButtons(btns[i]);
+			this.options.btnright[i] = this.addButtons(btns[i]);
 
 		return true;
 	}
@@ -60,6 +64,7 @@ class _WDialog extends WindmillObject {
 					temp = {
 						label: "$DlgBtn_Cancel$",
 						langpre: "",
+						preset: "cancel",
 						onclick: function(e, btn, dialog) { dialog.hide(); } 
 					}
 					break;
@@ -69,6 +74,7 @@ class _WDialog extends WindmillObject {
 					temp = {
 						label: "$DlgBtn_Accept$",
 						langpre: "",
+						preset: "accept",
 						onclick: function(e, btn, dialog) { dialog.hide(); }
 					}
 					break;
@@ -134,13 +140,13 @@ class _WDialog extends WindmillObject {
 		if(btnobj.clickhandler)
 			bindfunc(btnobj.clickhandler, btnobj.onclick);
 		if(btnobj.onclick && (!btnobj.clickhandler || !btnobj.clickhandler.isGenerator()))
-			bindfunc(btnobj.onclick);	
+			bindfunc(btnobj.onclick);
 
 		//Butonn hinzufEen
 		btn.appendTo(elm);
-		
+
 		btnobj.element = btn;
-		return btn;
+		return btnobj;
 	}
 
 	lock() {
@@ -151,6 +157,16 @@ class _WDialog extends WindmillObject {
 	unlock() {
 		$(this.element).find(".main-wdialog-lockoverlay").css("background", "rgba(255,255,255,0)");
 		$(this.element).find(".main-wdialog-wrapper").css("pointer-events", "");
+	}
+	
+	submit() {
+		let found, btn = {}, buttons = this.options.btnleft.concat(this.options.btnright);
+		for(var i = 0; i < buttons.length; i++)
+			if((btn = buttons[i]) && btn.preset == "accept")
+				break;
+		try {
+			$(btn.element).trigger("click");
+		} catch(e) { log(e, true); }
 	}
 
 	//Dialog anzeigen
@@ -209,12 +225,21 @@ class _WDialog extends WindmillObject {
 				if(this.options.btnright)
 					this.setBtnRight(this.options.btnright);
 			}
-			
+
 			this.updatePseudoElements();
 		}
 		
 		clone.appendTo($("#mainstack"));
 		$(this.element).focus();
+		
+		let buttons = this.options.btnleft.concat(this.options.btnright);
+		if(buttons.length) {
+			$(buttons[0].element).focus();
+			if(buttons.length > 1)
+				for(var i = 0; i < buttons.length; i++)
+					if(buttons[i] && buttons[i].preset == "cancel")
+						$(buttons[i].element).focus();
+		}
 		
 		//Modal setzen
 		if(this.options.modal) {
@@ -235,13 +260,17 @@ class _WDialog extends WindmillObject {
 		let dlgelm = this.element, dlg = this;
 
 		//Checklistbox
-		var clickfn = function() {
-			if($(this).hasClass("disabled"))
-				return;
+		function prepareChecklistboxItems() {
+			$(dlgelm).find(".dlg-checklistitem").unbind("click").click(function() {
+				if($(this).hasClass("disabled"))
+					return;
 
-			$(this).toggleClass('selected');
+				$(this).toggleClass('selected');
+			}).each(function(e) {
+				$(this).attr("tabindex", "-1");
+			});
 		}
-		$(dlgelm).find(".dlg-checklistitem").unbind("click").click(clickfn);
+		prepareChecklistboxItems();
 		$(dlgelm).find(".dlg-checklistbox").off("DOMSubtreeModified").on("DOMSubtreeModified", function() {
 			var height = parseInt($(this).css("max-height"));
 			var elmheight = $(this).find(".dlg-checklistitem:not(.hidden)").length * $(this).find(".dlg-checklistitem:not(.hidden)").height()+2;
@@ -249,24 +278,55 @@ class _WDialog extends WindmillObject {
 				height = elmheight;
 
 			height += parseInt($(this).css("padding-top")) + parseInt($(this).css("padding-bottom"));
+			prepareChecklistboxItems();
 			$(this).css("height", height);
-			$(this).find(".dlg-checklistitem").unbind("click").click(clickfn);
 			dlg.updateTextNodes();
-		});
+		}).attr("tabindex", "0").unbind("keydown").keydown(function(e) {
+				let preventDefault = true, active = document.activeElement;
+				if($(active).parents().index(this) == -1) {
+					active = $(this).children()[0];
+					if(e.keyCode == 38 || e.keyCode == 40) {
+						$(active).focus();
+						return e.preventDefault();
+					}
+				}
+				switch(e.keyCode) {
+					case 38: //Cursor Hoch
+						$(active).prev().focus();
+						break;
+					case 40: //Cursor Runter
+						$(active).next().focus();
+						break;
+					case 32: //Leertaste
+					case 13: //Returntaste
+						$(active).trigger("click");
+						break;
+					default:
+						preventDefault = false;
+						break;
+				}
+
+				if(preventDefault)
+					e.preventDefault();
+			});
 
 		//Listbox
-		var clickfn2 = function() {
-			if($(this).hasClass("disabled") || $(this).parent().attr("data-noselect"))
-				return;
+		function prepareListboxItems() {
+			$(dlgelm).find(".dlg-list-item").unbind("click").click(function() {
+				if($(this).hasClass("disabled") || $(this).parent().attr("data-noselect"))
+					return;
 
-			if($(this).parents(".dlg-listbox").attr("data-multiselect"))
-				$(this).toggleClass("selected");
-			else {
-				$(this).siblings(".selected").removeClass("selected");
-				$(this).addClass('selected');
-			}
+				if($(this).parents(".dlg-listbox").attr("data-multiselect"))
+					$(this).toggleClass("selected");
+				else {
+					$(this).siblings(".selected").removeClass("selected");
+					$(this).addClass('selected');
+				}
+			}).each(function(e) {
+				$(this).attr("tabindex", "-1");
+			});
 		}
-		$(dlgelm).find(".dlg-list-item").unbind("click").click(clickfn2);
+
 		$(dlgelm).find(".dlg-listbox").off("DOMSubtreeModified").on("DOMSubtreeModified", function() {
 			var height = parseInt($(this).css("max-height"));
 			var elmheight = $(this).find(".dlg-list-item:not(.hidden)").length * $(this).find(".dlg-list-item:not(.hidden)").height()+4;
@@ -274,17 +334,53 @@ class _WDialog extends WindmillObject {
 				height = elmheight;
 
 			$(this).css("height", height);
-			$(this).find(".dlg-list-item").unbind("click").click(clickfn2);
+			prepareListboxItems();
 			dlg.updateTextNodes();
+		}).attr("tabindex", "0").unbind("keydown").keydown(function(e) {
+			let preventDefault = true, active = document.activeElement;
+			if($(active).parents().index(this) == -1) {
+				active = $(this).children(".dlg-list-item")[0];
+				if(e.keyCode == 38 || e.keyCode == 40) {
+					$(active).focus();
+					return e.preventDefault();
+				}
+			}
+			switch(e.keyCode) {
+				case 38: //Cursor Hoch
+					$(active).prev(".dlg-list-item").focus();
+					break;
+				case 40: //Cursor Runter
+					$(active).next(".dlg-list-item").focus();
+					break;
+				case 32: //Leertaste
+				case 13: //Returntaste
+					$(active).trigger("click");
+					break;
+				default:
+					preventDefault = false;
+					break;
+			}
+
+			if(preventDefault)
+				e.preventDefault();
+		});
+		$(dlgelm).find("textbox,input").each(function() {
+			if(!$(this).prop("hasWindmillDialogFunctionality")) {
+				$(this).keypress(function(e) {
+					if(e.keyCode == 13)
+						dlg.submit();
+				});
+				$(this).prop("hasWindmillDialogFunctionality", true);
+			}
 		});
 
 		//Infobox: Error
-		$(dlgelm).find(".dlg_infobox.error").hide();
+		$(dlgelm).find(".dlg-infobox.error").hide();
 
 		let observer = new MutationObserver(function(mutations) {
 			$(mutations[0].target).show();
 		});
-		$(dlgelm).find(".dlg_infobox.error").each(function() {
+		$(dlgelm).find(".dlg-infobox.error").each(function() {
 			observer.observe(this, { childList: true });
 		});
 

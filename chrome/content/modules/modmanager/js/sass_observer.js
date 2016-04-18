@@ -39,7 +39,7 @@ hook("load", function() {
 		if(def.observe && def.observe !== "main" && !getModuleDef(def.observe))
 			log("To observe module definition hasn't been found: " + def.observe);
 		
-		$("#ss-deflist").append("<row id=\"ss-def-"+i+"\">"+
+		$("#ss-deflist").append("<row id=\"ss-def-"+i+"\" align=\"center\">"+
 				"<label value=\""+def.leafName+"\" flex=\"1\" />"+
 				"<label value=\""+(def.observe || "Global")+"\" flex=\"1\"/>"+
 				"<label class=\"update-date\" value=\"unknown\" flex=\"1\"/>"+

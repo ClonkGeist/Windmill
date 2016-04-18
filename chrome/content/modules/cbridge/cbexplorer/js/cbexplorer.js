@@ -8,6 +8,8 @@ marked.setOptions({
 });
 
 function initializeDirectory() {
+	loadMissionAccessPasswords();
+
 	//Verzeichnis einlesen und Inhalte auflisten
 	loadDirectory(_sc.clonkpath());
 	unlockModule();
@@ -120,13 +122,25 @@ function hideFileExtension(fext) {
 	return true;
 }
 
+let mission_access = [];
+
+function loadMissionAccessPasswords() {
+	if(OS_TARGET == "WINNT") {
+		let wrk = _sc.wregkey();
+		wrk.open(wrk.ROOT_KEY_CURRENT_USER, "Software\\OpenClonk Project\\OpenClonk\\General", wrk.ACCESS_READ);
+		let passwordlist = wrk.readStringValue("MissionAccess").split(",");
+		wrk.close();
+		mission_access = passwordlist;
+	}
+}
+
 function getTreeEntryData(entry, fext) {
 	if(!entry.isDirectory())
 		return false;
 
 	let task = Task.spawn(function*() {
-		let data = {}, title;
-		try { title = yield OS.File.read(entry.path+"/Title.txt", {encoding: "utf-8"}); }
+		let data = {}, title, entrypath = formatPath(entry.path);
+		try { title = yield OS.File.read(entrypath+"/Title.txt", {encoding: "utf-8"}); }
 		catch(e) { log(e, true); }
 		if(title) {
 			lines = title.split('\n');
@@ -144,7 +158,7 @@ function getTreeEntryData(entry, fext) {
 			if(!data.title && titleUS)
 				data.title = titleUS;
 		}
-		let iconpath = formatPath(entry.path)+"/Icon.png";
+		let iconpath = entrypath+"/Icon.png";
 		if(yield OS.File.exists(iconpath)) {
 			iconpath = encodeURI(iconpath).replace(/#/g, "%23");
 			if(OS_TARGET == "WINNT")
@@ -152,8 +166,25 @@ function getTreeEntryData(entry, fext) {
 			else
 				data.icon = "file:///"+iconpath;
 		}
-		if(entry.leafName.split(".").pop() == "ocs" && !(yield OS.File.exists(formatPath(entry.path)+"/Script.c")))
-			data.special = "tree-splitter";
+		let fileext = entry.leafName.split(".").pop();
+		if(fileext == "ocs") {
+			if(!(yield OS.File.exists(entrypath+"/Script.c")))
+				data.special = "tree-splitter";
+
+			let scenario = parseINIArray(yield OS.File.read(entrypath+"/Scenario.txt", {encoding: "utf-8"}));
+			data.index = parseInt(scenario["Head"]["Difficulty"]);
+			if(!data.special && scenario["Head"]["MissionAccess"] && mission_access.indexOf(scenario["Head"]["MissionAccess"]) == -1) {
+				data.special = "tree-no-access";
+				data.additional_data = { "data-mission-access-password": scenario["Head"]["MissionAccess"] };
+			}
+		}
+		else if(fileext == "ocf") {
+			try {
+				let folder = parseINIArray(yield OS.File.read(entrypath+"/Folder.txt", {encoding: "utf-8"}));
+				data.index = parseInt(folder["Head"]["Index"]);
+			}
+			catch(e) {}
+		}
 
 		return data;
 	});

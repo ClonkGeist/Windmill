@@ -170,7 +170,7 @@ function buildDoc(path = _sc.chpath + "/docs/docs", __rec) {
 						from += "/";
 					}
 					
-					output = output.replace(/\${STYLESHEET}/g, "../"+relpath.join("/").replace(/(.+?)(\/|$)/g, "../")+"windmill_doc.css");
+					output = output.replace(/\${STYLESHEET}/g, "../"+relpath.join("/").replace(/(.+?)(\/|$)/g, "../")+"windmillDocs.css");
 					output = output.replace(/\${STYLESHEET_PRISM}/g, "../"+relpath.join("/").replace(/(.+?)(\/|$)/g, "../")+"prism.css");
 
 					let htmlfile = yield OS.File.open(dest.substr(0, dest.length-2)+"html", { truncate: true });

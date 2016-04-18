@@ -120,5 +120,12 @@
 	"cssTarget": "content/modules/modmanager/modManager.css",
 	"observe": "modmanager",
 	"require": "global|icons|specialUi"
+},
+{
+	"name":	"windmillDocs",
+	"scss": "modules/windmillDocs.scss",
+	"cssTarget": "docs/build/windmillDocs.css",
+	"observe": "",
+	"require": "global"
 }
 ]

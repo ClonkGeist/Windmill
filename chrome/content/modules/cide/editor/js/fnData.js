@@ -281,12 +281,14 @@ function getFunctionDetection(id, session) {
 						fBreak = true;
 						break;
 					
-					case "paren.rparen.rparenround":
-						level += pos.column - token.start;
+					case "paren.rparen":
+						if(token.value === ")")
+							level += pos.column - token.start;
 						break;
 					
-					case "paren.lparen.lparenround":
-						level -= pos.column - token.start;
+					case "paren.lparen":
+						if(token.value === "(")
+							level -= pos.column - token.start;
 						break;
 					
 					case "param-divide": // ,

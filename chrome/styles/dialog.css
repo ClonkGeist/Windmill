@@ -67,7 +67,6 @@
 
 
 /* y no use consistent seperators */
-.dlg_infobox,
 .dlg-infobox {
 	padding: 5px;
 	border: 1px solid gainsboro;
@@ -76,8 +75,7 @@
 	margin: 5px 0px;
 }
 
-.dlg-infobox.error,
-.dlg_infobox.error {
+.dlg-infobox.error {
 	background-color: #FFB2B2;
 	border-color: #CCB1B1;
 	-moz-user-select: text;
@@ -93,6 +91,7 @@
 	color: rgb(60, 60, 60);
 	-moz-box-pack: center;
 	padding: 3px 0px;
+	-moz-user-focus: normal;
 }
 
 @font-face {
@@ -109,6 +108,7 @@
 	background-color: white;
 	color: rgb(120, 120, 120);
 	padding-left: 14px;
+	-moz-user-focus: normal;
 }
 
 .dlg-checklistitem:before {
@@ -125,7 +125,7 @@
 	content: "\e608";
 }
 
-.dlg-checklistitem:hover { 
+.dlg-checklistitem:hover, .dlg-checklistitem:focus { 
 	background-color: rgba(0, 165, 207, 0.15);
 	outline: 1px solid rgba(0, 165, 207, 0.3);
 	outline-offset: -1px;
@@ -141,11 +141,13 @@
 
 /* Listbox */
 
+.dlg-listbox { -moz-user-focus: normal; }
 .dlg-list-head, .dlg-list-item { padding: 4px 6px; }
+.dlg-list-item { -moz-user-focus: normal; }
 .dlg-list-head { background: #DDD; }
 .dlg-list-item.hidden { display: none; }
 
-.dlg-list-item.selected, .dlg-list-item:hover {
+.dlg-list-item.selected, .dlg-list-item:hover, .dlg-list-item:focus {
 	background-color: rgba(0, 165, 207, 0.15);
 	outline: 1px solid rgba(0, 165, 207, 0.3);
 	outline-offset: -1px;

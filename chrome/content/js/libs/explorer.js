@@ -40,8 +40,37 @@ hook("load", function() {
 		return;
 	});
 
+	let dragstep;
+	$(document).on("dragover", function(e) {
+		e = e.originalEvent;
+		let start = dragstep;
+
+		if(e.clientY < 150)
+			dragstep = -5;
+		else if(e.clientY > $(window).height()-150)
+			dragstep = 5;
+		else
+			dragstep = 0;
+
+		function scrollDraggableElement() {
+			let scrolltop = $(MAINTREE_OBJ).parent().scrollTop();
+			$(MAINTREE_OBJ).parent().scrollTop(scrolltop+dragstep);
+			if(dragstep)
+				window.requestAnimationFrame(scrollDraggableElement);
+		}
+
+		if(!start)
+			scrollDraggableElement();
+	});
+	//Mousemove wird nur aufgerufen wenn kein Dragevent aktiv ist
+	$(document).mousemove(function(e) {
+		dragstep = 0;
+	});
+
 	return true;
 });
+
+let explorer_search_info = {};
 
 function searchFile(searchstr, workpath) {
 	var lastmatch = $(".last-search-match");
@@ -53,15 +82,17 @@ function searchFile(searchstr, workpath) {
 
 		for(var retv; index < workenvs.length; index++) {
 			if(retv = searchFile(searchstr, workenvs[index])) {
-				if(retv == -1) //HAB DIE MELDUNG SCHON BEIM ERSTEN MAL VERSTANDEN
+				if(retv == -1)
 					return;
 				var treeobj = navigateToPath(retv.path, true);
 				$(treeobj).addClass(".last-search-match");
+				explorer_search_info = {searchstr, path: retv.path};
 			}
 		}
 	}
 	else {
-		warn("Die Suche ist noch nicht voll integriert da vorher ein Code Rework anstehen muss.");
+		
+		warn("Die Suche ist noch nicht voll integriert.");
 		return -1;
 	}
 }
@@ -373,7 +404,7 @@ function addFileTreeEntry(entry, parentobj, sort_container) {
 		return false;
 
 	let task = Task.spawn(function*() {
-		let {title, icon, special} = yield getTreeEntryData(entry, fext)||{};
+		let {title, icon, special, index, additional_data} = yield getTreeEntryData(entry, fext)||{};
 		if(!title)
 			title = entry.leafName;
 
@@ -404,9 +435,11 @@ function addFileTreeEntry(entry, parentobj, sort_container) {
 
 		if(!icon)
 			icon = "chrome://windmill/content/img/icon-fileext-other.png";
-		
+
+		if(index === undefined || isNaN(index))
+			index = -1;
 		//Baumelement erzeugen
-		createTreeElement(parentobj, title, container, 0, icon, entry.leafName, special);
+		createTreeElement(parentobj, title, container, 0, icon, entry.leafName, special, {noSelection: !!special, index, additional_data});
 		if(sort_container)
 			sortTreeContainerElements(parentobj);
 		return true;

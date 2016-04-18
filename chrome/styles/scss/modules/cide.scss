@@ -72,19 +72,19 @@ toolbox {
 	max-height: 14px;
 	color: grey;
 	
-	padding: 0;
-	margin: 0;
-	margin-left: 0.3em;
+	padding: 0 0 0 2px;
+	margin: 0 0 0 .3em;
 	
 	border-radius: 14px;
 	
 	-moz-box-align: center;
-	font-size: 12px;
+	font-size: 10px;
 }
 
 .close-button:hover {
 	color: $clr-paper;
-	background-color: $interact_red;
+	background-color: $interact-red;
+	outline: 2px solid $interact-red;
 }
 
 .deck-desc {
@@ -197,23 +197,23 @@ toolbarbutton:focus  *{
 }*/
  
 .dragover-sidedeck-right {
-    box-shadow: inset 5px 0 0 0 $interact_orange;
+    box-shadow: inset 5px 0 0 0 $interact-orange;
 }
  
 .dragover-sidedeck-bottom {
-	box-shadow: inset 0 5px 0 0 $interact_orange;
+	box-shadow: inset 0 5px 0 0 $interact-orange;
 }
 
 .dragover-sidedeck-left {
-	box-shadow: inset 5px 0 0 0 $interact_orange;
+	box-shadow: inset 5px 0 0 0 $interact-orange;
 }
 
 .dragover-sidedeck-top {
-	box-shadow: inset 0 -5px 0 0 $interact_orange;
+	box-shadow: inset 0 -5px 0 0 $interact-orange;
 }
 
 .dragover-deck {
-	outline: 5px solid $interact_orange;
+	outline: 5px solid $interact-orange;
 	outline-offset: -5px;
 }
 

@@ -154,7 +154,7 @@ $(window).ready(function() {
 						_mainwindow.restartWindmill();
 					}}, "cancel"]});
 				
-				var liststr = '<vbox id="dex_dlg_gffiles" class="dlg-checklistbox">';
+				var liststr = '<vbox id="dex-dlg-gffiles" class="dlg-checklistbox">';
 				for(var i = 0; i < files.length; i++)
 					liststr += '<hbox class="dlg-checklistitem" data-fileindex="'+i+'">'+files[i].filepath.replace(_sc.workpath(files[i])+"/", "")+'</hbox>';
 				
@@ -182,15 +182,15 @@ $(window).ready(function() {
 			if(!obj)
 				continue;
 
-			var clone = $(".applist_item.draft").clone();
+			var clone = $(".applist-item.draft").clone();
 			clone.removeClass("draft");
-			clone.appendTo($("#application_list"));
+			clone.appendTo($("#application-list"));
 			clone.attr("default-appid", obj.identifier);
-			clone.find(".applist_img").attr("src", obj.icon);
-			clone.find(".applist_title").val(obj.name);
-			clone.find(".applist_desc").text(Locale(obj.data.description, -1));
-			clone.find(".applist_path").val(obj.path);
-			clone.find(".applist_browse").click(function() {
+			clone.find(".applist-img").attr("src", obj.icon);
+			clone.find(".applist-title").val(obj.name);
+			clone.find(".applist-desc").text(Locale(obj.data.description, -1));
+			clone.find(".applist-path").val(obj.path);
+			clone.find(".applist-browse").click(function() {
 				openProgramDialog(this, obj);
 			});
 		}
@@ -416,7 +416,7 @@ function openProgramDialog(obj, extApp) {
 		saveConfig();
 
 		if(extApp)
-			$('[default-appid="'+extApp.identifier+'"]').find(".applist_path").text(path);
+			$('[default-appid="'+extApp.identifier+'"]').find(".applist-path").text(path);
 		else
 			$(obj).parent().find(".view-directory-path").text(path);
 	}

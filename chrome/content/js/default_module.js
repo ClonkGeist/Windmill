@@ -8,32 +8,30 @@ Components.utils.import("resource://gre/modules/Task.jsm");
 const OCGRP_FILEEXTENSIONS = ["ocd", "ocs","ocg","ocf","ocs", "oci", "ocp"];
 
 //Hilfsfunktion zum loggen
-function log(str, hidden, type) {
-	if(getConfigData("Global", "DevMode")) {
-		var clone = _mainwindow.$("#developerlog .log-listitem.draft").clone();
-		clone.removeClass("draft");
-		clone.appendTo(_mainwindow.$("#log-entrylist"));
+function log(str, hidden, type) {	
+	var clone = _mainwindow.$("#developerlog .log-listitem.draft").clone();
+	clone.removeClass("draft");
+	clone.appendTo(_mainwindow.$("#log-entrylist"));
 
-		if(type)
-			clone.addClass(type);
-		if(hidden)
-			clone.addClass("hidden");
-		if(typeof str == "object") {
-			clone.click(function() {
-				var dlg = new WDialog("Object Information", "DEX", { modal: true, css: { "width": "450px" }, btnright: ["accept"]});
-				dlg.setContent('<box style="word-wrap: break-word; white-space: pre-wrap; overflow-y: scroll; height: 360px" flex="1">'+showObj3(str)+"</box>");
-				dlg.show();
-				dlg = 0;
-			});
-			clone.addClass("object");
-		}
-
-		clone.find(".log-listitem-content").text(str+"\n");
-		_mainwindow.$("#showLog").addClass("flashOnLog").addClass(type);
-		setTimeout(function() {
-			_mainwindow.$("#showLog").removeClass("flashOnLog").removeClass(type);
-		}, 10);
+	if(type)
+		clone.addClass(type);
+	if(hidden)
+		clone.addClass("hidden");
+	if(typeof str == "object") {
+		clone.click(function() {
+			var dlg = new WDialog("Object Information", "DEX", { modal: true, css: { "width": "450px" }, btnright: ["accept"]});
+			dlg.setContent('<box style="word-wrap: break-word; white-space: pre-wrap; overflow-y: scroll; height: 360px" flex="1">'+showObj3(str)+"</box>");
+			dlg.show();
+			dlg = 0;
+		});
+		clone.addClass("object");
 	}
+
+	clone.find(".log-listitem-content").text(str+"\n");
+	_mainwindow.$("#showLog").addClass("flashOnLog").addClass(type);
+	setTimeout(function() {
+		_mainwindow.$("#showLog").removeClass("flashOnLog").removeClass(type);
+	}, 10);
 	if(hidden && !getConfigData("Global", "ShowHiddenLogs"))
 		return;
 
@@ -128,6 +126,14 @@ function warn(str, prefix) {
 	alert(Locale(str, prefix));
 	return true;
 }
+
+top.Services.scriptloader.loadSubScript("chrome://windmill/content/js/default_functionalities/parser.js");
+top.Services.scriptloader.loadSubScript("chrome://windmill/content/js/default_functionalities/keybindings.js");
+top.Services.scriptloader.loadSubScript("chrome://windmill/content/js/default_functionalities/filehandling.js");
+top.Services.scriptloader.loadSubScript("chrome://windmill/content/js/default_functionalities/localization.js");
+top.Services.scriptloader.loadSubScript("chrome://windmill/content/js/default_functionalities/ui-feedback.js");
+top.Services.scriptloader.loadSubScript("chrome://windmill/content/js/default_functionalities/debug.js");
+top.Services.scriptloader.loadSubScript("chrome://windmill/content/js/default_functionalities/other.js");
 
 if(top != window) {
 	//Zugriff auf Sprachdateien
@@ -290,6 +296,97 @@ else {
 	var _mainwindow = window;
 }
 
+//Suche nach naechstem Element im DOM (Unter Beruecksichtigung aller Ebenen im angegebenen Container)
+function* nextElementInDOM(start, container = $(document.documentElement?document.documentElement:"body"), indent = "  ") {
+	let elements = $(container).children();
+	for(var i = 0; i < elements.length; i++) {
+		//log(`${indent}[${i}/${elements.length-1}] <${elements[i].tagName}>:${elements[i].id} (${$(elements[i]).attr("tabindex")})`);
+		//ggf. nach Startpunkt suchen
+		if(start) {
+			if($(start)[0] == elements[i]) {
+				if($(elements[i]).children()[0])
+					yield* nextElementInDOM(0, elements[i], indent+"  ");
+				start = false;
+			}
+			else if($(start).parents().index(elements[i]) != -1) {
+				yield* nextElementInDOM(start, elements[i], indent+"  ");
+				start = false;
+			}
+		}
+		else {
+			//Nicht sichtbare Elemente, Frames und Elemente mit Tabindex -1 ueberspringen
+			if($(elements[i]).css("display") == "none" || 
+			   $(elements[i]).css("visibility") == "hidden" || 
+			   $(elements[i]).prop("tagName") == "iframe" ||
+			   $(elements[i]).attr("tabindex") == "-1")
+				continue;
+			yield $(elements[i]);
+			if($(elements[i]).children()[0])
+				yield* nextElementInDOM(0, elements[i], indent+"  ");
+		}
+	}
+}
+
+function* prevElementInDOM(start, container = $(document.documentElement?document.documentElement:"body"), indent = "  ") {
+	let elements = $(container).children();
+	for(var i = elements.length-1; i >= 0; i--) {
+		//log(`${indent}[${i}/${elements.length-1}] <${elements[i].tagName}>:${elements[i].id} (${$(elements[i]).attr("tabindex")})`);
+		//ggf. nach Startpunkt suchen
+		if(start) {
+			if($(start)[0] == elements[i])
+				start = false;
+			else if($(start).parents().index(elements[i]) != -1) {
+				yield* prevElementInDOM(start, elements[i], indent+"  ");
+				start = false;
+			}
+		}
+		else {
+			//Nicht sichtbare Elemente, Frames und Elemente mit Tabindex -1 ueberspringen
+			if($(elements[i]).css("display") == "none" || 
+			   $(elements[i]).css("visibility") == "hidden" || 
+			   $(elements[i]).prop("tagName") == "iframe")
+				continue;
+			if($(elements[i]).children()[0])
+				yield* prevElementInDOM(0, elements[i], indent+"  ");
+			yield $(elements[i]);
+		}
+	}
+}
+
+//Tabfocus
+$(document).keydown(function(e) {
+	//log(showObj2(e, 0, {avoidErr: true}));
+	if(e.currentTarget != document)
+		return;
+	//Nicht auf Event-Bubbling reagieren
+	if(!document.activeElement || $(document.activeElement).prop("tagName") == "iframe")
+		return;
+
+	if(e.keyCode == 9) {
+		let elm = document.activeElement;
+
+		//Naechstes fokussierbares Element suche
+		let search = e.shiftKey?prevElementInDOM:nextElementInDOM;
+		let start = document.activeElement, container = $(start).parents('[data-tabcontext="true"]')[0], elmdom = search(start, container), result;
+		while(result = elmdom.next()) {
+			if(result.done && start) {
+				elmdom = search(0, container);
+				continue;
+			}
+			let elm = result.value;
+			if(start == elm[0])
+				break;
+			if(elm.attr("tabindex") == "-1")
+				continue;
+			elm.focus();
+			//Auch auf Parents untersuchen, um Shadow DOM zu beruecksichtigen (XUL Textboxen laden HTML-Inputfelder)
+			if(document.activeElement == elm[0] || $(document.activeElement).parents().index(elm[0]) != -1)
+				break;
+		}
+		e.preventDefault();
+	}
+});
+
 var domwu = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils) || top.domwu;
 
 function frameUpdateWindmillTitle() {
@@ -303,318 +400,6 @@ function frameUpdateWindmillTitle() {
 	}
 }
 
-function Locale(str, prefix) {
-	if(!prefix && prefix !== "")
-		prefix = MODULE_LPRE;
-
-	if(prefix == -1)
-		prefix = "";
-
-	if(!str)
-		return str;
-	
-	var lgreplace = str.match(/\$[a-zA-Z0-9_]+?\$/g);
-	for(var d in lgreplace) {
-		var id = lgreplace[d];
-		var str2 = __l[prefix+"_"+id.match(/\$([a-zA-Z0-9_]+?)\$/)[1]];
-		
-		if(str2)
-			str = str.replace(RegExp(id.replace(/\$/g, "\\$")), str2.replace(/\\n/, "\n"));
-	}
-	
-	return str;
-}
-
-function localizeModule() {
-	let rgx = /\$[a-zA-Z0-9_]+?\$/g;
-
-	function getReplacement(lgreplace) {
-		let replacement = __l[MODULE_LPRE+"_"+lgreplace.replace(/\$/g, "")];
-		if(replacement)
-			replacement.replace(/\\n/, "\n");
-
-		return replacement;
-	}
-
-	function fnLocale(i, obj) {
-		//Keine Lokalisierung
-		if($(obj).attr("no_localization"))
-			return;
-
-		//Attribute durchgehen
-		jQuery.each(obj.attributes, function(j, attr) {
-			let match = $(obj).attr(attr.name).match(rgx);
-			if(match)
-				$(obj).attr(attr.name, getReplacement(match[0]));
-		});
-
-		//Textnodes durchgehen
-		$(obj).contents().each(function() {
-			if(this.nodeType == 3) {
-				this.nodeValue = jQuery.trim($(this).text()).replace(rgx, function(match) {
-					if(getReplacement(match))
-						return getReplacement(match);
-					else
-						return match;
-				});
-			}
-		});
-
-		jQuery.each($(obj).children("*"), fnLocale);
-	}
-
-	if(MODULE_LANG == "html")
-		jQuery.each($("body > *"), fnLocale);
-	else if(MODULE_LANG == "xul")
-		jQuery.each($(document.documentElement).children("*"), fnLocale);
-}
-
-function getClonkExecutablePath(filename_only) {	//Alternative Executabledatei
-	var name = getConfigData("Global", "AlternativeApp");
-	if(!name) {
-		if(OS_TARGET == "WINNT")
-			name = "openclonk.exe";
-		else
-			name = "openclonk";
-	}
-
-	if(filename_only)
-		return name;
-	return _sc.clonkpath() + "/" + name;
-}
-
-function getC4GroupPath() {
-	if(OS_TARGET == "WINNT")
-		name = "c4group.exe";
-	else
-		name = "c4group";
-
-	return _sc.clonkpath() + "/" + name;
-}
-
-var domWrapper;
-
-function displayDOM(el, lang) {
-	var css = `position: absolute;
-	bottom: 0;
-	left: 0;
-	right: 0;`;
-	if(!domWrapper) {
-		if(lang == "xul")
-			domWrapper = $('<box style="'+css+'"></box>')[0];
-		else
-			domWrapper = $('<div style="'+css+'"></div>')[0];
-	}
-	err(parseHTML(el));
-	$(domWrapper).text(parseHTML(el));
-}
-
-function parseHTML(el) {
-	var str = "<"+el.nodeName+" >";
-	
-	for(var i in el.childNodes) {	
-		err(i + "  ::  " + el.childNodes[i])
-		str += parseHTML(el.childNodes[i]);
-	}
-	return str + "</"+el.nodeName+">";
-}
-
-function parseCssStyle(el) {
-	var str = "", style = window.getComputedStyle(el);
-
-	for(var i = 0; i < style.length; i++)
-		str += style.item(i) + ": " + style.getPropertyValue(style.item(i)) + "\n";
-
-	return str;
-}
-
-function* parseINI2(value) {
-	if(typeof value == "string")
-		value = parseINIArray(value);
-	
-	for(var sect in value) {
-		if(value[sect])
-			yield sect;
-		else
-			continue;
-
-		for(var key in value[sect])
-			yield { sect, key, val: value[sect][key] };
-	}
-}	
-
-function parseINIArray(text) {
-	var lines = text.split("\n");
-	var data = [], current_section = 0;
-	for(var i = 0; i < lines.length; i++) {
-		var line = lines[i];
-		if(line.search(/[^=\[]+#/) == 0)
-			continue;
-		
-		if(line.search(/[^=.]*\[[^=.]+\][^=.]*/) == 0) {
-			//Section
-			current_section = line.match(/[^=.]*\[([^=.]+)\][^=.]*/)[1];
-			data[current_section] = [];
-		}
-		else if(line.search(/.=./) != -1) {
-			var key = line.match(/(.+?)=/)[1];
-			var value = line.match(/.+?=(.+)/)[1];
-
-			if(!data[current_section])
-				data[current_section] = [];
-			data[current_section][key] = value;
-		}
-	}
-
-	return data;
-}
-
-function parseINIValue(value, type, default_val) {
-	if(value == undefined)
-		return default_val;
-
-	if(type == "int") {
-		value = parseInt(value);
-		if(isNaN(value))
-			return default_val;
-		else
-			return value;
-	}
-	else if(type == "bool" || type == "boolean") {
-		if(isNaN(parseInt(value))) {
-			if(value.toUpperCase() == "TRUE")
-				return true;
-			else if(value.toUpperCase() == "FALSE")
-				return false;
-			else
-				return default_val;
-		}
-		else
-			return !!parseInt(value);
-	}
-	
-	//Currently not supported
-	return value;
-}
-
-function readFile(input, nohtml) {
-	if(!input)
-		return false;
-	
-	if(input.isFile)
-		var f = input;
-	else
-		var f = _sc.file(input);
-	
-	if(!f.exists())
-		return false;
-
-	var	charset = "utf-8",
-		fs = _sc.ifstream(f, 1, 0, false),
-		cs = _sc.cistream(),
-		result = {};
-		cs.init(fs, charset, fs.available(), cs.DEFAULT_REPLACEMENT_CHARACTER);
-	
-	cs.readString(fs.available(), result);
-
-	cs.close();
-	fs.close();
-	
-	//HTML-Codes entschaerfen
-	if(nohtml)
-		result.value = result.value.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-	
-	return result.value;
-}
-
-function writeFile(path, text, fCreateIfNonexistent) {
-	if(path instanceof Ci.nsIFile)
-		var f = path;
-	else
-		var f = new _sc.file(path);
-
-	if(!f.exists() && fCreateIfNonexistent)
-		f.create(f.NORMAL_FILE_TYPE, 0o777);
-	
-	var fstr = _sc.ofstream(f, _scc.PR_WRONLY|_scc.PR_TRUNCATE, 0x200);
-	var cstr = _sc.costream();
-
-	cstr.init(fstr, "utf-8", text.length, Ci.nsIConverterInputStream.DEFAULT_REPLACEMENT_CHARACTER);
-	cstr.writeString(text);
-
-	cstr.close();
-	fstr.close();
-}
-
-function OSFileRecursive(sourcepath, destpath, callback, operation = "copy", noOverwrite = true, options = { checkIfFileExist: true }, __rec) {
-	//TODO: Overwrite vorschlagen
-	let task = Task.spawn(function*() {
-		let f = new _sc.file(sourcepath), extra = "", file;
-		let counter = 0;
-		//Dateinamen aufspalten um passenden Alternativen Namen generieren zu koennen (Dabei Dateierweiterungen beruecksichtigen)
-		let tpath = destpath.split("/");
-		let tname = tpath.pop().split(".");
-		tpath = tpath.join("/")+"/";
-		let fext = "";
-		if(tname.length > 1)
-			fext = "."+tname.pop();
-
-		tname = tname.join(".");
-		let toperation = operation;
-		if(f.isDirectory())
-			toperation = "makeDir";
-
-		while(true) {
-			try {
-				if(toperation == "makeDir" && options.checkIfFileExist && noOverwrite)
-					if(yield OS.File.exists(tpath+tname+extra+fext))
-						throw { becauseExists: true, becauseFileExists: true };
-
-				if(toperation == "makeDir")
-					yield OS.File.makeDir(tpath+tname+extra+fext, {ignoreExisting: !noOverwrite});
-				else
-					yield OS.File[toperation](sourcepath, tpath+tname+extra+fext, {noOverwrite});
-			}
-			catch(e) {
-				if(!e.becauseExists)
-					throw e;
-				if(e.becauseFileExists && !noOverwrite)
-					return {path: tpath+tname+extra+fext, file: f};
-				if(noOverwrite == 2)
-					throw e;
-				if(counter > 99)
-					throw "Could not create an alternative name";
-				extra = " - " + (++counter);
-				continue;
-			}
-			destpath = tpath+tname+extra+fext;
-			break;
-		}
-
-		if(toperation == "makeDir") {
-			let entries = f.directoryEntries;
-			while(entries.hasMoreElements()) {
-				let entry = entries.getNext().QueryInterface(Ci.nsIFile);
-
-				if(callback)
-					callback(entry.leafName, entry.path);
-
-				yield OSFileRecursive(entry.path, destpath+"/"+entry.leafName, callback, operation, noOverwrite, options, true);
-			}
-
-			//Ggf. nochmal aufraeumen
-			if(!__rec && operation == "move")
-				yield OS.File.removeDir(sourcepath, {ignoreAbsent: true})
-		}
-
-		return {path: destpath, file: f};
-	});
-	task.then(null, function(reason) {
-		log(reason);
-	});
-	
-	return task;
-}
 
 function removeSubFrames() {
 	if($("iframe").get(0)) {
@@ -626,429 +411,3 @@ function removeSubFrames() {
 		$("iframe").remove();
 	}
 }
-
-var tooltipTimeout, tooltipEl;
-
-function tooltip(targetEl, desc, lang, duration) {
-	desc = Locale(desc);
-	if(!duration)
-		duration = 600; // ms
-
-	$(targetEl).mouseenter(function() {
-		clearTooltip();
-		
-		tooltipTimeout = setTimeout(() => {
-			var el = $('<'+(lang === "html"?'div style="background-color: black"':'panel')+'></'+(lang == "html"?'div':'panel')+'>')[0];
-
-			$(this).append(el);
-
-			$(el).css(toolTipStyle).text(desc);
-
-			var [x,y,w,h] = [this.offsetLeft, this.offsetTop, this.offsetWidth, this.offsetHeight];
-			
-			// if its too near to the upper border
-			if(y < el.offsetHeight)
-				y += h; // then show it at the bottom
-			else // otherwise lift it so the original element is still visible
-				y -= el.offsetHeight;
-			
-			// center the x position relative to the original element
-			x += (w/2 - el.offsetWidth/2);
-			
-			// if its too close to the left border
-			if(x < 0)
-				x = 0;
-			// same thing with right border
-			else if(x + el.offsetWidth > $(document).width())
-				x = $(document).width() - $(el)[0].offsetWidth;
-
-			$(el).css("top", y + "px");
-			$(el).css("left", x + "px");
-
-			// store for remove
-			tooltipEl = el;
-		}, duration);
-	});
-	
-	$(targetEl).mouseleave(function(e) {
-		clearTooltip();
-	});
-}
-
-function clearTooltip() {
-	clearTimeout(tooltipTimeout);
-	$(tooltipEl).remove();
-}
-
-var toolTipStyle = {
-	position: "absolute",
-	"background-color": "rgb(80, 80, 80)",
-	color: "whitesmoke",
-	"font-family": '"Segoe UI", Verdana, sans-serif',
-	"font-size": "14px",
-	"line-height": "14px",
-	"z-index": "30",
-	width: "auto",
-	padding: "1px 5px",
-	transition: "opacity 0.3s"
-};
-
-function setWindowTitle(title) {
-	_mainwindow.document.getElementById("window-title").setAttribute("value", title);
-}
-
-/*-- KeyBindings --*/
-
-const KB_Call_Down = 0, KB_Call_Up = 1, KB_Call_Pressed = 2;
-
-function _keybinderGetKeysByIdentifier(identifier) {
-	if(!_mainwindow.customKeyBindings)
-		return;
-	
-	return _mainwindow.customKeyBindings[identifier];
-}
-
-function _keybinderCheckKeyBind(keybind, event, keys) {
-	if(!keys) {
-		keys = _keybinderGetKeysByIdentifier(keybind.getIdentifier());
-		if(!keys && !(keys = keybind.defaultKeys))
-			return false;
-
-		if(typeof keys == "object") {
-			for(var i = 0; i < keys.length; i++)
-				if(_keybinderCheckKeyBind(keybind, event, keys[i]))
-					return true;
-			
-			return false;
-		}
-	}
-
-	//Modifier überprüfen
-	if(keys.search(/(^|-)Ctrl($|-)/) != -1 && !event.ctrlKey)
-		return false;
-	if(keys.search(/(^|-)Shift($|-)/) != -1 && !event.shiftKey)
-		return false;
-	if(keys.search(/(^|-)Alt($|-)/) != -1 && !event.altKey)
-		return false;
-
-	//Letzte Taste Rausfinden und checken
-	var key = keys.replace(/-?(Ctrl|Shift|Alt)-?/g, "");
-	if(getKeyCodeIdentifier(event.keyCode) == key)
-		return true;
-	
-	return false;
-}
-
-function bindKeyToObj(kb, obj = $(document)) {
-	obj = $(obj);
-	for(var i = 0; i < obj.length; i++) {
-		var elm = obj[i];
-		if(elm._windmill_keybinding)
-			elm._windmill_keybinding.push(kb);
-		else {
-			elm._windmill_keybinding = [kb];
-			$(obj).keypress(function(e) {
-				if(!$(this).prop("_windmill_keybinding"))
-					return;
-
-				for(var i = 0; i < $(this).prop("_windmill_keybinding").length; i++) {
-					var keybind = $(this).prop("_windmill_keybinding")[i];
-
-					if(keybind.calltype != KB_Call_Pressed)
-						continue;
-
-					if(_keybinderCheckKeyBind(keybind, e))
-						keybind.exec(e, this);
-					else
-						continue;
-
-					e.stopImmediatePropagation();
-					return true;
-				}
-			});
-			$(obj).keydown(function(e) {
-				if(!$(this).prop("_windmill_keybinding"))
-					return;
-
-				for(var i = 0; i < $(this).prop("_windmill_keybinding").length; i++) {
-					var keybind = $(this).prop("_windmill_keybinding")[i];
-
-					if(keybind.calltype != KB_Call_Down)
-						continue;
-
-					if(_keybinderCheckKeyBind(keybind, e))
-						keybind.exec(e, this);
-					else
-						continue;
-
-					e.stopImmediatePropagation();
-					return true;
-				}
-			});
-			$(obj).keyup(function(e) {
-				if(!$(this).prop("_windmill_keybinding"))
-					return;
-
-				for(var i = 0; i < $(this).prop("_windmill_keybinding").length; i++) {
-					var keybind = $(this).prop("_windmill_keybinding")[i];
-
-					if(keybind.calltype != KB_Call_Up)
-						continue;
-
-					if(_keybinderCheckKeyBind(keybind, e))
-						keybind.exec(e, this);
-					else
-						continue;
-
-					e.stopImmediatePropagation();
-					return true;
-				}
-			});
-		}
-	}
-}
-
-function getKeyBindingObjById(id) {
-	if(!_mainwindow)
-		_mainwindow = window;
-
-	for(var i = 0; i < _mainwindow.keyBindingList.length; i++)
-		if(_mainwindow.keyBindingList[i] && _mainwindow.keyBindingList[i].getIdentifier() == id)
-			return _mainwindow.keyBindingList[i];
-
-	return false;
-}
-
-class _KeyBinding {
-	constructor(id, dks, ex, ct = KB_Call_Down, pfx = MODULE_LPRE, opt = {}) {
-		if(typeof id == "object") {
-			var options = id;
-			this.identifier = options.identifier;
-			this.prefix = options.prefix || pfx;
-			this.calltype = options.calltype || ct; // 
-			this.defaultKeys = options.defaultKeySetup;
-			this.exec = options.exec;
-			this.options = options;
-		}
-		else { //Falls id = identifier
-			this.identifier = id;
-			this.prefix = pfx;
-			this.calltype = ct;
-			this.defaultKeys = dks;
-			this.exec = ex;
-			this.options = opt;
-		}
-		//In Liste hinzufügen
-		if(!_mainwindow.keyBindingList)
-			_mainwindow.keyBindingList = [this];
-		else
-			_mainwindow.keyBindingList.push(this);
-
-		if(!_mainwindow.customKeyBindings)
-			_mainwindow.customKeyBindings = [];
-
-		if(!_mainwindow.customKeyBindings[this.getIdentifier()])
-			_mainwindow.customKeyBindings[this.getIdentifier()] = this.defaultKeys;
-	}
-
-	getIdentifier() { return this.prefix + "_" + this.identifier; }
-}
-
-//Fallback
-function KeyBinding(...pars) { return new _KeyBinding(...pars); }
-
-/*-- Lock Module --*/
-
-function lockModule(message, nofadein) {
-	if($(".windmill-modal")[0]) {
-		$(".windmill-modal").html(Locale(message));
-	
-		return true;
-	}
-
-	if(MODULE_LANG == "html") {
-		var modal = $('<div class="windmill-modal" style="z-index: 10000"></div>');
-		modal.html(Locale(message));
-		$("body").append(modal);
-		/*if(!nofadein)
-			$(".windmill-modal").fadeIn(400);
-		else
-			$(".windmill-modal").show();*/
-	}
-	else if(MODULE_LANG == "xul") {
-		var modal = $('<box class="windmill-modal"></box>');
-		modal.html(Locale(message));
-		if(!$("#windmill-modal-wrapper,.windmill-lockmodule-wrapper")[0])
-			$(document.documentElement).children().wrapAll('<stack flex="1" id="windmill-modal-wrapper" class="temporary"></stack>');
-
-		$("#windmill-modal-wrapper,.windmill-lockmodule-wrapper").append(modal);
-		/*if(!nofadein)
-			$(".windmill-modal").fadeIn(400);
-		else
-			$(".windmill-modal").show();*/
-	}
-
-	return true;
-}
-
-function unlockModule() {
-	//$(".windmill-modal").fadeOut(400, function() { $($("#windmill-modal-wrapper.temporary").children()[0]).unwrap(); $(".windmill-modal").remove() });
-	$($("#windmill-modal-wrapper.temporary").children()[0]).unwrap();
-	$(".windmill-modal").remove();
-	return true;
-}
-
-/*-- EventInfos --*/
-
-const EVENTINFO_DISPLAYTIME = 400;
-var eventinfo_timeout;
-
-function EventInfo(message, lpre) {
-	message = Locale(message, lpre);
-
-	if($(".eventinfo")[0]) {
-		clearTimeout(eventinfo_timeout);
-		$(".eventinfo").stop(true).css("opacity", "");
-
-		var off = $(".eventinfo").last().offset();
-		if(MODULE_LANG == "html")
-			var nEventInfo = $('<div class="eventinfo">'+message+'</div>');
-		else if(MODULE_LANG == "xul")
-			var nEventInfo = $('<div class="eventinfo" xmlns="http://www.w3.org/1999/xhtml">'+message+'</div>');
-		nEventInfo.appendTo(document.documentElement);
-		nEventInfo.css({ top: off.top-$(nEventInfo).outerHeight(), left: 0});
-	}
-	else {
-		if(MODULE_LANG == "html")
-			var nEventInfo = $('<div class="eventinfo">'+message+'</div>');
-		else if(MODULE_LANG == "xul")
-			var nEventInfo = $('<div class="eventinfo" xmlns="http://www.w3.org/1999/xhtml">'+message+'</div>');
-		nEventInfo.appendTo(document.documentElement);
-		nEventInfo.css({ bottom: 0, left: 0});
-	}
-	
-	eventinfo_timeout = setTimeout(function() { $(".eventinfo").fadeOut(600, function() {$(this).remove();}); }, EVENTINFO_DISPLAYTIME);
-	return nEventInfo;
-}
-
-Object.defineProperty(Array.prototype, "byte2str", { enumerable: false, writable: false,
-	value: function(nullchars) {
-	for(var i = 0, str = ""; i < this.length; i++)
-		if(this[i] > 0 || nullchars)
-			str += String.fromCharCode(this[i]);
-	
-	return str;
-}});
-Object.defineProperty(Array.prototype, "byte2num", { enumerable: false, writable: false,
-	value: function() {
-	for(var i = this.length-1, str = ""; i >= 0; i--) {
-		if(this[i] < 16)
-			str += "0";
-		str += this[i].toString(16);
-	}
-	var ret = parseInt(str, 16);
-	if(isNaN(ret))
-		return 0;
-	else
-		return ret;
-}});
-Object.defineProperty(Number.prototype, "num2byte", { enumerable: false, writable: false,
-	value: function(size) {
-		var ar = [], num = this;
-		for(var i = 0; i < size; i++) {
-			ar.push(num & 0xFF);
-			num >>= 8;
-		}
-		
-		return ar;
-}});
-
-
-
-// debugfn
-
-function showObj2(obj, depth, options = {}) {
-	if(depth == undefined || depth == -1)
-		depth = 10;
-	var fn = function(obj, indent, d) {		
-		var txt = "";
-
-		try {
-			for(var key in obj) {
-				if(obj instanceof Array && options.maxArraySize) {
-					if(obj.length > options.maxArraySize && !isNaN(parseInt(key)))
-						if(parseInt(key) >= 2 || parseInt(key) < obj.length-2) {
-							if(key == "2")
-								txt += indent + "[...]\n";
-							
-							continue;
-						}
-				}
-				
-				if(key == "top")
-					continue;
-				
-				var v, isObj = false;
-
-				try {
-					if(typeof obj[key] === "function")
-						v = "[function]";
-					else if(typeof obj[key] === "object")
-						isObj = true;
-					else
-						v = obj[key];
-				}
-				catch(e) {
-					v = "error";
-				}
-				
-				if(isObj && d)
-					txt += indent + "[" + key + "]: \n" + fn(obj[key], indent + "        ", d - 1);
-				else if(isObj)
-					txt += indent + key + "[object]\n";
-				else
-					txt += indent + key + ": " + v + "\n";
-			}
-		} catch(e) { txt = "[Prevented]"; }
-
-		return txt;
-	};
-	
-	if(options.avoidErr)
-		return fn(obj, "", depth);
-	else
-		err(fn(obj, "", depth));
-}
-
-function showObj3(obj) {
-	function stringify(obj, replacer, spaces, cycleReplacer) {
-	  return JSON.stringify(obj, serializer(replacer, cycleReplacer), spaces)
-	}
-
-	function serializer(replacer, cycleReplacer) {
-	  var stack = [], keys = []
-
-	  if (cycleReplacer == null) cycleReplacer = function(key, value) {
-		if (stack[0] === value) return "[Circular ~]"
-		return "[Circular ~." + keys.slice(0, stack.indexOf(value)).join(".") + "]"
-	  }
-
-	  return function(key, value) {
-		if (stack.length > 0) {
-		  var thisPos = stack.indexOf(this)
-		  ~thisPos ? stack.splice(thisPos + 1) : stack.push(this)
-		  ~thisPos ? keys.splice(thisPos, Infinity, key) : keys.push(key)
-		  if (~stack.indexOf(value)) value = cycleReplacer.call(this, key, value)
-		}
-		else stack.push(value)
-
-		return replacer == null ? value : replacer.call(this, key, value)
-	  }
-	}
-	return stringify(obj, null, 4);
-}
-
-var TIMES = {};
-
-function iTr(key) { TIMES[key] = (new Date).getTime(); }
-function gTr(key) { err(key + ": " + ((new Date).getTime() - (TIMES[key])) + "ms"); }

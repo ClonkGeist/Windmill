@@ -1,3 +1,4 @@
+/* deprecated */
 /*-- Sammelstyles fuer Inhalte der default_module.js --*/
 .eventinfo {
   background-color: black;
@@ -18,13 +19,17 @@
   right: 0;
   bottom: 0;
   background-color: #000;
-  opacity: 0.5;
+  opacity: 0;
   font-size: 16pt;
   color: white;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center; }
+
+.windmill-modal.modal-enabled {
+  opacity: 0.5;
+  transition: opacity 0.5s; }
 
 .modal-big {
   font-size: 24pt; }
@@ -326,6 +331,9 @@
 .icon-documentation:before {
   content: "?"; }
 
+.icon-screenshots:before {
+  content: "\e904"; }
+
 window {
   font-family: "Segoe UI", "Trebuchet MS", sans-serif;
   background-color: #ebebeb; }
@@ -385,16 +393,16 @@ toolbox {
   height: 14px;
   max-height: 14px;
   color: grey;
-  padding: 0;
-  margin: 0;
-  margin-left: 0.3em;
+  padding: 0 0 0 2px;
+  margin: 0 0 0 .3em;
   border-radius: 14px;
   -moz-box-align: center;
-  font-size: 12px; }
+  font-size: 10px; }
 
 .close-button:hover {
   color: #fafafa;
-  background-color: #dc4632; }
+  background-color: #dc4632;
+  outline: 2px solid #dc4632; }
 
 .deck-desc {
   color: #b4b4b4;

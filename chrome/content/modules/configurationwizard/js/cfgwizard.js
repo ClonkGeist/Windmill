@@ -27,7 +27,7 @@ $(window).ready(function() {
 
 		//Datei gefunden
 		if(rv == Ci.nsIFilePicker.returnOK) {
-			/** CMC HARDCODE **/
+			/** ALPHA HARDCODE **/
 			switch($(this).parent().attr("id")) {
 				case "OCPath":
 					var clonkfile = "openclonk";
@@ -39,7 +39,7 @@ $(window).ready(function() {
 						$(this).trigger("click");
 						return;
 					}
-					setConfigData("Global", "ClonkDirectories", [formatPath(fp.file.path)]);
+					setConfigData("Global", "ClonkDirectories", [{ path: formatPath(fp.file.path), active: true }]);
 					break;
 
 				case "WSPath":
@@ -55,7 +55,7 @@ $(window).ready(function() {
 					setConfigData("ExtApplication", "ExtApplication_Git", fp.file.path);
 					break;
 			}
-			/** CMC HARDCODE ENDE **/
+			/** ALPHA HARDCODE ENDE **/
 			$(this).siblings(".filepath-show").text(fp.file.path);
 		}
 	});
@@ -67,7 +67,8 @@ $(window).ready(function() {
 			alert("Kein Clonkverzeichnis angegeben.");
 			return;
 		}
-		var ocfile = _sc.file(clonkdir[0]+"/"+(OS_TARGET=="WINNT"?"openclonk.exe":"openclonk"));
+		clonkdir = clonkdir[0].path;
+		var ocfile = _sc.file(clonkdir+"/"+(OS_TARGET=="WINNT"?"openclonk.exe":"openclonk"));
 		if(!ocfile.exists() || !ocfile.isExecutable()) {
 			alert("openclonk.exe konnte nicht gefunden werden.");
 			return;

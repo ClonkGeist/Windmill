@@ -41,7 +41,7 @@ hook("load", function() {
 		initializeConfig();
 
 		//Config einlesen
-		yield loadConfig();
+		try { yield loadConfig(); } catch(e) {}
 		//Config speichern
 		yield saveConfig(); //Configdatei speichern (falls noch nicht existiert)
 		//Sprachpakete einlesen
@@ -70,11 +70,9 @@ hook("load", function() {
 		$("#startup-loading").text("Creating and Initializing Modules");
 		//Configuration Wizard ggf. starten
 		if(result == -1) {
-			$("#wrapper").css("display", "none");
-			
-			window.outerWidth = 800;
-			window.outerHeight = 600;
-			createModule("configwizard", $("#cfgwizwrapper")[0]);
+			$("#modules-wrapper").removeClass("startup-loading");
+			$("#startup-loading").fadeOut(500);
+			createModule("configwizard", $("#modules-wrapper")[0]);
 			return;
 		}
 
@@ -192,6 +190,21 @@ hook("load", function() {
 		$("#showDocs").click(function() {
 			togglePage(mainDeck.id, docFrameID);
 		});
+		$("#showScreenshots").click(function() {
+			let path = "";
+			if(OS_TARGET == "WINNT")
+				path = _sc.env.get("APPDATA")+"\\OpenClonk\\Screenshots";
+
+			let promise = OS.File.exists(path);
+			promise.then(function(exists) {
+				if(exists)
+					openInFilemanager(path);
+				else
+					warn("No screenshots folder found.");
+			}, function(e) {
+				log(e);
+			});
+		});
 
 		//Neustart
 		$("#restartWindmill").click(function() { restartWindmill(); });
@@ -204,6 +217,15 @@ hook("load", function() {
 		$("#log-entrylist").on("DOMSubtreeModified", function() {
 			$("#log-entrylist").scrollTop($("#log-entrylist")[0].scrollHeight);
 		});
+		$(window).keydown(function(e) {
+			if(e.keyCode == 68 && e.ctrlKey && e.shiftKey && !getConfigData("Global", "DevMode")) {
+				setConfigData("Global", "DevMode", true, true);
+				$(".devmode-elm").css("display", "");
+				EventInfo("DevMode activated");
+			}
+		});
+		if(!getAppByID("git").isAvailable())
+			$("#showGitLog").css("display", "none");
 	}, function(reason) {
 		$("#startup-loading").remove();
 		$("#startup-errorlog > vbox").append(`
