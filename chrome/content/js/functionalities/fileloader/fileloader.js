@@ -167,13 +167,10 @@ class FileSearchProcess extends WindmillObject {
 					if(!current_tasks)
 						return;
 				}
-				else {
-					log("yo! " + wp);
+				else
 					workpath = wp;
-				}
 				
 				function* processFileEntry(path, subpath, filehistoryparent, cnttasks) {
-					//log("processing " + subpath);
 					let matched_tasks, leafName = subpath.split("/").pop();
 					//Unterverzeichnisse durchsuchen
 					let stat = yield OS.File.stat(subpath);
@@ -248,16 +245,13 @@ class FileSearchProcess extends WindmillObject {
 							}
 						}
 					}
-					//log("::: " + sp.filehistory[workpath].length);
 					for(var i = 0; i < sp.filehistory[workpath].length; i++) {
 						let filepath = sp.filehistory[workpath][i], cnttasks;
-						//log("check " + filepath);
 						if((cnttasks = sp.taskMatchingContainer(filepath.split("/").pop(), current_tasks)).length)
 							yield* processFileHistory(sp.filehistory[workpath][i], sp.filehistory[workpath], filepath, cnttasks);
 					}
 
 					sp.currentState.taskamount = sp.tasklist.length;
-					return;
 				}
 				else {
 					workpath = formatPath(workpath);
@@ -298,16 +292,15 @@ class FileSearchProcess extends WindmillObject {
 				if(sp.fulfillTasks(current_tasks) == 2)
 					return;
 
-				prev_workpaths.push(workpath);
+				if(!wp)
+					prev_workpaths.push(workpath);
 				workpath = undefined;
 				return true;
 			}
 			
 			while(yield* processWorkpaths()) {
 				//Pruefen ob neue Auftraege hinzugekommen sind
-				log(`${taskamount}, ${sp.tasklist.length}, ${sp.tasklist.slice(taskamount).length}, ${sp.hasHighPriorityTasks(sp.tasklist.slice(taskamount))} :: ${sp.tasklist[1]}`);
 				if(sp.tasks_added && sp.hasHighPriorityTasks(sp.tasklist.slice(taskamount))) {
-					log("new tasks found.");
 					//In dem Falle ggf. jene neue Auftraege nochmal durchgehen
 					for(var i = 0; i < prev_workpaths.length; i++)
 						if(sp.taskMatchingWorkpath(prev_workpaths[i], sp.tasklist.slice(taskamount)).length)
