@@ -441,6 +441,9 @@ li:focus *, li:focus {
 .icon-documentation:before {
   content: "?"; }
 
+.icon-screenshots:before {
+  content: "\e904"; }
+
 splitter {
   -moz-appearance: none;
   background-color: #fafafa;

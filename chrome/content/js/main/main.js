@@ -190,6 +190,21 @@ hook("load", function() {
 		$("#showDocs").click(function() {
 			togglePage(mainDeck.id, docFrameID);
 		});
+		$("#showScreenshots").click(function() {
+			let path = "";
+			if(OS_TARGET == "WINNT")
+				path = _sc.env.get("APPDATA")+"\\OpenClonk\\Screenshots";
+
+			let promise = OS.File.exists(path);
+			promise.then(function(exists) {
+				if(exists)
+					openInFilemanager(path);
+				else
+					warn("No screenshots folder found.");
+			}, function(e) {
+				log(e);
+			});
+		});
 
 		//Neustart
 		$("#restartWindmill").click(function() { restartWindmill(); });

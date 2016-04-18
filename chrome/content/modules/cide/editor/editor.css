@@ -331,6 +331,9 @@
 .icon-documentation:before {
   content: "?"; }
 
+.icon-screenshots:before {
+  content: "\e904"; }
+
 .main-editor {
   display: none;
   position: absolute !important;

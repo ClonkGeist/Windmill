@@ -814,7 +814,7 @@ function initializeContextMenu() {
 	//Da Filemanager unter Linux eine Zumutung sind, vorerst nur fuer Windows
 	if(OS_TARGET == "WINNT") {
 		workenvContextMenu.addEntry(lbl, 0, function() {
-			openInFilemanager(_sc.workpath(getCurrentTreeSelection()).replace(/\//g, "\\"));
+			openInFilemanager(_sc.workpath(getCurrentTreeSelection()));
 		}, 0);
 	}
 }

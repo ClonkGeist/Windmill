@@ -725,7 +725,7 @@ function openInFilemanager(path) {
 	let filemanager
 	if(OS_TARGET == "WINNT") {
 		filemanager = _ws.pr(_sc.env.get("windir")+"\\explorer.exe");
-		filemanager.create([path]); 
+		filemanager.create([path.replace(/\//g, "\\")]); 
 	}
 
 	return filemanager;
