@@ -40,7 +40,7 @@ function onConfigChange(sect, key, val) {
 	if(val.constructor.name == "ConfigEntry")
 		val = val.tempvalue;
 	if(!$("#config-"+sect+"-"+key)[0]) {
-		$("#config-overview").append(`<row id="config-${sect}-${key}"> align="center"
+		$("#config-overview").append(`<row id="config-${sect}-${key}" align="center">
 				<label class="cfg-sect" value="${sect}" />
 				<label class="cfg-key" value="${key}" />
 				<hbox>

@@ -27,7 +27,7 @@ $(window).ready(function() {
 
 		//Datei gefunden
 		if(rv == Ci.nsIFilePicker.returnOK) {
-			/** CMC HARDCODE **/
+			/** ALPHA HARDCODE **/
 			switch($(this).parent().attr("id")) {
 				case "OCPath":
 					var clonkfile = "openclonk";
@@ -55,7 +55,7 @@ $(window).ready(function() {
 					setConfigData("ExtApplication", "ExtApplication_Git", fp.file.path);
 					break;
 			}
-			/** CMC HARDCODE ENDE **/
+			/** ALPHA HARDCODE ENDE **/
 			$(this).siblings(".filepath-show").text(fp.file.path);
 		}
 	});

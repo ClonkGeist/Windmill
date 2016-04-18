@@ -91,6 +91,7 @@
 	color: rgb(60, 60, 60);
 	-moz-box-pack: center;
 	padding: 3px 0px;
+	-moz-user-focus: normal;
 }
 
 @font-face {
@@ -107,6 +108,7 @@
 	background-color: white;
 	color: rgb(120, 120, 120);
 	padding-left: 14px;
+	-moz-user-focus: normal;
 }
 
 .dlg-checklistitem:before {
@@ -123,7 +125,7 @@
 	content: "\e608";
 }
 
-.dlg-checklistitem:hover { 
+.dlg-checklistitem:hover, .dlg-checklistitem:focus { 
 	background-color: rgba(0, 165, 207, 0.15);
 	outline: 1px solid rgba(0, 165, 207, 0.3);
 	outline-offset: -1px;
@@ -139,11 +141,13 @@
 
 /* Listbox */
 
+.dlg-listbox { -moz-user-focus: normal; }
 .dlg-list-head, .dlg-list-item { padding: 4px 6px; }
+.dlg-list-item { -moz-user-focus: normal; }
 .dlg-list-head { background: #DDD; }
 .dlg-list-item.hidden { display: none; }
 
-.dlg-list-item.selected, .dlg-list-item:hover {
+.dlg-list-item.selected, .dlg-list-item:hover, .dlg-list-item:focus {
 	background-color: rgba(0, 165, 207, 0.15);
 	outline: 1px solid rgba(0, 165, 207, 0.3);
 	outline-offset: -1px;

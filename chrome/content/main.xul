@@ -56,7 +56,6 @@
 </vbox>
 <!-- end of res save mode content -->
 <stack flex="1" id="mainstack" class="windmill-lockmodule-wrapper" width="1000" height="1000">
-	<vbox flex="1" id="cfgwizwrapper"></vbox>
 	<!-- page -->
 	<vbox flex="1" id="wrapper">
 		<stack id="titlestack">
@@ -93,6 +92,7 @@
 							<box class="nav-image icon-console icon-32" height="32" width="32" id="showLog"></box>
 							<box class="nav-image icon-reload-2 icon-32 devmode-elm" height="32" width="32" id="restartWindmill"></box> <!-- DEVMODE -->
 							<box class="nav-image icon-documentation icon-32 devmode-elm" height="32" width="32" id="showDocs"></box> <!-- DEVMODE -->
+							<box class="nav-image icon-screenshots icon-32" height="32" width="32" id="showScreenshots"></box>
 							<box class="nav-image icon-gear icon-32" height="32" width="32" id="showSettings"></box>
 						</toolbar>
 					</toolbox>
@@ -291,11 +291,11 @@
 	
 	<!-- Dialogs -->
 	<box id="wdialogmodal"></box>
-	<vbox class="main-wdialog draft" align="center" tabindex="1">
+	<vbox class="main-wdialog draft" align="center" tabindex="-1">
 		<spacer flex="1"/>
 		<stack>
 			<vbox flex="1">
-				<vbox class="main-wdialog-wrapper">
+				<vbox class="main-wdialog-wrapper" data-tabcontext="true">
 					<hbox class="main-wdialog-head">
 						<vbox class="main-wdialog-title"></vbox>
 						<spacer flex="1"/>

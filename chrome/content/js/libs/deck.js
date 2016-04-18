@@ -195,26 +195,27 @@ class Deck extends WindmillObject {
 		}
 		
 		//Deck Overload fuer _sc.workpath (Workpath ueber DeckItemId)
-		if(!el.contentWindow.readyState) {// && el.contentWindow._sc) {
+		if(el.contentWindow && !el.contentWindow.readyState) {// && el.contentWindow._sc) {
 			el.contentWindow.addEventListener("load", () => {
-			var workpathov = _sc.workpath;
+				var workpathov = _sc.workpath;
 
-			el.contentWindow._sc.workpath = (data, noWorkspaceName = false) => {
-				if(typeof data == "number") {
-					if(this.options[data]) {
-						if(this.options[data].filepath)
-							data = formatPath(this.options[data].filepath);
-						else if(this.options[data].file)
-							data = formatPath(this.options[data].file.path);
+				el.contentWindow._sc.workpath = (data, noWorkspaceName = false) => {
+					if(typeof data == "number") {
+						if(this.options[data]) {
+							if(this.options[data].filepath)
+								data = formatPath(this.options[data].filepath);
+							else if(this.options[data].file)
+								data = formatPath(this.options[data].file.path);
+						}
 					}
+
+					var ovdata = workpathov(data);
+					if(noWorkspaceName)
+						ovdata = ovdata.replace(/\/[^/]+$/g, "");
+
+					return ovdata;
 				}
-
-				var ovdata = workpathov(data);
-				if(noWorkspaceName)
-					ovdata = ovdata.replace(/\/[^/]+$/g, "");
-
-				return ovdata;
-			}});
+			});
 		}
 
 		this.items[index] = el;

@@ -331,6 +331,9 @@
 .icon-documentation:before {
   content: "?"; }
 
+.icon-screenshots:before {
+  content: "\e904"; }
+
 body, html {
   width: 100%;
   height: 100%;

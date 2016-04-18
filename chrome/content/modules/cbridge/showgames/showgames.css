@@ -331,6 +331,9 @@
 .icon-documentation:before {
   content: "?"; }
 
+.icon-screenshots:before {
+  content: "\e904"; }
+
 html, body {
   background-color: whitesmoke;
   font-family: "Segoe UI", "Trebuchet MS", sans-serif;
