@@ -160,7 +160,9 @@ var _sc = {
 	//Supports-String
 	supportsstr : function() { return Cc["@mozilla.org/supports-string;1"].getService(Ci.nsISupportsString); },
 	//Crypto-Hash
-	crptohash : function() { return Cc["@mozilla.org/security/hash;1"].createInstance(Ci.nsICryptoHash); }
+	crptohash : function() { return Cc["@mozilla.org/security/hash;1"].createInstance(Ci.nsICryptoHash); },
+	//SubScript-Loader
+	subscript: function() { return Cc["@mozilla.org/moz/jssubscript-loader;1"].getService(Ci.mozIJSSubScriptLoader); }
 };
 
 //XPCOM-Konstanten
