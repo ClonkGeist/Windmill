@@ -109,11 +109,9 @@ class wmProcess extends WindmillInterface {
 			this.status = 1; //Gestartet
 			
 			if(blocking) {
-				dump("blocking process");
 				WaitForSingleObject(this.pi.hProcess, 0xFFFFFFFF);
 				this.routine();
 			}
-				
 		}
 		else {
 			fallbackInformation();

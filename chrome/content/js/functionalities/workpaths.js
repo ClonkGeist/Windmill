@@ -5,24 +5,24 @@ class WorkEnvironment {
 	constructor(path = _sc.clonkpath(), Type = WORKENV_TYPE_ClonkPath, id = -1, options = {}) {
 		this._path = this.truepath = formatPath(path);
 		this.id = id;
+		this.header = { Workspace: {
+			Type,
+			Unloaded: false
+		}};
+		this.setOptions(options);
+		this.workEnvChildren = [];
+	}
+	
+	setOptions(options) {
+		var {unloaded} = options;
 		this.options = options;
 		if(this.options.secured) {
 			this.options.rejectDeletion = true;
 			this.options.rejectRename = true;
 			this.options.rejectMove = true;
 		}
-
-		this.header = { Workspace: {
-			Type,
-			Unloaded: false
-		}};
-		this.workEnvChildren = [];
-	}
-	
-	setOptions(options) {
-		var {unloaded} = options;
-		this.header.Workspace.Unloaded = unloaded;
-		this.options = options;
+		if(unloaded)
+			this.header.Workspace.Unloaded = unloaded;
 	}
 	isValid(path = this.path, options = {}) {
 		path = formatPath(path);
@@ -89,7 +89,7 @@ class WorkEnvironment {
 						let src = source+"/"+filelist[i], dest = formatPath(_this.path+"/"+filelist[i]);						
 						let stat = yield OS.File.stat(src);
 						let {file} = yield OSFileRecursive(src, dest, function(name, entrypath) {
-							if(!options.noLock && getModuleByName("cide-explorer").contentWindow)
+							if(getModuleByName("cide-explorer").contentWindow)
 								getModuleByName("cide-explorer").contentWindow
 								.updateCreateWorkEnvInfo("Creating: <"+_this._path.split("/").pop()+">", "Copying " + filelist[i]);
 						});
@@ -103,9 +103,8 @@ class WorkEnvironment {
 					if(options.success)
 						options.success(_this);
 
-					if(!options.noLock && getModuleByName("cide-explorer").contentWindow)
+					if(getModuleByName("cide-explorer").contentWindow)
 						getModuleByName("cide-explorer").contentWindow.updateCreateWorkEnvInfo();
-					_this.header.Workspace.FullCopy = !!options.fullcopy;
 					_this.saveHeader();
 					return true;
 				}
@@ -143,7 +142,6 @@ class WorkEnvironment {
 			this.type = parseINIValue(text["Workspace"]["WorkspaceType"], "int", this.type);
 			this.alwaysexplode = parseINIValue(text["Workspace"]["AlwaysExplode"], "boolean", this.alwaysexplode);
 			this.linkedTo = parseINIValue(text["Workspace"]["LinkedTo"], "string", "");
-			this.fullcopy = parseINIValue(text["Workspace"]["FullCopy"], "boolean", false);
 			this.index = parseINIValue(text["Workspace"]["Index"], "int", -1);
 			if(this.type != WORKENV_TYPE_ClonkPath)
 				this.sourcedir = parseINIValue(text["Workspace"]["SourceDir"], "string", _sc.clonkpath());
@@ -191,7 +189,7 @@ class WorkEnvironment {
 		if(this.type == WORKENV_TYPE_ClonkPath) {
 			var clonkdirs = JSON.parse(getConfigData("Global", "ClonkDirectories")), temp = [];
 			for(var i = 0; i < clonkdirs.length; i++) {
-				if(formatPath(clonkdirs[i]) != this.path)
+				if(formatPath(clonkdirs[i].path) != this.path)
 					temp.push(clonkdirs[i]);
 				else if(i < clonkpath_id)
 					clonkpath_id--;

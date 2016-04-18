@@ -721,6 +721,16 @@ function* UniqueFilename(path, throwError, maxAttempts = 100) {
 	return path+"/"+checkname+"."+fext;
 }
 
+function openInFilemanager(path) {
+	let filemanager
+	if(OS_TARGET == "WINNT") {
+		filemanager = _ws.pr(_sc.env.get("windir")+"\\explorer.exe");
+		filemanager.create([path]); 
+	}
+
+	return filemanager;
+}
+
 function removeSubFrames() {
 	if($("iframe").get(0)) {
 		$("iframe").each(function(a, wdw) {

@@ -60,11 +60,12 @@
 			<div id="content">
 				<h1 id="shownotification">showNotification</h1>
 <p>Bei den Benachrichtigungen handelt es sich um Desktop-Notifications (in Form von XUL-Panels) die sich einfach über <code>showNotification</code> erstellen lassen. Hierbei ist zu Beachten, dass damit nicht die WebNotification API gemeint ist und daher auch keine Erlaubnis vom Benutzer benötigt wird.</p>
-<p><strong>&lt;jQueryObject&gt;</strong> showNotification(<strong>string</strong> color, <strong>string</strong> title, <strong>string</strong> description, [opt] <strong>string</strong> code);</p>
+<pre><code class="lang-javascript"><span class="token operator" >&lt;</span>jQueryObject<span class="token operator" >></span> <span class="token function" >showNotification</span><span class="token punctuation" >(</span>string color<span class="token punctuation" >,</span> string title<span class="token punctuation" >,</span> string description<span class="token punctuation" >,</span> <span class="token punctuation" >[</span>opt<span class="token punctuation" >]</span> string code<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
 <ul>
 <li><strong>color:</strong><br>Ein CSS-kompatibler String der die Färbung der Markierung angibt. Folgende Konstanten sind zusätzlich zur Auswahl:<ul>
-<li><strong>NOTIFICATION_COLOR_INFO:</strong> (<code>#0D6F07</code>) Für Benachrichtigungen die den Benutzer allgemein informieren sollen. (Standardwert)</li>
-<li><strong>NOTIFICATION_COLOR_ERROR:</strong> (<code>#9E0505</code>) Für Benachrichtigungen die den Benutzer über Fehler informieren sollen.</li>
+<li><strong>NOTIFICATION_COLOR_INFO:</strong> <code>#0D6F07</code> Für Benachrichtigungen die den Benutzer allgemein informieren sollen. (Standardwert)</li>
+<li><strong>NOTIFICATION_COLOR_ERROR:</strong> <code>#9E0505</code> Für Benachrichtigungen die den Benutzer über Fehler informieren sollen.</li>
 </ul>
 </li>
 <li><strong>title:</strong><br>Gibt den Titel der Benachrichtigung an.</li>
