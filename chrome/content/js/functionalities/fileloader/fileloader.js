@@ -82,17 +82,24 @@ class FileLoadingTask extends WindmillObject {
 				return true;
 			}
 		}
+		else if(container)
+			return true;
 	}
 	
 	store(info) {
 		this.matches.push(info);
 		this.updateFulfillmentStatus(info);
+		this.execHook("storedfile", info);
 	}
 	
 	fulfill() {
+		if(this.fulfilled)
+			return;
+
 		this.fulfilled = true;
 		for(var i = 0; i < this.promises.length; i++)
 			this.promises[i].success(this);
+		this.execHook("fulfilled);
 	}
 }
 
@@ -169,6 +176,7 @@ class FileSearchProcess extends WindmillObject {
 				}
 				else
 					workpath = wp;
+				log(workpath);
 				
 				function* processFileEntry(path, subpath, filehistoryparent, cnttasks) {
 					let matched_tasks, leafName = subpath.split("/").pop();
@@ -308,6 +316,7 @@ class FileSearchProcess extends WindmillObject {
 
 					sp.currentState.taskamount = taskamount = sp.tasklist.length;
 					sp.tasks_added = false;
+					workpath = undefined;
 				}
 			}
 			sp.fulfillTasks(sp.tasklist, true);
@@ -326,7 +335,6 @@ class FileSearchProcess extends WindmillObject {
 		for(var i = 0; i < this.tasklist.length; i++)
 			if(tasks.indexOf(this.tasklist[i]) != -1 && (this.tasklist[i].fulfillment_status || fulfill_all)) {
 				this.tasklist[i].fulfill();
-				log("fulfilled: " + this.tasklist[i].fulfillment_status + " | " + fulfill_all);
 				delete this.tasklist[i];
 				deletedtasks++;
 			}
