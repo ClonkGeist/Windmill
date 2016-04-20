@@ -32,7 +32,7 @@
 				<label value="$DlgWETypeClonkDir$:" style="font-weight: bold"/>
 			</hbox>
 			<hbox class="dlg-infobox">
-				<description>$DlgWETypeClonkDirDesc$</description>
+				<description flex="!">$DlgWETypeClonkDirDesc$</description>
 			</hbox>
 			<hbox>
 				<description flex="1" id="dex-dlg-workenv-ocpath" class="view-directory-path">$DlgWEPathEmpty$</description>
@@ -47,7 +47,7 @@
 				<label value="$DlgWETypeWorkspace$:" style="font-weight: bold"/>
 			</hbox>
 			<hbox class="dlg-infobox">
-				<description>$DlgWETypeWorkspaceDesc$</description>
+				<description flex="!">$DlgWETypeWorkspaceDesc$</description>
 			</hbox>
 			<hbox>
 				<label value="$DlgLblName$:" control="dex-dlg-workenv-name" flex="1" />

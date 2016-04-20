@@ -271,16 +271,25 @@ class _WDialog extends WindmillObject {
 			});
 		}
 		prepareChecklistboxItems();
+		let checklistbox_noupdate = false;
 		$(dlgelm).find(".dlg-checklistbox").off("DOMSubtreeModified").on("DOMSubtreeModified", function() {
+			if(checklistbox_noupdate)
+				return;
+			let time = (new Date()).getTime();
 			var height = parseInt($(this).css("max-height"));
 			var elmheight = $(this).find(".dlg-checklistitem:not(.hidden)").length * $(this).find(".dlg-checklistitem:not(.hidden)").height()+2;
 			if(elmheight < height)
 				height = elmheight;
 
+			//Bei Aenderungen des Inhalts rekursives Aufrufen von DOMSubtreeModified verhindern
+			checklistbox_noupdate = true;
+
 			height += parseInt($(this).css("padding-top")) + parseInt($(this).css("padding-bottom"));
 			prepareChecklistboxItems();
 			$(this).css("height", height);
 			dlg.updateTextNodes();
+
+			checklistbox_noupdate = false;
 		}).attr("tabindex", "0").unbind("keydown").keydown(function(e) {
 				let preventDefault = true, active = document.activeElement;
 				if($(active).parents().index(this) == -1) {
@@ -327,15 +336,24 @@ class _WDialog extends WindmillObject {
 			});
 		}
 
+		let listbox_noupdate = false;
 		$(dlgelm).find(".dlg-listbox").off("DOMSubtreeModified").on("DOMSubtreeModified", function() {
+			if(listbox_noupdate)
+				return;
+
 			var height = parseInt($(this).css("max-height"));
 			var elmheight = $(this).find(".dlg-list-item:not(.hidden)").length * $(this).find(".dlg-list-item:not(.hidden)").height()+4;
 			if(elmheight < height)
 				height = elmheight;
 
+			//Rekursives Aufrufen von DOMSubtreeModified verhindern
+			listbox_noupdate = true;
+
 			$(this).css("height", height);
 			prepareListboxItems();
 			dlg.updateTextNodes();
+
+			listbox_noupdate = false;
 		}).attr("tabindex", "0").unbind("keydown").keydown(function(e) {
 			let preventDefault = true, active = document.activeElement;
 			if($(active).parents().index(this) == -1) {
