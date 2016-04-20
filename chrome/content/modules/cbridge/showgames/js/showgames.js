@@ -167,6 +167,7 @@ function showMasterServerGames(info) {
 			return 0;
 	});
 
+	let currentref = $(".reference.ref-selected").attr("id");
 	$(".reference:not(.reference-draft").remove();
 
 	for(var i = 0; i < obj["Reference"].length; i++) {
@@ -322,6 +323,9 @@ function showMasterServerGames(info) {
 			});
 
 			$("#reference-list").append(clone);
+
+			if(currentref == clone.attr("id"))
+				clone.trigger("click");
 
 			if(getConfigData("ShowGame", "PortScan")) {
 				//Ports überprüfen
