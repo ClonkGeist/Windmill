@@ -13,6 +13,10 @@ function log(str, hidden, type) {
 	clone.removeClass("draft");
 	clone.appendTo(_mainwindow.$("#log-entrylist"));
 
+	//Ggf. nur loggen wenn mans wirklich will.
+	if(type == -1 && !getConfigData("Global", "ShowHiddenLogs"))
+		return;
+
 	if(type)
 		clone.addClass(type);
 	if(hidden)

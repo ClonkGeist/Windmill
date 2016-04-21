@@ -1,5 +1,21 @@
 /*-- Parser --*/
 
+//INISection
+class INISection {
+	constructor(name, top) {
+		this.name = name;
+		this.top = top;
+		this.items = [];
+		this.plainstr = "";
+		this.length = 0;
+	}
+	
+	newSection() {
+		var r = this[this.length++] = { top: this.top };
+		return r;
+	}
+}
+
 function parseHTML(el) {
 	var str = "<"+el.nodeName+" >";
 	
@@ -86,4 +102,91 @@ function parseINIValue(value, type, default_val) {
 	
 	//Currently not supported
 	return value;
+}
+
+function parseHierarchicalINI(text) {
+	var lines = text.split('\n'), fEmpty = false, lastIndent = 0;
+	var obj = [], current = obj;
+
+	for(var i = 0; i < lines.length; i++) {
+		var line = lines[i];
+		var pline = line;
+
+		//Leerzeile
+		if(!line.length || line.search(/[^\s\t]/) == -1) {
+			fEmpty = true;
+			continue;
+		}
+
+		//Einrückung "zählen"
+		var indent = line.match(/^[\s\t]+/g);
+		if(indent) {
+			let tabcount = indent[0].match(/\t/g) || 0;
+			if(tabcount)
+				tabcount = tabcount.length;
+			indent = indent[0].length+tabcount;
+			line = line.replace(/^[\s\t]+/g, "");
+		}
+		else
+			indent = 0;
+
+		//Bei Einrückungsunterschied zurückspringen
+		if(/*fEmpty || */(lastIndent != indent)) {
+			var diff = lastIndent - indent;
+
+			//Sonderregelung für Wertzuweisungen
+			if(line.search(/.+?=.+/) != -1)
+				diff -= 1;
+
+			while(diff >= 0) {
+				if(current.top)
+					current = current.top;
+				diff -= 2;
+			}
+
+			fEmpty = false;
+		}
+
+		//Prüfen ob es sich nicht um eine Wertzuweisung handelt
+		if(line.search(/.+?=.+/) == -1) {
+			//Eine neue [Sektion]
+			if(line.search(/\[.+\]/) != -1) {
+				if(lastIndent == indent && current && current.top)
+					current = current.top;
+
+				var name = line.match(/\[(.+)\]/)[1];
+				if(current[name])
+					current = current[name].newSection();
+				else {
+					current[name] = new INISection(name, current);
+					current = current[name].newSection();
+				}
+			}
+		}
+		else {
+			var [, name, value] = line.match(/(.+?)=(.+)/);
+
+			if(value[0] == '"' && value[value.length-1] == '"')
+				value = value.substr(1, value.length-2).octToAscii().parseTags();
+
+			current[name] = value;
+		}
+		
+		var temp = current;
+		if(lastIndent != indent)
+			pline = "\r\n"+pline;
+		while(temp.top) {
+			if(!pline)
+				break;
+
+			if(!temp.plainstr)
+				temp.plainstr = "";
+			temp.plainstr += pline+"\r\n";
+			temp = temp.top;
+		}
+
+		lastIndent = indent;
+	}
+
+	return obj;
 }

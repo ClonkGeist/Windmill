@@ -25,10 +25,19 @@
 		<box flex="5" id="wrapper1" style="-moz-box-orient: horizontal">
 			<vbox flex="10" id="preview">
 				<vbox><image id="previewimage"></image></vbox>
-				<vbox flex="1" style="max-width: 300px">
+				<vbox style="max-width: 300px">
 					<div xmlns="http://www.w3.org/1999/xhtml" id="previewdesc">
 						
 					</div>
+				</vbox>
+				<vbox id="parameters" flex="1">
+					<hbox class="parametersel draft">
+						<label class="parametersel-title" value="Title:" flex="1" />
+						<menulist class="parametersel-selection" flex="1">
+							<menupopup>
+							</menupopup>
+						</menulist>
+					</hbox>
 				</vbox>
 			</vbox>
 			<vbox flex="6" id="hostsettings" class="singleplayer">
@@ -59,7 +68,6 @@
 						</hbox>
 						<hbox flex="1">
 							<textbox id="set-pw" placeholder="Wipf" flex="1" class="deactivated" maxlength="1023" />
-							<!-- Warum auch immer das Passwort 4x so groß wie ein Kommentar sein kann lol -->
 						</hbox>
 					</vbox>
 					<vbox id="comment-container" class="hostset-container">

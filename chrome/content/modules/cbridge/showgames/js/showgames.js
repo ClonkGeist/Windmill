@@ -49,23 +49,6 @@ String.prototype.removeHTMLTags = function() {
 	return ret;
 };
 
-//INISection
-class INISection {
-	constructor(name, top) {
-		this.name = name;
-		this.top = top;
-		this.items = [];
-		this.plainstr = "";
-		this.length = 0;
-	}
-	
-	newSection() {
-		var r = this[this.length++] = [];
-		r["top"] = this.top;
-		return r;
-	}
-}
-
 //Bitmaske zur Sortierung
 var REFSTATE_NoPass = 1, REFSTATE_RunTimeJoin = 2, REFSTATE_League = 4, REFSTATE_Lobby = 8;
 function getRefState(ref) {
@@ -585,7 +568,7 @@ function showObj(obj, indent, notRecursive) {
 	if(!indent)
 		indent = "";
 	for(var data in obj) {
-		if(data == "top")
+		if(data == "top" || data == "plainstr")
 			continue;
 
 		if(typeof obj[data] == "function")
@@ -632,82 +615,5 @@ function getMasterServerInformation(call) {
 }
 
 function handleMasterservData(text) {
-	var lines = text.split('\n'), fEmpty = false, lastIndent = 0;
-	var obj = [], current = obj;
-
-	for(var i = 0; i < lines.length; i++) {
-		var line = lines[i];
-		var pline = line;
-
-		//Leerzeile
-		if(!line.length) {
-			fEmpty = true;
-			continue;
-		}
-
-		//Einrückung "zählen"
-		var indent = line.match(/^\s+/g);
-		if(indent) {
-			indent = indent[0].length;
-			line = line.replace(/^\s+/g, "");
-		}
-		else
-			indent = 0;
-
-		//Bei Leerzeile + Einrückungsunterschied zurückspringen
-		if(fEmpty || (lastIndent != indent)) {
-			var diff = lastIndent - indent;
-
-			//Sonderregelung für Wertzuweisungen
-			if(line.search(/.+?=.+/) != -1)
-				diff -= 1;
-
-			while(diff >= 0) {
-				if(current.top)
-					current = current.top;
-				diff -= 2;
-			}
-
-			fEmpty = false;
-		}
-
-		//Prüfen ob es sich nicht um eine Wertzuweisung handelt
-		if(line.search(/.+?=.+/) == -1) {
-			//Eine neue [Sektion]
-			if(line.search(/\[.+\]/) != -1) {
-				var name = line.match(/\[(.+)\]/)[1];
-				if(current[name])
-					current = current[name].newSection();
-				else {
-					current[name] = new INISection(name, current);
-					current = current[name].newSection();
-				}
-			}
-		}
-		else {
-			var [, name, value] = line.match(/(.+?)=(.+)/);
-
-			if(value[0] == '"' && value[value.length-1] == '"')
-				value = value.substr(1, value.length-2).octToAscii().parseTags();
-
-			current[name] = value;
-		}
-		
-		var temp = current;
-		if(lastIndent != indent)
-			pline = "\r\n"+pline;
-		while(temp.top) {
-			if(!pline)
-				break;
-
-			if(!temp.plainstr)
-				temp.plainstr = "";
-			temp.plainstr += pline+"\r\n";
-			temp = temp.top;
-		}
-
-		lastIndent = indent;
-	}
-
-	return obj;
+	return parseHierarchicalINI(text);
 }

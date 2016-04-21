@@ -196,6 +196,9 @@ function noContainer(fext) {return fext == "ocs"; }
 function noDragDropItem() {return true;}
 
 function onTreeDeselect(obj) { $("#previewimage").attr("src", ""); }
+
+let filecache = {};
+
 function onTreeSelect(obj) {
 	Task.spawn(function*() {
 		let path = _sc.clonkpath() + getTreeObjPath(obj), info;
@@ -226,6 +229,43 @@ function onTreeSelect(obj) {
 				return;
 			}
 		}
+		let pars = {}, achvm = {}, strings = {};
+		if(!filecache[path]) {
+			//Parameterdefinitionen laden
+			try {
+				let parameters = yield OS.File.read(path+"/ParameterDefs.txt", {encoding: "utf-8"});
+				if(parameters) {
+					let parobj = parseHierarchicalINI(parameters);
+					for(var i = 0; i < parobj["ParameterDef"].length; i++) {
+						let obj = parobj["ParameterDef"][i];
+						if(obj.Achievement)
+							achvm[obj.ID] = obj;
+						else
+							pars[obj.ID] = obj;
+					}
+				}
+			} catch(e) { log(e, true, -1); }
+			filecache[path] = { parameters: pars, achievements: achvm };
+
+			//StringTbl laden
+			try {
+				let stringtbls;
+				try {
+					stringtbls = yield OS.File.read(path+"/StringTbl"+prefix+".txt", {encoding: "utf-8"});
+				} catch(e) {
+					stringtbls = yield OS.File.read(path+"/StringTblUS.txt", {encoding: "utf-8"});
+				}
+
+				if(stringtbls)
+					strings = parseINIArray(stringtbls);
+			} catch(e) { log(e, true, -1); }
+			filecache[path].strings = strings;
+		}
+		else {
+			pars = filecache[path].parameters;
+			achvm = filecache[path].achievements;
+			strings = filecache[path].strings;
+		}
 
 		//HTML/XUL in Beschreibungen deaktivieren
 		let splittedtext = text.split("\n");
@@ -233,8 +273,47 @@ function onTreeSelect(obj) {
 			splittedtext[0] = "##"+splittedtext[0];
 		text = splittedtext.join("\n");
 		$("#previewdesc").html(marked(text).replace(/(<[^\/]+?)>/g, '$1 xmlns="http://www.w3.org/1999/xhtml">'));
+
+		$(".parametersel:not(.draft)").remove();
+		for(var key in pars) {
+			let clone = $(".parametersel.draft").clone();
+			clone.removeClass("draft");
+			clone.find(".parametersel-title").attr("value", key);
+
+			let menupopup = clone.find(".parametersel-selection > menupopup");
+			try {
+				let options = pars[key].Options[0].Option;
+				for(var i = 0; i < options.length; i++) {
+					menupopup.append(`<menuitem value="${options[i].Value}" label="${options[i].Name}" data-description="${options[i].Description}"/>`);
+				}
+			}
+			catch(e) {log(e + e.stack)}
+			clone.appendTo($("#parameters"));
+		}
 	});
 	return true;
+}
+
+let asdid = 0;
+function showObj(obj, indent, notRecursive) {
+	var text = "";
+	if(!indent)
+		indent = "";
+	for(var data in obj) {
+		if(data == "top" || data == "plainstr")
+			continue;
+
+		if(typeof obj[data] == "function")
+			continue;
+
+		text += indent + data + ": " + obj[data] + "\n";
+		if(typeof obj[data] == "object" && !notRecursive) {
+			asdid++;
+			text += showObj(obj[data], indent + "  ");
+		}
+	}
+
+	return text;
 }
 
 function onTreeExpand(obj, listitem) {
