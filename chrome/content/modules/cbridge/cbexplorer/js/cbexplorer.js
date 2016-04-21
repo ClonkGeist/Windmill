@@ -274,18 +274,26 @@ function onTreeSelect(obj) {
 		text = splittedtext.join("\n");
 		$("#previewdesc").html(marked(text).replace(/(<[^\/]+?)>/g, '$1 xmlns="http://www.w3.org/1999/xhtml">'));
 
+		//Lokalisierung
+		function stringtbl(str) {
+			return str.replace(/\$(.+?)\$/g, function(fullmatch, sub) {
+				return (strings[0] && strings[0][sub]) || fullmatch;
+			}).replace(/"/g, "&quot;");
+		}
+
+		//Szenarienparameter auflisten
 		$(".parametersel:not(.draft)").remove();
 		for(var key in pars) {
 			let clone = $(".parametersel.draft").clone();
 			clone.removeClass("draft");
-			clone.find(".parametersel-title").attr("value", key);
+			clone.find(".parametersel-title").attr("value", stringtbl(pars[key].Name));
+			clone.attr("data-parid", key);
 
 			let menupopup = clone.find(".parametersel-selection > menupopup");
 			try {
 				let options = pars[key].Options[0].Option;
-				for(var i = 0; i < options.length; i++) {
-					menupopup.append(`<menuitem value="${options[i].Value}" label="${options[i].Name}" data-description="${options[i].Description}"/>`);
-				}
+				for(var i = 0; i < options.length; i++)
+					menupopup.append(`<menuitem value="${options[i].Value}" label="${stringtbl(options[i].Name)}" data-description="${stringtbl(options[i].Description)}"/>`);
 			}
 			catch(e) {log(e + e.stack)}
 			clone.appendTo($("#parameters"));
