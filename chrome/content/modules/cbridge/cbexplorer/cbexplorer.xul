@@ -15,7 +15,7 @@
 	<hbox flex="1">
 		<box flex="1">
 			<vbox id="filecontainer" context="clipmenu" flex="1">
-				<html:ul id="maintree">
+				<html:ul id="maintree" class="workenvironment">
 					
 				</html:ul>
 			</vbox>

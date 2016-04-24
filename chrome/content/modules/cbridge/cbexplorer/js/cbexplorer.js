@@ -11,6 +11,7 @@ function initializeDirectory() {
 	loadMissionAccessPasswords();
 
 	//Verzeichnis einlesen und Inhalte auflisten
+	$(MAINTREE_OBJ).attr("workpath", _sc.clonkpath());
 	loadDirectory(_sc.clonkpath());
 	unlockModule();
 }
@@ -78,9 +79,8 @@ $(window).load(function() {
 
 	//Start Game button
 	$("#btn-startgame").click(function() {
-		var sel = getCurrentTreeSelection();
-		if(sel)
-			handleTreeEntry($(sel));
+		if($(current_selection)[0])
+			handleTreeEntry($(current_selection));
 	});
 
 	//Switch type
@@ -122,7 +122,7 @@ function hideFileExtension(fext) {
 	return true;
 }
 
-let mission_access = [];
+let mission_access = [], current_selection;
 
 function loadMissionAccessPasswords() {
 	if(OS_TARGET == "WINNT") {
@@ -298,6 +298,7 @@ function onTreeSelect(obj) {
 			catch(e) {log(e + e.stack)}
 			clone.appendTo($("#parameters"));
 		}
+		current_selection = obj;
 	});
 	return true;
 }
@@ -366,6 +367,10 @@ function getOCStartArguments(path) {
 		args.push("--editor");
 	else
 		args.push("--fullscreen");
+
+	$(".parametersel:not(.draft)").each(function() {
+		args.push("--scenpar="+$(this).attr("data-parid")+"="+$(this).find(".parametersel-selection").val());
+	});
 
 	args.push(path);
 	log(args);
