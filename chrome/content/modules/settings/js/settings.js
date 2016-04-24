@@ -211,6 +211,21 @@ $(window).ready(function() {
 					$(this).val(val);
 					break;
 			}
+			$(this).on("command", function() {
+				var sect = $(this).attr("default-cfgsect"), key = $(this).attr("default-cfgkey"), val;
+
+				switch($(this).prop("tagName").toLowerCase()) {
+					case "checkbox":
+						val = $(this).attr("checked");
+						break;
+
+					default:
+						val = $(this).val();
+						break;
+				}
+
+				setConfigData(sect, key, val);
+			});
 		});
 
 		$(".extprogram-always-use").on("command", function() {
@@ -224,6 +239,35 @@ $(window).ready(function() {
 		});
 	}, 1);
 });
+
+function rejectDeckPageLeave(deck, newPageId) {
+	let changed = false, cfg = getConfig();
+	for(var sect in cfg)
+		for(var key in cfg[sect])
+			if(cfg[sect][key].value != cfg[sect][key]._value) {
+				changed = true;
+				break;
+			}
+	//Falls Aenderungen die ungespeichert sind, zum Speichern auffordern
+	if(changed) {
+		dlg = new WDialog("$DlgUnsavedChanges$", MODULE_LPRE, { modal: true, css: { "width": "450px" },
+			btnright: [{onclick: function(e, btn, _self) {
+				saveSettings();
+				deck.show(newPageId);
+				_self.hide();
+			}, label: "$DlgBtnSave$"},
+			{onclick: function(e, btn, _self) {
+				deck.show(newPageId);
+				_self.hide();
+			}, label: "$DlgBtnSkip$"},
+			"cancel"]});
+
+		dlg.setContent('<description>$DlgUnsavedConfigChangesDesc$</description>');
+		dlg.show();
+		return true;
+	}
+	return false;
+}
 
 var changeNeedsRestart = false;
 

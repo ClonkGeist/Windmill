@@ -10,8 +10,11 @@ function addDeck(container, navEl, lang)
 
 function togglePage(deckId, itemId)
 {
-	//Mittlerer Mausklick auf Tabs nicht zum Seitenwechseln benutzen (Tab blendet sich sonst beim Schliessen kurz ein)
+	if(!decks[deckId].canTogglePage(itemId))
+		return;
+
 	decks[deckId].show(itemId);
+	return true;
 }
 
 function closePage(event, deckId, itemId)
@@ -178,7 +181,14 @@ class Deck extends WindmillObject {
 		
 		return -1;
 	}
-	
+
+	canTogglePage(newPageId) {
+		let item = this.items[this.selectedId];
+		if(item && item.contentWindow && item.contentWindow.rejectDeckPageLeave)
+			return !item.contentWindow.rejectDeckPageLeave(this, newPageId);
+		return true;
+	}
+
 	//Wird die Funktion hier ueberhaupt noch supportet?
 	desc(text, prefix) {
 		$(this.element).find("#deck-"+this.id+"-description").text(Locale(text, prefix));
