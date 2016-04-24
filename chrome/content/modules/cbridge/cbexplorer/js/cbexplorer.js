@@ -296,6 +296,7 @@ function onTreeSelect(obj) {
 					menupopup.append(`<menuitem value="${options[i].Value}" label="${stringtbl(options[i].Name)}" data-description="${stringtbl(options[i].Description)}"/>`);
 			}
 			catch(e) {log(e + e.stack)}
+			tooltip(clone, stringtbl(pars[key].Description));
 			clone.appendTo($("#parameters"));
 		}
 		current_selection = obj;
