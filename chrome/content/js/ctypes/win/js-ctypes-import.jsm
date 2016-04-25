@@ -13,7 +13,7 @@ Cu.import("resource://ctypes/win/js-ctypes-import-datatypes.jsm");
 Cu.import("resource://ctypes/win/js-ctypes-import-structs.jsm");
 
 var EXPORTED_SYMBOLS = ["_WIN64", "GetLastError", "CreateProcess", "WaitForSingleObject", "CloseHandle", "CreatePipe", "ReadFile", "WriteFile", 
-						"SetHandleInformation", "GetStdHandle", "PeekNamedPipe", "GetExitCodeProcess"];
+						"SetHandleInformation", "GetStdHandle", "PeekNamedPipe", "GetExitCodeProcess", "WSAStartup", "socket", "connect", "closesocket", "inet_addr", "htons", "WSACleanup"];
 var WINABI = _WIN64?ctypes.default_abi:ctypes.winapi_abi;
 var GetLastError = function() { return ctypes.winLastError; }
 
@@ -137,5 +137,76 @@ var PeekNamedPipe = kernel32.declare("PeekNamedPipe", WINABI,
 var GetExitCodeProcess = kernel32.declare("GetExitCodeProcess", WINABI,
 	BOOL,		// return value
 	HANDLE,		// _In_		HANDLE	hProcess
-	LPDWORD	// _Out_	LPDWORD	lpExitCode
+	LPDWORD		// _Out_	LPDWORD	lpExitCode
+);
+
+/*------------------------- Ws2_32.dll -------------------------*/
+
+let Ws2_32 = ctypes.open("Ws2_32.dll");
+
+/* WSAStartup
+ * https://msdn.microsoft.com/de-de/library/windows/desktop/ms742213(v=vs.85).aspx
+ */ 
+
+var WSAStartup = Ws2_32.declare("WSAStartup", WINABI,
+	ctypes.int,	// return value
+	WORD,		// __in		WORD		wVersionRequested
+	LPWSADATA	// __out	LPWSADATA	lpWSAData
+);
+
+/* socket
+ * https://msdn.microsoft.com/de-de/library/windows/desktop/ms740506(v=vs.85).aspx
+ */
+
+var socket = Ws2_32.declare("socket", WINABI,
+	SOCKET,		// return value
+	ctypes.int,	// __in	int	af
+	ctypes.int,	// __in	int	type
+	ctypes.int	// __in	int	protocol
+);
+
+/* connect
+ * https://msdn.microsoft.com/de-de/library/windows/desktop/ms737625(v=vs.85).aspx
+ */
+
+var connect = Ws2_32.declare("connect", WINABI,
+	ctypes.int,		// return value
+	SOCKET,			// __in	SOCKET					s
+	sockaddr_ptr,	// __in	const struct sockaddr	*name
+	ctypes.int		// __in	int						namelen
+);
+
+/* closesocket
+ * https://msdn.microsoft.com/de-de/library/windows/desktop/ms737582(v=vs.85).aspx
+ */
+
+var closesocket = Ws2_32.declare("closesocket", WINABI,
+	ctypes.int,	// return value
+	SOCKET		// __in	SOCKET	s
+);
+
+/* inet_addr
+ * https://msdn.microsoft.com/de-de/library/windows/desktop/ms738563(v=vs.85).aspx
+ */
+
+var inet_addr = Ws2_32.declare("inet_addr", WINABI,
+	ctypes.unsigned_long,	// return value
+	ctypes.char.ptr			// __in	const char	*cp
+);
+
+/* htons
+ * https://msdn.microsoft.com/de-de/library/windows/desktop/ms738557(v=vs.85).aspx
+ */
+
+var htons = Ws2_32.declare("htons", WINABI,
+	ctypes.unsigned_short,	// return value
+	ctypes.unsigned_short	// __in	u_short	hostshort
+);
+
+/* WSACleanup
+ * https://msdn.microsoft.com/de-de/library/windows/desktop/ms741549(v=vs.85).aspx
+ */
+
+var WSACleanup = Ws2_32.declare("WSACleanup", WINABI,
+	ctypes.int	// return value
 );

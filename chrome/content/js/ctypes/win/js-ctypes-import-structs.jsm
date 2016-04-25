@@ -6,11 +6,12 @@ var Cu = Components.utils;
 Cu.import("resource://gre/modules/ctypes.jsm");
 Cu.import("resource://ctypes/win/js-ctypes-import-datatypes.jsm");
 
-const EXPORTED_SYMBOLS = ["SECURITY_ATTRIBUTES", "LPSECURITY_ATTRIBUTES", "STARTUPINFO", "LPSTARTUPINFO", "PROCESS_INFORMATION", "LPPROCESS_INFORMATION", "OVERLAPPED", "LPOVERLAPPED"];
+const EXPORTED_SYMBOLS = ["SECURITY_ATTRIBUTES", "LPSECURITY_ATTRIBUTES", "STARTUPINFO", "LPSTARTUPINFO", "PROCESS_INFORMATION", "LPPROCESS_INFORMATION", "OVERLAPPED", "LPOVERLAPPED", "WSADATA", "LPWSADATA", "in_addr", "sockaddr", "sockaddr_ptr", "sockaddr_in", "sockaddr_in_ptr"];
 
 /* SECURITY_ATTRIBUTES structure
  * https://msdn.microsoft.com/en-us/library/windows/desktop/aa379560(v=vs.85).aspx
- */ 
+ */
+
 const SECURITY_ATTRIBUTES = new ctypes.StructType("_SECURITY_ATTRIBUTES", [
 	{"nLength": DWORD}, 
 	{"lpSecurityDescriptor": LPVOID},
@@ -67,3 +68,46 @@ const OVERLAPPED = new ctypes.StructType("_OVERLAPPED", [
 	{"hEvent": HANDLE}
 ]);
 const LPOVERLAPPED = new ctypes.PointerType(OVERLAPPED);
+
+/* WSADATA structure
+ * https://msdn.microsoft.com/de-de/library/windows/desktop/ms741563(v=vs.85).aspx
+ */
+
+const WSADATA = new ctypes.StructType("WSAData", [
+	{"wVersion": WORD},
+	{"wHighVersion": WORD},
+	{"szDescription": ctypes.char},
+	{"szSystemStatus": ctypes.char},
+	{"iMaxSockets": ctypes.unsigned_short},
+	{"iMaxUdpDg": ctypes.unsigned_short},
+	{"lpVendorInfo": ctypes.voidptr_t}
+]);
+const LPWSADATA = new ctypes.PointerType(WSADATA);
+
+/* in_addr structure
+ * https://msdn.microsoft.com/de-de/library/windows/desktop/ms738571(v=vs.85).aspx
+ */
+
+const in_addr = new ctypes.StructType("in_addr", [
+	{"S_addr": ctypes.unsigned_long}
+]);
+const IN_ADDR = in_addr;
+const PIN_ADDR = new ctypes.PointerType(in_addr);
+
+/* sockaddr, sockaddr_in structure
+ * https://msdn.microsoft.com/de-de/library/windows/desktop/ms740496(v=vs.85).aspx
+ */
+
+const sockaddr = new ctypes.StructType("sockaddr", [
+	{"sa_family": ctypes.unsigned_short},
+	{"sa_data": ctypes.char.array(14)}
+]);
+const sockaddr_ptr = new ctypes.PointerType(sockaddr);
+
+const sockaddr_in = new ctypes.StructType("sockaddr_in", [
+	{"sin_family": ctypes.short},
+	{"sin_port": ctypes.unsigned_short},
+	{"sin_addr": in_addr},
+	{"sin_zero": ctypes.char.array(8)}
+]);
+const sockaddr_in_ptr = new ctypes.PointerType(sockaddr_in);

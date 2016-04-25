@@ -194,12 +194,14 @@ var _scc = {
 };
 
 //CTYPES
-Cu.unload("resource://ctypes/js-ctypes-process.jsm");
-var __ws = Cu.import("resource://ctypes/js-ctypes-process.jsm");
+Cu.import("resource://ctypes/js-ctypes-process.jsm");
+Cu.import("resource://ctypes/js-ctypes-sockets.jsm");
 
 //Windmill-Shortcuts
 var _ws = {
-	pr: function(...args) { return new wmProcess(...args); }
+	pr: function(...args) { return new wmProcess(...args); },
+	process: this.pr,
+	socket: function(...args) { return new wmSocket(...args); }
 };
 
 /**

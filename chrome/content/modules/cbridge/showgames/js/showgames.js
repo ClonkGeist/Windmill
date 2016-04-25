@@ -420,8 +420,23 @@ function checkIfPortsForwarded(ref) {
 		if(ipaddr.search(/^(192\.168|10\.\d+|172\.16)\.\d+\.\d+/) != -1)
 			continue;
 
+		if(ports_checked[getRefIdentifier(ref)][port])
+			return;
+		if(ports_checked[getRefIdentifier(ref)]["status"] == SG_PORTS_Open)
+			return;
+		
+		ports_checked[getRefIdentifier(ref)][port] = SG_PORTS_Closed;
+		setPortForwardingInformation(ref);
 		let last = (i == addr_obj.length-1);
-		var img = new Image();
+		let sock = _ws.socket(ipaddr, port);
+		sock.create();
+		if(!sock.status) {
+			ports_checked[getRefIdentifier(ref)][port] = SG_PORTS_Open;
+			ports_checked[getRefIdentifier(ref)]["status"] = SG_PORTS_Open;
+			setPortForwardingInformation(ref);
+		}
+		sock.close();
+		/*var img = new Image();
 		var timeoutid = setTimeout(function() {
 			if(ports_checked[getRefIdentifier(ref)][port])
 				return;
@@ -444,7 +459,7 @@ function checkIfPortsForwarded(ref) {
 		};
 		img.onload = img.onerror;
 		
-		img.src = 'http://'+ipaddr+':'+port;
+		img.src = 'http://'+ipaddr+':'+port;*/
 	}
 }
 
