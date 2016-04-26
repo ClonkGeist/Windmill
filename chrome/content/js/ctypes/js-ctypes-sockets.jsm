@@ -38,22 +38,49 @@ function formatPath(path) {
 }
 
 class wmSocket extends WindmillInterface {
-	constructor(addr, port) {
+	constructor(addr, port, options) {
 		super();
 		this.addr = addr;
 		this.port = port;
+		this.options = options;
 	}
 
 	create() {
+		if(true)
+			return;
+		/**WIP**/
 		if(OS_TARGET == "WINNT") {
 			let data = new WSADATA, err;
-			if(err = WSAStartup(513, data.address())) {
+			if(err = WSAStartup(MAKEWORD(2,0), data.address())) {
 				throw "Winsock did not initialize correctly. (Errorcode: " + err + ")";
 			}
 			else {
 				let AF_INET = 0x2, SOCK_STREAM = 0x1;
 
+				if(!options.blocking) {
+					let wClass = new WNDCLASSEX, hInst = ctypes.cast(GetModuleHandle(), HINSTANCE);
+					wClass.cbSize = WNDCLASSEX.size;
+					wClass.hbrBackground = ctypes.cast(COLOR_WINDOW, HBRUSH);
+					wClass.hCursor = LoadCursor(NULL, IDC_ARROW);
+					wClass.hInstance = hInst;
+					wClass.lpfnWndProc = new WNDPROC(function(hwnd, umsg, wparam, lparam) {
+						
+					});
+					wClass.lpszClassName = "Window Class";
+					
+					let wnd = CreateWindowEx(NULL, "Window Class", "Windows Async Client", NULL, 1, 1, 1, 1, NULL, NULL, hInst, NULL);
+					if(!wnd)
+						throw "Window creatiob failed. (Errorcode: " + GetLastError() + ")";
+				}
+
 				this.sock = socket(AF_INET, SOCK_STREAM, 0);
+
+				if(!options.blocking) {
+					let result = WSAAsyncSelect(this.sock, getCurrentProcessMainwindow(), 104, (FD_CLOSE|FD_CONNECT));
+					if(result)
+						throw "WSAAsyncSelect failed. (Errorcode: " + GetLastError() + ")";
+				}
+
 				let saddr = new sockaddr_in;
 				saddr.sin_family = AF_INET;
 				saddr.sin_port = htons(this.port);

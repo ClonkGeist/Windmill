@@ -436,8 +436,11 @@ function checkIfPortsForwarded(ref) {
 			setPortForwardingInformation(ref);
 		}
 		sock.close();
-		/*var img = new Image();
-		var timeoutid = setTimeout(function() {
+		
+		/*-- Veraltete Methode ueber Image --*/
+		
+		var img = new Image();
+		/*var timeoutid = setTimeout(function() {
 			if(ports_checked[getRefIdentifier(ref)][port])
 				return;
 			if(ports_checked[getRefIdentifier(ref)]["status"] == SG_PORTS_Open)
@@ -445,21 +448,22 @@ function checkIfPortsForwarded(ref) {
 			
 			ports_checked[getRefIdentifier(ref)][port] = SG_PORTS_Closed;
 			setPortForwardingInformation(ref);
-		}, 1000);
+		}, 1000);*/
 		
 		img.onerror = function() {
-			if(ports_checked[getRefIdentifier(ref)][port])
+			/*if(ports_checked[getRefIdentifier(ref)][port])
 				return;
 
 			ports_checked[getRefIdentifier(ref)][port] = SG_PORTS_Open;
 			ports_checked[getRefIdentifier(ref)]["status"] = SG_PORTS_Open;
-			setPortForwardingInformation(ref);
+			setPortForwardingInformation(ref);*/
+			//$(getContainerByRef(ref)).addClass("portsopen-imagemethod");
 			
-			clearTimeout(timeoutid);
+			//clearTimeout(timeoutid);
 		};
 		img.onload = img.onerror;
 		
-		img.src = 'http://'+ipaddr+':'+port;*/
+		img.src = 'http://'+ipaddr+':'+port;
 	}
 }
 

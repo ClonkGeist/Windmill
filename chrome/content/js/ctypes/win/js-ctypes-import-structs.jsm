@@ -6,8 +6,6 @@ var Cu = Components.utils;
 Cu.import("resource://gre/modules/ctypes.jsm");
 Cu.import("resource://ctypes/win/js-ctypes-import-datatypes.jsm");
 
-const EXPORTED_SYMBOLS = ["SECURITY_ATTRIBUTES", "LPSECURITY_ATTRIBUTES", "STARTUPINFO", "LPSTARTUPINFO", "PROCESS_INFORMATION", "LPPROCESS_INFORMATION", "OVERLAPPED", "LPOVERLAPPED", "WSADATA", "LPWSADATA", "in_addr", "sockaddr", "sockaddr_ptr", "sockaddr_in", "sockaddr_in_ptr"];
-
 /* SECURITY_ATTRIBUTES structure
  * https://msdn.microsoft.com/en-us/library/windows/desktop/aa379560(v=vs.85).aspx
  */
@@ -111,3 +109,48 @@ const sockaddr_in = new ctypes.StructType("sockaddr_in", [
 	{"sin_zero": ctypes.char.array(8)}
 ]);
 const sockaddr_in_ptr = new ctypes.PointerType(sockaddr_in);
+
+/* WNDCLASSEX structure
+ * https://msdn.microsoft.com/en-us/library/windows/desktop/ms633577(v=vs.85).aspx
+ */
+
+const WNDCLASSEX = new ctypes.StructType("tagWNDCLASSEX", [
+	{"cbSize": UINT},
+	{"style": UINT},
+	{"lpfnWndProc": WNDPROC},
+	{"cbClsExtra": ctypes.int},
+	{"cbWndExtra": ctypes.int},
+	{"hInstance": HINSTANCE},
+	{"hIcon": HICON},
+	{"hCursor": HCURSOR},
+	{"hbrBackground": HBRUSH},
+	{"lpszMenuName": LPCTSTR},
+	{"lpszClassName": LPCTSTR},
+	{"hIconSm": HICON}
+]);
+const PWNDCLASSEX = new ctypes.PointerType(WNDCLASSEX);
+
+/* POINT structure
+ * https://msdn.microsoft.com/en-us/library/windows/desktop/dd162805(v=vs.85).aspx
+ */
+
+const POINT = new ctypes.StructType("tagPoint", [
+	{"x": LONG},
+	{"y": LONG}
+]);
+const PPOINT = new ctypes.PointerType(POINT);
+
+/* MSG structure
+ * https://msdn.microsoft.com/en-us/library/windows/desktop/ms644958(v=vs.85).aspx
+ */
+
+const MSG = new ctypes.StructType("tagMSG", [
+	{"hwnd": HWND},
+	{"message": UINT},
+	{"wParam": WPARAM},
+	{"lParam": LPARAM},
+	{"time": DWORD},
+	{"pt": POINT}
+]);
+
+const EXPORTED_SYMBOLS = ["SECURITY_ATTRIBUTES", "LPSECURITY_ATTRIBUTES", "STARTUPINFO", "LPSTARTUPINFO", "PROCESS_INFORMATION", "LPPROCESS_INFORMATION", "OVERLAPPED", "LPOVERLAPPED", "WSADATA", "LPWSADATA", "in_addr", "sockaddr", "sockaddr_ptr", "sockaddr_in", "sockaddr_in_ptr", "WNDCLASSEX", "PWNDCLASSEX"];

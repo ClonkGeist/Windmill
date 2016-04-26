@@ -113,7 +113,7 @@ html, body, #wrapper {
 	
 	/*  workaround ... */
 	
-	border: none;
+	border: 3px solid red;
 	box-shadow: 
 		1px 0 0 0 rgb(230, 230, 230), 
 		0 1px 0 0 rgb(230, 230, 230), 
@@ -173,6 +173,9 @@ html, body, #wrapper {
 	
 	&.reference-draft {
 		display: none;
+	}
+	&.portsopen-imagemethod {
+		border: none;
 	}
 }
 
