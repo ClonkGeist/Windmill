@@ -607,11 +607,16 @@ h2 {
   font-family: "Segoe UI", "Trebuchet MS", Verdana, sans-serif;
   padding: 0; }
 
-#game-hostname {
-  margin-top: 10px;
-  font-size: 15px;
-  line-height: 15px;
-  padding: 0; }
+#game-infowrapper1 {
+  display: flex; }
+  #game-infowrapper1 #game-time {
+    text-align: right; }
+  #game-infowrapper1 #game-hostname, #game-infowrapper1 #game-time {
+    flex: 1;
+    margin-top: 10px;
+    font-size: 15px;
+    line-height: 15px;
+    padding: 0; }
 
 /* button */
 #ressavemode-btn {

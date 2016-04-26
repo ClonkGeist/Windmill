@@ -1,6 +1,6 @@
 /*-- Lokalisierungsfunktionen --*/
 
-function Locale(str, prefix) {
+function Locale(str, prefix, ...pars) {
 	if(!prefix && prefix !== "")
 		prefix = MODULE_LPRE;
 
@@ -9,7 +9,8 @@ function Locale(str, prefix) {
 
 	if(!str)
 		return str;
-	
+
+
 	var lgreplace = str.match(/\$[a-zA-Z0-9_]+?\$/g);
 	for(var d in lgreplace) {
 		var id = lgreplace[d];
@@ -18,7 +19,10 @@ function Locale(str, prefix) {
 		if(str2)
 			str = str.replace(RegExp(id.replace(/\$/g, "\\$")), str2.replace(/\\n/, "\n"));
 	}
-	
+
+	if(arguments.length > 2)
+		return sprintf(str, ...pars);
+
 	return str;
 }
 

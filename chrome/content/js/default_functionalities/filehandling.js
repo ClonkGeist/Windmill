@@ -104,7 +104,8 @@ function openInFilemanager(path) {
 
 /*-- Shortcuts zu openclonk(.exe)/c4group(.exe) --*/
 
-function getClonkExecutablePath(filename_only) {	//Alternative Executabledatei
+function getClonkExecutablePath(filename_only) {
+	//Alternative Executabledatei
 	var name = getConfigData("Global", "AlternativeApp");
 	if(!name) {
 		if(OS_TARGET == "WINNT")
