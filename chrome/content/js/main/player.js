@@ -181,11 +181,14 @@ function addPlayerlistItem(id, filename, imgstr) {
 	
 	// edit player
 	clone.find(".ps-edit-player").click(function(e) {
+		alert(Locale("$BETA_EditPlayerNotAvailable$"));
+		/* Vorerst deaktiviert, da hier auf laengere Sicht nicht gearbeitet wird. (Bearbeiten von gepackten Dateien waere noetig)
+		
 		$("#ap-player-caption").text(Locale("$EditPlayer$"));
 		switchPlrPage('page-addplayer');
 		insertPlayerIntoEditPage(id);
 		
-		e.stopPropagation();
+		e.stopPropagation();*/
 	});
 	
 	return clone;
