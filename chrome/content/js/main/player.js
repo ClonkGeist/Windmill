@@ -53,7 +53,8 @@ hook("load", function() {
 				
 				if(ClrByOwner(r,g,b)) {
 					var nclr = ModulateClr([b,b,b,a], clr);
-					[data[i], data[i+1], data[i+2], data[i+3]] = [...nclr, a];
+					[data[i], data[i+1], data[i+2]] = [...nclr];
+					data[i+3] = a;
 				}
 			}
 
