@@ -16,11 +16,20 @@ hook("load", function() {
 		if(initializeContextMenu)
 			initializeContextMenu();
 
-		bindKeyToObj(new KeyBinding("Refresh", "F5", function() {
+		bindKeyToObj(new KeyBinding("FullRefresh", "Ctrl-F5", function() {
 			$(MAINTREE_OBJ).empty();
 
 			initializeDirectory();
-		}, 0, "DEX"), MAINTREE_OBJ);
+		}, 0, "DEX"), document);
+		bindKeyToObj(new KeyBinding("Refresh", "F5", function() {
+			if(window.onExplorerRefresh)
+				if(window.onExplorerRefresh())
+					return;
+
+			$(MAINTREE_OBJ).empty();
+
+			initializeDirectory();
+		}, 0, "DEX"), document);
 		bindKeyToObj(new KeyBinding("Search", "F3", function() {
 			if($("#searchinput")[0]) {
 				$("#searchinput").removeClass("hidden").focus();
@@ -323,6 +332,9 @@ function loadDirectory(path, parentobj, autosearch_parent, no_async, blacklist) 
 				createEmptyTemplate(parentobj);
 		});
 	}
+	
+	if($(parentobj).hasClass("tree-loadcontainer"))
+		return;
 
 	/* Da processEntryList und addFileTreeEntry auch nicht mehr asynchron sind, ist no_async auch nicht mehr 
 	 * voll synchron, garantiert also nicht das dass Verzeichnis komplett geladen/angezeigt ist nach Abschluss.
@@ -345,6 +357,7 @@ function loadDirectory(path, parentobj, autosearch_parent, no_async, blacklist) 
 		processEntryList(aDirEntries);
 	}
 	else {
+		$(parentobj).addClass("tree-loadcontainer");
 		let task = Task.spawn(function*() {
 			//Ladetemplate
 			createTreeElement(parentobj, "&lt;...&gt;", false, false, "", "", "treeitem-loading", { noSelection: false });
@@ -380,8 +393,10 @@ function loadDirectory(path, parentobj, autosearch_parent, no_async, blacklist) 
 			$(parentobj).find(".treeitem-loading").remove();
 			if(select_first_item)
 				selectTreeItem($(parentobj).children("li:not(.no-selection)")[0]);
+			$(parentobj).removeClass("tree-loadcontainer");
 		});
 		task.then(null, function(reason) {
+			$(parentobj).removeClass("tree-loadcontainer");
 			log("An error occured while trying to load the directory:");
 			log(reason);
 		});

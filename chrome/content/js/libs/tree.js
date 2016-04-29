@@ -2,6 +2,7 @@
 var TREE_ELM_ID = 0, MAINTREE_OBJ;
 
 var workpathov = _sc.workpath;
+let lastSelectedTreeItem;
 
 _sc.workpath = function(treeobj) {
 	if(treeobj === undefined)
@@ -389,9 +390,15 @@ function selectTreeItem(obj, openParents) {
 		else if(top < 5) 
 			fcnt.scrollTop(fcnt.scrollTop()+top);
 	}
-	
+
+	//Speichert das zuletzt ausgewaehlte Element (auf das nach Fokusverlust bezogen werden kann)
+	lastSelectedTreeItem = { obj: $(obj), path: getTreeObjFullPath(obj) };
+
 	return true;
 }
+
+function getLastSelectedTreeItem() { return lastSelectedTreeItem; }
+function getTreeObjFullPath(obj) { return _sc.workpath(obj)+getTreeObjPath(obj); }
 
 function selectTreeEntryCrs(val) {
 	//Alle li-Elemente sammeln
@@ -487,7 +494,7 @@ function setupMaintree(obj) {
 			//Einfuegen eines Eintrags aus dem Clipboard an die ausgewaehlte Stelle (oder Hauptverzeichnis)
 			pasteFile(obj);
 		}
-		else if(!(e.ctrlKey||e.altKey||e.shiftKey) && RegExp("[a-zA-Z0-9]").test(String.fromCharCode(chr))) {
+		else if(!(e.ctrlKey||e.altKey||e.shiftKey) && chr >= 48 && chr <= 90) {
 			//TODO: Schauen ob die Taste an ein KeyBinding verknuepft ist
 			return searchTreeEntry(chr);
 		}
