@@ -290,6 +290,7 @@ if(top != window) {
 
 		if(parent && parent.updateChildFrameWindowFocus)
 			parent.updateChildFrameWindowFocus(window);
+		_mainwindow.setFocusedFrame(window);
 
 		frameUpdateWindmillTitle();
 	});

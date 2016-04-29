@@ -207,7 +207,31 @@ hook("load", function() {
 		});
 
 		//Neustart
-		$("#restartWindmill").click(function() { restartWindmill(); });
+		$("#restartWindmill").click(function(e) {
+			if(e.ctrlKey && getFocusedFrame() != window) {
+				var pars = "?";
+				if(typeof getFocusedFrame().getReloadPars == "function")
+					pars += getFocusedFrame().getReloadPars();
+
+				getFocusedFrame().location.replace(getFocusedFrame().location.pathname+pars);
+			}
+			else
+				restartWindmill();
+		}).hover(function(e) {
+			if(e.ctrlKey) {
+				let doc = getFocusedFrame().document;
+				if(getFocusedFrame().document.documentElement)
+					doc = getFocusedFrame().document.documentElement;
+				$(doc).css("outline", "3px solid rgba(250,169, 0, 0.7)");
+				$(doc).css("outline-offset", "-3px");
+			}
+		}, function() {
+			let doc = getFocusedFrame().document;
+			if(getFocusedFrame().document.documentElement)
+				doc = getFocusedFrame().document.documentElement;
+			$(doc).css("outline", "").css("outline-offset", "");;
+		});
+		$(window).focus(function() { setFocusedFrame(window); });
 
 		if(!getConfigData("Global", "DevMode"))
 			$(".devmode-elm").css("display", "none");
@@ -350,6 +374,14 @@ function parseINI(text) {
 	
 	return sect;
 }
+
+let FOCUSED_FRAME;
+
+function setFocusedFrame(wnd) {
+	FOCUSED_FRAME = wnd;
+}
+
+function getFocusedFrame() { return FOCUSED_FRAME || window; }
 
 
 /*********************************************************************

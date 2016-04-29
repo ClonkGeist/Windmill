@@ -11,6 +11,7 @@ function initializeDirectory() {
 	loadMissionAccessPasswords();
 
 	//Verzeichnis einlesen und Inhalte auflisten
+	$(MAINTREE_OBJ).attr("workpath", _sc.clonkpath());
 	loadDirectory(_sc.clonkpath());
 	unlockModule();
 }
@@ -78,9 +79,8 @@ $(window).load(function() {
 
 	//Start Game button
 	$("#btn-startgame").click(function() {
-		var sel = getCurrentTreeSelection();
-		if(sel)
-			handleTreeEntry($(sel));
+		if($(current_selection)[0])
+			handleTreeEntry($(current_selection));
 	});
 
 	//Switch type
@@ -122,7 +122,7 @@ function hideFileExtension(fext) {
 	return true;
 }
 
-let mission_access = [];
+let mission_access = [], current_selection;
 
 function loadMissionAccessPasswords() {
 	if(OS_TARGET == "WINNT") {
@@ -274,22 +274,32 @@ function onTreeSelect(obj) {
 		text = splittedtext.join("\n");
 		$("#previewdesc").html(marked(text).replace(/(<[^\/]+?)>/g, '$1 xmlns="http://www.w3.org/1999/xhtml">'));
 
+		//Lokalisierung
+		function stringtbl(str) {
+			return str.replace(/\$(.+?)\$/g, function(fullmatch, sub) {
+				return (strings[0] && strings[0][sub]) || fullmatch;
+			}).replace(/"/g, "&quot;");
+		}
+
+		//Szenarienparameter auflisten
 		$(".parametersel:not(.draft)").remove();
 		for(var key in pars) {
 			let clone = $(".parametersel.draft").clone();
 			clone.removeClass("draft");
-			clone.find(".parametersel-title").attr("value", key);
+			clone.find(".parametersel-title").attr("value", stringtbl(pars[key].Name));
+			clone.attr("data-parid", key);
 
 			let menupopup = clone.find(".parametersel-selection > menupopup");
 			try {
 				let options = pars[key].Options[0].Option;
-				for(var i = 0; i < options.length; i++) {
-					menupopup.append(`<menuitem value="${options[i].Value}" label="${options[i].Name}" data-description="${options[i].Description}"/>`);
-				}
+				for(var i = 0; i < options.length; i++)
+					menupopup.append(`<menuitem value="${options[i].Value}" label="${stringtbl(options[i].Name)}" data-description="${stringtbl(options[i].Description)}"/>`);
 			}
 			catch(e) {log(e + e.stack)}
+			tooltip(clone, stringtbl(pars[key].Description));
 			clone.appendTo($("#parameters"));
 		}
+		current_selection = obj;
 	});
 	return true;
 }
@@ -358,6 +368,10 @@ function getOCStartArguments(path) {
 		args.push("--editor");
 	else
 		args.push("--fullscreen");
+
+	$(".parametersel:not(.draft)").each(function() {
+		args.push("--scenpar="+$(this).attr("data-parid")+"="+$(this).find(".parametersel-selection").val());
+	});
 
 	args.push(path);
 	log(args);

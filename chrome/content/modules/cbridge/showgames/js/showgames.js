@@ -125,6 +125,20 @@ function getRefPlayerCount(ref, ignoreScriptPlayers) {
 
 var current_references = 0;
 
+function updateTimeDisplay() {
+	let starttime = parseInt($("#game-time").attr("data-starttime"));
+	if(!starttime || isNaN(starttime)) {
+		$("#game-time").text("");
+		return;
+	}
+
+	let time = Math.floor((new Date()).getTime()/1000) - starttime;
+	let hours = Math.floor(time / 3600),
+		minutes = Math.floor((time % 3600) / 60),
+		seconds = time % 60;
+	$("#game-time").text(Locale("$InGameFor$", 0, hours, minutes, seconds));
+}
+
 function showMasterServerGames(info) {
 	var obj = handleMasterservData(info);
 	current_references = obj;
@@ -155,9 +169,8 @@ function showMasterServerGames(info) {
 
 	for(var i = 0; i < obj["Reference"].length; i++) {
 		if(obj["Reference"][i]) {
-			var ref = obj["Reference"][i];
-			var state = getRefState(ref);
-			var clone = $(".reference-draft").clone(true);
+			let ref = obj["Reference"][i], state = getRefState(ref);
+			let clone = $(".reference-draft").clone(true);
 			clone.removeClass("reference-draft");
 			if(ref.GameId)
 				clone.attr("id", "game"+ref.GameId);
@@ -237,11 +250,13 @@ function showMasterServerGames(info) {
 				}
 
 				$("#game-title").html(r.Title);
+				$("#game-time").attr("data-starttime", !(state & REFSTATE_Lobby)?r.StartTime:0);
 				$("#game-hostname").text(Locale(" $on$ ") + r.Client[0].Name);
 				$("#game-comment").html(r.Comment || "");
 
 				$("#game-playerlist").empty();
 
+				updateTimeDisplay();
 				var clients = r.PlayerInfos[0].Client;
 				if(clients) {
 					for(var i = 0; i < clients.length; i++) {
@@ -328,11 +343,7 @@ function showMasterServerGames(info) {
 }
 
 function joinGame(ref) {
-	var filename = "openclonk";
-	if(OS_TARGET == "WINNT")
-		filename = "openclonk.exe";
-
-	var f = _sc.file(_sc.clonkpath() + "/" + filename);
+	var f = _sc.file(getClonkExecutablePath());
 	if(!f.exists())
 		return alert(Locale("$err_ocexecutable_not_found$"));
 
@@ -559,6 +570,8 @@ hook("load", function() {
 			//Objektauswahl öffnen
 		}]
 	], MODULE_LPRE)));
+	
+	setInterval(updateTimeDisplay, 1000);
 });
 
 var asdid = 0;

@@ -4,7 +4,7 @@
 
 var tooltipTimeout, tooltipEl;
 
-function tooltip(targetEl, desc, lang, duration) {
+function tooltip(targetEl, desc, lang = MODULE_LANG, duration) {
 	desc = Locale(desc);
 	if(!duration)
 		duration = 600; // ms
@@ -30,12 +30,13 @@ function tooltip(targetEl, desc, lang, duration) {
 			// center the x position relative to the original element
 			x += (w/2 - el.offsetWidth/2);
 			
+			let doc = lang=="html"?document:document.documentElement;
 			// if its too close to the left border
 			if(x < 0)
 				x = 0;
 			// same thing with right border
-			else if(x + el.offsetWidth > $(document).width())
-				x = $(document).width() - $(el)[0].offsetWidth;
+			else if(x + el.offsetWidth > $(doc).width())
+				x = $(doc).width() - $(el)[0].offsetWidth;
 
 			$(el).css("top", y + "px");
 			$(el).css("left", x + "px");

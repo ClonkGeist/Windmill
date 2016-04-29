@@ -171,10 +171,10 @@
 						</hbox>
 						<vbox class="ps-b">
 							<hbox>
-								<textbox flex="1" id="ap-plrname" emptytext="$enterplrname$" maxlength="64" data-default="$NewPlayerName$" />
+								<textbox flex="1" id="ap-plrname" placeholder="$enterplrname$" maxlength="64" data-default="$NewPlayerName$" />
 							</hbox>
 							<hbox>
-								<textbox flex="1" id="ap-plrcomment" emptytext="$enterplrcomment$" maxlength="255" multiline="true" data-default="$NewPlayerComment$"/>
+								<textbox flex="1" id="ap-plrcomment" placeholder="$enterplrcomment$" maxlength="255" multiline="true" data-default="$NewPlayerComment$"/>
 							</hbox>
 							
 							<!-- Farbwahl -->
@@ -192,14 +192,14 @@
 							<hbox>
 								<label value="$pickstyle$"/><spacer flex="1"/>
 								<box>
-									<image width="64" height="64" id="img-apclonkstyle" src="chrome://windmill/content/img/icon-hgopt-editor.png" />
+									<image width="64" height="64" id="img-apclonkstyle" src="chrome://windmill/content/img/playerselection/ClonkSkin0.png" />
 								</box>
 							</hbox>
 							
-							<hbox>
+							<!--<hbox>
 								<label value="$pickcontrol$"/><spacer flex="1"/>
 								<label value="$ctrl_keyboard$" id="ap-setcontrol" />
-							</hbox>
+							</hbox>-->
 						</vbox>
 					</vbox>
 				</vbox>
@@ -338,6 +338,7 @@
 	<script type="application/javascript" src="chrome://windmill/content/js/functionalities/modules.js"/>
 	<script type="application/javascript" src="chrome://windmill/content/js/functionalities/notifications.js"/>
 	<script type="application/javascript" src="chrome://windmill/content/js/functionalities/keybindings.js"/>
+	<script type="application/javascript" src="chrome://windmill/content/js/functionalities/fileloader/fileloader.js"/>
 	<script type="application/javascript" src="chrome://windmill/content/js/libs/contextmenu.js"/>
 	<script type="application/javascript" src="chrome://windmill/content/js/default_module.js"/>
 	<script type="application/javascript" src="chrome://windmill/content/js/functionalities/dialog.js"/>
