@@ -299,14 +299,13 @@ function insertPlayerIntoEditPage(id) {
 	AutoContextMenu=1
 */
 function getNewPlayer() {
-	
 	var plr = {
 		Player: {
 			Name: Locale("$NewPlayerName$"),
 			Comment: Locale("$NewPlayerComment$"),
 			RankName: "Clonk",
 		},
-		
+
 		Preferences: {
 			Color: 7,
 			ColorDw: 4293951568,
@@ -315,8 +314,7 @@ function getNewPlayer() {
 			AutoContextMenu: 1
 		}
 	}
-	
-	
+
 	return plr;
 }
 
@@ -326,8 +324,14 @@ function removePlayer(iplr) {
 		path = _sc.env.get("APPDATA")+"/OpenClonk/";
 	path += players[iplr][0];
 
-	let promise = OS.File.remove(path, { ignoreAbsent: true });
-	promise.then(function() {
+	let task = Task.spawn(function*() {
+		let stat = yield OS.File.stat(path);
+		if(!stat.isDir)
+			yield OS.File.remove(path, { ignoreAbsent: true });
+		else
+			yield OS.File.removeDir(path, { ignoreAbsent: true });
+	});
+	task.then(function() {
 		$("[data-playerid='"+iplr+"']").remove();
 	}, function(reason) {
 		EventInfo("An error occured while trying to remove the player.");
