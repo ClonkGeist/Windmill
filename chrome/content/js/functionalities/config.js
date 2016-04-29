@@ -210,6 +210,7 @@ function initializeConfig() {
 	addConfigString("CIDE", "CommandLineParameters", "--editor --nonetwork %SCENARIO%"); 
 	addConfigString("CIDE", "WorkspaceParentDirectory", "", "path");
 	addConfigString("CIDE", "FileProtection", true);
+	addConfigString("CIDE", "RejectScenarioBackup", true);
 	
 	//Audiomodule
 	addConfigString("Audiomodule", "Volume", 100);
