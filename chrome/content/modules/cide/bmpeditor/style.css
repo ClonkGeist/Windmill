@@ -340,7 +340,7 @@ html, body {
   margin: 0;
   height: 100%;
   width: 100%;
-  font-family: "Segoe UI", Verdana, sans-serif; }
+  font-family: "Segoe UI", "Trebuchet MS", sans-serif; }
 
 body {
   position: relative; }
@@ -349,9 +349,23 @@ canvas {
   display: none;
   position: absolute;
   z-index: 0;
-  image-rendering: -moz-crisp-edges;
-  left: 50px;
-  top: 50px; }
+  image-rendering: -moz-crisp-edges; }
+
+canvas#draw-canvas {
+  display: block; }
+
+.canvas-wrapper {
+  position: relative; }
+
+.layer-wrapper {
+  position: relative; }
+
+.layer-wrapper > * {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0; }
 
 .image-canvas {
   z-index: -1; }
@@ -360,24 +374,26 @@ canvas {
   width: 18px;
   left: 0px;
   top: 0px;
-  border-right: 1px solid #787878; }
+  border-right: 1px solid #a0a0a0; }
 
 #ruler-top {
   height: 18px;
   top: 0px;
   left: 0px;
-  border-bottom: 1px solid #787878; }
+  border-bottom: 1px solid #a0a0a0; }
 
 .ruler {
   display: block;
   z-index: 6; }
 
 .rulerdisplay {
-  background-color: #db4631;
+  background-color: #dc4632;
   position: fixed;
   top: 0px;
   left: 0px;
   z-index: 6; }
+  .rulerdisplay.mirror-marker {
+    background-color: #00a5d2; }
 
 .rulerdisplay.hidden {
   display: hidden; }
@@ -419,7 +435,7 @@ canvas {
 
 .toolbarbutton.active:hover,
 .toolbarbutton.active {
-  background-color: #db4631;
+  background-color: #dc4632;
   color: white; }
 
 .toolbarbutton.deactivated {
@@ -449,7 +465,7 @@ canvas {
 	#toolbar input[type=text]::selection,
 	*/
 #toolbar input[type=text]::-moz-selection {
-  background-color: #db4631;
+  background-color: #dc4632;
   color: white; }
 
 #toolbar input[type=text] {
@@ -534,7 +550,8 @@ input[type=range]::-moz-range-track {
   font-size: 10px;
   color: #777;
   -moz-user-select: none;
-  cursor: default; }
+  cursor: default;
+  padding-left: 3px; }
 
 .toolbar-collapse {
   float: right;
@@ -681,7 +698,7 @@ select {
   opacity: 0.6; }
 
 .cmw-unassigned-clr {
-  border: 2px solid #db4631; }
+  border: 2px solid #dc4632; }
 
 .cmw-selected-clr {
   border: 2px solid #00a5cf;
@@ -791,3 +808,84 @@ select {
 
 #material-suggestion-box {
   width: 130px; }
+
+/* ui rect */
+.ui-rect {
+  background-color: rgba(255, 255, 255, 0.15);
+  outline: 1px solid rgba(0, 0, 0, 0.3);
+  left: 0;
+  top: 0;
+  display: flex;
+  justify-content: stretch;
+  position: absolute; }
+
+.ui-rect-container {
+  flex: 1;
+  position: relative;
+  cursor: move; }
+
+.ui-rect.invisible {
+  display: none; }
+
+.ui-thumb {
+  width: 6px;
+  height: 6px;
+  border: 1px solid white;
+  outline: 1px solid black;
+  position: absolute; }
+
+.ui-thumb.top-left {
+  margin-top: -3px;
+  margin-left: -3px;
+  top: 0;
+  left: 0;
+  cursor: nw-resize; }
+
+.ui-thumb.top {
+  top: 0;
+  left: 50%;
+  margin-top: -3px;
+  margin-left: -3px;
+  cursor: n-resize; }
+
+.ui-thumb.top-right {
+  top: 0;
+  right: 0;
+  margin-top: -3px;
+  margin-right: -3px;
+  cursor: ne-resize; }
+
+.ui-thumb.left {
+  left: 0;
+  top: 50%;
+  margin-top: -3px;
+  margin-left: -3px;
+  cursor: w-resize; }
+
+.ui-thumb.right {
+  right: 0;
+  top: 50%;
+  margin-top: -3px;
+  margin-right: -3px;
+  cursor: e-resize; }
+
+.ui-thumb.bottom-left {
+  bottom: 0;
+  left: 0;
+  margin-left: -3px;
+  margin-bottom: -3px;
+  cursor: sw-resize; }
+
+.ui-thumb.bottom {
+  bottom: 0;
+  left: 50%;
+  margin-left: -3px;
+  margin-bottom: -3px;
+  cursor: s-resize; }
+
+.ui-thumb.bottom-right {
+  bottom: 0;
+  right: 0;
+  margin-right: -3px;
+  margin-bottom: -3px;
+  cursor: se-resize; }
