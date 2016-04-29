@@ -192,14 +192,14 @@
 							<hbox>
 								<label value="$pickstyle$"/><spacer flex="1"/>
 								<box>
-									<image width="64" height="64" id="img-apclonkstyle" src="chrome://windmill/content/img/icon-hgopt-editor.png" />
+									<image width="64" height="64" id="img-apclonkstyle" src="chrome://windmill/content/img/playerselection/ClonkSkin0.png" />
 								</box>
 							</hbox>
 							
-							<hbox>
+							<!--<hbox>
 								<label value="$pickcontrol$"/><spacer flex="1"/>
 								<label value="$ctrl_keyboard$" id="ap-setcontrol" />
-							</hbox>
+							</hbox>-->
 						</vbox>
 					</vbox>
 				</vbox>

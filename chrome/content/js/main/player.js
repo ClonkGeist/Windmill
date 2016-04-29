@@ -104,6 +104,18 @@ hook("load", function() {
 			}
 		}
 	});
+
+	$("#img-apclonkstyle").click(function() {
+		let id = parseInt($(this).attr("data-skinid"));
+		if(isNaN(id))
+			id = 0;
+		id++;
+		OS.File.exists(_sc.chpath+"/content/img/playerselection/ClonkSkin"+id+".png").then((exists) => {
+			if(!exists)
+				id = 0;
+			$(this).attr("src", "chrome://windmill/content/img/playerselection/ClonkSkin"+id+".png").attr("data-skinid", id);
+		});
+	});
 });
 
 function addPlayerlistItem(id, filename, imgstr) {
@@ -217,6 +229,9 @@ function addNewPlayer() {
 
 	var clr = cPkr.getColor();
 	plr["Player"]["ColorDw"] = ((clr[0] << 16)|(clr[1] << 8)|clr[2]).toString();
+	let skin = parseInt($("#img-apclonkstyle").attr("data-skinid"));
+	if(skin && !isNaN(skin))
+		plr["Preferences"]["ClonkSkin"] = skin;
 	
 	Task.spawn(function*() {
 		let plrleafname = plr["Player"]["Name"].replace(/[^a-zA-Z0-9_-]/, "_")+".ocp";
@@ -297,7 +312,7 @@ function getNewPlayer() {
 			ColorDw: 4293951568,
 			Control: 0,
 			AutoStopControl: 1,
-			AutoContextMenu: 1,
+			AutoContextMenu: 1
 		}
 	}
 	
@@ -306,9 +321,17 @@ function getNewPlayer() {
 }
 
 function removePlayer(iplr) {
-	let promise = OS.File.remove(_sc.env.get("APPDATA")+"/OpenClonk/" + players[iplr][0], { ignoreAbsent: true });
+	let path = "";
+	if(OS_TARGET == "WINNT")
+		path = _sc.env.get("APPDATA")+"/OpenClonk/";
+	path += players[iplr][0];
+
+	let promise = OS.File.remove(path, { ignoreAbsent: true });
 	promise.then(function() {
 		$("[data-playerid='"+iplr+"']").remove();
+	}, function(reason) {
+		EventInfo("An error occured while trying to remove the player.");
+		log(reason);
 	});
 	return promise;
 }
