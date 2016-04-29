@@ -120,15 +120,17 @@ function createTreeElement(tree, label, container, open, img, filename, special,
 					files.push(file);
 			}
 		}
-	   
+
 		//Files durchgehen und verschieben
 		let path = _sc.workpath(elm) + getTreeObjPath(elm);
 
 		Task.spawn(function*() {
 			for(var i = 0; i < files.length; i++) {
-				let f = files[i];
+				let f = files[i], method = "move";
+				if(e.dataTransfer.dropEffect.search(/copy/) != -1)
+					method = "copy";
 				//Datei befindet sich in anderem Laufwerk? Dann moveTo, ansonsten renameTo
-				yield OSFileRecursive(f.path, path+"/"+f.leafName, null, "move");
+				yield OSFileRecursive(f.path, path+"/"+f.leafName, null, method);
 				
 				//Callback wenn Container schon Inhalte hat
 				if($(cnt).children("li")[0]) {
