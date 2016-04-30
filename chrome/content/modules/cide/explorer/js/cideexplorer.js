@@ -508,6 +508,37 @@ function onTreeItemBlur(obj) {
 	return;
 }
 
+function shortenOuterHTML(str) { return str.replace(/(<.+?>)(.+)(<.+?>$)/, function(a,b,c,d) { return b+(c.length?"...":"")+d }) }
+
+function onExplorerRefresh() {
+	let sel = getCurrentTreeSelection();
+	if(!sel) {
+		sel = getLastSelectedTreeItem();
+		if(!sel) {
+			sel = $(".workenvironment.tree-expanded")[0];
+			if(!sel) {
+				sel = _sc.clonkpath();
+				if(!sel)
+					return;
+			}
+		}
+		else
+			sel = sel.path;
+	}
+
+	workenv = getWorkEnvironmentByPath(_sc.workpath(sel));
+	if(!workenv)
+		return;
+
+	let cnt = $("ul[workpath='"+workenv.path+"']");
+	if(!cnt[0])
+		return;
+
+	$(cnt).empty();
+	loadDirectory(workenv.path, cnt);
+	return true;
+}
+
 function initializeContextMenu() {
 	//-- Kontextmenü initialisieren
 	
@@ -794,6 +825,14 @@ function initializeContextMenu() {
 		let workenv = getWorkEnvironmentByPath(getFullPathForSelection());
 		createNewWorkEnvironmentDlg(workenv, getTreeCntById(getTreeObjId(getCurrentTreeSelection())));
 	});
+	//Aktualisieren
+	workenvContextMenu.addEntry("$ctxreload$", 0, function() {
+		let sel = getCurrentTreeSelection();
+		let cnt = getTreeCntById(getTreeObjId(sel));
+
+		$(cnt).empty();
+		loadDirectory(_sc.workpath(sel), cnt);
+	}, 0, { identifier: 'ctxReload' });
 	workenvContextMenu.addSeperator();
 	workenvContextMenu.addEntry("$ctxrename$", 0, function() {
 		renameTreeObj($(getCurrentTreeSelection()));

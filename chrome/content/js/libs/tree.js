@@ -2,6 +2,7 @@
 var TREE_ELM_ID = 0, MAINTREE_OBJ;
 
 var workpathov = _sc.workpath;
+let lastSelectedTreeItem;
 
 _sc.workpath = function(treeobj) {
 	if(treeobj === undefined)
@@ -120,15 +121,17 @@ function createTreeElement(tree, label, container, open, img, filename, special,
 					files.push(file);
 			}
 		}
-	   
+
 		//Files durchgehen und verschieben
 		let path = _sc.workpath(elm) + getTreeObjPath(elm);
 
 		Task.spawn(function*() {
 			for(var i = 0; i < files.length; i++) {
-				let f = files[i];
+				let f = files[i], method = "move";
+				if(e.dataTransfer.dropEffect.search(/copy/) != -1)
+					method = "copy";
 				//Datei befindet sich in anderem Laufwerk? Dann moveTo, ansonsten renameTo
-				yield OSFileRecursive(f.path, path+"/"+f.leafName, null, "move");
+				yield OSFileRecursive(f.path, path+"/"+f.leafName, null, method);
 				
 				//Callback wenn Container schon Inhalte hat
 				if($(cnt).children("li")[0]) {
@@ -387,9 +390,15 @@ function selectTreeItem(obj, openParents) {
 		else if(top < 5) 
 			fcnt.scrollTop(fcnt.scrollTop()+top);
 	}
-	
+
+	//Speichert das zuletzt ausgewaehlte Element (auf das nach Fokusverlust bezogen werden kann)
+	lastSelectedTreeItem = { obj: $(obj), path: getTreeObjFullPath(obj) };
+
 	return true;
 }
+
+function getLastSelectedTreeItem() { return lastSelectedTreeItem; }
+function getTreeObjFullPath(obj) { return _sc.workpath(obj)+getTreeObjPath(obj); }
 
 function selectTreeEntryCrs(val) {
 	//Alle li-Elemente sammeln
@@ -485,7 +494,7 @@ function setupMaintree(obj) {
 			//Einfuegen eines Eintrags aus dem Clipboard an die ausgewaehlte Stelle (oder Hauptverzeichnis)
 			pasteFile(obj);
 		}
-		else if(!(e.ctrlKey||e.altKey||e.shiftKey) && RegExp("[a-zA-Z0-9]").test(String.fromCharCode(chr))) {
+		else if(!(e.ctrlKey||e.altKey||e.shiftKey) && chr >= 48 && chr <= 90) {
 			//TODO: Schauen ob die Taste an ein KeyBinding verknuepft ist
 			return searchTreeEntry(chr);
 		}
@@ -886,6 +895,8 @@ function handleTreeEntry(obj, open_sidedeck) {
 
 			var f = _sc.file(getClonkExecutablePath());
 			var process = _ws.pr(f);
+			if(args.stdouthook)
+				process.hook("stdout", args.stdouthook);
 			process.create(args, 0, 0, function(data) {
 				log(data);
 			});
