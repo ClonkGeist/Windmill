@@ -278,12 +278,15 @@
 				</vbox>
 			</hbox>
 			
-			<box top="-10" left="50">
-				<box class="overallmode togglemode-img activated invisible icon-controller icon-24" id="toggle-cbridge"></box>
-			</box>
-			<box top="-10" left="90">
-				<box class="overallmode togglemode-img activated invisible icon-brackets icon-24" id="toggle-cide"></box>
-			</box>
+			<!-- Um Cide/CBridge zu deaktivieren. Vorerst allerdings deaktiviert -->
+			<!--
+				<box top="-10" left="50">
+					<box class="overallmode togglemode-img activated invisible icon-controller icon-24" id="toggle-cbridge"></box>
+				</box>
+				<box top="-10" left="90">
+					<box class="overallmode togglemode-img activated invisible icon-brackets icon-24" id="toggle-cide"></box>
+				</box>
+			-->
 		</stack>
 	</vbox>
 	

@@ -90,8 +90,8 @@ hook("load", function() {
 
 		//Switcher zwischen cIDE/cBridge
 		$("#switchMode").click(function() {
-			if(!$(".togglemode-img").hasClass("invisible"))
-				return;
+			/*if(!$(".togglemode-img").hasClass("invisible"))
+				return;*/
 
 			if(mainDeck.selectedId == mainDeck.getModuleId("cbridge") || mainDeck.selectedId == mainDeck.getModuleId("cide")) {
 				if($(this).hasClass("cBridge")) {
@@ -107,8 +107,8 @@ hook("load", function() {
 			togglePage(mainDeck.id, $(this).hasClass("cBridge")?mainDeck.getModuleId("cbridge"):mainDeck.getModuleId("cide"));
 		});
 
-		//cIDE/cBridge-Deaktivier Box
-		var mouseholdID = 0;
+		//cIDE/cBridge-Deaktivier Box (Vorerst deaktiviert..)
+		/*var mouseholdID = 0;
 		$(".togglemode-img").mouseenter(function() {
 			clearTimeout(togglemode_timeout_id);
 		}).mouseleave(function() { 
@@ -124,7 +124,7 @@ hook("load", function() {
 			}, 600);
 		}).bind("mouseup mouseleave", function() {
 			clearTimeout(mouseholdID);
-		});
+		});*/
 
 		$("#toggle-cide").click(function() {
 			$(this).toggleClass("activated");

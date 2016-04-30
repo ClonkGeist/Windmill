@@ -825,6 +825,14 @@ function initializeContextMenu() {
 		let workenv = getWorkEnvironmentByPath(getFullPathForSelection());
 		createNewWorkEnvironmentDlg(workenv, getTreeCntById(getTreeObjId(getCurrentTreeSelection())));
 	});
+	//Aktualisieren
+	workenvContextMenu.addEntry("$ctxreload$", 0, function() {
+		let sel = getCurrentTreeSelection();
+		let cnt = getTreeCntById(getTreeObjId(sel));
+
+		$(cnt).empty();
+		loadDirectory(_sc.workpath(sel), cnt);
+	}, 0, { identifier: 'ctxReload' });
 	workenvContextMenu.addSeperator();
 	workenvContextMenu.addEntry("$ctxrename$", 0, function() {
 		renameTreeObj($(getCurrentTreeSelection()));
