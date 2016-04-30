@@ -160,7 +160,10 @@ hook("load", function() {
 		).then(function() {
 			iterator.close();
 			for(var i = 0; i < playernames.length; i++) {
-				$(".ps-playerlistitem[data-playername='"+playernames[i]+"']").remove();
+				let elm = $(".ps-playerlistitem[data-playername='"+playernames[i]+"']");
+				if(elm.hasClass("selected"))
+					$("#nav-playername").attr("value", "");
+				elm.remove();
 				delete players[players[playernames[i]].index];
 				delete players[playernames[i]];
 			}
@@ -168,11 +171,7 @@ hook("load", function() {
 	}, 7500);
 });
 
-function addPlayerlistItem(id, filename, imgstr) {
-	/*let plr2 = players[id],
-		player2 = plr2["Player"],
-		lastround2 = plr2["LastRound"];*/
-	
+function addPlayerlistItem(id, filename, imgstr) {	
 	players[id][0] = filename;
 	
 	var name = players[id].Player.Name || Locale("$NewPlayerName$");
