@@ -268,16 +268,13 @@ class BMPScene {
 			-(y + h - this.height/2)/this.height
 		]
 	}
-	
-	zoom(iDir) {
-		this.zoomFactor += iDir
 		
-		this.updateZoom()
-	}
-	
 	updateZoom() {
 		$(this.canvas).css("width", (this.width*this.zoomFactor) + "px")
 		$(this.canvas).css("height", (this.height*this.zoomFactor) + "px")
+		
+		if(this.currentRect)
+			this.updateUiRectPos()
 	}
 	
 	screenToTexture(x, y) {
@@ -293,6 +290,13 @@ class BMPScene {
 		
 		// flip y
 		return [Math.round(x), Math.round(y)]
+	}
+	
+	getNeededDimensions() {
+		return [
+			this.width * this.zoomFactor,
+			this.height * this.zoomFactor
+		]
 	}
 	
 	render() {
@@ -323,7 +327,7 @@ class BMPScene {
 		this.setUniforms()
 		this.gl.drawArrays(this.gl.TRIANGLES, 0, 6)
 		
-		// use copySubTexImage
+		// TODO: use copySubTexImage
 		this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture_Combined)
 		this.gl.copyTexImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGB, 0, 0, this.width, this.height, 0)
 	}
@@ -613,7 +617,8 @@ function createBuffer(gl, mirrorType) {
 			 
 			 -1, 1,
 			 1, -1,
-			 1, 1
+			 1, 1,
+			 
 		]), gl.STATIC_DRAW)
 		
 		gl.bindBuffer(gl.ARRAY_BUFFER, uvBuffer)

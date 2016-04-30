@@ -995,52 +995,45 @@ function changeZoom(id, fZoomOut) {
 		return;
 
 	canvasArray[id].z = Math.max(1, Math.min(32, canvasArray[id].z));
+	
+	a_S.zoomFactor = canvasArray[id].z;
+	
 	onUpdateZoom();
 	return true;
 }
 
-function centerCanvas(id) {
-	if(id == undefined)
-		id = getCurrentCanvasId();
+function centerCanvas() {
+	if(!a_S)
+		return
 
-	var cnv = $("#bmpCanvas-"+id);
-	var offset = cnv.offset();
-	var wdwwdt = $(window).width(), wdwhgt = $(window).height();
-	var nx = wdwwdt/2-$(cnv).width()/2, ny = wdwhgt/2-$(cnv).height()/2-30;
-	if(cnv.width() > wdwwdt)
+	var cnv = $(".canvas-wrapper");
+	
+	var [neededWidth, neededHeight] = a_S.getNeededDimensions();
+	
+	var wdwwdt = $(window).width(),
+		wdwhgt = $(window).height();
+	
+	var nx = (wdwwdt - neededWidth)/2,
+		ny = (wdwhgt - neededHeight)/2;
+	
+	if(neededWidth > wdwwdt)
 		nx = 20;
-	if(cnv.height() > wdwhgt)
+	if(neededHeight > wdwhgt)
 		ny = 20;
 	
 	
 	//Canvas zentrieren
 	cnv.css("top", ny+"px").css("left", nx+"px");
-	$(editlayer).css("top", ny+"px").css("left", nx+"px");
 
 	return true;
 }
 
-/** partly @deprecated */
 function onUpdateZoom() {
 	//Canvas vergrößern
 	var id = getCurrentCanvasId();
 	var zoom = canvasArray[id].z;
-	var current_cnv = canvasArray[id].c;
-	$(current_cnv).css("width", (canvasArray[id].wdt*(zoom))+"px");
-	$(current_cnv).css("height", (canvasArray[id].hgt*(zoom))+"px");
-	$(editlayer).css("width", (canvasArray[id].wdt*(zoom))+"px");
-	$(editlayer).css("height", (canvasArray[id].hgt*(zoom))+"px");
 	
-	/*
-	var mvlayer = $("#movinglayer").get(0);
-	$(mvlayer).css("width", (mvlayer.width*(zoom))+"px");
-	$(mvlayer).css("height", (mvlayer.height*(zoom))+"px");
-	*/
-	/*
-	var offset = $(current_cnv).offset();
-	$("#ruler-top").width(offset.left*2+$(current_cnv).width());
-	$("#ruler-left").height(offset.top*2+$(current_cnv).height());
-	*/
+	a_S.updateZoom()
 	
 	//Canvas zentrieren
 	centerCanvas();
@@ -1051,45 +1044,6 @@ function onUpdateZoom() {
 	//Infoleiste aktualisieren
 	updateInfotoolbar();
 	
-	return true;
-}
-
-/*function fixAntialiasing(imgdata) {
-	//var clrdata = parseInt(clr.substr(1), 16).num2byte();
-	var canvasdata = canvasArray[getCurrentCanvasId()].c.getContext('2d').getImageData(0, 0, imgdata.width, imgdata.height);
-	for(var i = 0; i < imgdata.data.length; i+=4) {
-		if(imgdata.data[i+3] != 0)
-			imgdata.data[i+3] = 255;
-		else {
-			imgdata.data[i] = canvasdata.data[i];
-			imgdata.data[i+1] = canvasdata.data[i+1];
-			imgdata.data[i+2] = canvasdata.data[i+2];
-			imgdata.data[i+3] = 255;
-		}
-	}
-	
-	return imgdata;
-}*/
-
-/** @deprecated */
-function applyEditlayer() {
-	if(true)return
-	var ctx2 = canvasArray[getCurrentCanvasId()].c.getContext('2d');
-	var ctx = editlayer.getContext('2d');
-	var imgdata = ctx.getImageData(0, 0, editlayer.width, editlayer.height);
-	var canvasdata = canvasArray[getCurrentCanvasId()].c.getContext('2d').getImageData(0, 0, imgdata.width, imgdata.height);
-	for(var i = 0; i < imgdata.data.length; i+=4) {
-		if(imgdata.data[i+3] != 0)
-			imgdata.data[i+3] = 255;
-		else {
-			imgdata.data[i] = canvasdata.data[i];
-			imgdata.data[i+1] = canvasdata.data[i+1];
-			imgdata.data[i+2] = canvasdata.data[i+2];
-			imgdata.data[i+3] = 255;
-		}
-	}
-	//var imgdata = fixAntialiasing(ctx.getImageData(0, 0, editlayer.width, editlayer.height));
-	ctx2.putImageData(imgdata, 0, 0);
 	return true;
 }
 
@@ -1123,28 +1077,6 @@ function pointInPolygon(px, py, poly) {
 				inside = !inside;
 	}
     return inside;
-}
-
-function activateMovingLayer(x, y, width, height) {
-	var mvlayer = $("#movinglayer").get(0);
-	var offset = $(".visible").offset();
-	
-	//Movinglayer-Größe setzen
-	mvlayer.width = width;
-	mvlayer.height = height;
-	
-	//Ggf. Zoom setzen
-	var id = getCurrentCanvasId();
-	var zoom = canvasArray[id].z;
-	$(mvlayer).css("width", (width*zoom)+"px");
-	$(mvlayer).css("height", (height*zoom)+"px");
-	
-	//Position setzen
-	$(mvlayer).css("top", (offset.top+(y*zoom))+"px");
-	$(mvlayer).css("left", (offset.left+(x*zoom))+"px");
-	$(mvlayer).addClass("active");
-	
-	return true;
 }
 
 function getCurrentCanvasId() { 	
@@ -2245,7 +2177,6 @@ function showDeckItem(id) {
 	
 	a_S = _SCENES[id]
 	
-	a_S.zoom(3)
 	a_S.onShow()
 	activeId = id
 	

@@ -1,9 +1,8 @@
 /**
 	TODO:
-	(mode modifiers: shift, alt, ctrl)
 	
 	interpolate Free-Draw-steps
-	make backup
+	undo manager
 */
 
 
@@ -25,8 +24,8 @@ function initCtrls() {
 		
 		inMode = true
 		
-		var x = e.clientX - a_S.canvas.offsetLeft,
-			y = e.clientY - a_S.canvas.offsetTop
+		var x = e.clientX - this.offsetLeft,
+			y = e.clientY - this.offsetTop
 		
 		// convert screen pixels to textures pixels (includes zoom)
 		var pos = a_S.screenToTexture(x, y)
@@ -41,8 +40,10 @@ function initCtrls() {
 		if(!inMode || $(".color-matching-wizard.visible2").get(0))
 			return
 		
-		var x = e.clientX - a_S.canvas.offsetLeft,
-			y = e.clientY - a_S.canvas.offsetTop
+		let cvswrppr = $(".canvas-wrapper").get(0)
+		
+		var x = e.clientX - cvswrppr.offsetLeft,
+			y = e.clientY - cvswrppr.offsetTop
 		
 		var [x, y] = a_S.screenToTexture(x, y)
 		a_Mode.onMousemove(x, y, a_S, getEventModifiers(e))
@@ -52,8 +53,10 @@ function initCtrls() {
 		if(!inMode || e.which !== 1 ||  $(".color-matching-wizard.visible2").get(0))
 			return
 		
-		var x = e.clientX - a_S.canvas.offsetLeft,
-			y = e.clientY - a_S.canvas.offsetTop
+		let cvswrppr = $(".canvas-wrapper").get(0)
+		
+		var x = e.clientX - cvswrppr.offsetLeft,
+			y = e.clientY - cvswrppr.offsetTop
 		
 		a_Mode.onMouseup(x, y, a_S, getEventModifiers(e))
 		
@@ -146,56 +149,6 @@ class Mode_Eyedropper extends DefaultMode {
 		// let clr = scene.getPixelColor(x, y)
 	}
 }
-
-/*
-class Mode_Draw_Shape extends DefaultMode {
-	
-	constructor(op_id, scene, x, y) {
-		super(op_id, scene)
-		this.diameter = 1
-		this.shape = new scene.selShape(this.diameter)
-		
-		this.worker = scene.createDryWorker()
-		
-		this.lastX = x
-		this.lastY = y
-	}
-	
-	onSceneFocus(scene) {
-		scene.useDryWorker(this.worker)
-		scene.shaderType = SHADER_TYPE_COMBINED_BACKBUFFER
-	}
-	
-	onMousemove(x = 0, y = 0, scene, modifier) {
-		
-		let t = this.worker
-		
-		// draw into dry texture
-		this.shape.setCenterAt(x, y)
-		t.insertShape(this.shape)
-		
-		// fill in gl texture
-		let r = new Rect(t.rect, this.shape.rect)
-		
-		scene.reloadWorkerSub(r, t)
-		
-		this.lastX = x
-		this.lastY = y
-	}
-	
-	onMouseup(x = 0, y = 0, scene, modifier) {
-		this.scene.combineIntoSource()
-	}
-	
-	// store in a format which allows to rebuild the needed information with less ressources
-	bake() {
-		this.clr = this.selClrIndex
-	}
-	
-	// rebuild
-	rebuild() {
-	}
-}*/
 
 class Mode_Draw_Shape extends DefaultMode {
 	
@@ -308,14 +261,6 @@ class Mode_Draw_Rect extends DefaultMode {
 		this.scene.setInputRect(this.rect)
 		this.scene.combineInputIntoSource(SHADER_TYPE_RECTANGLE)
 	}
-	
-	// store in a format which allows to rebuild the needed information with less ressources
-	bake() {
-	}
-	
-	// rebuild
-	rebuild() {
-	}
 }
 
 class Mode_Draw_Circle extends DefaultMode {
@@ -385,14 +330,6 @@ class Mode_Draw_Circle extends DefaultMode {
 		this.scene.setInputRect(this.rect)
 		this.scene.combineInputIntoSource(SHADER_TYPE_CIRCLE)
 	}
-	
-	// store in a format which allows to rebuild the needed information with less ressources
-	bake() {
-	}
-	
-	// rebuild
-	rebuild() {
-	}
 }
 
 /* Shapes */
@@ -404,7 +341,7 @@ class Shape {
 	}
 	
 	isShape() {
-		return true;
+		return true
 	}
 	
 	setCenterAt(x, y) {
@@ -524,10 +461,6 @@ class Rect {
 			i += arrayBreak
 		}
 	}
-}
-
-function rotateCanvas(iChange) {
-	a_S.rotate(iChange)
 }
 
 var _profilerIds = {}

@@ -342,34 +342,24 @@ html, body {
   width: 100%;
   font-family: "Segoe UI", "Trebuchet MS", sans-serif; }
 
-body {
-  position: relative; }
-
 canvas {
-  display: none;
   position: absolute;
   z-index: 0;
   image-rendering: -moz-crisp-edges; }
 
-canvas#draw-canvas {
-  display: block; }
-
 .canvas-wrapper {
-  position: relative; }
-
-.layer-wrapper {
-  position: relative; }
-
-.layer-wrapper > * {
   position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0; }
+  display: flex;
+  justify-content: stretch; }
 
-.image-canvas {
-  z-index: -1; }
+.canvas-dimension {
+  position: relative;
+  flex: 1; }
 
+.visible {
+  display: block !important; }
+
+/* ruler */
 #ruler-left {
   width: 18px;
   left: 0px;
@@ -398,17 +388,17 @@ canvas#draw-canvas {
 .rulerdisplay.hidden {
   display: hidden; }
 
-#ruler-left-display {
+#ruler-left-display,
+#mirror-left-display {
   width: 18px;
   height: 1px; }
 
+#ruler-top-display,
 #ruler-top-display {
   width: 1px;
   height: 18px; }
 
-.visible {
-  display: block !important; }
-
+/* toolbar */
 #toolbar {
   position: fixed;
   bottom: 0;
