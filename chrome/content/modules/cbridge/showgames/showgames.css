@@ -500,7 +500,11 @@ html, body, #wrapper {
 
 .ref-playernames {
   float: left;
-  clear: left; }
+  clear: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 80%; }
 
 .ref-titleimage {
   height: 6em; }
@@ -560,7 +564,16 @@ html, body, #wrapper {
 
 #reference-list.ref-layout-classic .reference {
   clear: left;
-  width: 100%; }
+  width: 100%;
+  outline: none; }
+
+#reference-list.ref-layout-classic .reference:hover {
+  outline: none;
+  box-shadow: -5px 0 0 0 rgba(250, 169, 0, 0.7), 5px 0 0 0 rgba(250, 169, 0, 0.7); }
+
+#reference-list.ref-layout-classic .reference.ref-selected {
+  outline: none;
+  box-shadow: -5px 0 0 0 #d7d7d7, 5px 0 0 0 #d7d7d7; }
 
 /* description */
 #game-info.selected-ref #game-ref-info,
