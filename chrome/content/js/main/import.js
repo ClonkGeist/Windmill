@@ -202,6 +202,15 @@ var _ws = {
 	pr: function(...args) { return new wmProcess(...args); }
 };
 
+Services.scriptloader.loadSubScript("chrome://windmill/content/js/default_functionalities/windmillobject.js");
+Services.scriptloader.loadSubScript("chrome://windmill/content/js/default_functionalities/parser.js");
+Services.scriptloader.loadSubScript("chrome://windmill/content/js/default_functionalities/keybindings.js");
+Services.scriptloader.loadSubScript("chrome://windmill/content/js/default_functionalities/filehandling.js");
+Services.scriptloader.loadSubScript("chrome://windmill/content/js/default_functionalities/localization.js");
+Services.scriptloader.loadSubScript("chrome://windmill/content/js/default_functionalities/ui-feedback.js");
+Services.scriptloader.loadSubScript("chrome://windmill/content/js/default_functionalities/debug.js");
+Services.scriptloader.loadSubScript("chrome://windmill/content/js/default_functionalities/other.js");
+
 /**
  * sprintf for Javascript
  * https://github.com/alexei/sprintf.js
