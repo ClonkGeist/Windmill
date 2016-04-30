@@ -74,34 +74,45 @@ hook("load", function() {
 	image.src="chrome://windmill/content/img/img-defaultplr.png";
 	
 	
+	function* loadPlayerFile(entry, time) {
+		let text, img, imgstr = "chrome://windmill/content/img/DefaultPlayer.png";
+		if(!entry.isDir) {
+			let group = readC4GroupFile(_sc.file(entry.path));
+			text = group.getEntryByName("Player.txt").data.byte2str();
+			img = group.getEntryByName("BigIcon.png");
+			if(img)
+				imgstr = "data:image/png;base64,"+btoa(img.data.byte2str(true));
+		}
+		else {
+			text = yield OS.File.read(entry.path+"/Player.txt", {encoding: "utf-8"});
+			if(yield OS.File.exists(entry.path+"/BigIcon.png"))
+				imgstr = "file://"+formatPath(entry.path)+"/BigIcon.png";
+		}
+		let sects = parseINI(text);
+		if(players[entry.name]) {
+			players[players[entry.name].index] = sects;
+			players[entry.name].time = time;
+			$(".ps-playerlistitem[data-playername='"+entry.name+"'].selected").click();
+		}
+		else {
+			players.push(sects);
+			players[entry.name] = { time: Date.now(), index: players.length-1 };
+			addPlayerlistItem(players.length - 1, entry.name, imgstr);
+		}
+	}
+	
 	//Spielerdatei aus Benutzerpfad rauslesen und in Liste eintragen
-	var iterator;
+	let iterator, userdatapath = _sc.env.get("APPDATA")+"/OpenClonk";
 	Task.spawn(function*() {
-		iterator = new OS.File.DirectoryIterator(_sc.env.get("APPDATA")+"/OpenClonk");
+		iterator = new OS.File.DirectoryIterator(userdatapath);
 		while(true) {
 			let entry = yield iterator.next();
 			let t = entry.name.split('.');
 			if(t.length == 1)
 				continue;
 
-			if(t[t.length-1] == "ocp") {
-				var text, img, imgstr = "chrome://windmill/content/img/DefaultPlayer.png";
-				if(!entry.isDir) {
-					var group = readC4GroupFile(_sc.file(entry.path));
-					text = group.getEntryByName("Player.txt").data.byte2str();
-					img = group.getEntryByName("BigIcon.png");
-					if(img)
-						imgstr = "data:image/png;base64,"+btoa(img.data.byte2str(true));
-				}
-				else {
-					text = yield OS.File.read(entry.path+"/Player.txt", {encoding: "utf-8"});
-					if(yield OS.File.exists(entry.path+"/BigIcon.png"))
-						imgstr = "file://"+formatPath(entry.path)+"/BigIcon.png";
-				}
-				var sects = parseINI(text);
-				players.push(sects);
-				addPlayerlistItem(players.length - 1, entry.name, imgstr);
-			}
+			if(t[t.length-1] == "ocp")
+				yield* loadPlayerFile(entry);
 		}
 	});
 
@@ -116,24 +127,68 @@ hook("load", function() {
 			$(this).attr("src", "chrome://windmill/content/img/playerselection/ClonkSkin"+id+".png").attr("data-skinid", id);
 		});
 	});
+	
+	//Spielerdateien ueberpruefen und ggf. aktualisieren
+	setInterval(function() {
+		let iterator = new OS.File.DirectoryIterator(userdatapath);
+		let playernames = [];
+		for(var key in players) {
+			if(key.search(/\D/) != -1)
+				playernames.push(key);
+		}
+		iterator.forEach(
+			function onEntry(entry) {
+				if(entry.name.split('.').pop() != "ocp")
+					return;
+
+				if(playernames.indexOf(entry.name) != -1)
+					playernames.splice(playernames.indexOf(entry.name), 1);
+
+				let path = entry.path;
+				if(entry.isDir)
+					path += "/Player.txt";
+
+				OS.File.stat(path).then(function(stat) {
+					let time = stat.lastModificationDate.getTime();
+					if(!players[entry.name] || time > players[entry.name].time) {
+						Task.spawn(function*() {
+							yield* loadPlayerFile(entry, time);
+						});
+					}
+				});
+			}
+		).then(function() {
+			iterator.close();
+			for(var i = 0; i < playernames.length; i++) {
+				$(".ps-playerlistitem[data-playername='"+playernames[i]+"']").remove();
+				delete players[players[playernames[i]].index];
+				delete players[playernames[i]];
+			}
+		}, function() { iterator.close(); });
+	}, 7500);
 });
 
 function addPlayerlistItem(id, filename, imgstr) {
-	var plr = players[id],
-		player = plr["Player"],
-		lastround = plr["LastRound"];
+	/*let plr2 = players[id],
+		player2 = plr2["Player"],
+		lastround2 = plr2["LastRound"];*/
 	
-	plr[0] = filename;
+	players[id][0] = filename;
 	
-	var name = player["Name"] || Locale("$NewPlayerName$");
+	var name = players[id].Player.Name || Locale("$NewPlayerName$");
 	
 	var clone = $(".ps-playerlistitem.draft").clone(true);
 	clone.removeClass("draft");
 	clone.attr("data-playerid", id);
+	clone.attr("data-playername", filename);
 	clone.find(".lbl-psplayername").attr("value", name);
 	clone.find(".img-psbigicon").attr("src", imgstr);
 	
 	clone.click(function() {
+		let plr = players[id],
+			player = plr["Player"],
+			lastround = plr["LastRound"],
+			wasSelected = $(this).hasClass("selected");
 		$(".ps-playerlistitem.selected").removeClass("selected");
 		$(this).addClass("selected");
 	
@@ -163,10 +218,12 @@ function addPlayerlistItem(id, filename, imgstr) {
 		$("#ps-pdlr-date").attr("value", sprintf(Locale("$PD_LRDateLbl$"), date.getDate(), date.getMonth()+1, date.getFullYear(), date.getHours(), date.getMinutes()));
 	
 		//Speichern
-		var wrk = _sc.wregkey();
-		wrk.open(wrk.ROOT_KEY_CURRENT_USER, "Software\\OpenClonk Project\\OpenClonk\\General", wrk.ACCESS_WRITE);
-		wrk.writeStringValue("Participants", filename);
-		wrk.close();
+		if(!wasSelected) {
+			var wrk = _sc.wregkey();
+			wrk.open(wrk.ROOT_KEY_CURRENT_USER, "Software\\OpenClonk Project\\OpenClonk\\General", wrk.ACCESS_WRITE);
+			wrk.writeStringValue("Participants", filename);
+			wrk.close();
+		}
 	});
 
 	clone.appendTo($("#ps-playerlist"));
