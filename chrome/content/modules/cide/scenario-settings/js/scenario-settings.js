@@ -274,6 +274,7 @@ function addScript(path, lang, index, path, fShow) {
 		getWrapper(".nav-page-landscape", index).mousedown(navbtnfn("page-landscape"));
 		getWrapper(".nav-page-environment", index).mousedown(navbtnfn("page-environment"));
 		getWrapper(".nav-page-code", index).mousedown(navbtnfn("page-code"));
+		getWrapper(".nav-errorlog", index).mousedown(function() { $("#errorlog").toggleClass("show"); updateErrorLog(); });
 		getWrapper(".nav-reload", index).mousedown(reloadDefinitions);
 		getWrapper(".nav-save", index).mousedown(function() { return saveTab(index); });
 
@@ -852,7 +853,7 @@ function checkDefListFlags(def, flaglist) {
 const DEFFLAG_VEGETATION = 1, DEFFLAG_ANIMAL = 2, DEFFLAG_HIDEINMENUSYSTEM = 4,
 	  DEFFLAG_VEHICLES = 8;
 
-function loadDefinitionsFrom(path, fullpath, maindef, flags, skipError) {
+function loadDefinitionsFrom(path, fullpath, maindef, flags, skipError = true) {
 	let iterator;
 	return Task.spawn(function*() {
 		if(!fullpath) {
@@ -899,12 +900,13 @@ function loadDefinitionsFrom(path, fullpath, maindef, flags, skipError) {
 				break;
 		}
 
-
 		setLoadingSubCaption(path);
 
 		let f = _sc.file(path);
-		if(!f.isDirectory())
+		if(!f.isDirectory()) {
+			reportLoadingError(maindef, "Could not load " + path);
 			return;
+		}
 
 		//Verzeichniselemente durchsuchen
 		let entries = f.directoryEntries;
@@ -991,6 +993,30 @@ class OCDefinition {
 	}
 }
 
+function reportLoadingError(maindef, msg, type = "error") {
+	let clone = $(".errorlog-item.draft").clone();
+	clone.removeClass("draft").addClass(type);
+	clone.find(".errorlog-item-content").text(msg);
+	clone.attr("data-maindef", maindef);
+	if(type == "error")
+		clone.find(".errorlog-item-type").text("!");
+	clone.appendTo($("#errorlog"));
+	updateErrorLog();
+}
+
+function updateErrorLog() {
+	let index = getCurrentWrapperIndex();
+	let defs = sessions[index].scenariodefs;
+	$("#errorlog .errorlog-item").addClass("hidden");
+	for(var i = 0; i < defs.length; i++)
+		$("#errorlog .errorlog-item[data-maindef='"+defs[i]+"']").removeClass("hidden");
+	let amount = $("#errorlog .errorlog-item:not(.hidden)").length;
+	if(!amount)
+		getWrapper(".nav-errorlog-iconoverlay").addClass("hidden");
+	else
+		getWrapper(".nav-errorlog-iconoverlay").removeClass("hidden").text(amount);
+}
+
 /*-- Number inputs --*/
 
 function setupNumberInputs(index) {
@@ -1031,6 +1057,7 @@ function showDeckItem(id) {
 	clearCideToolbar();
 	createCideToolbar();
 	frameUpdateWindmillTitle();
+	updateErrorLog();
 }
 
 function removeDeckItem(id) {

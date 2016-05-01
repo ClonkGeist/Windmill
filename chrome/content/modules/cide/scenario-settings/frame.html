@@ -9,7 +9,7 @@
 
 	<div id="wrapper">
 		
-		<!-- pseudo web components end -->
+		<!-- pseudo web components start -->
 		<div class="definition-selection-wrapper draft">
 			<div class="definition-selection-header"></div>
 			<div class="definition-selection-list">
@@ -43,6 +43,10 @@
 				<div class="navigation-option nav-page-landscape icon-landscape"></div>
 				<div class="navigation-option nav-page-environment icon-environment"></div>
 				<div class="navigation-option nav-page-code icon-brackets"></div>
+				<div class="navigation-option nav-errorlog">
+					<span class="icon-24 icon-error"></span>
+					<span class="nav-errorlog-iconoverlay hidden"></span>
+				</div>
 				<div class="navigation-spacer"></div>
 				<div class="navigation-option nav-reload icon-reload"></div>
 				<div class="navigation-option nav-save"><span class="icon-24 icon-save"></span></div>
@@ -284,6 +288,14 @@
 		<div id="editorframe">
 
 		</div>
+		
+		<div id="errorlog">
+			<div class="errorlog-item draft">
+				<div class="errorlog-item-type"></div>
+				<div class="errorlog-item-content"></div>
+			</div>
+		</div>
+
 	</div>
 	
 	<script src="chrome://windmill/content/js/default_module.js" type="text/javascript" charset="utf-8"></script>

@@ -569,3 +569,62 @@ h1
 .flex-spacer {
 	flex: 1;
 }
+
+.nav-errorlog {
+	position: relative;
+}
+
+.nav-errorlog-iconoverlay {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	background-color: #ff4e4e;
+	color: white;
+	font-size: 10px;
+	line-height: 16px;
+	width: 16px;
+	height: 16px;
+	border-radius: 8px;
+	text-align: center;
+
+	&.hidden { display: none; }
+}
+
+#errorlog {
+	position: absolute;
+	left: 70px;
+	right: 0;
+	bottom: 0;
+	height: 0px;
+	opacity: 0;
+	transition: opacity 0.5s;
+	background-color: white;
+	z-index: 1001203123;
+	border-top: 1px solid #ccc;
+	box-shadow: 2px 0 -2px #000;
+}
+#errorlog.show {
+	opacity: 1;
+	height: 240px;
+}
+
+.errorlog-item {
+	display: flex;
+	.errorlog-item-type {
+		@include flexcenter;
+		width: 1em;
+	}
+	.errorlog-item-content { flex: 1; padding-left: 5px; }
+	&.hidden { display: none; }
+}
+
+.errorlog-item.error {
+	width: 100%;
+	.errorlog-item-type {
+		background-color: #ff4e4e;
+		color: white;
+		text-align: center;
+		font-weight: bold;
+	}
+	.errorlog-item-content { background-color: #ffeded; }
+}

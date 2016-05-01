@@ -23,9 +23,9 @@
   font-size: 16pt;
   color: white;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center; }
+  justify-content: center;
+  flex-direction: column; }
 
 .windmill-modal.modal-enabled {
   opacity: 0.5;
@@ -443,6 +443,9 @@ li:focus *, li:focus {
 
 .icon-screenshots:before {
   content: "\e904"; }
+
+.icon-error:before {
+  content: "\e90c"; }
 
 splitter {
   -moz-appearance: none;
