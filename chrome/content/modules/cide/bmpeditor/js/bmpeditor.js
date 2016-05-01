@@ -2046,8 +2046,6 @@ function loadUnsupportedImage(file, id, fShow, clridxtbl) {
 /* Farbabfragen */
 
 function getCurrentColor(id = activeId) {
-	err(id)
-	err(activeId)
 	return getColorByIndex(id, canvasArray[id].rtdata.current_matidx);
 }
 
@@ -2061,6 +2059,26 @@ function getColorByIndex(id, index) {
 
 	return "#"+clr;
 }
+
+function getCurrentRGB(id) {
+	return hexToRGB(getColorByIndex(id, canvasArray[id].rtdata.current_matidx));
+}
+
+function hexToRGB(hex) {
+    // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+    var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+    hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+        return r + r + g + g + b + b;
+    });
+
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? [
+        parseInt(result[1], 16),
+        parseInt(result[2], 16),
+        parseInt(result[3], 16)
+    ] : null;
+}
+
 
 function getMaterialByIndex(id, index) {
 	var selection = "Sky";
@@ -2119,6 +2137,8 @@ function drawMaterialPalette(id) {
 	
 	return true;
 }
+
+/* Deck functionalities */
 
 function saveFileByPath(path) {
 	for(var id in canvasArray)

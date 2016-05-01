@@ -164,22 +164,32 @@ class Mode_Draw_Shape extends DefaultMode {
 		this.lastX = x
 		this.lastY = y
 		
+		let color = getCurrentRGB(activeId)
+		if(color === null)
+			this.color = new Float32Array([0, 0, 0])
+		else {
+			color[0] = color[0] / 255
+			color[1] = color[1] / 255
+			color[2] = color[2] / 255
+			
+			this.color = color
+		}
+		
 		this.bounding = new Rect(this.shape.rect)
 	}
 	
 	onSceneFocus(scene) {
 		scene.shaderType = SHADER_TYPE_COMBINED_BACKBUFFER
+		scene.setColorRGB(this.color)
 	}
 	
 	onMousemove(x = 0, y = 0, scene, modifier) {
 		
 		let t = this.worker
-		
-		this.shape.setCenterAt(x, y)
-		
+				
 		this.scene.shaderType = SHADER_TYPE_BACKBUFFER
-		this.scene.setInputRect(this.shape.rect)
-		this.scene.renderInputIntoWorker(SHADER_TYPE_INPUT)
+		
+		this.scene.renderInputLineIntoWorker(SHADER_TYPE_INPUT, this.lastX, this.lastY, x, y, this.shape)
 		
 		this.scene.shaderType = SHADER_TYPE_COMBINED_BACKBUFFER
 		this.scene.render()

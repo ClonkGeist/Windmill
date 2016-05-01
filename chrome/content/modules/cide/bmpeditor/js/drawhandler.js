@@ -93,6 +93,8 @@ class BMPScene {
 		
 		this.selClrIndex = 0
 		this.selShape = Shape_Circle
+		
+		this.currentColorRGB = new Float32Array(3)
 	}
 	
 	set ptexture_Source (tex) {
@@ -190,6 +192,8 @@ class BMPScene {
 			this.initialized = true
 			
 			this.render()
+			
+			centerCanvas()
 		}
 		
 		img.onerror = function(e) {
@@ -332,6 +336,52 @@ class BMPScene {
 		this.gl.copyTexImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGB, 0, 0, this.width, this.height, 0)
 	}
 	
+	renderInputLineIntoWorker(shaderType, x1, y1, x2, y2, shape) {
+		// draw old
+		this.useShaderOfType(this.shaderType)
+		this.setUniforms()
+		this.gl.drawArrays(this.gl.TRIANGLES, 0, 6)
+		
+		// draw new
+		this.useShaderOfType(shaderType)
+		/*
+		// sort points by x
+		if(x1 > x2) {
+			let temp = x1
+			x1 = x2
+			x2 = temp
+			
+			temp = y1
+			y1 = y2
+			y2 = temp
+		}
+		
+		var slope = y2 - y1 / x2 - x1
+		
+		var y = y1,
+			yMax = y += slope
+		
+		for(let x = x1; x <= x2; x++) {
+			for(; y <= yMax; y++) {
+				shape.setCenterAt(x, y)
+				this.setInputRect(shape.rect)
+				
+				this.setUniforms()
+				this.gl.drawArrays(this.gl.TRIANGLES, 0, 6)
+			}
+			
+			yMax += slope
+		}*/
+		shape.setCenterAt(x2, y2)
+		this.setInputRect(shape.rect)
+		this.setUniforms()
+		this.gl.drawArrays(this.gl.TRIANGLES, 0, 6)
+			
+		// TODO: use copySubTexImage
+		this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture_Combined)
+		this.gl.copyTexImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGB, 0, 0, this.width, this.height, 0)
+	}
+	
 	combineInputIntoSource(shaderTypeForInput) {
 		this.useShaderOfType(this.shaderType)
 		this.setUniforms()
@@ -418,7 +468,7 @@ class BMPScene {
 	}
 	
 	getCurrentWorkerColor() {
-		return new Float32Array([0.1, 0.5, 0.3])
+		return this.currentColorRGB
 	}
 	
 	getShaderByFlags(flags) {
@@ -512,14 +562,10 @@ class BMPScene {
 	uploadBrush(shape) {
 	}
 	
-	setScissor(rect) {
-		this.gl.disable(this.gl.SCISSOR_TEST)
-		
-		this.gl.scissor(rect.x, rect.y, rect.w, rect.h)
-	}
-	
-	unsetScissor() {
-		this.gl.disable(this.gl.SCISSOR_TEST)
+	setColorRGB([r, g, b]) {
+		this.currentColorRGB[0] = r
+		this.currentColorRGB[1] = g
+		this.currentColorRGB[2] = b
 	}
 	
 	/** 
