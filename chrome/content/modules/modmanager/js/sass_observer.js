@@ -135,7 +135,7 @@ function reloadStylesheet(fScss, def) {
 		}
 		else {
 			var mdls = getModulesByName(def.observe)
-			if(mdls && mdls.length) {
+			if(mdls && mdls.length && false) {
 				var uri = _mainwindow._sc.ioserv().newURI(OS.Path.toFileURI(_sc.chpath + "/" + def.cssTarget), null, null)
 				log("Sass: Write file: " + _sc.chpath + "/" + def.cssTarget)
 				
