@@ -138,8 +138,8 @@ function ctxInsertGraphicsEntries(obj_by) {
 
 var sessions = [], definitions = [];
 
-function setLoadingCaption(text, index) {	getWrapper(".loadingPage-caption > p", index).text(Locale(text)); }
-function setLoadingSubCaption(text, index) {	getWrapper(".loadingPage-subCaption", index).text(Locale(text)); }
+function setLoadingCaption(text, index, ...pars) {	getWrapper(".loadingPage-caption > p", index).text(Locale(text, 0, ...pars)); }
+function setLoadingSubCaption(text, index, ...pars) {	getWrapper(".loadingPage-subCaption", index).text(Locale(text, 0, ...pars)); }
 
 function getWrapper(sel, index = getCurrentWrapperIndex()) {
 	if(sel)
@@ -173,7 +173,7 @@ function addScript(path, lang, index, path, fShow) {
 	var loadingdefs = [], scenariodefs = [];
 	Task.spawn(function*() {
 		let text = yield OS.File.read(path, {encoding: "utf-8"});
-		let scendata = parseINIArray(text), def;
+		let scendata = parseINIArray(text), def, promises = {};
 		sessions[index].scendata = scendata;
 
 		for(var key in scendata["Definitions"]) {
@@ -183,10 +183,21 @@ function addScript(path, lang, index, path, fShow) {
 				scenariodefs.push(def);
 
 			//Geladene und gecachete Definitionen nicht nochmal laden
-			if(definitions[def])
+			if(definitions[def]) {
+				if(definitions[def].loading) {
+					setLoadingCaption("$LoadingDefFrom$: " + def);
+					if(definitions[def].task)
+						yield definitions[def].task;
+					else
+						yield definitions[def].promise;
+				}
 				continue;
+			}
 
 			loadingdefs.push(def);
+			definitions[def] = { loading: true, promise: new Promise(function(success, reject) {
+				promises[def] = success;
+			}) };
 		}
 		if(!scendata["Definitions"])
 			loadingdefs = ["Objects.ocd"], scenariodefs = ["Objects.ocd"];
@@ -202,10 +213,17 @@ function addScript(path, lang, index, path, fShow) {
 
 		while(def = sessions[index].loadingdefs.pop()) {
 			setLoadingCaption("$LoadingDefFrom$: " + def);
-			definitions[def] = { ids: [] };
-			definitions[def].d = yield loadDefinitionsFrom(def, 0, def);
-			if(!definitions[def].d)
-				definitions[def] = undefined;
+			definitions[def] = { ids: [], loading: true };
+			definitions[def].task = Task.spawn(function*() {
+				definitions[def].d = yield loadDefinitionsFrom(def, 0, def);
+				if(!definitions[def].d)
+					definitions[def] = undefined;
+
+				definitions[def].loading = false;
+				if(promises[def])
+					promises[def]();
+			});
+			yield definitions[def].task;
 		}
 		return text;
 	}).then(function(text) {
@@ -231,9 +249,11 @@ function addScript(path, lang, index, path, fShow) {
 			if(identifier == "page-code") {
 				md_editorframe.contentWindow.setDocumentValue(index, generateScenarioTxt(index), true);
 				$("#editorframe").addClass("visible");
+				clearCideToolbar();
 				createCideToolbar();
 			}
 			else if(prev_page == "page-code") {
+				clearCideToolbar();
 				let scendata = sessions[index].scendata, deflist_changed;
 				sessions[index].scendata = parseINIArray(md_editorframe.contentWindow.getDocumentValue(index));
 				let scendefs = [];
@@ -316,8 +336,8 @@ function addScript(path, lang, index, path, fShow) {
 function loadScenarioContentToElements(index, skipDefsel) {
 	if(!skipDefsel) {
 		getWrapper(".definition-selection-wrapper", index).each(function() {
-			loadDefinitionSelectionData(this);
-			loadDefinitionSelection(this);
+			loadDefinitionSelectionData(this, undefined, index);
+			loadDefinitionSelection(this, index);
 		});
 	}
 
@@ -624,7 +644,6 @@ function preparePseudoElements(index) {
 		var clone = $(".definition-selection-wrapper.draft").clone();
 		clone.removeClass("draft");
 
-		var index = getCurrentWrapperIndex();
 		var classes = $(this)[0].className.split(/\s+/);
 		for(var i = 0; i < classes.length; i++)
 			clone.addClass(classes[i]);
@@ -636,7 +655,7 @@ function preparePseudoElements(index) {
 			clone.find(".definition-selection-header").remove();
 
 		loadDefinitionSelectionData(this, clone, index);
-		loadDefinitionSelection(clone);
+		loadDefinitionSelection(clone, index);
 
 		$(this).replaceWith(clone);
 	});
@@ -710,7 +729,7 @@ function loadDefinitionSelectionData(infosource, dest = infosource, index = getC
 		c4idlist = "";
 
 	c4idlist = c4idlist.split(";");
-	//Listenelemente laden (Rueckwaerts, um die Ladereihenfolge zu beruecksichtigen)
+	//Listenelemente laden (Rueckwaerts, um die Ladereihenfolge zu beruecksichtigen, d.h. spaeter geladene Definitionen ueberschreiben vorherige)
 	var listelements = [];
 	for(var i = sessions[index].scenariodefs.length-1; i >= 0 && c4idlist.length; i--) {
 		var deff = sessions[index].scenariodefs[i];
@@ -754,7 +773,7 @@ function loadDefinitionSelectionData(infosource, dest = infosource, index = getC
 	return true;
 }
 
-function loadDefinitionSelection(defsel) {
+function loadDefinitionSelection(defsel, index = getCurrentWrapperIndex()) {
 	defsel = $(defsel);
 	var category = defsel.attr("data-category") || "C4D_Object|C4D_Living|C4D_Goal|C4D_Rule|C4D_Structure|C4D_Vehicle|C4D_Environment",
 		sect = defsel.attr("data-scenario-sect").replace(/PlayerX/, "Player1") || "", //TODO: Replace fuer PlayerX richtig machen
@@ -768,7 +787,6 @@ function loadDefinitionSelection(defsel) {
 		getWrapper(".deflist-current > .deflist-ao-list-content").append(defsel.find(".definition-selection-item").clone());
 		addDeflistEntry(getWrapper(".deflist-current > .deflist-ao-list-content"), 0, getWrapper(".deflist-current").find(".definition-selection-item"), { nodragdrop: true });
 
-		var index = getCurrentWrapperIndex();
 		var flaglist = $(this).parents(".definition-selection-wrapper").attr("data-defflags");
 		for(var i = sessions[index].scenariodefs.length-1; i >= 0; i--) {
 			for(var j = 0; j < definitions[sessions[index].scenariodefs[i]].d.length; j++) {
@@ -809,7 +827,7 @@ function loadDefinitionSelection(defsel) {
 	});
 
 	//TODO: Listenelemente vorher sortieren
-	var deflist = sessions[getCurrentWrapperIndex()].deflist[sect+"_"+key];
+	var deflist = sessions[index].deflist[sect+"_"+key];
 	$(defsel).find(".definition-selection-list").empty();
 	if(deflist)
 		for(var i = 0; i < deflist.length; i++)
@@ -1007,6 +1025,9 @@ function reportLoadingError(maindef, msg, type = "error") {
 function updateErrorLog() {
 	let index = getCurrentWrapperIndex();
 	let defs = sessions[index].scenariodefs;
+	if(!defs)
+		return;
+
 	$("#errorlog .errorlog-item").addClass("hidden");
 	for(var i = 0; i < defs.length; i++)
 		$("#errorlog .errorlog-item[data-maindef='"+defs[i]+"']").removeClass("hidden");

@@ -873,8 +873,8 @@ h1 {
 
 .nav-errorlog-iconoverlay {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 22px;
+  right: 18px;
   background-color: #ff4e4e;
   color: white;
   font-size: 10px;
@@ -897,11 +897,13 @@ h1 {
   background-color: white;
   z-index: 1001203123;
   border-top: 1px solid #ccc;
-  box-shadow: 2px 0 -2px #000; }
+  box-shadow: 2px 0 -2px #000;
+  height: 240px;
+  pointer-events: none; }
 
 #errorlog.show {
   opacity: 1;
-  height: 240px; }
+  pointer-events: auto; }
 
 .errorlog-item {
   display: flex; }
