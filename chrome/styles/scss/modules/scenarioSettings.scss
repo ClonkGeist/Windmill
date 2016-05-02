@@ -398,7 +398,7 @@ section:last-child {
 /* special check boxes /big buttons/ */
 
 .special-cb {
-	@include ui-text-checkbox();
+	@include ui-text-checkbox2();
 }
 
 /*-- Number inputs --*/

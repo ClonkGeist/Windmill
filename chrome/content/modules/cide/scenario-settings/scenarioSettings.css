@@ -697,7 +697,7 @@ section:last-child {
   transition: background-color 0s, color 0s; }
 
 /* special check boxes /big buttons/ */
-.special-cb label {
+.special-cb .cblabel {
   background-color: gainsboro;
   border-bottom: 1px solid #b4b4b4;
   padding: 5px 10px;
@@ -707,21 +707,21 @@ section:last-child {
   pointer-events: auto;
   -moz-user-select: auto; }
 
-.special-cb label:hover {
+.special-cb .cblabel:hover {
   background-color: #b4b4b4;
   outline: none; }
 
-.special-cb input:checked + label {
+.special-cb input:checked + .cblabel {
   background-color: #dc4632;
   border-bottom-color: #c8321e;
   color: whitesmoke; }
 
-.special-cb input:checked + label:hover {
+.special-cb input:checked + .cblabel:hover {
   background-color: #c8321e;
   border-bottom-color: #c8321e; }
 
 .special-cb input {
-  display: nosne; }
+  display: none; }
 
 /*-- Number inputs --*/
 .sp-number-input {
