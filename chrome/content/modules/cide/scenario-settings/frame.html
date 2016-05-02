@@ -26,6 +26,16 @@
 			<div class="sp-checkinput-check"></div>
 			<input class="sp-checkinput-text" type="text" />
 		</div>
+		
+		<!-- <div class="sp-imgsel"></div> -->
+		<div class="image-selection-wrapper draft">
+			<div class="image-selection"></div>
+		</div>
+		<!-- <div class="sp-imgsel-item" data-caption="caption" data-img="imgsrc"></div> -->
+		<div class="image-selection-item draft">
+			<div class="image-selection-image"></div>
+			<div class="image-selection-caption"></div>
+		</div>
 		<!-- pseudo web components end -->
 
 		<div class="scenario-settings draft">
@@ -57,8 +67,9 @@
 					
 					<section>
 						<div class="flex-wrapper">
-							<div class="flex-item">
-								$Icon$: <select class="sp-g-selecticon" data-scenario-sect="Head" data-scenario-key="Icon"></select>
+							<div class="flex-item flex-wrapper">
+								<div class="flex-item sp-g-iconlabel">$Icon$</div>
+								<div class="sp-g-selecticon flex-item sp-imgsel size-24" data-scenario-sect="Head" data-scenario-key="Icon"></div>
 							</div>
 							<div class="sp-number-input flex-item">
 								<label>$MaxPlayers$:

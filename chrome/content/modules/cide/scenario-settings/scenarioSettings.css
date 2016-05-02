@@ -696,6 +696,94 @@ section:last-child {
   background-color: #db4631;
   transition: background-color 0s, color 0s; }
 
+/* Image Selection */
+.sp-g-iconlabel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20px;
+  margin-top: 10px; }
+
+.image-selection-wrapper {
+  position: relative;
+  width: 80px;
+  height: 80px; }
+  .image-selection-wrapper .image-selection {
+    position: absolute;
+    background-color: white;
+    padding: 10px 5px 5px 5px;
+    border-radius: 5px;
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-around;
+    max-width: 80px;
+    max-height: 80px;
+    transition: max-width 0.5s, max-height 0.5s;
+    overflow: hidden;
+    width: 250px; }
+    .image-selection-wrapper .image-selection:hover {
+      max-width: 280px;
+      max-height: 200px;
+      overflow: auto; }
+      .image-selection-wrapper .image-selection:hover .image-selection-item {
+        display: block !important; }
+      .image-selection-wrapper .image-selection:hover .selected {
+        outline-offset: -1px;
+        background-color: rgba(0, 165, 207, 0.2);
+        outline: 1px solid rgba(0, 165, 207, 0.5); }
+    .image-selection-wrapper .image-selection .image-selection-item .image-selection-image {
+      width: 64px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center; }
+    .image-selection-wrapper .image-selection .image-selection-item .image-selection-caption {
+      text-align: center; }
+    .image-selection-wrapper .image-selection .image-selection-item:hover {
+      background-color: rgba(0, 165, 207, 0.15);
+      outline: 1px solid rgba(0, 165, 207, 0.3);
+      outline-offset: -1px; }
+    .image-selection-wrapper .image-selection .image-selection-item:not(.selected) {
+      display: none; }
+
+.image-selection-wrapper.size-24 {
+  width: 50px;
+  height: 50px; }
+  .image-selection-wrapper.size-24 .image-selection {
+    max-width: 50px;
+    max-height: 50px;
+    width: 220px;
+    justify-content: space-around; }
+    .image-selection-wrapper.size-24 .image-selection:hover {
+      max-width: 220px;
+      max-height: 136px;
+      overflow: auto; }
+    .image-selection-wrapper.size-24 .image-selection .image-selection-item {
+      margin: 5px; }
+      .image-selection-wrapper.size-24 .image-selection .image-selection-item .image-selection-image {
+        width: 24px;
+        height: 24px; }
+
+.image-selection-wrapper.size-32 {
+  width: 62px;
+  height: 62px; }
+  .image-selection-wrapper.size-32 .image-selection {
+    max-width: 62px;
+    max-height: 62px;
+    width: 240px;
+    justify-content: space-around; }
+    .image-selection-wrapper.size-32 .image-selection:hover {
+      max-width: 240px;
+      max-height: 148px;
+      overflow: auto; }
+    .image-selection-wrapper.size-32 .image-selection .image-selection-item {
+      margin: 5px; }
+      .image-selection-wrapper.size-32 .image-selection .image-selection-item .image-selection-image {
+        width: 32px;
+        height: 32px; }
+
 /* special check boxes /big buttons/ */
 .special-cb .cblabel {
   background-color: gainsboro;

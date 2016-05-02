@@ -9,9 +9,23 @@ function alternativeActiveId() { return getCurrentWrapperIndex(); }
 $(window).ready(function() {
 	md_editor = createModule("scripteditor", $("#editorframe"));
 	md_editorframe = getModule(md_editor, true);
+});
 
+let scenario_icons = [];
+
+hook("load", function() {
 	setupDeflistKeybindings();
 	initializeContextMenu();
+	let icondirpath = _sc.chpath+"/content/img/scenariosettings";
+	let iterator = new OS.File.DirectoryIterator(icondirpath);
+	iterator.forEach(function(entry) {
+		let id = parseInt(entry.name.replace(/ScenarioIcon_(.+?)\.png/, "$1"));
+		scenario_icons[id] = "chrome://windmill"+formatPath(entry.path).replace(_sc.chpath, "");
+	}).then(function() {
+		iterator.close();
+	}, function() {
+		iterator.close();
+	});
 });
 
 function setupDeflistKeybindings() {
@@ -300,6 +314,9 @@ function addScript(path, lang, index, path, fShow) {
 
 		tooltip(getWrapper(".nav-reload", index), "$TooltipReloadDefs$", "html", 600);
 
+		for(var i = 0; i < scenario_icons.length; i++)
+			getWrapper(".sp-g-selecticon", index).append(`<div class="sp-imgsel-item" data-value="${i}" data-img="${scenario_icons[i]}" data-caption="${i}"></div>`);
+
 		preparePseudoElements(index);
 
 		getWrapper(".sp-o-switchpage", index).click(function() { getWrapper(".sp-o-group", index).toggleClass("inactive"); });
@@ -372,6 +389,10 @@ function loadScenarioContentToElements(index, skipDefsel) {
 			onFileChanged(getCurrentWrapperIndex());
 		});
 	});
+	let iconid = sessions[index].scendata.Head.Icon;
+	if(!iconid)
+		iconid = 0;
+	getWrapper(".sp-g-selecticon .image-selection-item[data-value='"+iconid+"']").addClass("selected");
 }
 
 function saveTabContent(index) {
@@ -391,13 +412,15 @@ function getScenarioValue(obj) {
 				break;
 
 			default:
-				//Support fuer 4-Integer-Werte
+				//TODO: Support fuer 4-Integer-Werte
 				val = $(obj).val();
 				break;
 		}
 	}
 	if($(obj).hasClass("definition-selection-wrapper"))
 		val = getDeflistString(obj);
+	else if($(obj).hasClass("image-selection-wrapper"))
+		val = $(obj).find(".image-selection-item.selected").attr("data-value");
 
 	return val;
 }
@@ -704,6 +727,31 @@ function preparePseudoElements(index) {
 	getWrapper(".sp-radiobutton", index).mousedown(function() {
 		$(this).parent().find('.sp-radiobutton[data-group="sp-o-playersel"]').removeClass("active");
 		$(this).addClass("active");
+	});
+	
+	getWrapper(".sp-imgsel", index).each(function() {
+		let clone = $(".image-selection-wrapper.draft").clone();
+		clone.removeClass("draft");
+		clone.attr({ "data-scenario-sect": $(this).attr("data-scenario-sect"), "data-scenario-key": $(this).attr("data-scenario-key")});
+
+		let classes = $(this)[0].className.split(/\s+/);
+		for(var i = 0; i < classes.length; i++)
+			clone.addClass(classes[i]);
+
+		$(this).find(".sp-imgsel-item").each(function() {
+			let itemclone = $(".image-selection-item.draft").clone();
+			itemclone.removeClass("draft");
+			itemclone.find(".image-selection-image").append("<img src='"+$(this).attr("data-img")+"'>");
+			itemclone.find(".image-selection-caption").text($(this).attr("data-caption"));
+			itemclone.attr("data-value", $(this).attr("data-value"));
+			itemclone.mousedown(function() {
+				clone.find(".image-selection-item.selected").removeClass("selected");
+				$(this).addClass("selected");
+			});
+			clone.find(".image-selection").append(itemclone);
+		});
+
+		$(this).replaceWith(clone);
 	});
 
 	setupNumberInputs(index);
@@ -1052,8 +1100,6 @@ function setupNumberInputs(index) {
 		spUp.className = "input-spinners-button icon-arrow-up";
 		spDw.className = "input-spinners-button icon-arrow-down";
 
-		/*spUp.addEventListener("click", function() { tEl.stepUp(); });
-		spDw.addEventListener("click", function() { tEl.stepDown(); });*/
 		let interval = 0;
 		function clearIntv() { clearInterval(interval); }
 		$(spUp).mousedown(function() {
