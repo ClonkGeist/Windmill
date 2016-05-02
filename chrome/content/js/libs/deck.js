@@ -266,7 +266,12 @@ class Deck extends WindmillObject {
 					</hbox>`);
 				
 				var deckId = this.id;
-				$(".deck-"+this.id+"-button-"+id).click(event => { if(event.which == 2) closePage(event, deckId, id); });
+				$(".deck-"+this.id+"-button-"+id).click(event => {
+					if(event.which == 2)
+						closePage(event, deckId, id);
+				}).find(".close-button").mousedown(event => {
+					event.stopPropagation();
+				});
 			}
 			else	{
 				$(this.buttonContainer).append(`<${tagName} class="deck-${this.id}-button-${id}" 
