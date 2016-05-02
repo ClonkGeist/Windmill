@@ -115,14 +115,38 @@
 	<canvas id="ruler-left" class="ruler"></canvas>
 	<canvas id="ruler-top" class="ruler"></canvas>
 	
-	<div id="ruler-left-display" class="rulerdisplay"></div><div id="ruler-top-display" class="rulerdisplay"></div>
+	<div id="ruler-left-display" class="rulerdisplay"></div>
+	<div id="ruler-top-display" class="rulerdisplay"></div>
+	
+	<div id="mirror-left-display" class="rulerdisplay mirror-marker"></div>
+	<div id="mirror-top-display" class="rulerdisplay mirror-marker"></div>
 
-	<canvas class="working-canvas" id="previewlayer" style="z-index: 1 !important; display: block; " tabindex="0"></canvas>
-	<canvas class="working-canvas" id="movinglayer" style="z-index: 2 !important; pointer-events: none;" tabindex="0"></canvas>
+	<div class="canvas-wrapper">
+		<div class="canvas-dimension">
+			<canvas id="draw-canvas" class="draw-canvas" height="20" width="20" tabindex="0"></canvas>
+			<div class="ui-rect invisible">
+				<div class="ui-rect-container">
+					<div class="ui-thumb top-left"></div>
+					<div class="ui-thumb top"></div>
+					<div class="ui-thumb top-right"></div>
+					
+					<div class="ui-thumb left"></div>
+					
+					<div class="ui-thumb right"></div>
+					
+					<div class="ui-thumb bottom-left"></div>
+					<div class="ui-thumb bottom"></div>
+					<div class="ui-thumb bottom-right"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+<script type="text/javascript" src="chrome://windmill/content/js/default_module.js" charset="utf-8"></script>
+<script type="text/javascript" src="chrome://windmill/content/modules/cide/bmpeditor/js/bmpeditor.js" charset="utf-8"></script>
 
-
-<script src="chrome://windmill/content/js/default_module.js" type="text/javascript" charset="utf-8"></script>
-<script src="chrome://windmill/content/modules/cide/bmpeditor/js/drawingmethods.js" type="text/javascript" charset="utf-8"></script>
-<script src="chrome://windmill/content/modules/cide/bmpeditor/js/bmpeditor.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" src="chrome://windmill/content/modules/cide/bmpeditor/js/shaders2d.js"></script>
+<script type="text/javascript" src="chrome://windmill/content/modules/cide/bmpeditor/js/controls.js"></script>
+<script type="text/javascript" src="chrome://windmill/content/modules/cide/bmpeditor/js/drawhandler.js"></script>
 </body>
 </html>

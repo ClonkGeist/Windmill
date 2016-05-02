@@ -229,6 +229,10 @@ html, body, #wrapper {
 .ref-playernames {
 	float: left;
 	clear: left;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 80%;
 }
 
 .ref-titleimage {
@@ -304,6 +308,18 @@ html, body, #wrapper {
 	&.ref-layout-classic .reference {
 		clear: left;
 		width: 100%;
+		outline: none;
+	}
+	
+	&.ref-layout-classic .reference:hover {
+		outline: none;
+		box-shadow: -5px 0 0 0 $interact_orange,
+					5px 0 0 0 $interact_orange;
+	}
+	&.ref-layout-classic .reference.ref-selected {
+		outline: none;
+		box-shadow: -5px 0 0 0 $clr-border,
+					5px 0 0 0 $clr-border;
 	}
 }
 

@@ -1,5 +1,6 @@
 var canvasArray = new Array();
 var editlayer, editObj = { mode: 0 }, rulerData = {};
+var activeId;
 
 const mdPoint = 0, mdLine = 1, mdRect = 2, mdCircle = 3, mdFill = 4, mdSelectRect = 5, mdSelectCircle = 6, mdGetColor = 8,
 	  mdSelectPoly = 9, mdDefault = 10;
@@ -15,465 +16,6 @@ var modesettings = { settings: [mdsThickness,
 					 filled: true};
 
 $(window).ready(function() {
-	//Canvas für Bearbeitung auswählen
-	editlayer = $("#previewlayer")[0];
-	editlayer.getContext('2d').imageSmoothingEnabled = false;
-
-	$(document.body).mousedown(function(e) {
-		if($(".color-matching-wizard.visible2").get(0))
-			return;
-	
-		var id = parseInt($(".visible").attr("id").replace(/bmpCanvas-/, ""));
-		var mode = getCurrentMode();
-		var color = getCurrentColor(id);
-		var rect = editlayer.getBoundingClientRect();
-		var zoom = canvasArray[id].z;
-		var mx = (e.clientX - rect.left)/zoom, my = (e.clientY - rect.top)/zoom; //Aktuelle Position
-		var ctx = editlayer.getContext("2d"), ctx2 = $(".visible").get(0).getContext("2d");
-		ctx.moveTo(mx, my);
-		ctx2.moveTo(mx, my);
-		
-		//Nur, sofern auch auf dem Canvas gezeichnet wird
-		if(mx < 0 || my < 0 || mx > (rect.width)/zoom || my > (rect.height)/zoom)
-			return;
-		
-		if(!editObj.active)
-			editObj = { mode: mode, x: mx, y: my, startx: mx, starty: my, active: true, clr: color };
-		
-		switch(mode) {
-			//Farbauswahl
-			case mdGetColor:
-				selectIndexByPixel(getCurrentCanvasId(), mx, my);
-				break;
-			
-			//Füllwerkzeug
-			case mdFill:
-				mx = Math.floor(mx); my = Math.floor(my);
-				//Zielfarbe bestimmen
-				var tdata = ctx2.getImageData(mx, my, 1, 1).data; 
-				var tclr = [tdata[2], tdata[1], tdata[0], 0].byte2num();
-				
-				//Canvasdaten abfragen
-				var cwdt = canvasArray[id].c.width, chgt = canvasArray[id].c.height;
-				canvasArray[id].rtdata.ffdata = ctx2.getImageData(0, 0, cwdt, chgt);
-				
-				//Füllfarbe bestimmen
-				var fclr = parseInt(color.substr(1), 16).num2byte(4), fclrnum = parseInt(color.substr(1), 16);
-				
-				//Pixelfarbe von ImgData aus setzen/abfragen
-				var getPixelColor = function(x, y) {
-					var offset = (x%cwdt)*4+y*4*cwdt;
-					return [canvasArray[id].rtdata.ffdata.data[offset+2], 
-							canvasArray[id].rtdata.ffdata.data[offset+1], 
-							canvasArray[id].rtdata.ffdata.data[offset], 0].byte2num();
-				}
-				var setPixelColor = function(x, y) {
-					var offset = (x%cwdt)*4+y*4*cwdt;
-					canvasArray[id].rtdata.ffdata.data[offset+2] = fclr[0];
-					canvasArray[id].rtdata.ffdata.data[offset+1] = fclr[1];
-					canvasArray[id].rtdata.ffdata.data[offset] = fclr[2];
-				}
-				
-				//Füllfunktion
-				var floodfill = function(x, y, first) {
-					//Außerhalb des Canvas?
-					if(x < 0 || y < 0)
-						return;
-					if(x >= canvasArray[id].c.width || y >= canvasArray[id].c.height)
-						return;
-	
-					//Pixelfarbe überprüfen
-					var pxclr = getPixelColor(x, y);
-					if(pxclr == tclr && pxclr != fclrnum) {
-						//Pixel setzen
-						setPixelColor(x, y);
-						
-						//Gleiches für Pixel um diesen Pixel herum ausführen
-						for(var i = -1; i < 2; i++)
-							for(var j = -1; j < 2; j++)
-								if(x || y)
-									floodfill(x+i, y+j);
-						
-						//Falls Füllvorgang beendet wurde: Bilddaten in Canvas einfügen
-						if(first) {
-							ctx2.putImageData(canvasArray[id].rtdata.ffdata, 0, 0);
-							canvasArray[id].rtdata.ffdata = 0;
-						}
-					}
-					else
-						return;
-				}
-				
-				//Füllvorgang starten
-				floodfill(mx,my,true);
-				break;
-		}
-	})
-	.mousemove(function(e) {
-		if($(".color-matching-wizard.visible2").get(0))
-			return;
-		
-		var id = getCurrentCanvasId();
-		var zoom = canvasArray[id].z;
-		var rect = editlayer.getBoundingClientRect();
-		var mx = (e.clientX - rect.left)/zoom, my = (e.clientY - rect.top)/zoom; //Aktuelle Position
-		updateInfotoolbar(mx, my);
-	
-		if(!editObj.active)
-			return;
-	
-		var mode = editObj.mode;
-		var lx = editObj.x, ly = editObj.y; //Letzte Position
-		var sx = editObj.startx, sy = editObj.starty; //Startposition
-		var ctx = editlayer.getContext("2d"), ctx2 = $(".visible").get(0).getContext("2d");
-		var clr = editObj.clr;
-		ctx.clearRect(0, 0, editlayer.width, editlayer.height);
-		
-		//Modesettings übernehmen
-		if(modesettings.settings[mode] & mdsThickness) {
-			ctx.lineWidth = parseInt($("#mds_thickness_nr").val());
-			ctx2.lineWidth = parseInt($("#mds_thickness_nr").val());
-		}
-		else if(modesettings.settings[mode] & mdsLineThickness || modesettings.settings[mode] & mdsCanFill) {
-			ctx.lineWidth = parseInt($("#mds_linethickness_nr").val());
-			ctx2.lineWidth = parseInt($("#mds_linethickness_nr").val());
-		}
-		else {
-			ctx.lineWidth = 3;
-			ctx2.lineWidth = 3;
-		}
-		if(modesettings.settings[mode] & mdsCanFill)
-			ctx.fillStyle = clr;
-		else
-			ctx.strokeStyle = clr;
-
-		switch(mode) {
-			case mdDefault:
-				var mvlayer = $("#movinglayer");
-				if(!mvlayer.hasClass("active"))
-					break;
-				
-				var offset = mvlayer.offset();
-				mvlayer.css("top", offset.top+(my-ly)*zoom+"px");
-				mvlayer.css("left", offset.left+(mx-lx)*zoom+"px");
-				break;
-		
-			//Stift
-			case mdPoint:
-				ctx.strokeStyle = clr;
-				ctx.moveTo(lx, ly);
-				ctx.lineTo(mx, my);
-				ctx.stroke();
-				break;
-
-			//Linie
-			case mdLine:
-				ctx.strokeStyle = clr;
-				ctx.beginPath();
-				ctx.moveTo(sx, sy);
-				ctx.lineTo(mx, my);
-				ctx.stroke();
-				break;
-
-			//Rechteck
-			case mdRect:
-				ctx.fillStyle = clr;
-				ctx.strokeStyle = clr;
-				if(modesettings.filled)
-					ctx.fillRect(sx, sy, mx-sx, my-sy);
-				else
-					ctx.strokeRect(sx, sy, mx-sx, my-sy);
-				break;
-			
-			//Kreis
-			case mdCircle:
-				ctx.fillStyle = clr;
-				ctx.strokeStyle = clr;
-				ctx.beginPath();
-
-				var w = mx-sx, h = my-sy,
-					ox = (w/2) * .5522848,
-					oy = (h/2) * .5522848,
-					xm = sx + w/2,
-					ym = sy + h/2;
-				
-				ctx.moveTo(sx, ym);
-				ctx.bezierCurveTo(sx, ym - oy, xm - ox, sy, xm, sy);
-				ctx.bezierCurveTo(xm + ox, sy, mx, ym - oy, mx, ym);
-				ctx.bezierCurveTo(mx, ym + oy, xm + ox, my, xm, my);
-				ctx.bezierCurveTo(xm - ox, my, sx, ym + oy, sx, ym);
-				if(modesettings.filled)
-					ctx.fill();
-				else
-					ctx.stroke();
-				break;
-
-			//Füllwerkzeug
-			case mdFill:
-				break;
-
-			//Rechteckauswahl
-			case mdSelectRect:
-				ctx.strokeStyle = "#000";
-				ctx.strokeRect(sx, sy, mx-sx, my-sy);
-				break;
-			
-			//Kreisauswahl
-			case mdSelectCircle:
-				ctx.strokeStyle = "#000";
-				ctx.beginPath();
-
-				var w = mx-sx, h = my-sy,
-					ox = (w/2) * .5522848,
-					oy = (h/2) * .5522848,
-					xm = sx + w/2,
-					ym = sy + h/2;
-				
-				ctx.moveTo(sx, ym);
-				ctx.bezierCurveTo(sx, ym - oy, xm - ox, sy, xm, sy);
-				ctx.bezierCurveTo(xm + ox, sy, mx, ym - oy, mx, ym);
-				ctx.bezierCurveTo(mx, ym + oy, xm + ox, my, xm, my);
-				ctx.bezierCurveTo(xm - ox, my, sx, ym + oy, sx, ym);
-				ctx.stroke();
-				break;
-
-			//Farbauswahl
-			case mdGetColor:
-				selectIndexByPixel(id, mx, my);
-				break;
-			
-			//Polygonauswahl
-			case mdSelectPoly:
-				if(!editObj.poly)
-					break;
-
-				var poly = editObj.poly;
-				ctx.beginPath();
-				ctx.moveTo(poly[0][0], poly[0][1]);
-				for(var i = 1; i < poly.length; i++)
-					ctx.lineTo(poly[i][0], poly[i][1]);
-				
-				ctx.lineTo(mx, my);
-				ctx.stroke();
-				break;
-		}
-		
-		editObj.x = mx;
-		editObj.y = my;
-	})
-	.mouseup(function(e) {
-		if($(".color-matching-wizard.visible2").get(0))
-			return;
-		
-		if(!editObj.active)
-			return;
-
-		var mode = editObj.mode;
-		var id = getCurrentCanvasId();
-		var zoom = canvasArray[id].z;
-		var sx = editObj.startx, sy = editObj.starty;
-		var mx = editObj.x, my = editObj.y;
-		var ctx = editlayer.getContext("2d"), ctx2 = $(".visible").get(0).getContext("2d");
-		var clr = editObj.clr;
-		
-		switch(mode) {
-			//Linie
-			case mdLine:
-				ctx2.strokeStyle = clr;
-				_cnvStrokeLine(canvasArray[id].c, sx, sy, mx, my);
-				break;
-
-			//Rechteck
-			case mdRect:
-				if(modesettings.filled) { //Gefuellt
-					var idata = getImageData2(ctx2, sx, sy, mx, my);
-					for(var x = 0; x < idata.width; x++)
-						for(var y = 0; y < idata.height; y++)
-							idata = _idataSetPixel(idata, x, y, clr);
-					
-					ctx2.putImageData(idata, Math.min(sx, mx), Math.min(sy, my));
-				}
-				else { //Ungefuellt
-					ctx2.strokeStyle = clr;
-					var lw = ctx2.lineWidth;
-					var c = canvasArray[id].c, x0 = Math.min(sx, mx), y0 = Math.min(sy, my);
-					var wdt = Math.abs(mx-sx), hgt = Math.abs(my-sy);
-					_cnvStrokeLine(c, x0, y0-Math.floor(lw/2), x0, y0+hgt+Math.floor(lw/2));
-					_cnvStrokeLine(c, x0, y0, x0+wdt, y0);
-					_cnvStrokeLine(c, x0+wdt, y0-Math.floor(lw/2), x0+wdt, y0+hgt+Math.floor(lw/2));
-					_cnvStrokeLine(c, x0, y0+hgt, x0+wdt, y0+hgt);
-				}
-				break;
-
-			//Ellipse
-			case mdCircle:
-				ctx2.fillStyle = clr;
-				ctx2.strokeStyle = clr;
-				if(modesettings.filled) //Gefuellt
-					_cnvFillEllipse(canvasArray[id].c, sx, sy, mx, my);
-				else { //Ungefuellt
-					var x0 = Math.min(sx, mx), x1 = Math.max(sx, mx);
-					var y0 = Math.min(sy, my), y1 = Math.max(sy, my);
-					for(var thickness = ctx2.lineWidth; thickness > 0; thickness--) {
-						if(x0 < x1) { x0++; x1--; }
-						if(y0 < y1) { y0++; y1--; }
-					}
-					var mdata = getImageData2(canvasArray[id].c.getContext("2d"), x0, y0, x1, y1);
-					_cnvFillEllipse(canvasArray[id].c, sx, sy, mx, my);
-					_cnvFillEllipse(canvasArray[id].c, x0, y0, x1, y1, mdata.data)
-				}
-				break;
-
-			case mdPoint:
-				applyEditlayer();
-				break;
-			
-			//Rechteckauswahl
-			case mdSelectRect:
-				var imgData = ctx2.getImageData(sx, sy, mx-sx, my-sy);
-				var mvlayer = $("#movinglayer").get(0);
-				
-				//Movinglayer aktivieren
-				activateMovingLayer((sx<mx?sx:mx), (sy<my?sy:my), mx-sx, my-sy);
-				
-				//Bilddateien einfügen
-				mvlayer.getContext('2d').putImageData(imgData, 0, 0);
-				ctx.fillRect(sx, sy, mx-sx, my-sy);
-				applyEditlayer();
-				
-				//Auf Default switchen (zum Moven)
-				$("#md_default").trigger('click');
-				
-				//Callback festlegen
-				canvasArray[getCurrentCanvasId()].rtdata.moving_callback = function() {
-					var mvcnv = $("#movinglayer").get(0);
-					var mvctx = mvcnv.getContext('2d');
-					var ctx2 = $(".visible").get(0).getContext("2d");
-					
-					var offset = $("#movinglayer").offset();
-					var cnv_offset = $(".visible").offset();
-					var zoom = canvasArray[getCurrentCanvasId()].z;
-					ctx2.putImageData(mvctx.getImageData(0, 0, mvcnv.width, mvcnv.height), (offset.left-cnv_offset.left)/zoom, (offset.top-cnv_offset.top)/zoom);
-				}
-				break;
-			
-			case mdSelectCircle:
-				ctx.clearRect(0, 0, editlayer.width, editlayer.height);
-				var imgData = ctx2.getImageData(sx, sy, mx-sx, my-sy);
-				var mvlayer = $("#movinglayer").get(0);
-				
-				//Movinglayer aktivieren
-				activateMovingLayer((sx<mx?sx:mx), (sy<my?sy:my), mx-sx, my-sy);
-				
-				var rx = (mx-sx)/2, ry = (my-sy)/2;
-				var cx = rx, cy = ry;
-				
-				//Einzelne Pixel überprüfen und ggf. übernehmen
-				for(var i = 0; i < imgData.data.length; i += 4) {
-					var px = (i/4)%imgData.width, py = Math.floor(i/4/imgData.width);
-					if(Math.pow(px-cx, 2)/Math.pow(rx, 2) + Math.pow(py-cy, 2)/Math.pow(ry, 2) > 1)
-						imgData.data[i+3] = 0;
-				}
-				
-				//Bilddateien einfügen
-				mvlayer.getContext('2d').putImageData(imgData, 0, 0);
-				
-				//Bereich leeren
-				var w = mx-sx, h = my-sy,
-					ox = (w/2) * .5522848,
-					oy = (h/2) * .5522848,
-					xm = sx + w/2,
-					ym = sy + h/2;
-				
-				ctx.moveTo(sx, ym);
-				ctx.bezierCurveTo(sx, ym - oy, xm - ox, sy, xm, sy);
-				ctx.bezierCurveTo(xm + ox, sy, mx, ym - oy, mx, ym);
-				ctx.bezierCurveTo(mx, ym + oy, xm + ox, my, xm, my);
-				ctx.bezierCurveTo(xm - ox, my, sx, ym + oy, sx, ym);
-				ctx.fill();
-				applyEditlayer();
-
-				//Auf Default switchen (zum Moven)
-				$("#md_default").trigger('click');
-				break;
-		}
-		ctx.closePath(); ctx2.closePath();
-		
-		//clearRect für weitere Bearbeitung im editlayer rausschmeißen
-		ctx.clearRect(0, 0, editlayer.width, editlayer.height);
-		
-		if([mdSelectCircle, mdSelectPoly, mdSelectRect].indexOf(editObj.mode) == -1)
-			//Aenderungen in Undostack speichern
-			stockUndoStack(ctx2.getImageData(0, 0, canvasArray[id].c.width, canvasArray[id].c.height));
-
-		//Polygonauswahl
-		if(editObj.mode == mdSelectPoly) {
-			if(editObj.poly) {
-				var start = editObj.poly[0];
-				//Wenn 5px nah an Startpunkt: Polygon vervollständigen
-				if(Math.sqrt(Math.pow(start[0]-mx, 2)+Math.pow(start[1]-my, 2)) < 5) {
-					var poly = editObj.poly;
-					
-					//Polygon erst ab 3 Eckpunkten möglich
-					if(poly.length < 3) {
-						editObj = {mode: 0};
-						return;
-					}
-					
-					var minX, minY, maxX, maxY;
-					minX = minY = maxX = maxY = -1;
-					
-					for(var i = 0; i < poly.length; i++) {
-						var x = poly[i][0], y = poly[i][1];
-						
-						if(minX == -1 || x < minX)
-							minX = x;
-						if(minY == -1 || y < minY)
-							minY = y;
-						if(maxX == -1 || x > maxX)
-							maxX = x;
-						if(maxY == -1 || y > maxY)
-							maxY = y;
-					}
-					var imgData = ctx2.getImageData(minX, minY, maxX-minX, maxY-minY);
-					for(var i = 0; i < imgData.data.length; i += 4) {
-						if(!pointInPolygon((i/4)%imgData.width+minX, Math.floor((i/4)/imgData.width)+minY, poly)) {
-							imgData.data[i+3] = 0;
-						}
-					}
-					
-					var mvlayer = $("#movinglayer").get(0);
-					
-					//Movinglayer aktivieren
-					activateMovingLayer(minX, minY, maxX-minX, maxY-minY);
-					
-					//Bilddateien einfügen
-					var mvctx = mvlayer.getContext('2d');
-					mvctx.putImageData(imgData, 0, 0);
-					
-					//Aus Bild ausschneiden
-					ctx.beginPath();
-					ctx.moveTo(poly[0][0], poly[0][1]);
-					for(i = 0; i < poly.length; i++)
-						ctx.lineTo(poly[i][0], poly[i][1]);
-					ctx.closePath();
-					ctx.fill();
-					applyEditlayer();
-
-					//Auf Default switchen (zum Moven)
-					$("#md_default").trigger('click');
-					editObj = {mode: 0};
-				}
-				else
-					editObj.poly.push([mx, my]);
-			}
-			else 
-				editObj.poly = [[mx, my]];
-		}
-		else
-			editObj = {mode: 0};
-	});
-	
 	//Bei Reload Tabdaten Laden
 	var query = location.search.substr(1).split('&');
 	if(query) {
@@ -647,11 +189,10 @@ $(window).ready(function() {
 		if($("#current-material-name > input").is(":focus"))
 			return;
 
-		var id = parseInt($(".visible").attr("id").replace(/bmpCanvas-/, ""));
-		var current_mat = canvasArray[id].rtdata.current_matidx;
+		var current_mat = canvasArray[activeId].rtdata.current_matidx;
 	
-		$("#current-material-clr").css("background-color", getColorByIndex(id, current_mat));
-		$("#current-material-name > input").val(getMaterialByIndex(id, current_mat));
+		$("#current-material-clr").css("background-color", getColorByIndex(activeId, current_mat));
+		$("#current-material-name > input").val(getMaterialByIndex(activeId, current_mat));
 	}).contextmenu(function(e) {
 		var rect = matpalette.getBoundingClientRect();
 		var mx = e.clientX - rect.left, my = e.clientY - rect.top;
@@ -862,7 +403,13 @@ $(window).ready(function() {
 			$("#material-suggestion-box").removeClass("active");
 	});
 	
-	rulerData = { left: $("#ruler-left-display"), top: $("#ruler-top-display"), fq: 0 };
+	rulerData = {
+		left: $("#ruler-left-display"),
+		top: $("#ruler-top-display"),
+		mirrorLeft: $("#ruler-left-display"),
+		mirrorTop: $("#ruler-left-display"),
+		fq: 0 
+	};
 	
 	//Maussteuerung
 	$(document).mousedown(function(e) {
@@ -914,7 +461,7 @@ $(window).ready(function() {
 		rulerData.fq = (rulerData.fq + 1)%3;
 		if(rulerData.fq)
 			return;
-		if(!$(".visible").get(0))
+		if(activeId === null)
 			return;
 		
 		$(".rulerdisplay.hidden").removeClass("hidden");
@@ -1112,7 +659,7 @@ function updateSidePalette(id) {
 }
 
 /*-- Rotation --*/
-
+/** @deprecated */
 //Rotation in 90°-Schritten
 function rotateImage(angle) {
 	angle = (angle - (angle % 90)) % 360;
@@ -1172,7 +719,7 @@ function rotateImage(angle) {
 }
 
 /*-- Spiegelung --*/
-
+/** @deprecated */
 function mirrorImage(fVertically) {
 	var id = getCurrentCanvasId(), cnv = canvasArray[id].c;
 	if($("#movinglayer.active").get(0))
@@ -1225,7 +772,7 @@ function mirrorImage(fVertically) {
 }
 
 /*-- Skalierung --*/
-
+/** @needsReview */
 function openScalingDialog() {
 	var dlg = new WDialog("$DlgScaleImage$", MODULE_LPRE, { modal: true, css: { "width": "470px" }, 
 			btnright: [{preset: "accept", onclick: function(e, btn, _self) {
@@ -1308,9 +855,9 @@ function openScalingDialog() {
 	
 	dlg = 0;
 }
-
+/** @deprecated */
 /*-- Undostack --*/
-
+/** @deprecated */
 function stockUndoStack(imgdata, id, fSaved) {
 	if(id == undefined)
 		id = getCurrentCanvasId();
@@ -1336,8 +883,9 @@ function stockUndoStack(imgdata, id, fSaved) {
 	$(btn_redo).addClass("deactivated");
 	return true;
 }
-
+/** @deprecated */
 function canUndoImageData() {
+	if(true)return
 	var id = getCurrentCanvasId();
 	if(!canvasArray[id].rtdata.undoStack)
 		return false;
@@ -1350,7 +898,7 @@ function canUndoImageData() {
 
 	return true;
 }
-
+/** @deprecated */
 function undoImageData() {
 	var id = getCurrentCanvasId();
 
@@ -1386,7 +934,7 @@ function canRedoImageData() {
 
 	return true;
 }
-
+/** @deprecated */
 function redoImageData() {
 	var id = getCurrentCanvasId();
 	
@@ -1447,27 +995,35 @@ function changeZoom(id, fZoomOut) {
 		return;
 
 	canvasArray[id].z = Math.max(1, Math.min(32, canvasArray[id].z));
+	
+	a_S.zoomFactor = canvasArray[id].z;
+	
 	onUpdateZoom();
 	return true;
 }
 
-function centerCanvas(id) {
-	if(id == undefined)
-		id = getCurrentCanvasId();
+function centerCanvas() {
+	if(!a_S)
+		return
 
-	var cnv = $("#bmpCanvas-"+id);
-	var offset = cnv.offset();
-	var wdwwdt = $(window).width(), wdwhgt = $(window).height();
-	var nx = wdwwdt/2-$(cnv).width()/2, ny = wdwhgt/2-$(cnv).height()/2-30;
-	if(cnv.width() > wdwwdt)
+	var cnv = $(".canvas-wrapper");
+	
+	var [neededWidth, neededHeight] = a_S.getNeededDimensions();
+	
+	var wdwwdt = $(window).width(),
+		wdwhgt = $(window).height();
+	
+	var nx = (wdwwdt - neededWidth)/2,
+		ny = (wdwhgt - neededHeight)/2;
+	
+	if(neededWidth > wdwwdt)
 		nx = 20;
-	if(cnv.height() > wdwhgt)
+	if(neededHeight > wdwhgt)
 		ny = 20;
 	
 	
 	//Canvas zentrieren
 	cnv.css("top", ny+"px").css("left", nx+"px");
-	$(editlayer).css("top", ny+"px").css("left", nx+"px");
 
 	return true;
 }
@@ -1476,19 +1032,8 @@ function onUpdateZoom() {
 	//Canvas vergrößern
 	var id = getCurrentCanvasId();
 	var zoom = canvasArray[id].z;
-	var current_cnv = canvasArray[id].c;
-	$(current_cnv).css("width", (canvasArray[id].wdt*(zoom))+"px");
-	$(current_cnv).css("height", (canvasArray[id].hgt*(zoom))+"px");
-	$(editlayer).css("width", (canvasArray[id].wdt*(zoom))+"px");
-	$(editlayer).css("height", (canvasArray[id].hgt*(zoom))+"px");
 	
-	var mvlayer = $("#movinglayer").get(0);
-	$(mvlayer).css("width", (mvlayer.width*(zoom))+"px");
-	$(mvlayer).css("height", (mvlayer.height*(zoom))+"px");
-	
-	var offset = $(current_cnv).offset();
-	$("#ruler-top").width(offset.left*2+$(current_cnv).width());
-	$("#ruler-left").height(offset.top*2+$(current_cnv).height());
+	a_S.updateZoom()
 	
 	//Canvas zentrieren
 	centerCanvas();
@@ -1499,43 +1044,6 @@ function onUpdateZoom() {
 	//Infoleiste aktualisieren
 	updateInfotoolbar();
 	
-	return true;
-}
-
-/*function fixAntialiasing(imgdata) {
-	//var clrdata = parseInt(clr.substr(1), 16).num2byte();
-	var canvasdata = canvasArray[getCurrentCanvasId()].c.getContext('2d').getImageData(0, 0, imgdata.width, imgdata.height);
-	for(var i = 0; i < imgdata.data.length; i+=4) {
-		if(imgdata.data[i+3] != 0)
-			imgdata.data[i+3] = 255;
-		else {
-			imgdata.data[i] = canvasdata.data[i];
-			imgdata.data[i+1] = canvasdata.data[i+1];
-			imgdata.data[i+2] = canvasdata.data[i+2];
-			imgdata.data[i+3] = 255;
-		}
-	}
-	
-	return imgdata;
-}*/
-
-function applyEditlayer() {
-	var ctx2 = canvasArray[getCurrentCanvasId()].c.getContext('2d');
-	var ctx = editlayer.getContext('2d');
-	var imgdata = ctx.getImageData(0, 0, editlayer.width, editlayer.height);
-	var canvasdata = canvasArray[getCurrentCanvasId()].c.getContext('2d').getImageData(0, 0, imgdata.width, imgdata.height);
-	for(var i = 0; i < imgdata.data.length; i+=4) {
-		if(imgdata.data[i+3] != 0)
-			imgdata.data[i+3] = 255;
-		else {
-			imgdata.data[i] = canvasdata.data[i];
-			imgdata.data[i+1] = canvasdata.data[i+1];
-			imgdata.data[i+2] = canvasdata.data[i+2];
-			imgdata.data[i+3] = 255;
-		}
-	}
-	//var imgdata = fixAntialiasing(ctx.getImageData(0, 0, editlayer.width, editlayer.height));
-	ctx2.putImageData(imgdata, 0, 0);
 	return true;
 }
 
@@ -1571,36 +1079,12 @@ function pointInPolygon(px, py, poly) {
     return inside;
 }
 
-function activateMovingLayer(x, y, width, height) {
-	var mvlayer = $("#movinglayer").get(0);
-	var offset = $(".visible").offset();
-	
-	//Movinglayer-Größe setzen
-	mvlayer.width = width;
-	mvlayer.height = height;
-	
-	//Ggf. Zoom setzen
-	var id = getCurrentCanvasId();
-	var zoom = canvasArray[id].z;
-	$(mvlayer).css("width", (width*zoom)+"px");
-	$(mvlayer).css("height", (height*zoom)+"px");
-	
-	//Position setzen
-	$(mvlayer).css("top", (offset.top+(y*zoom))+"px");
-	$(mvlayer).css("left", (offset.left+(x*zoom))+"px");
-	$(mvlayer).addClass("active");
-	
-	return true;
-}
-
 function getCurrentCanvasId() { 	
-	if(!$(".visible").get(0))
-		return -1;
-	return parseInt($(".visible").attr("id").replace(/bmpCanvas-/, ""));
+	return activeId || 0;
 }
 
 function updateRulers() {
-	if(!$(".visible").get(0))
+	if(!a_S)
 		return;
 
 	var rulerl = $("#ruler-left").get(0);
@@ -1610,7 +1094,7 @@ function updateRulers() {
 	
 	var nwidth = $(document).width(), nheight = $(document).height();
 
-	var cnvpos = $(".visible").offset();
+	var cnvpos = $(".draw-canvas").offset();
 	var xoff = cnvpos.left, yoff = cnvpos.top;
 
 	if(nwidth > $(".visible").outerWidth()+xoff)
@@ -1627,9 +1111,9 @@ function updateRulers() {
 	rulert.width = $(rulert).width();
 	
 	//Leeren
-	lctx.fillStyle = "rgb(240, 240, 240)";
+	lctx.fillStyle = "rgb(235, 235, 235)";
 	lctx.fillRect(0, 0, rulerl.width, rulerl.height);
-	tctx.fillStyle = "rgb(240, 240, 240)";
+	tctx.fillStyle = "rgb(235, 235, 235)";
 	tctx.fillRect(0, 0, rulert.width, rulert.height);
 	
 	lctx.lineWidth = 1;
@@ -1695,13 +1179,13 @@ function setRulerMarker(canvas, top, offset, size, text) {
 	}
 
 	context.closePath();
-	context.strokeStyle = "rgb(120, 120, 120)";
+	context.strokeStyle = "rgb(160, 160, 160)";
 	context.stroke();
 	
 	//Bei vollen Strichen: Pixelzahl anzeigen
 	if(size == 1) {
 		context.font = "10px Arial";
-		context.fillStyle = "rgb(80, 80, 80)";
+		context.fillStyle = "rgb(128, 128, 128)";
 		if(top)
 			context.fillText(text, offset+3, 10);
 		else
@@ -1992,29 +1476,21 @@ function loadImageFileData(file, id) {
 
 function loadImage(file, id, fShow) {
 	var r = loadImageFileData(file, id);
-	if(r == -1)
+	
+	if(r === -1)
 		return loadUnsupportedImage(file, id, fShow);
 
-	var infoheader = r[0], clr_index = r[1], data = r[2], bitmap_header = r[3];
+	var [infoheader, clr_index, data, bitmap_header] = r;
 	
-	//Canvas erstellen und Bild anzeigen
-	$("body").append("<canvas id='bmpCanvas-"+id+"' class='image-canvas'></canvas>");
-	var canvas = document.getElementById("bmpCanvas-"+id);
+	let gl = getGl()
 	
-	if(!canvas)
-		return;
+	if(!gl)
+		return
 	
-	canvasArray[id] = { c: canvas, f: file, header: infoheader, coloridx: clr_index, rtdata: {}, z: 1 };
-
-	var context = canvas.getContext('2d');
-
-	//Canvas-Grundeinstellungen
-	canvasArray[id].wdt = canvas.width = infoheader.width;
-	canvasArray[id].hgt = canvas.height = infoheader.height;
-	context.imageSmoothingEnabled = false;
+	var scene = addScene(gl, document.getElementById("draw-canvas"))
+	scene.useAsRect($(".ui-rect").get(0))
 	
-	var imgdata = context.createImageData(infoheader.width, infoheader.height);
-	var d = imgdata.data;
+	canvasArray[id] = { scene, f: file, header: infoheader, coloridx: clr_index, rtdata: {}, z: 1 };
 	
 	var num2byte = function(num, size) {
 		var ar = [];
@@ -2031,6 +1507,7 @@ function loadImage(file, id, fShow) {
 		data.splice(0, bitmap_header.offset_pxarray-1078);
 	
 	//Bild aus Pixelstorage generieren
+	/*
 	var j = 0;
 	var padding_bytes = (4-(infoheader.width%4))%4;
 	for(var i = Math.abs(infoheader.height)-1; i >= 0; i--) {
@@ -2045,10 +1522,28 @@ function loadImage(file, id, fShow) {
 		
 		j += padding_bytes;
 	}
+	*/
+	var texData = new Uint8Array()
+	var w = infoheader.width
+	/*
+	for(let i = Math.abs(infoheader.height)-1; i >= 0; i--) {
+		for(let x = 0; x < (infoheader.width)*4; x+=4) {
+			let pos = i*(infoheader.width*4)+x;
+			let index = data[j++]; 
+			let px = num2byte(canvasArray[id].coloridx[index], 4);
+			
+			//Canvas-Alpha: 255 = sichtbar
+			data[pos] = px[2]
+			data[pos+1] = px[1]
+			data[pos+2] = px[0]
+		}
+	}*/
+	
+	//scene.initWithData()
+	scene.initWithTexture(file.path)
 	
 	//Bitmap anzeigen
-	canvas.getContext("2d").putImageData(imgdata, 0, 0);
-	stockUndoStack(imgdata, id, true);
+	//stockUndoStack(imgdata, id, true);
 	
 	//Materialien und Texturen laden
 	loadMaterials(id);
@@ -2057,7 +1552,7 @@ function loadImage(file, id, fShow) {
 	centerCanvas(id);
 	
 	//Canvas ggf. anzeigen
-	if(fShow || !$(".visible")[0])
+	if(fShow || !a_S)
 		showDeckItem(id);
 
 	return true;
@@ -2546,16 +2041,11 @@ function loadUnsupportedImage(file, id, fShow, clridxtbl) {
 		imageObj.src = "file://"+file.path.replace(/\\/gi, "/");
 	else
 		imageObj.src = "file://"+file.path;
-	
-	context.imageSmoothingEnabled = false;
-	
-	/*var imgdata = context.createImageData(infoheader.width, infoheader.height);
-	var d = imgdata.data;*/
 }
 
 /* Farbabfragen */
 
-function getCurrentColor(id) {
+function getCurrentColor(id = activeId) {
 	return getColorByIndex(id, canvasArray[id].rtdata.current_matidx);
 }
 
@@ -2569,6 +2059,26 @@ function getColorByIndex(id, index) {
 
 	return "#"+clr;
 }
+
+function getCurrentRGB(id) {
+	return hexToRGB(getColorByIndex(id, canvasArray[id].rtdata.current_matidx));
+}
+
+function hexToRGB(hex) {
+    // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+    var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+    hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+        return r + r + g + g + b + b;
+    });
+
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? [
+        parseInt(result[1], 16),
+        parseInt(result[2], 16),
+        parseInt(result[3], 16)
+    ] : null;
+}
+
 
 function getMaterialByIndex(id, index) {
 	var selection = "Sky";
@@ -2628,6 +2138,8 @@ function drawMaterialPalette(id) {
 	return true;
 }
 
+/* Deck functionalities */
+
 function saveFileByPath(path) {
 	for(var id in canvasArray)
 		if(canvasArray[id])
@@ -2648,7 +2160,7 @@ function fileLoaded(path) {
 
 function showDeckItem(id) {
 	//Auswahl deaktivieren bei Tabwechsel
-	if($(".visible").attr("id") != "bmpCanvas-"+id)
+	if(id !== activeId)
 		$("#movinglayer").removeClass("active");
 	
 	//Fuer Color-Matching-Wizard die Toolbar deaktivieren
@@ -2669,9 +2181,9 @@ function showDeckItem(id) {
 		selectColorIndex(id, canvasArray[id].rtdata.current_matidx);
 
 	$(".visible").removeClass("visible");
-	$("#bmpCanvas-"+id).addClass("visible");
 	$("#cmw-wrapper-"+id).addClass("visible");
 	
+	/*
 	if(canUndoImageData())
 		$(btn_undo).removeClass("deactivated");
 	else
@@ -2681,19 +2193,16 @@ function showDeckItem(id) {
 		$(btn_redo).removeClass("deactivated");
 	else
 		$(btn_redo).addClass("deactivated");
+	*/
+	
+	a_S = _SCENES[id]
+	
+	a_S.onShow()
+	activeId = id
 	
 	//Lineal und Zoom aktualisieren
 	onUpdateZoom();
-	
-	var cnv = $("#bmpCanvas-"+id).get(0);
-
-	if(editlayer) {
-		editlayer.width = cnv.width;
-		editlayer.height = cnv.height;
-		var off = $(cnv).offset();
-		$(editlayer).css("top", off.top+"px").css("left", off.left+"px");
-	}
-	
+		
 	frameUpdateWindmillTitle();
 }
 
@@ -2704,7 +2213,6 @@ function frameWindowTitle() {
 }
 
 function removeDeckItem(id) {
-	$("#bmpCanvas-"+id).remove();
 	$("#cmw-wrapper-"+id).remove();
 	
 	canvasArray[id] = null;
@@ -2725,7 +2233,7 @@ function getTabData(tabid) {
 	var cnv = canvasArray[tabid];
 	var data = {
 		file: cnv.f,
-		imgdata: cnv.c.getContext('2d').getImageData(0, 0, cnv.wdt, cnv.hgt),
+		// imgdata: cnv.c.getContext('2d').getImageData(0, 0, cnv.wdt, cnv.hgt),
 		wdt: cnv.wdt,
 		hgt: cnv.hgt
 	};
