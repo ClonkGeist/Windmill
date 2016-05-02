@@ -1052,8 +1052,20 @@ function setupNumberInputs(index) {
 		spUp.className = "input-spinners-button icon-arrow-up";
 		spDw.className = "input-spinners-button icon-arrow-down";
 
-		spUp.addEventListener("click", function() { tEl.stepUp(); });
-		spDw.addEventListener("click", function() { tEl.stepDown(); });
+		/*spUp.addEventListener("click", function() { tEl.stepUp(); });
+		spDw.addEventListener("click", function() { tEl.stepDown(); });*/
+		let interval = 0;
+		function clearIntv() { clearInterval(interval); }
+		$(spUp).mousedown(function() {
+			interval = setInterval(function() {
+				tEl.stepUp();
+			}, 100);
+		}).mouseup(clearIntv).mouseleave(clearIntv);
+		$(spDw).mousedown(function() {
+			interval = setInterval(function() {
+				tEl.stepDown();
+			}, 100);
+		}).mouseup(clearIntv).mouseleave(clearIntv);
 		$(this).append(spUp).append(spDw);
 	});
 }
