@@ -502,15 +502,6 @@ section:last-child {
   width: 100%;
   overflow: hidden; }
 
-.sp-o-switchpage {
-  width: 30px;
-  background-color: gainsboro;
-  opacity: 0.2;
-  transition: opacity 0.7s; }
-
-.sp-o-switchpage:hover {
-  opacity: 0.8; }
-
 .sp-o-wealth {
   width: 40px;
   margin: auto; }
@@ -788,7 +779,7 @@ section:last-child {
 .sp-range {
   display: flex; }
   .sp-range .sp-rangelabel {
-    width: 100px; }
+    min-width: 100px; }
   .sp-range input[type='range'] {
     flex: 1; }
     .sp-range input[type='range']::-moz-range-track {

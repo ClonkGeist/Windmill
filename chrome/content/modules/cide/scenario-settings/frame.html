@@ -24,7 +24,7 @@
 		<div class="sp-checkinput draft">
 			<label class="sp-checkinput-label"></label>
 			<div class="sp-checkinput-check"></div>
-			<input class="sp-checkinput-text" type="text" />
+			<input class="sp-checkinput-text" type="text">
 		</div>
 		
 		<!-- <div class="sp-imgsel"></div> -->
@@ -73,14 +73,14 @@
 							</div>
 							<div class="sp-number-input flex-item">
 								<label>$MaxPlayers$:
-									<input type="number" class="sp-g-maxplayers" min="1" max="12" data-defaultvalue="4"  data-scenario-sect="Head" data-scenario-key="MaxPlayer" />
+									<input type="number" class="sp-g-maxplayers" min="1" max="12" data-defaultvalue="4"  data-scenario-sect="Head" data-scenario-key="MaxPlayer">
 									<div class="input-spinners" data-input-id="i_0"></div>
 								</label>
 							</div>
 							<div class="flex-item">
 								<div>
 									<label class="special-cb">
-										<input type="checkbox" class="sp-g-enablefow" data-scenario-sect="Game" data-scenario-key="FoWEnabled" />
+										<input type="checkbox" class="sp-g-enablefow" data-scenario-sect="Game" data-scenario-key="FoWEnabled">
 										<span class="cblabel">$FoW$</span>
 									</label>
 								</div>
@@ -110,10 +110,15 @@
 						</div>
 					</section>-->
 					<section>
-						<div class="sp-number-input flex-item">
-							<label for="i_1">$Wealth$:</label>
-							<input id="i_1" type="number" class="sp-o-wealth" min="0" max="1000" data-defaultvalue="250" data-scenario-sect="PlayerX" data-scenario-key="Wealth" />
-							<div class="input-spinners" data-input-id="i_1"></div>
+						<div class="flex-wrapper">
+							<div class="sp-number-input flex-item">
+								<label for="i_1">$Wealth$:</label>
+								<input id="i_1" type="number" class="sp-o-wealth" min="0" max="1000" data-defaultvalue="250" data-scenario-sect="PlayerX" data-scenario-key="Wealth">
+								<div class="input-spinners" data-input-id="i_1"></div>
+							</div>
+							<div class="special-cb sp-o-switchpage">
+								<span class="cblabel">$SwitchPage$</span>
+							</div>
 						</div>
 					</section>
 					<section>
@@ -155,8 +160,6 @@
 									</div>
 								</div>
 							</div>
-						
-							<div class="sp-o-switchpage">&gt;</div>
 						</div>
 					</section>
 				</div>
@@ -173,20 +176,20 @@
 								<div class="sp-settingsgroup-body">
 									<div class="sp-range">
 										<div class="sp-rangelabel">$MapWidth$:</div>
-										<input type="range" class="sp-l-mapwidth" min="300" max="2000" data-defaultmin="300" data-defaultmax="2000" data-scenario-sect="Landscape" data-scenario-key="MapWidth"/>
+										<input type="range" class="sp-l-mapwidth" min="300" max="2000" data-defaultmin="300" data-defaultmax="2000" data-scenario-sect="Landscape" data-scenario-key="MapWidth">
 									</div>
 									<div class="sp-range">
 										<div class="sp-rangelabel">$MapHeight$:</div>
-										<input type="range" class="sp-l-mapheight" min="300" max="2000" data-defaultmin="400" data-defaultmax="2000" data-scenario-sect="Landscape" data-scenario-key="MapHeight"/>
+										<input type="range" class="sp-l-mapheight" min="300" max="2000" data-defaultmin="400" data-defaultmax="2000" data-scenario-sect="Landscape" data-scenario-key="MapHeight">
 									</div>
 									<div class="sp-range">
 										<div class="sp-rangelabel">$MapZoom$:</div>
-										<input type="range" class="sp-l-mapzoom" min="1" max="15" data-scenario-sect="Landscape" data-scenario-key="MapZoom"/>
+										<input type="range" class="sp-l-mapzoom" min="1" max="15" data-scenario-sect="Landscape" data-scenario-key="MapZoom">
 									</div>
-									<label>$NoScan$:<input type="checkbox" class="sp-l-noscan" data-scenario-sect="Landscape" data-scenario-key="NoScan" /></label><br/>
-									<label>$MapPlayerExtend$:<input type="checkbox" class="sp-l-mapplayerextend" data-scenario-sect="Landscape" data-scenario-key="MaxPlayerExtend" /></label><br/>
-									$Sky$: <select class="sp-l-selectsky" data-scenario-sect="Landscape" data-scenario-key="Sky"></select></br>
-									$SkyFade$: <!--ColorPicker--></br>
+									<label>$NoScan$:<input type="checkbox" class="sp-l-noscan" data-scenario-sect="Landscape" data-scenario-key="NoScan"></label><br>
+									<label>$MapPlayerExtend$:<input type="checkbox" class="sp-l-mapplayerextend" data-scenario-sect="Landscape" data-scenario-key="MaxPlayerExtend"></label><br>
+									$Sky$: <select class="sp-l-selectsky" data-scenario-sect="Landscape" data-scenario-key="Sky"></select><br>
+									$SkyFade$: <!--ColorPicker--><br>
 								</div>
 							</div>
 							
@@ -198,23 +201,23 @@
 								<div class="sp-settingsgroup-body">
 									<div class="sp-range">
 										<div class="sp-rangelabel">$Amplitude$:</div>
-										<input type="range" class="sp-l-amplitude" min="0" max="100" data-scenario-sect="Landscape" data-scenario-key="Amplitude" />
+										<input type="range" class="sp-l-amplitude" min="0" max="100" data-scenario-sect="Landscape" data-scenario-key="Amplitude">
 									</div>
 									<div class="sp-range">
 										<div class="sp-rangelabel">$Phase$:</div>
-										<input type="range" class="sp-l-phase" min="0" max="100" data-scenario-sect="Landscape" data-scenario-key="Phase" />
+										<input type="range" class="sp-l-phase" min="0" max="100" data-scenario-sect="Landscape" data-scenario-key="Phase">
 									</div>
 									<div class="sp-range">
 										<div class="sp-rangelabel">$Period$:</div>
-										<input type="range" class="sp-l-period" min="0" max="100" data-scenario-sect="Landscape" data-scenario-key="Period" />
+										<input type="range" class="sp-l-period" min="0" max="100" data-scenario-sect="Landscape" data-scenario-key="Period">
 									</div>
 									<div class="sp-range">
 										<div class="sp-rangelabel">$Random$:</div>
-										<input type="range" class="sp-l-random" min="0" max="100" data-scenario-sect="Landscape" data-scenario-key="Random" />
+										<input type="range" class="sp-l-random" min="0" max="100" data-scenario-sect="Landscape" data-scenario-key="Random">
 									</div>
 									<div class="sp-range">
 										<div class="sp-rangelabel">$LiquidLevel$:</div>
-										<input type="range" class="sp-l-liquidlevel" min="0" max="100" data-scenario-sect="Landscape" data-scenario-key="LiquidLevel" />
+										<input type="range" class="sp-l-liquidlevel" min="0" max="100" data-scenario-sect="Landscape" data-scenario-key="LiquidLevel">
 									</div>
 								</div>
 							</div>
@@ -225,11 +228,11 @@
 									<div class="sp-settingsgroup-collapse">▼</div>
 								</div>
 								<div class="sp-settingsgroup-body">
-									<label>$TopOpen$: <input class="sp-l-topopen" type="checkbox" data-scenario-sect="Landscape" data-scenario-key="TopOpen" /></label><br/>
-									<label>$BottomOpen$: <input class="sp-l-bottomopen" type="checkbox" data-scenario-sect="Landscape" data-scenario-key="BottomOpen" /></label><br/>
-									<label>$AutoScanSide$: <input class="sp-l-autoscanside" type="checkbox" data-scenario-sect="Landscape" data-scenario-key="AutoScanSide" /></label><br/>
-									<div class="checkinput" data-class="sp-l-leftopen" data-scenario-sect="Landscape" data-scenario-key="LeftOpen">$LeftOpen$:</div><br/>
-									<div class="checkinput" data-class="sp-l-rightopen" data-scenario-sect="Landscape" data-scenario-key="RightOpen">$RightOpen$:</div><br/>
+									<label>$TopOpen$: <input class="sp-l-topopen" type="checkbox" data-scenario-sect="Landscape" data-scenario-key="TopOpen"></label><br>
+									<label>$BottomOpen$: <input class="sp-l-bottomopen" type="checkbox" data-scenario-sect="Landscape" data-scenario-key="BottomOpen"></label><br>
+									<label>$AutoScanSide$: <input class="sp-l-autoscanside" type="checkbox" data-scenario-sect="Landscape" data-scenario-key="AutoScanSide"></label><br>
+									<div class="checkinput" data-class="sp-l-leftopen" data-scenario-sect="Landscape" data-scenario-key="LeftOpen">$LeftOpen$:</div><br>
+									<div class="checkinput" data-class="sp-l-rightopen" data-scenario-sect="Landscape" data-scenario-key="RightOpen">$RightOpen$:</div><br>
 								</div>
 							</div>
 							
@@ -253,10 +256,16 @@
 					</div>
 					<div class="flex-wrapper">
 						<div class="flex-item">
-							$VegetationLevel$: <input type="range" class="sp-e-vegetationlevel" min="0" max="100" data-scenario-sect="Landscape" data-scenario-key="VegetationLevel" />
+							<div class="sp-range">
+								<div class="sp-rangelabel">$VegetationLevel$:</div>
+								<input type="range" class="sp-e-vegetationlevel" min="0" max="100" data-scenario-sect="Landscape" data-scenario-key="VegetationLevel">
+							</div>
 						</div>
 						<div class="flex-item">
-							$InEarthLevel$: <input type="range" class="sp-e-inearthlevel" min="0" max="100" data-scenario-sect="Landscape" data-scenario-key="InEarthLevel" />
+							<div class="sp-range">
+								<div class="sp-rangelabel">$InEarthLevel$:</div>
+								<input type="range" class="sp-e-inearthlevel" min="0" max="100" data-scenario-sect="Landscape" data-scenario-key="InEarthLevel">
+							</div>
 						</div>
 					</div>
 					<div class="flex-wrapper">
@@ -274,16 +283,26 @@
 									<div class="sp-settingsgroup-caption">$WeatherCaption$</div>
 								</div>
 								<div class="sp-settingsgroup-body">
-									$Climate$:
-									<input type="range" class="sp-e-climate" min="0" max="100" data-scenario-sect="Weather" data-scenario-key="Climate" /><br/>
-									$StartSeason$:
-									<input type="range" class="sp-e-startseason" min="0" max="100" data-scenario-sect="Weather" data-scenario-key="StartSeason" /><br/>
-									$YearSpeed$:
-									<input type="range" class="sp-e-yearspeed" min="0" max="100" data-scenario-sect="Weather" data-scenario-key="YearSpeed" /><br/>
-									$Wind$:
-									<input type="range" class="sp-e-wind" min="-100" max="100" data-scenario-sect="Weather" data-scenario-key="Wind" /><br/>
-									$Gravity$:
-									<input type="range" class="sp-e-gravity" min="10" max="200" data-defaultvalue="100" data-scenario-sect="Weather" data-scenario-key="Gravity" /><br/>
+									<div class="sp-range">
+										<div class="sp-rangelabel">$Climate$:</div>
+										<input type="range" class="sp-e-climate" min="0" max="100" data-scenario-sect="Weather" data-scenario-key="Climate">
+									</div>
+									<div class="sp-range">
+										<div class="sp-rangelabel">$StartSeason$:</div>
+										<input type="range" class="sp-e-startseason" min="0" max="100" data-scenario-sect="Weather" data-scenario-key="StartSeason">
+									</div>
+									<div class="sp-range">
+										<div class="sp-rangelabel">$YearSpeed$:</div>
+										<input type="range" class="sp-e-yearspeed" min="0" max="100" data-scenario-sect="Weather" data-scenario-key="YearSpeed">
+									</div>
+									<div class="sp-range">
+										<div class="sp-rangelabel">$Wind$:</div>
+										<input type="range" class="sp-e-wind" min="-100" max="100" data-scenario-sect="Weather" data-scenario-key="Wind">
+									</div>
+									<div class="sp-range">
+										<div class="sp-rangelabel">$Gravity$:</div>
+										<input type="range" class="sp-e-gravity" min="10" max="200" data-defaultvalue="100" data-scenario-sect="Weather" data-scenario-key="Gravity">
+									</div>
 								</div>
 							</div>
 						</div>

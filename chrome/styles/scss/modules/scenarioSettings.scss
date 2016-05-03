@@ -168,18 +168,6 @@ section:last-child {
 	overflow: hidden;
 }
 
-.sp-o-switchpage {
-	width: 30px;
-	background-color: rgb(220, 220, 220);
-	opacity: 0.2;
-	
-	transition: opacity 0.7s;
-}
-
-.sp-o-switchpage:hover {
-	opacity: 0.8;
-}
-
 .sp-o-wealth {
 	width: 40px;
 	margin: auto;
@@ -510,7 +498,7 @@ section:last-child {
 	display: flex;
   
 	.sp-rangelabel {
-	  width: 100px;
+	  min-width: 100px;
 	}
 	
 	input[type='range'] {
