@@ -481,7 +481,7 @@ section:last-child {
   flex-direction: row; }
 
 .sp-l-sidebar {
-  width: 300px;
+  width: 500px;
   height: 100%;
   border-right: 1px solid black;
   overflow-y: auto; }
@@ -784,6 +784,22 @@ section:last-child {
         width: 32px;
         height: 32px; }
 
+/* Range */
+.sp-range {
+  display: flex; }
+  .sp-range .sp-rangelabel {
+    width: 100px; }
+  .sp-range input[type='range'] {
+    flex: 1; }
+    .sp-range input[type='range']::-moz-range-track {
+      background-color: gainsboro;
+      height: 100%; }
+    .sp-range input[type='range']::-moz-range-thumb {
+      background-color: #00a5d2;
+      border-radius: 0;
+      border: 0;
+      height: 100%; }
+
 /* special check boxes /big buttons/ */
 .special-cb .cblabel {
   background-color: gainsboro;
@@ -896,7 +912,8 @@ section:last-child {
   width: 20px; }
 
 .sp-settingsgroup {
-  border-bottom: 1px solid black; }
+  border-bottom: 1px solid black;
+  background-color: #FFF; }
 
 /*-- Checkbox-Textinputs --*/
 .sp-checkinput {
