@@ -219,6 +219,7 @@ function initializeConfig() {
 
 	//ScenarioSettings
 	addConfigString("ScenarioSettings", "AlwaysUseScenarioSettings", true);
+	addConfigString("ScenarioSettings", "UseModuleCache", false);
 	
 	//BMP-Editor
 	addConfigString("BMPEditor", "HideUnusedMat", true);

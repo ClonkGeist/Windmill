@@ -26,6 +26,11 @@ hook("load", function() {
 	}, function() {
 		iterator.close();
 	});
+	for(var key in definitions) {
+		if(definitions[key].errors)
+			for(var i = 0; i < definitions[key].errors.length; i++)
+				reportLoadingError(key, definitions[key].errors[i].msg, definitions[key].errors[i].type, true);
+	}
 });
 
 function setupDeflistKeybindings() {
@@ -150,7 +155,12 @@ function ctxInsertGraphicsEntries(obj_by) {
 	return true;
 }
 
-var sessions = [], definitions = [];
+if(!parent.scenariosettings_definitions)
+	parent.scenariosettings_definitions = [];
+
+var sessions = [], definitions = parent.scenariosettings_definitions;
+if(getConfigData("ScenarioSettings", "UseModuleCache"))
+	definitions = [];
 
 function setLoadingCaption(text, index, ...pars) {	getWrapper(".loadingPage-caption > p", index).text(Locale(text, 0, ...pars)); }
 function setLoadingSubCaption(text, index, ...pars) {	getWrapper(".loadingPage-subCaption", index).text(Locale(text, 0, ...pars)); }
@@ -213,8 +223,11 @@ function addScript(path, lang, index, path, fShow) {
 				promises[def] = success;
 			}) };
 		}
-		if(!scendata["Definitions"])
-			loadingdefs = ["Objects.ocd"], scenariodefs = ["Objects.ocd"];
+		if(!scendata["Definitions"] || !scendata["Definitions"]["Definition1"]) {
+			if(!definitions["Objects.ocd"] || definitions["Objects.ocd"].loading)
+				loadingdefs.unshift("Objects.ocd");
+			scenariodefs.unshift("Objects.ocd");
+		}
 
 		let temp = formatPath(sessions[index].path).split("/");
 		temp.pop();
@@ -347,6 +360,7 @@ function addScript(path, lang, index, path, fShow) {
 		}
 		else
 			md_editorframe.contentWindow.addScript(text, lang, index, path, true);
+		updateErrorLog();
 	});
 }
 
@@ -1054,12 +1068,16 @@ class OCDefinition {
 		this.path = "";
 		this.title = undefined;
 		this.flags = 0;
-		this.imagepath = "";
 		this.desc = Locale("$DefHasNoDescription$");
 	}
 }
 
-function reportLoadingError(maindef, msg, type = "error") {
+function reportLoadingError(maindef, msg, type = "error", dontSave) {
+	if(!dontSave) {
+		if(!definitions[maindef].errors)
+			definitions[maindef].errors = [];
+		definitions[maindef].errors.push({type, msg});
+	}
 	let clone = $(".errorlog-item.draft").clone();
 	clone.removeClass("draft").addClass(type);
 	clone.find(".errorlog-item-content").text(msg);
