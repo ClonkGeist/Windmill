@@ -45,7 +45,7 @@ function setupDeflistKeybindings() {
 			if($(target).prev()[0])
 				$(target).prev().trigger("mousedown").focus();
 		}, 0, 0, { no_customization: true }),
-
+                                               
 		//Cursor Runter
 		new KeyBinding("DefselMoveDown", "DOWN", function(e, target) {
 			if($(target).next()[0])
@@ -1157,6 +1157,13 @@ function showDeckItem(id) {
 	updateErrorLog();
 }
 
+function definitionInUse(def) {
+	for(var i = 0; i < sessions.length; i++) {
+		if(sessions[i] && (sessions[i].scenariodefs.indexOf(def) >= 0 || def == sessions[i].relpath))
+			return true;
+	}
+}
+
 function removeDeckItem(id) {
 	md_editorframe.contentWindow.removeDeckItem(id);
 	sessions[id] = 0;
@@ -1168,16 +1175,16 @@ function removeDeckItem(id) {
 		if(def == "Objects.ocd")
 			continue;
 
-		var def_used = false;
-		for(var i = 0; i < sessions.length; i++) {
-			if(sessions[i] && sessions[i].scenariodefs.indexOf(def) >= 0) {
+		let def_used = false, modules = getModulesByName("scenario-settings");
+		for(var i = 0; i < modules.length; i++) {
+			if(modules[i].contentWindow.definitionInUse(def)) {
 				def_used = true;
 				break;
-			}	
+			}
 		}
 
 		if(!def_used)
-			definitions[def] = undefined;
+			delete definitions[def];
 	}
 	$("#scensettings-session-"+id).remove();
 }
