@@ -162,7 +162,10 @@ var _sc = {
 	//Crypto-Hash
 	crptohash : function() { return Cc["@mozilla.org/security/hash;1"].createInstance(Ci.nsICryptoHash); },
 	//SubScript-Loader
-	subscript: function() { return Cc["@mozilla.org/moz/jssubscript-loader;1"].getService(Ci.mozIJSSubScriptLoader); }
+	subscript: function() { return Cc["@mozilla.org/moz/jssubscript-loader;1"].getService(Ci.mozIJSSubScriptLoader); },
+	
+	//clipboard API
+	clipboard2 : require("sdk/clipboard")
 };
 
 //XPCOM-Konstanten

@@ -224,10 +224,12 @@ function remapKeybindings(editor) {
 }
 
 hook("load", function() {
-	
+	$(window).bind("paste", function(e) {
+		e.preventDefault();
+	});
 	bindKeyToObj(new KeyBinding("Save", "Ctrl-S", function() { saveTab(-1); }));
 	bindKeyToObj(new KeyBinding("DuplicateSel", "Ctrl-Shift-D", function() { a_E.execCommand("duplicateSelection"); }));
-	bindKeyToObj(new KeyBinding("Paste", "Ctrl-V", function() { a_E.execCommand("paste"); }));
+	bindKeyToObj(new KeyBinding("Paste", "Ctrl-V", function() { a_E.execCommand("paste", _sc.clipboard2.get()); }));
 	bindKeyToObj(new KeyBinding("RemoveLine", "Ctrl-D", function() { a_E.execCommand("removeline"); }));
 	bindKeyToObj(new KeyBinding("OpenSnippetDialog", "Ctrl-Alt-S", function() { err("ES"); showSnippetDialog(a_E.__scope); }));
 	bindKeyToObj(new KeyBinding("SelectAll", "Ctrl-A", function() { a_E.selectAll(); }));
