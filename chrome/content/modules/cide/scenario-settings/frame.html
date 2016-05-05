@@ -168,7 +168,69 @@
 					
 					<div class="sp-l-wrapper">
 						<div class="sp-l-sidebar">
-							<div class="sp-settingsgroup">
+							<div class="sidebar-wrapper">
+								<div class="group">
+									<div class="sp-range autosize">
+										<div class="sp-rangelabel" data-tooltip="$MapWidth$">M</div>
+										<input type="range" class="sp-l-mapwidth" min="300" max="2000" data-defaultmin="300" data-defaultmax="2000" data-scenario-sect="Landscape" data-scenario-key="MapWidth">
+									</div>
+									<div class="sp-range autosize">
+										<div class="sp-rangelabel" data-tooltip="$MapHeight$">H</div>
+										<input type="range" class="sp-l-mapheight" min="300" max="2000" data-defaultmin="400" data-defaultmax="2000" data-scenario-sect="Landscape" data-scenario-key="MapHeight">
+									</div>
+									<div class="sp-range autosize">
+										<div class="sp-rangelabel" data-tooltip="$MapZoom$">Z</div>
+										<input type="range" class="sp-l-mapzoom" min="1" max="15" data-scenario-sect="Landscape" data-scenario-key="MapZoom">
+									</div>
+									<div class="flexwrapper">
+										<div class="flexitem iconcb sp-l-noscan" data-scenario-sect="Landscape" data-scenario-key="NoScan" data-tooltip="$NoScan$">NoSc</div>
+										<div class="flexitem iconcb sp-l-mapplayerextend" data-scenario-sect="Landscape" data-scenario-key="MaxPlayerExtend" data-tooltip="$MapPlayerExtend$">ExPl</div>
+									</div>
+									<div class="flexwrapper">
+										<div class="flexitem">
+											Sky
+										</div>
+										<div class="flexitem">
+											SkFa <!-- Colorpicker -->
+										</div>
+									</div>
+								</div>
+								<div class="group">
+									<div class="sp-range autosize">
+										<div class="sp-rangelabel" data-tooltip="$Amplitude$">A</div>
+										<input type="range" class="sp-l-amplitude" min="0" max="100" data-scenario-sect="Landscape" data-scenario-key="Amplitude">
+									</div>
+									<div class="sp-range autosize">
+										<div class="sp-rangelabel" data-tooltip="$Phase$">Ph</div>
+										<input type="range" class="sp-l-phase" min="0" max="100" data-scenario-sect="Landscape" data-scenario-key="Phase">
+									</div>
+									<div class="sp-range autosize">
+										<div class="sp-rangelabel" data-tooltip="$Period$">Pe</div>
+										<input type="range" class="sp-l-period" min="0" max="100" data-scenario-sect="Landscape" data-scenario-key="Period">
+									</div>
+									<div class="sp-range autosize">
+										<div class="sp-rangelabel" data-tooltip="$Random$">Rnd</div>
+										<input type="range" class="sp-l-random" min="0" max="100" data-scenario-sect="Landscape" data-scenario-key="Random">
+									</div>
+									<div class="sp-range autosize">
+										<div class="sp-rangelabel" data-tooltip="$LiquidLevel$">LL</div>
+										<input type="range" class="sp-l-liquidlevel" min="0" max="100" data-scenario-sect="Landscape" data-scenario-key="LiquidLevel">
+									</div>
+								</div>
+								<div class="group">
+									<div class="flexwrapper">
+										<div class="flexitem iconcb sp-l-borders">B</div>
+										<div class="flexitem iconcb sp-l-autoscanside" data-scenario-sect="Landscape" data-scenario-key="AutoScanSide" data-tooltip="$AutoScanSide$">AutoS</div>
+									</div>
+									<!--<label>$TopOpen$: <input class="sp-l-topopen" type="checkbox" data-scenario-sect="Landscape" data-scenario-key="TopOpen"></label>
+									<label>$BottomOpen$: <input class="sp-l-bottomopen" type="checkbox" data-scenario-sect="Landscape" data-scenario-key="BottomOpen"></label>
+									<label>$AutoScanSide$: <input class="sp-l-autoscanside" type="checkbox" data-scenario-sect="Landscape" data-scenario-key="AutoScanSide"></label>
+									<div class="checkinput" data-class="sp-l-leftopen" data-scenario-sect="Landscape" data-scenario-key="LeftOpen">$LeftOpen$:</div>
+									<div class="checkinput" data-class="sp-l-rightopen" data-scenario-sect="Landscape" data-scenario-key="RightOpen">$RightOpen$:</div>-->
+								</div>
+							</div>
+
+							<!--<div class="sp-settingsgroup">
 								<div class="sp-settingsgroup-header">
 									<div class="sp-settingsgroup-caption">$SGHMapData$</div>
 									<div class="sp-settingsgroup-collapse">▼</div>
@@ -189,11 +251,11 @@
 									<label>$NoScan$:<input type="checkbox" class="sp-l-noscan" data-scenario-sect="Landscape" data-scenario-key="NoScan"></label><br>
 									<label>$MapPlayerExtend$:<input type="checkbox" class="sp-l-mapplayerextend" data-scenario-sect="Landscape" data-scenario-key="MaxPlayerExtend"></label><br>
 									$Sky$: <select class="sp-l-selectsky" data-scenario-sect="Landscape" data-scenario-key="Sky"></select><br>
-									$SkyFade$: <!--ColorPicker--><br>
+									$SkyFade$: <br>
 								</div>
-							</div>
+							</div>-->
 							
-							<div class="sp-settingsgroup">
+							<!--<div class="sp-settingsgroup">
 								<div class="sp-settingsgroup-header">
 									<div class="sp-settingsgroup-caption">$SGHMapGenerator$</div>
 									<div class="sp-settingsgroup-collapse">▼</div>
@@ -220,9 +282,9 @@
 										<input type="range" class="sp-l-liquidlevel" min="0" max="100" data-scenario-sect="Landscape" data-scenario-key="LiquidLevel">
 									</div>
 								</div>
-							</div>
+							</div>-->
 							
-							<div class="sp-settingsgroup">
+							<!--<div class="sp-settingsgroup">
 								<div class="sp-settingsgroup-header">
 									<div class="sp-settingsgroup-caption">$SGHOpenBorders$</div>
 									<div class="sp-settingsgroup-collapse">▼</div>
@@ -234,7 +296,7 @@
 									<div class="checkinput" data-class="sp-l-leftopen" data-scenario-sect="Landscape" data-scenario-key="LeftOpen">$LeftOpen$:</div><br>
 									<div class="checkinput" data-class="sp-l-rightopen" data-scenario-sect="Landscape" data-scenario-key="RightOpen">$RightOpen$:</div><br>
 								</div>
-							</div>
+							</div>-->
 							
 							
 						</div>

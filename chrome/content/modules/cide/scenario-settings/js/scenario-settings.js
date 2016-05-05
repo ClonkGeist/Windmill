@@ -330,6 +330,10 @@ function addScript(path, lang, index, path, fShow) {
 		for(var i = 0; i < scenario_icons.length; i++)
 			getWrapper(".sp-g-selecticon", index).append(`<div class="sp-imgsel-item" data-value="${i}" data-img="${scenario_icons[i]}" data-caption="${i}"></div>`);
 
+		getWrapper("[data-tooltip]", index).each(function() {
+			tooltip(this, $(this).attr("data-tooltip"), "html", 600);
+			$(this).attr("data-tooltip", "");
+		});
 		preparePseudoElements(index);
 
 		getWrapper(".sp-o-switchpage", index).click(function() { getWrapper(".sp-o-group", index).toggleClass("inactive"); });
@@ -399,6 +403,10 @@ function loadScenarioContentToElements(index, skipDefsel) {
 					break;
 			}
 		}
+		else if($(this).hasClass("iconcb"))
+			if(val)
+				$(this).addClass("active");
+
 		$(this).unbind("change").change(function() {
 			onFileChanged(getCurrentWrapperIndex());
 		});
@@ -435,6 +443,8 @@ function getScenarioValue(obj) {
 		val = getDeflistString(obj);
 	else if($(obj).hasClass("image-selection-wrapper"))
 		val = $(obj).find(".image-selection-item.selected").attr("data-value");
+	else if($(obj).hasClass("iconcb"))
+		val = $(obj).hasClass("active")?"1":"0";
 
 	return val;
 }
@@ -722,6 +732,11 @@ function preparePseudoElements(index) {
 
 		$(this).replaceWith(clone);
 		clone.find(".sp-checkinput-label").insertBefore(clone);
+	});
+
+	//Icon-Checkboxen (Landscape Page)
+	getWrapper(".iconcb", index).click(function() {
+		$(this).toggleClass("active");
 	});
 
 	getWrapper(".sp-settingsgroup-collapse", index).parent().mousedown(function() {

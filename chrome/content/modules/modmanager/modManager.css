@@ -337,6 +337,54 @@
 .icon-error:before {
   content: "\e90c"; }
 
+.icon-mapwidth:before {
+  content: "W"; }
+
+.icon-mapheight:before {
+  content: "H"; }
+
+.icon-mapzoom:before {
+  content: "Z"; }
+
+.icon-noscan:before {
+  content: "NoSc"; }
+
+.icon-map-player-extend:before {
+  content: "MPE"; }
+
+.icon-amplitude:before {
+  content: "A"; }
+
+.icon-phase:before {
+  content: "Ph"; }
+
+.icon-period:before {
+  content: "Pe"; }
+
+.icon-random:before {
+  content: "Rnd"; }
+
+.icon-liquidlevel:before {
+  content: "LL"; }
+
+.icon-borders:before {
+  content: "B"; }
+
+.icon-border-top:before {
+  content: "BT"; }
+
+.icon-border-right:before {
+  content: "BR"; }
+
+.icon-border-bottom:before {
+  content: "BB"; }
+
+.icon-border-left:before {
+  content: "BL"; }
+
+.icon-auto-scan-side:before {
+  content: "AutoS"; }
+
 /*
 @structure:
 
