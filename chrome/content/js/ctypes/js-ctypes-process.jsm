@@ -19,7 +19,7 @@ else {
 }
 
 function fallbackInformation() {
-	log("There is no or not fully supported native function support available for this operating system ("+OS_TARGET+"). Use limited fallback.");
+	dump("There is no or not fully supported native function support available for this operating system ("+OS_TARGET+"). Use limited fallback.\n");
 	return;
 }
 
