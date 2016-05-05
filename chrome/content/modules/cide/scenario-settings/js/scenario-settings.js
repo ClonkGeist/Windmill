@@ -1105,6 +1105,9 @@ function reportLoadingError(maindef, msg, type = "error", dontSave) {
 
 function updateErrorLog() {
 	let index = getCurrentWrapperIndex();
+	if(!sessions[index])
+		return;
+
 	let defs = sessions[index].scenariodefs;
 	if(!defs)
 		return;
