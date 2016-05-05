@@ -876,6 +876,19 @@ section:last-child {
     flex: 1;
     margin: 15px 0; }
 
+.sp-l-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  left: 370px;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  border: 1px solid gainsboro;
+  margin: 35px;
+  background: linear-gradient(to top left, rgba(220, 220, 220, 0) 0%, rgba(220, 220, 220, 0) calc(50% - 0.8px), gainsboro 50%, rgba(220, 220, 220, 0) calc(50% + 0.8px), rgba(220, 220, 220, 0) 100%), linear-gradient(to top right, rgba(220, 220, 220, 0) 0%, rgba(220, 220, 220, 0) calc(50% - 0.8px), gainsboro 50%, rgba(220, 220, 220, 0) calc(50% + 0.8px), rgba(220, 220, 220, 0) 100%); }
+
 /* special check boxes /big buttons/ */
 .special-cb .cblabel {
   background-color: gainsboro;

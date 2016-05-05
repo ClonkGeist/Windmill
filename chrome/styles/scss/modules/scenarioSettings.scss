@@ -564,6 +564,20 @@ section:last-child {
 	}
 }
 
+$dlclr: rgba(220, 220, 220, 0);
+
+.sp-l-preview {
+	@include flexcenter();
+	position: absolute;
+	left: 370px;
+	top: 0; bottom: 0; right: 0;
+	border: 1px solid gainsboro;
+	margin: 35px;
+	background: 
+       linear-gradient(to top left, $dlclr 0%, $dlclr calc(50% - 0.8px), rgba(220, 220, 220, 1) 50%, $dlclr calc(50% + 0.8px), $dlclr 100%),
+       linear-gradient(to top right, $dlclr 0%, $dlclr calc(50% - 0.8px), rgba(220, 220, 220, 1) 50%, $dlclr calc(50% + 0.8px), $dlclr 100%);
+}
+
 /* special check boxes /big buttons/ */
 
 .special-cb {
