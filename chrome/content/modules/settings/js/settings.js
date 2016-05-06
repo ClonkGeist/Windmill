@@ -1,4 +1,6 @@
-$(window).ready(function() {
+let keybinding_changes = false;
+
+hook("load", function() {
 	setTimeout(function() {
 		$(".view-directory-path").each(function() {
 			var options = filePickerOptions($(this).attr("id"));
@@ -105,6 +107,12 @@ $(window).ready(function() {
 					var lkeystr = keystr + getKeyCodeIdentifier(e.keyCode, true);
 					keystr += getKeyCodeIdentifier(e.keyCode);
 
+					let applyKeyBinding = (key, val) => {
+						$(this).find(".pkb-list-entry-keys").text(val);
+						_mainwindow.customKeyBindings[key] = val;
+						keybinding_changes = true;
+					}
+
 					var ckey, prefix = $(this).attr("lprefix");
 					if(ckey = isShortcutAlreadyInUse(keystr, prefix)) {
 						dlg.hide();
@@ -117,8 +125,7 @@ $(window).ready(function() {
 							btnright: [{preset: "accept", onclick: function(e, btn, _self) {
 								$(".pkb-list-entry[keyname="+ckey+"]").find(".pkb-list-entry-keys").text("");
 								_mainwindow.customKeyBindings[ckey] = "";
-								$(this).find(".pkb-list-entry-keys").text(lkeystr);
-								_mainwindow.customKeyBindings[key] = keystr;
+								applyKeyBinding(key, keystr);
 							}}, "cancel"]});
 
 						dlg.setContent(`<description style="width: 450px;">$DlgConflictedKeyDesc$</description>
@@ -129,8 +136,7 @@ $(window).ready(function() {
 						dlg.show();
 					}
 					else {
-						$(this).find(".pkb-list-entry-keys").text(lkeystr);
-						_mainwindow.customKeyBindings[key] = keystr;
+						applyKeyBinding(key, keystr);
 
 						dlg.hide();
 					}
@@ -242,14 +248,15 @@ $(window).ready(function() {
 });
 
 function rejectDeckPageLeave(deck, newPageId) {
-	let changed = false, cfg = getConfig();
-	for(var sect in cfg)
-		for(var key in cfg[sect])
-			if(cfg[sect][key].value != cfg[sect][key]._value) {
-				changed = true;
-				break;
-			}
-	//Falls Aenderungen die ungespeichert sind, zum Speichern auffordern
+	let changed = keybinding_changes, cfg = getConfig();
+	if(!changed)
+		for(var sect in cfg)
+			for(var key in cfg[sect])
+				if(cfg[sect][key].value != cfg[sect][key]._value) {
+					changed = true;
+					break;
+				}
+	//Falls ungespeicherte Aenderungen vorhanden sind, zum Speichern auffordern
 	if(changed) {
 		dlg = new WDialog("$DlgUnsavedChanges$", MODULE_LPRE, { modal: true, css: { "width": "450px" },
 			btnright: [{onclick: function(e, btn, _self) {
@@ -341,6 +348,7 @@ function saveSettings() {
 	Task.spawn(function*() {
 		yield saveConfig();
 		yield _mainwindow.saveKeyBindings();
+		keybinding_changes = false;
 	}).then(function() {
 		EventInfo("$EI_Saved$", -1);		
 		if(changeNeedsRestart)
