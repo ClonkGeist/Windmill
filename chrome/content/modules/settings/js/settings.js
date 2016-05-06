@@ -44,7 +44,8 @@ $(window).ready(function() {
 		//KeyBindings auflisten
 		var keybindings = _mainwindow.customKeyBindings, current_prefix;
 
-		for(let key in keybindings) {
+		for(var key2 in keybindings) {
+			let key = key2;
 			var t = key.split("_");
 			var prefix = t[0], val = keybindings[key];
 
@@ -88,11 +89,11 @@ $(window).ready(function() {
 				//Dialog öffnen
 				var dlg = new WDialog("$DlgApplyNewKey$", MODULE_LPRE, { modal: true, cancelOnModal: true, simple: true, css: { "width": "450px" }});
 				dlg.show();
-				
+
 				$(dlg.element).keydown((e) => {
 					if(["Shift", "Control", "Alt"].indexOf(e.key) != -1)
 						return;
-				
+
 					var keystr = "";
 					if(e.ctrlKey)
 						keystr += "Ctrl-";
@@ -103,11 +104,11 @@ $(window).ready(function() {
 
 					var lkeystr = keystr + getKeyCodeIdentifier(e.keyCode, true);
 					keystr += getKeyCodeIdentifier(e.keyCode);
-					
+
 					var ckey, prefix = $(this).attr("lprefix");
 					if(ckey = isShortcutAlreadyInUse(keystr, prefix)) {
 						dlg.hide();
-						
+
 						var ckeydata = ckey.match(/(.*?)_(.+)/i);
 						if(ckeydata[0] == $(this).attr("keyname"))
 							return;
@@ -136,7 +137,7 @@ $(window).ready(function() {
 				});
 			});
 		}
-	
+
 		$("#restartBarButton").click(function() {
 			var files = [];
 			if(getModuleByName("cide"))
