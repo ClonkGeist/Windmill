@@ -30,6 +30,15 @@ function addScript(text, highlightMode, id, path, fShow) {
 	
 	if(highlightMode)
 		editors[id].getSession().setMode("ace/mode/" + highlightMode);
+	editors[id].getSession().on("change", function(e) {
+		//setTimeout, da der UndoManager erst nach dem Event geupdatet wird
+		setTimeout(function() {
+			if(editors[id].getSession().getUndoManager().isClean())
+				onFileUnchanged(id);
+			else
+				onFileChanged(id);
+		}, 1);
+	});
 	
 	// remove local completer
 	var langTools = ace.require("ace/ext/language_tools");
