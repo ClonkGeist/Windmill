@@ -664,7 +664,7 @@ function initializeContextMenu() {
 			$(cnt).removeClass("tree-collapsed").removeClass("tree-expanded");
 
 			//Gepackt
-			$(sel).addClass("tree-packed");
+			$(sel).addClass("tree-groupfile-packed");
 			EventInfo("$EI_Packed$");
 		}, function(data) {
 			log(data);
@@ -700,6 +700,7 @@ function initializeContextMenu() {
 			}
 
 			$(cnt).empty();
+			$(sel).removeClass("tree-groupfile-packed");
 			loadDirectory(dir.path, cnt);
 			EventInfo("$EI_Exploded$");
 		});

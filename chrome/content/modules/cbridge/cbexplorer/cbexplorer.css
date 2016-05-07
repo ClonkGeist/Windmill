@@ -94,6 +94,12 @@ li {
   padding-right: 0.5em;
   text-overflow: ellipsis; }
 
+li.tree-groupfile-packed {
+  font-style: italic;
+  color: #444; }
+  li.tree-groupfile-packed description:after {
+    content: ' (packed)'; }
+
 li:focus *, li:focus {
   outline: none; }
 
