@@ -455,26 +455,34 @@ caption {
 #log-entrylist { overflow-y: scroll; }
 #log-entrylist.show-hidden-logs > .log-listitem.hidden { display: -moz-box; }
 
-.log-listitem { max-width: 100%; }
-.log-listitem:hover { background-color: #eee; }
+.log-listitem {
+	max-width: 100%;
 
-.log-listitem-type { width: 1em; }
+	&:hover { background-color: #eee; }
 
-.log-listitem.error > .log-listitem-type {background-color: #ff4e4e;}
-.log-listitem.error > .log-listitem-content {background-color: #ffeded;}
+	&.error {
+		.log-listitem-type { background-color: #ff4e4e; }
+		.log-listitem-content { background-color: #ffeded; }
+		&:hover {
+			.log-listitem-type { background-color: #ef3e3e; }
+			.log-listitem-content { background-color: #efdddd; }
+		}
+	}
+	
+	&.hidden {
+		text-decoration: italic;
+		color: #777;
+		display: none;
+	}
 
-.log-listitem.hidden {
-	text-decoration: italic;
-	color: #777;
-	display: none;
-}
-
-.log-listitem-content {
-	padding-left: 1em;
-	font-family: monospace;
-	word-wrap: break-word;
-	white-space: pre-wrap;
-	-moz-user-select: text;
+	.log-listitem-type { width: 1em; }
+	.log-listitem-content {
+		padding-left: 1em;
+		font-family: monospace;
+		word-wrap: break-word;
+		white-space: pre-wrap;
+		-moz-user-select: text;
+	}
 }
 
 #showLog {

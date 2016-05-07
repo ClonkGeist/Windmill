@@ -118,7 +118,12 @@ class _WDialog extends WindmillObject {
 					if(fn.isGenerator()) {
 						_this.lock();
 						Task.spawn(function*() {
-							yield* fn(e, e.target, _this);
+							let rval = yield* fn(e, e.target, _this);
+							if(rval == -1) {
+								_this.unlock();
+								return;
+							}
+
 							if(fn2) {
 								if(fn2.isGenerator())
 									yield* fn2(e, e.target, _this);
@@ -392,15 +397,19 @@ class _WDialog extends WindmillObject {
 			}
 		});
 
-		//Infobox: Error
-		$(dlgelm).find(".dlg-infobox.error").hide();
-
 		let observer = new MutationObserver(function(mutations) {
-			$(mutations[0].target).show();
+			//Style-Zuweisungen nicht ueber jQuery, da das in diesem speziellen Fall Probleme macht. (auch bei hide/show)
+			if(!$(mutations[0].target).contents().length)
+				mutations[0].target.style.display = "none";
+			else
+				mutations[0].target.style.display = "-moz-box";
 		});
 		$(dlgelm).find(".dlg-infobox.error").each(function() {
 			observer.observe(this, { childList: true });
 		});
+
+		//Infobox: Error
+		$(dlgelm).find(".dlg-infobox.error").hide();
 
 		this.updateTextNodes();
 	}

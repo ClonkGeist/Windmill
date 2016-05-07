@@ -860,30 +860,28 @@ caption {
 
 .log-listitem {
   max-width: 100%; }
-
-.log-listitem:hover {
-  background-color: #eee; }
-
-.log-listitem-type {
-  width: 1em; }
-
-.log-listitem.error > .log-listitem-type {
-  background-color: #ff4e4e; }
-
-.log-listitem.error > .log-listitem-content {
-  background-color: #ffeded; }
-
-.log-listitem.hidden {
-  text-decoration: italic;
-  color: #777;
-  display: none; }
-
-.log-listitem-content {
-  padding-left: 1em;
-  font-family: monospace;
-  word-wrap: break-word;
-  white-space: pre-wrap;
-  -moz-user-select: text; }
+  .log-listitem:hover {
+    background-color: #eee; }
+  .log-listitem.error .log-listitem-type {
+    background-color: #ff4e4e; }
+  .log-listitem.error .log-listitem-content {
+    background-color: #ffeded; }
+  .log-listitem.error:hover .log-listitem-type {
+    background-color: #ef3e3e; }
+  .log-listitem.error:hover .log-listitem-content {
+    background-color: #efdddd; }
+  .log-listitem.hidden {
+    text-decoration: italic;
+    color: #777;
+    display: none; }
+  .log-listitem .log-listitem-type {
+    width: 1em; }
+  .log-listitem .log-listitem-content {
+    padding-left: 1em;
+    font-family: monospace;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    -moz-user-select: text; }
 
 #showLog {
   transition: color 1.5s; }

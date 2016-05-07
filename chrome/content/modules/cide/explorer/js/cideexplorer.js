@@ -223,16 +223,16 @@ function createNewWorkEnvironmentDlg(parentWorkEnv, parentContainer) {
 				catch(err) {
 					if(err.becauseNoSuchFile) {
 						error("$DlgErrWEPathDoesNotExist$");
-						return e.stopImmediatePropagation();
+						return -1;
 					}
 					else {
 						error("<hbox>The following error occured while trying to create the work environment:</hbox><hbox>"+err+"</hbox>");
-						return e.stopImmediatePropagation();
+						return -1;
 					}
 				}
 				if(!info.isDir) {						
 					error("$DlgErrWEPathDoesNotExist$");
-					return e.stopImmediatePropagation();
+					return -1;
 				}
 
 				let cdirs = JSON.parse(getConfigData("Global", "ClonkDirectories")) || [];
@@ -240,7 +240,7 @@ function createNewWorkEnvironmentDlg(parentWorkEnv, parentContainer) {
 				//Ueberpruefen ob Pfad bereits vorhanden ist
 				if(cdirs.indexOf(path) != -1) {
 					error("$DlgErrWEAlreadyLoaded$");
-					return e.stopImmediatePropagation();
+					return -1;
 				}
 
 				//Ansonsten der Liste hinzufuegen und speichern
@@ -271,7 +271,7 @@ function createNewWorkEnvironmentDlg(parentWorkEnv, parentContainer) {
 				path = parentWorkEnv.path;
 			if(!path) {
 				error("$DlgErrWENoWorkspaceDir$");
-				return e.stopImmediatePropagation();
+				return -1;
 			}
 
 			//Workspaceverzeichnis erstellen und ggf. Error zurueckwerfen
@@ -279,11 +279,11 @@ function createNewWorkEnvironmentDlg(parentWorkEnv, parentContainer) {
 			catch(err) {
 				if(err.becauseNoSuchFile) {
 					error("$DlgErrWEInvalidPath$");
-					return e.stopImmediatePropagation();
+					return -1;
 				}
 				else {
 					error("<hbox>The following error occured while trying to create the work environment:</hbox><hbox>"+err+"</hbox>");
-					return e.stopImmediatePropagation();
+					return -1;
 				}
 			}
 
@@ -293,7 +293,7 @@ function createNewWorkEnvironmentDlg(parentWorkEnv, parentContainer) {
 				name = $(_self.element).find("#dex-dlg-workenv-destname").val();
 			if(!name) {
 				error("$DlgErrWENoName$");
-				return e.stopImmediatePropagation();
+				return -1;
 			}
 
 			//Ggf. Dateiliste generieren (Checklistbox)
@@ -326,15 +326,15 @@ function createNewWorkEnvironmentDlg(parentWorkEnv, parentContainer) {
 				//TODO: Auf Validitaet ueberpruefen
 				if(!options.cloneurl) {
 					error("$DlgErrWENoCloneURL$");
-					return e.stopImmediatePropagation();
+					return -1;
 				}
 				if(!$(_self.element).find("#dex-dlg-workenv-cfgusername").val()) {
 					error("$DlgErrWERepositoryNoUserName$");
-					return e.stopImmediatePropagation();
+					return -1;
 				}
 				if(!$(_self.element).find("#dex-dlg-workenv-cfgemail").val()) {
 					error("$DlgErrWERepositoryNoEmail$");
-					return e.stopImmediatePropagation();
+					return -1;
 				}
 				
 				options.userconfig = { username: $(_self.element).find("#dex-dlg-workenv-cfgusername").val(), 
@@ -878,9 +878,10 @@ function CreateNewGamefile(type, treeobj) {
 					let error = (str) => { return $(_self.element).find("#dex-dlg-gamefile-errorbox").text(Locale(str)); }
 
 					let name = _mainwindow.$("#dex-dlg-gffilename").val();
+					//Gueltigkeit des Namens ueberpruefen
 					if(!name || (OS_TARGET == "WINNT" && name.search(/[\\/:*?"<>|]/) != -1) || name.length < 1) {
-						error('$DlgInvalidFilename$');
-						return e.stopImmediatePropagation();
+						error('$DlgErrInvalidFilename$');
+						return -1;
 					}
 
 					name += '.'+type;
@@ -891,11 +892,11 @@ function CreateNewGamefile(type, treeobj) {
 					}
 					catch(err) {
 						if(err.becauseExists)
-							error('$DlgFilenameExists$');
+							error('$DlgErrFilenameExists$');
 						else
 							error('Error: ' + err);
 
-						return e.stopImmediatePropagation();
+						return -1;
 					}
 
 					//Auswahl in neu erstelltes Verzeichnis kopieren
