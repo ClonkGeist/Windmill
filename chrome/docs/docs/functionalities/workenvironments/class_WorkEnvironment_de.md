@@ -99,3 +99,11 @@ Gibt einen lückenlosen Array mit allen Kinder-Arbeitsverzeichnissen zurück.
 | alwaysexplode | bool | Gibt an, ob Groupdateien im Arbeitsverzeichnis immer zerlegt werden sollen. Nur gültig falls ```type``` auf ```WORKENV_TYPE_ClonkPath``` gesetzt ist, da es andernfalls Standardverhalten ist. |
 | linkedTo | string | Gibt den Pfad der Verknüpfung zu dem eigentlichen Arbeitsverzeichnis an. 
 | unloaded | bool | Gibt an, ob das geladene Arbeitsverzeichnis ausgeladen worden ist. In dem Falle ist das ```WorkEnvironment```-Objekt weitgehend unbrauchbar. |
+
+## Events
+
+**onWorkenvSetup**: [!INFO]
+
+**onWorkenvUnloaded**: [!INFO]
+
+
