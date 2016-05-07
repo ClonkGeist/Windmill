@@ -49,10 +49,6 @@ class ConfigEntry extends WindmillObject {
 			case "path":
 				return formatPath(this._value);
 
-			case "array":
-			case "object":
-				return JSON.parse(this._value);
-
 			case "int":
 			case "integer":
 			case "number":
@@ -97,9 +93,6 @@ class ConfigEntry extends WindmillObject {
 					break;
 			}
 		}
-		//Nur Temporaer, soll wieder raus wenn alles umgestellt ist
-		if(typeof val == "object")
-			val = JSON.stringify(val);
 
 		this.tempvalue = val;
 		if(this.alwaysSave)
@@ -175,7 +168,7 @@ function getConfig() { return CONFIG; }
 function initializeConfig() {
 	addConfigString("Global", "DevMode", false);
 	addConfigString("Global", "ClonkDirectories", "[]", "array").hook("onWritingAccess", function(val) {
-		if(this.value == "[]" && val instanceof Array) {
+		if(!this.value.length && val instanceof Array) {
 			for(var i = 0; i < val.length; i++)
 				if(val[i].active)
 					setClonkPath(i);
@@ -189,7 +182,7 @@ function initializeConfig() {
 	//CBridge
 	
 	//ShowGame
-	addConfigString("ShowGame", "Notifications", "");
+	addConfigString("ShowGame", "Notifications", "[]", "array");
 	addConfigString("ShowGame", "PortScan", true);
 	addConfigString("ShowGame", "NotificationsShowEmpty", false);
 	addConfigString("ShowGame", "MasterserverURL", "http://league.clonkspot.org/");
