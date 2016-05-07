@@ -407,10 +407,14 @@ class _WDialog extends WindmillObject {
 
 	updateTextNodes(objects = $(this.element).find("description")) {
 		//XUL-Description Elemente in der Breite anpassen (da sie sonst komisch overflowen)
+		let op = $(this.element).find(".main-wdialog-wrapper").offset();
+		let additional = $(this.element).find(".main-wdialog-content").outerWidth()-$(this.element).find(".main-wdialog-content").width();
+		let owdt = $(this.element).find(".main-wdialog-wrapper").innerWidth();
 		objects.each((index, elm) => {
-			let o = $(elm).offset(), op = $(this.element).find(".main-wdialog-wrapper").offset();
-			let additional = $(this.element).find(".main-wdialog-content").outerWidth()-$(this.element).find(".main-wdialog-content").width();
-			let owdt = $(this.element).find(".main-wdialog-wrapper").innerWidth();
+			let o = $(elm).offset();
+			//Element ist unsichtbar
+			if(!o.left)
+				return;
 			$(elm).css("width", (owdt-(o.left-op.left)-additional)+"px");
 		});
 	}
