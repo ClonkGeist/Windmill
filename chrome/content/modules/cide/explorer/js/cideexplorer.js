@@ -926,9 +926,18 @@ function CreateNewGamefile(type, treeobj) {
 			selectedFiles = '';
 
 		//Dateiauswahl erstellen
-		let content = `<vbox><hbox class="dlg-infobox error" id="dex-dlg-gamefile-errorbox"><description></description></hbox>
-					   <vbox><description>$DlgGfFilenameDesc$</description><textbox id="dex-dlg-gffilename"></textbox></vbox><vbox>
-					   <description>$DlgGfPickFiles$</description></vbox><vbox id="dex-dlg-gffiles" class="dlg-checklistbox">`;
+		let content = 	`<vbox>
+							<hbox class="dlg-infobox error" id="dex-dlg-gamefile-errorbox">
+								<description></description>
+							</hbox>
+							<vbox>
+								<description>$DlgGfFilenameDesc$</description>
+								<textbox id="dex-dlg-gffilename"></textbox>
+							</vbox>
+							<vbox>
+								<description>$DlgGfPickFiles$</description>
+							</vbox>
+							<vbox id="dex-dlg-gffiles" class="dlg-checklistbox">`;
 
 		//Auflisten
 		let entries = dir.directoryEntries;
@@ -947,7 +956,8 @@ function CreateNewGamefile(type, treeobj) {
 			else if(selectedFiles.search(RegExp("(^|/|)"+entry.leafName+"($|/|)")) != -1)
 				selstr = ' selected';
 
-			content += `<hbox class="dlg-checklistitem ${selstr}">${entry.leafName}</hbox>`;
+			selstr = "";
+			content += `<hbox class="dlg-checklistitem${selstr}">${entry.leafName}</hbox>`;
 		}
 
 		content += '</vbox></vbox>';

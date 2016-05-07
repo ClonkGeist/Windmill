@@ -230,13 +230,13 @@ class _WDialog extends WindmillObject {
 				if(this.options.btnright)
 					this.setBtnRight(this.options.btnright);
 			}
-
-			this.updatePseudoElements();
 		}
 		
 		clone.appendTo($("#mainstack"));
 		$(this.element).focus();
-		
+		if(!this.options.simple)
+			this.updatePseudoElements();
+
 		let buttons = this.options.btnleft.concat(this.options.btnright);
 		if(buttons.length) {
 			$(buttons[0].element).focus();
