@@ -577,7 +577,7 @@ var draggingWindow = false,
 	windowFn = true;
 	
 hook("load", function() {
-	$(".header-ctrl").mousedown(function(e) {
+	/*$(".header-ctrl").mousedown(function(e) {
 		if(!$(e.target).hasClass("header-ctrl"))
 			return;
 		draggingWindow = true;
@@ -611,13 +611,21 @@ hook("load", function() {
 			windowFn = true;
 			draggingWindow = false;
 		}
+	})*/
+	$(".header-ctrl").mousedown(function(e) {
+		draggingWindow = true;
+	}).mousemove(function(e) {
+		if(draggingWindow && window.isMaximized())
+			restoreWindow(true);
+	}).on("command", function(e) {
+		draggingWindow = false;
 	}).dblclick(function() {
 		if(window.isMaximized())
 			restoreWindow();
 		else
 			maximizeWindow();
 	});
-	
+
 	$("window").resize(window.saveWindowInformation());
 });
 
