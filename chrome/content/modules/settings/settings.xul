@@ -17,6 +17,7 @@
 			<button class="navigation" label="$KeyBindings$" oncommand="togglePage('settings-page-keybindings', 'settings-pages', this);" />
 			<button class="navigation" label="$ExternalApplications$" oncommand="togglePage('settings-page-extapp', 'settings-pages', this);" />
 			<spacer flex="1" />
+			<button class="navigation" label="$ClearTempData$" id="clear-temp-data" oncommand="clearTemporaryData();"  />
 			<button class="navigation" label="$Save$" oncommand="saveSettings();"  />
 		</vbox>
 		

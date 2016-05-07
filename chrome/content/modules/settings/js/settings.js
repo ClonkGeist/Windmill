@@ -247,6 +247,86 @@ hook("load", function() {
 	}, 1);
 });
 
+const TEMPORARY_DATA_PATH = _sc.profd+"/tmp";
+let clearTempDataTask;
+
+function showDeckItem() {
+	if(clearTempDataTask)
+		return;
+
+	clearTempDataTask = Task.spawn(function*() {
+		$("#clear-temp-data").attr("data-additional", Locale("$Calculating$"));
+		function* calcDirSize(fpath) {
+			if(clearTempDataTask == -2)
+				return -1;
+			let size = 0;
+			let iterator = new OS.File.DirectoryIterator(fpath);
+			entries = yield iterator.nextBatch();
+			iterator.close();
+			for(var i = 0; i < entries.length; i++) {
+				if(entries[i].isDir)
+					size += yield* calcDirSize(entries[i].path);
+				else {
+					let info = yield OS.File.stat(entries[i].path);
+					size += info.size;
+				}
+				if(clearTempDataTask == 2)
+					return -1;
+			}
+
+			return size;
+		}
+		let totalsize = yield* calcDirSize(TEMPORARY_DATA_PATH);
+		if(totalsize == -1)
+			return -1;
+
+		if(!totalsize)
+			$("#clear-temp-data").attr("data-additional", Locale("$Empty$"));
+		else {
+			totalsize /= 1024;
+			let unit = "KB";
+			if(totalsize > 1024) {
+				totalsize /= 1024;
+				unit = "MB";
+				if(totalsize > 1024) {
+					totalsize /= 1024;
+					unit = "GB";
+				}
+			}
+			$("#clear-temp-data").attr("data-additional", Math.floor(totalsize)+" "+unit);
+		}
+	});
+	clearTempDataTask.then(function(val) {
+		if(val != -1)
+			clearTempDataTask = false;
+	}, function(reason) {
+		log("Temp Data calculation failed: " + reason);
+		clearTempDataTask = false;
+		$("#clear-temp-data").attr("data-additional", Locale("$Failed$"));
+	});
+}
+
+function clearTemporaryData() {
+	clearTempDataTask = 2;
+	Task.spawn(function*() {
+		let iterator = new OS.File.DirectoryIterator(TEMPORARY_DATA_PATH);
+		entries = yield iterator.nextBatch();
+		iterator.close();
+		for(var i = 0; i < entries.length; i++) {
+			if(entries[i].isDir)
+				yield OS.File.removeDir(entries[i].path, {ignoreAbsent: true});
+			else
+				yield OS.File.remove(entries[i].path, {ignoreAbsent: true});
+		}
+		$("#clear-temp-data").attr("data-additional", Locale("$Empty$"));
+		EventInfo("$EI_TempCleared$");
+		clearTempDataTask = false;
+	}).then(null, function(reason) {
+		log("Clearing temporary data failed: " + reason);
+		EventInfo("An error occured while trying to clear temporary data.");
+	});
+}
+
 function rejectDeckPageLeave(deck, newPageId) {
 	let changed = keybinding_changes, cfg = getConfig();
 	if(!changed)
