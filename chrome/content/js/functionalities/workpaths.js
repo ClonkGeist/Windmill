@@ -187,7 +187,7 @@ class WorkEnvironment {
 
 	unload() {
 		if(this.type == WORKENV_TYPE_ClonkPath) {
-			var clonkdirs = JSON.parse(getConfigData("Global", "ClonkDirectories")), temp = [];
+			let clonkdirs = getConfigData("Global", "ClonkDirectories"), temp = [];
 			for(var i = 0; i < clonkdirs.length; i++) {
 				if(formatPath(clonkdirs[i].path) != this.path)
 					temp.push(clonkdirs[i]);
@@ -221,7 +221,7 @@ class WorkEnvironment {
 
 	set path(path) {
 		if(this.type == WORKENV_TYPE_ClonkPath) { 
-			var dirs = JSON.parse(getConfigData("Global", "ClonkDirectories")) || [];
+			var dirs = getConfigData("Global", "ClonkDirectories") || [];
 			for(var i = 0; i < dirs.length; i++)
 				if(formatPath(dirs[i]) == this._path)
 					dirs[i] = path;
@@ -299,7 +299,7 @@ function loadWorkEnvironment() {
 		{readOnly: true, unloaded: false, secured: true, alternativeTitle: "$WEUserData$", identifier: "UserData"});
 
 	//Clonkverzeichnisse laden und ggf. leere Eintraege loeschen
-	let clonkdirs = JSON.parse(getConfigData("Global", "ClonkDirectories")), temp = [];
+	let clonkdirs = getConfigData("Global", "ClonkDirectories"), temp = [];
 	if(clonkdirs) {
 		for(var i = 0; i < clonkdirs.length; i++) {
 			if(clonkdirs[i] && clonkdirs[i].path) {

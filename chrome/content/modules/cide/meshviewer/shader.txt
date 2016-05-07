@@ -1,0 +1,37 @@
+1100001110
+----------------
+attribute vec3 aVertexPosition;
+varying vec2 uv;
+attribute vec2 vUV;
+attribute vec4 boneWeights0;
+attribute vec4 boneIndices0;
+uniform vec4 mBones[248];
+uniform mat4 mWorld;
+void main(void) {
+uv = vUV;
+vec4 pos = vec4(0.0);
+if(int(boneIndices0[0]) != -1) {
+	int index = (int(boneIndices0[0])) * 4;
+	pos += mat4(mBones[index], mBones[index + 1], mBones[index + 2], mBones[index + 3])* vec4(aVertexPosition, 1.0) * boneWeights0[0];
+	index = (int(boneIndices0[1])) * 4;
+	pos += mat4(mBones[index], mBones[index + 1], mBones[index + 2], mBones[index + 3])* vec4(aVertexPosition, 1.0) * boneWeights0[1];
+	index = (int(boneIndices0[2])) * 4;
+	pos += mat4(mBones[index], mBones[index + 1], mBones[index + 2], mBones[index + 3])* vec4(aVertexPosition, 1.0) * boneWeights0[2];
+}
+else {
+	pos = vec4(aVertexPosition, 1.0);
+}
+gl_Position = mWorld * pos;
+}----------------
+precision mediump float;
+uniform sampler2D sampTexture;
+uniform sampler2D sampOverlay;
+uniform vec3 overlayColor;
+varying vec2 uv;
+			void main(void) {
+vec4 overlayTexel = texture2D(sampOverlay, uv);
+vec4 textureTexel = texture2D(sampTexture, uv);
+vec4 overlay = vec4(overlayColor * overlayTexel.rgb, overlayTexel.a);float alpha0 = 1.0 - (1.0 - textureTexel.a) * (1.0 - overlay.a);gl_FragColor = vec4(mix(textureTexel.rgb, overlay.rgb, overlay.a / alpha0), alpha0);
+if(gl_FragColor.a < 0.95)
+	discard;
+}

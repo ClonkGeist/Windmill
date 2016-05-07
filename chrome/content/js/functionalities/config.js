@@ -25,10 +25,14 @@ class ConfigEntry extends WindmillObject {
 	get value() {
 		execHook("onReadingAccess");
 
-		/*var valup = this._value.toUpperCase();
 		switch(this.type) {
 			case "boolean":
 			case "bool":
+				let valup;
+				if(typeof this._value == "string")
+					valup = this._value.toUpperCase();
+				else 
+					return this._value;
 				if(valup != "FALSE" && valup != "UNDEFINED" && valup != "NULL" && valup != "0" && valup.length)
 					return true;
 				return false;
@@ -38,6 +42,7 @@ class ConfigEntry extends WindmillObject {
 
 			case "array":
 			case "object":
+				log(">> " + this.sect + " / " + this.key + " - " + this._value);
 				return JSON.parse(this._value);
 
 			case "int":
@@ -47,7 +52,7 @@ class ConfigEntry extends WindmillObject {
 
 			default:
 				return this._value;
-		}*/
+		}
 		return this.tempvalue;
 	}
 	set value(val) {
@@ -75,11 +80,13 @@ class ConfigEntry extends WindmillObject {
 				case "array":
 				case "object":
 					val = JSON.parse(val);
+					break;
 
 				case "int":
 				case "integer":
 				case "number":
 					val = parseInt(val);
+					break;
 			}
 		}
 		//Nur Temporaer, soll wieder raus wenn alles umgestellt ist
@@ -96,7 +103,7 @@ var CONFIG = [], CONFIG_BACKUP = [], CONFIG_FIRSTSTART = false;
 let clonkpath_id;
 
 function setClonkPath(val = 0) {
-	let paths = JSON.parse(getConfigData("Global", "ClonkDirectories"));
+	let paths = getConfigData("Global", "ClonkDirectories");
 	if(typeof val == "string") {
 		for(var i = 0; i < paths.length; i++) {
 			if(paths[i].active)
@@ -122,7 +129,7 @@ function setClonkPath(val = 0) {
 
 //Shortcut hinzufügen
 _sc.clonkpath = function(index = 0, findnext = true) {
-	let clonkdirs = JSON.parse(getConfigData("Global", "ClonkDirectories"));
+	let clonkdirs = getConfigData("Global", "ClonkDirectories");
 	if(clonkpath_id === undefined) {
 		for(var i = 0; i < clonkdirs.length; i++)
 			if(clonkdirs[i].active) {
@@ -159,7 +166,7 @@ function getConfig() { return CONFIG; }
 
 function initializeConfig() {
 	addConfigString("Global", "DevMode", false);
-	addConfigString("Global", "ClonkDirectories", "[]").hook("onWritingAccess", function(val) {
+	addConfigString("Global", "ClonkDirectories", "[]", "array").hook("onWritingAccess", function(val) {
 		if(this.value == "[]" && val instanceof Array) {
 			for(var i = 0; i < val.length; i++)
 				if(val[i].active)
@@ -364,7 +371,7 @@ function configVersionUpdate(version) {
 			removedEntries.push(["CIDE", "AU_RTF"], ["CIDE", "ExtProg_RTF"]);
 		case "0.15":
 			if(getConfigData("Global", "ClonkDirectories")) {
-				let clonkdirs = JSON.parse(getConfigData("Global", "ClonkDirectories"));
+				let clonkdirs = getConfigData("Global", "ClonkDirectories");
 				for(var i = 0; i < clonkdirs.length; i++)
 					if(clonkdirs[i])
 						clonkdirs[i] = { path: clonkdirs[i], active: !i};

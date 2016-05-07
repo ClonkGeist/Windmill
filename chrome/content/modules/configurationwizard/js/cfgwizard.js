@@ -61,8 +61,7 @@ $(window).ready(function() {
 	});
 	
 	$("#finishconfig").click(function() {
-		var clonkdir = JSON.parse(getConfigData("Global", "ClonkDirectories"));
-		log(">> " + clonkdir + " ("+(typeof clonkdir)+")");
+		var clonkdir = getConfigData("Global", "ClonkDirectories");
 		if(!clonkdir || !clonkdir[0]) {
 			alert("Kein Clonkverzeichnis angegeben.");
 			return;

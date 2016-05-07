@@ -16,6 +16,7 @@ window.onerror = function(msg, url, line, col, e) {
 	log("");
 }
 
+
 function initializeModules() {
 	mainDeck = addDeck($("#modules-wrapper")[0], $("#modules-nav")[0]);
 

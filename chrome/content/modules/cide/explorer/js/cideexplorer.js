@@ -235,7 +235,7 @@ function createNewWorkEnvironmentDlg(parentWorkEnv, parentContainer) {
 					return e.stopImmediatePropagation();
 				}
 
-				let cdirs = JSON.parse(getConfigData("Global", "ClonkDirectories")) || [];
+				let cdirs = getConfigData("Global", "ClonkDirectories") || [];
 
 				//Ueberpruefen ob Pfad bereits vorhanden ist
 				if(cdirs.indexOf(path) != -1) {
@@ -441,7 +441,7 @@ function createNewWorkEnvironmentDlg(parentWorkEnv, parentContainer) {
 		var fp = _sc.filepicker();
 		fp.init(window, Locale("$DlgWEChooseOCDir$"), Ci.nsIFilePicker.modeGetFolder);
 
-		var current_path = JSON.parse(getConfigData("Global", "ClonkDirectories"));
+		var current_path = getConfigData("Global", "ClonkDirectories");
 		if(current_path && current_path[0]) {
 			var dir = new _sc.file(current_path[0].path);
 			if(dir.exists())
@@ -459,7 +459,7 @@ function createNewWorkEnvironmentDlg(parentWorkEnv, parentContainer) {
 			$(dlg.element).find("#dex-dlg-workenv-ocpath").text(fp.file.path);
 		}
 	});
-	var clonkdirs = JSON.parse(getConfigData("Global", "ClonkDirectories"));
+	var clonkdirs = getConfigData("Global", "ClonkDirectories");
 	if(clonkdirs.length < 1)
 		$(dlg.element).find("#dex-dlg-workenv-clonkdirset").css("display", "none");
 	else {

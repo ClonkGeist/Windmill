@@ -3,7 +3,7 @@ pref("app.support.baseURL", "https://support.mozilla.org/1/firefox/%VERSION%/%OS
 
 /* debugging prefs, disable these before you deploy your application! */
 pref("browser.dom.window.dump.enabled", true);
-//pref("browser.dom.window.dump.file", "chrome/logs/windmill.log");
+pref("browser.dom.window.dump.file", "chrome/logs/windmill.log");
 pref("javascript.options.showInConsole", true);
 pref("nglayout.debug.disable_xul_cache", true);
 pref("nglayout.debug.disable_xul_fastload", true);
