@@ -468,7 +468,15 @@ caption {
 			.log-listitem-content { background-color: #efdddd; }
 		}
 	}
-	
+	&.sass {
+		.log-listitem-type { background-color: #6ae35f; }
+		.log-listitem-content { background-color: #d3f2d0; }
+		&:hover {
+			.log-listitem-type { background-color: #5ad34f; }
+			.log-listitem-content { background-color: #c3e2c0; }
+		}
+	}
+
 	&.hidden {
 		text-decoration: italic;
 		color: #777;

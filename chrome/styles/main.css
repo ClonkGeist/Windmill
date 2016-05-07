@@ -870,6 +870,14 @@ caption {
     background-color: #ef3e3e; }
   .log-listitem.error:hover .log-listitem-content {
     background-color: #efdddd; }
+  .log-listitem.sass .log-listitem-type {
+    background-color: #6ae35f; }
+  .log-listitem.sass .log-listitem-content {
+    background-color: #d3f2d0; }
+  .log-listitem.sass:hover .log-listitem-type {
+    background-color: #5ad34f; }
+  .log-listitem.sass:hover .log-listitem-content {
+    background-color: #c3e2c0; }
   .log-listitem.hidden {
     text-decoration: italic;
     color: #777;
