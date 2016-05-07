@@ -420,6 +420,7 @@ function addFileTreeEntry(entry, parentobj, sort_container) {
 
 	let task = Task.spawn(function*() {
 		let {title, icon, special, index, additional_data} = yield getTreeEntryData(entry, fext)||{};
+		let classes = "";
 		if(!title)
 			title = entry.leafName;
 
@@ -444,6 +445,8 @@ function addFileTreeEntry(entry, parentobj, sort_container) {
 		}
 		else if(getConfigData("CIDE", "HideUnsupportedFiles") && !fSpecial)
 			return false;
+		else if(OCGRP_FILEEXTENSIONS.indexOf(fext) != -1)
+			classes += "tree-groupfile-packed ";
 
 		if(noContainer(fext))
 			container = false;
@@ -454,7 +457,7 @@ function addFileTreeEntry(entry, parentobj, sort_container) {
 		if(index === undefined || isNaN(index))
 			index = -1;
 		//Baumelement erzeugen
-		createTreeElement(parentobj, title, container, 0, icon, entry.leafName, special, {noSelection: !!special, index, additional_data});
+		createTreeElement(parentobj, title, container, 0, icon, entry.leafName, special, {noSelection: !!special, index, additional_data, classes});
 		if(sort_container)
 			sortTreeContainerElements(parentobj);
 		return true;

@@ -34,8 +34,10 @@ function createTreeElement(tree, label, container, open, img, filename, special,
 	else
 		filename = '';
 	
+	let classes = options.classes || "";
+
 	$(tree).append(`<li id="treeelm-${TREE_ELM_ID}" tabindex="0" name="${label.toLowerCase()}" data-index='${options.index}'
-		class="treeobj treeelm${container?' treecontainer':''} ${special}" xmlns="http://www.w3.org/1999/xhtml"
+		class="treeobj treeelm${container?' treecontainer':''} ${special} ${classes}" xmlns="http://www.w3.org/1999/xhtml"
 		${drag}${filename}>${imgTag} <description>${label}</description></li>`);
 	var elm = $("#treeelm-"+TREE_ELM_ID)[0];
 	if(options.additional_data)

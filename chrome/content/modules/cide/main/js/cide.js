@@ -298,26 +298,25 @@ window.addEventListener("load", function(){
 				if(e.clientY > 50)
 					$(this).removeClass("dragover-sidedeck-top");
 			}
-			else {
-				var newclass;
-				//Neuen Richtungseffekt anzeigen
-				if(e.clientX > ($(this).width()-50)) //Rechts
-					newclass = "dragover-sidedeck-right";
-				else if(e.clientY > ($(this).height()-50)) //Unten
-					newclass = "dragover-sidedeck-bottom";
-				else if(e.clientX < 50) //Links
-					newclass = "dragover-sidedeck-left";
-				else if(e.clientY < 50) //Oben
-					newclass = "dragover-sidedeck-top";
-				else if(outside)
-					newclass = "dragover-deck";
 
-				if(newclass) {
-					if(newclass != "dragover-deck" && $(this).hasClass("dragover-deck"))
-						$(this).removeClass("dragover-deck");
+			var newclass;
+			//Neuen Richtungseffekt anzeigen
+			if(e.clientX > ($(this).width()-50)) //Rechts
+				newclass = "dragover-sidedeck-right";
+			else if(e.clientY > ($(this).height()-50)) //Unten
+				newclass = "dragover-sidedeck-bottom";
+			else if(e.clientX < 50) //Links
+				newclass = "dragover-sidedeck-left";
+			else if(e.clientY < 50) //Oben
+				newclass = "dragover-sidedeck-top";
+			else if(outside)
+				newclass = "dragover-deck";
 
-					$(this).addClass(newclass);
-				}
+			if(newclass) {
+				if(newclass != "dragover-deck" && $(this).hasClass("dragover-deck"))
+					$(this).removeClass("dragover-deck");
+
+				$(this).addClass(newclass);
 			}
 		}
 		//Effekt für Deck-Hover (falls es schon offen ist)

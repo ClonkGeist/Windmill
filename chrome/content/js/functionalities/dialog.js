@@ -118,7 +118,12 @@ class _WDialog extends WindmillObject {
 					if(fn.isGenerator()) {
 						_this.lock();
 						Task.spawn(function*() {
-							yield* fn(e, e.target, _this);
+							let rval = yield* fn(e, e.target, _this);
+							if(rval == -1) {
+								_this.unlock();
+								return;
+							}
+
 							if(fn2) {
 								if(fn2.isGenerator())
 									yield* fn2(e, e.target, _this);
@@ -225,13 +230,13 @@ class _WDialog extends WindmillObject {
 				if(this.options.btnright)
 					this.setBtnRight(this.options.btnright);
 			}
-
-			this.updatePseudoElements();
 		}
 		
 		clone.appendTo($("#mainstack"));
 		$(this.element).focus();
-		
+		if(!this.options.simple)
+			this.updatePseudoElements();
+
 		let buttons = this.options.btnleft.concat(this.options.btnright);
 		if(buttons.length) {
 			$(buttons[0].element).focus();
@@ -392,25 +397,33 @@ class _WDialog extends WindmillObject {
 			}
 		});
 
-		//Infobox: Error
-		$(dlgelm).find(".dlg-infobox.error").hide();
-
 		let observer = new MutationObserver(function(mutations) {
-			$(mutations[0].target).show();
+			//Style-Zuweisungen nicht ueber jQuery, da das in diesem speziellen Fall Probleme macht. (auch bei hide/show)
+			if(!$(mutations[0].target).contents().length)
+				mutations[0].target.style.display = "none";
+			else
+				mutations[0].target.style.display = "-moz-box";
 		});
 		$(dlgelm).find(".dlg-infobox.error").each(function() {
 			observer.observe(this, { childList: true });
 		});
+
+		//Infobox: Error
+		$(dlgelm).find(".dlg-infobox.error").hide();
 
 		this.updateTextNodes();
 	}
 
 	updateTextNodes(objects = $(this.element).find("description")) {
 		//XUL-Description Elemente in der Breite anpassen (da sie sonst komisch overflowen)
+		let op = $(this.element).find(".main-wdialog-wrapper").offset();
+		let additional = $(this.element).find(".main-wdialog-content").outerWidth()-$(this.element).find(".main-wdialog-content").width();
+		let owdt = $(this.element).find(".main-wdialog-wrapper").innerWidth();
 		objects.each((index, elm) => {
-			let o = $(elm).offset(), op = $(this.element).find(".main-wdialog-wrapper").offset();
-			let additional = $(this.element).find(".main-wdialog-content").outerWidth()-$(this.element).find(".main-wdialog-content").width();
-			let owdt = $(this.element).find(".main-wdialog-wrapper").innerWidth();
+			let o = $(elm).offset();
+			//Element ist unsichtbar
+			if(!o.left)
+				return;
 			$(elm).css("width", (owdt-(o.left-op.left)-additional)+"px");
 		});
 	}

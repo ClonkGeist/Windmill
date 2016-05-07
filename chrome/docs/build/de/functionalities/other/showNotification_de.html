@@ -31,6 +31,9 @@
 					<li class="navigation-elm"><a href="../../_home/__head_de.html">Startseite</a></li><ul class="navigation-sublist">
 </ul>
 <li class="navigation-elm"><a href="../__head_de.html">Funktionalitäten</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../workenvironments/__head_de.html">Arbeitsumgebungen</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../workenvironments/class_WorkEnvironment_de.html">class WorkEnvironment</a></li>
+</ul>
 <li class="navigation-elm"><a href="__head_de.html">Weitere Funktionen</a></li><ul class="navigation-sublist">
 <li class="navigation-elm"><a href="showNotification_de.html">showNotification</a></li>
 </ul>
@@ -60,6 +63,7 @@
 			<div id="content">
 				<h1 id="shownotification">showNotification</h1>
 <p>Bei den Benachrichtigungen handelt es sich um Desktop-Notifications (in Form von XUL-Panels) die sich einfach über <code>showNotification</code> erstellen lassen. Hierbei ist zu Beachten, dass damit nicht die WebNotification API gemeint ist und daher auch keine Erlaubnis vom Benutzer benötigt wird.</p>
+<p>Benachrichtigungen stapeln sich, falls mehrere vorhanden sind und werden nach einer Zeit automatisch gelöscht.</p>
 <pre><code class="lang-javascript"><span class="token operator" >&lt;</span>jQueryObject<span class="token operator" >></span> <span class="token function" >showNotification</span><span class="token punctuation" >(</span>string color<span class="token punctuation" >,</span> string title<span class="token punctuation" >,</span> string description<span class="token punctuation" >,</span> <span class="token punctuation" >[</span>opt<span class="token punctuation" >]</span> string code<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 </code></pre>
 <ul>
