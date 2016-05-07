@@ -22,6 +22,15 @@ class ConfigEntry extends WindmillObject {
 	get type() { return this._type; }
 	set type(type) { this._type = type.toLowerCase(); }
 
+	get stringvalue() {
+		switch(this.type) {
+			case "array":
+			case "object":
+				return JSON.stringify(this.value);
+		}
+
+		return this.value;
+	}
 	get value() {
 		execHook("onReadingAccess");
 
@@ -42,7 +51,6 @@ class ConfigEntry extends WindmillObject {
 
 			case "array":
 			case "object":
-				log(">> " + this.sect + " / " + this.key + " - " + this._value);
 				return JSON.parse(this._value);
 
 			case "int":
@@ -302,7 +310,7 @@ function saveConfig(special) {
 					CONFIG[sect][key].apply();
 
 				if(!CONFIG[sect][key].runTimeOnly)
-					text += key+"="+CONFIG[sect][key].value+"\r\n";
+					text += key+"="+CONFIG[sect][key].stringvalue+"\r\n";
 			}
 		}
 	}
