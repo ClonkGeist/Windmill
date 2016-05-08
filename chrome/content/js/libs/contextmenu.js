@@ -248,7 +248,7 @@ class _ContextMenu {
 			this.topMenu = menuitemobj.topMenu;
 
 		if(MODULE_LANG == "xul") {
-			this.element = $("<panel class='contextmenu' noautohide='true' noautofocus='true'></panel>")[0];
+			this.element = $("<panel class='contextmenu' noautofocus='true'></panel>")[0];
 			$(this.element).appendTo($(document.documentElement));
 			this.element.openPopup();
 
@@ -310,7 +310,7 @@ class _ContextMenu {
 		}
 
 		this.element.contextmenu_obj = this;
-		$(this.element).focus();
+		/*$(this.element).focus();*/
 
 		$(this.element).blur(() => {
 			//Neuer Fokus wird nicht sofort gesetzt, daher um 1ms verzögert prüfen
