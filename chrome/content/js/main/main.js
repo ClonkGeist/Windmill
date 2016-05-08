@@ -556,7 +556,7 @@ function getWindowWidth()  { return document.getElementById("window-w").getAttri
 function getWindowHeight() { return document.getElementById("window-h").getAttribute("data-value") ||
 									document.getElementById("main").getAttribute("height"); }
 
-function restoreWindow(fOnlySize) {
+function restoreWindow(fOnlySize, mouse_event) {
 	if(restoreHeight == undefined)
 		restoreHeight = getWindowHeight();
 	if(restoreWidth == undefined)
@@ -570,9 +570,18 @@ function restoreWindow(fOnlySize) {
 	
 	$("window").removeClass("maximized");
 	
+	window.resizeTo(restoreWidth, restoreHeight);
 	if(!fOnlySize)
 		window.moveTo(restoreLeft, restoreTop);
-	window.resizeTo(restoreWidth, restoreHeight);
+	else if(mouse_event) {
+		let scr = _sc.screenmgr().screenForRect(window.screenX, window.screenY, getWindowWidth(), getWindowHeight());
+		let x = {}, y = {}, wdt = {}, hgt = {};
+		scr.GetAvailRect(x, y, wdt, hgt);
+		let newx = Math.min(Math.max(mouse_event.screenX-restoreWidth/2, 0), wdt.value-restoreWidth);
+		log(`${mouse_event.screenX}, ${restoreWidth}, ${wdt.value} === ${newx}`);
+		window.moveTo(newx, 0);
+		return newx;
+	}
 }
 
 
@@ -582,7 +591,7 @@ var draggingWindow = false,
 	windowFn = true;
 	
 hook("load", function() {
-	/*$(".header-ctrl").mousedown(function(e) {
+	$(".header-ctrl").mousedown(function(e) {
 		if(!$(e.target).hasClass("header-ctrl"))
 			return;
 		draggingWindow = true;
@@ -594,11 +603,11 @@ hook("load", function() {
 			if(window.isMaximized()) {
 				windowFn = false;
 				
-				restoreWindow(true);
-				window.moveTo(
+				windowStartX = e.screenX - restoreWindow(true, e);
+				/*window.moveTo(
 					Math.round(e.screenX - e.clientX/screen.availWidth*restoreWidth) - 4,
 					Math.round(e.screenY - e.clientY/screen.availHeight*restoreHeight) - 4
-				);
+				);*/
 				
 				windowFn = true;
 			}
@@ -616,15 +625,25 @@ hook("load", function() {
 			windowFn = true;
 			draggingWindow = false;
 		}
-	})*/
+	})
+	/*
+	 * <titlebar>-Implementation:
+	 *	Da die maximize-Implementation kein richtiges Maximize ist, sondern nur das Fenster vergroessert, gibt es beim Wiederherstellen des Fensters
+	 *	Probleme mit der Neupositionierung des Fensters. (Da die Differenz zw. Mausposition und Fensterposition nicht neu berechnet wird)
+	 *	Es gibt mit Maximize jedoch auch Probleme unter Windows, da das Fenster nicht auf die WorkArea vergroessert wird, sondern auf die gesamte
+	 *	Bildschirmgroesse (Fullscreen), was ein Verdecken der Taskleiste zur Folge hat.
+	 *
+	 *  Daher bis auf weiteres (bis eine bessere Loesung gefunden wird falls vorhanden) deaktiviert und durch obige volle JavaScript-Implementation
+	 * 	ersetzt.
+
 	$(".header-ctrl").mousedown(function(e) {
 		draggingWindow = true;
 	}).mousemove(function(e) {
 		if(draggingWindow && window.isMaximized())
-			restoreWindow(true);
+			restoreWindow(true, e);
 	}).on("command", function(e) {
 		draggingWindow = false;
-	}).dblclick(function() {
+	})*/.dblclick(function() {
 		if(window.isMaximized())
 			restoreWindow();
 		else
