@@ -67,8 +67,8 @@ class WorkEnvironment {
 								options.success(_this);
 
 							unlockModule();
-							git.create(["config", "-f", _this.path+"/.git/config", "user.name", options.userconfig.username], 0x2);
-							git.create(["config", "-f", _this.path+"/.git/config", "user.email", options.userconfig.email], 0x2);
+							git.create(["config", "-f", _this.path+"/.git/config", "user.name", options.userconfig.username], 0x3);
+							git.create(["config", "-f", _this.path+"/.git/config", "user.email", options.userconfig.email], 0x3);
 
 							_this.saveHeader();
 						}
@@ -151,7 +151,7 @@ class WorkEnvironment {
 
 		if(this.repository) {
 			let git = getAppByID("git");
-			git.create(["config", "-f", this.path+"/.git/config", "--get", "remote.origin.url"], 0x2, null, (data) => {
+			git.create(["config", "-f", this.path+"/.git/config", "--get", "remote.origin.url"], 0x3, null, (data) => {
 				let matches = data.match(/https:\/\/(.+?):(.+?)@/);
 				if(!matches)
 					return;
