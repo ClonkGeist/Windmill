@@ -202,25 +202,31 @@ hook("load", function() {
 			});
 		}
 
+		//Simplere Einstellungselemente automatisch initialisieren
 		$(".autoinit").each(function() {
-			var sect = $(this).attr("default-cfgsect");
-			var key = $(this).attr("default-cfgkey");
+			let sect = $(this).attr("default-cfgsect");
+			let key = $(this).attr("default-cfgkey");
 			if(!sect || !key)
 				throw "No section or key for auto initialized settings element defined.";
-			var val = getConfigData(sect, key);
+			let val = getConfigData(sect, key), event = "command";
 
+			//Wert und Event je nach Elementart setzen
 			switch($(this).prop("tagName").toLowerCase()) {
 				case "checkbox":
 					$(this).attr("checked", val);
+					break;
+
+				case "textbox":
+					event = "input";
+					$(this).val(val);
 					break;
 
 				default:
 					$(this).val(val);
 					break;
 			}
-			$(this).on("command", function() {
-				var sect = $(this).attr("default-cfgsect"), key = $(this).attr("default-cfgkey"), val;
-
+			//Bei Veraenderung diese in der Config temporaer speichern
+			$(this).on(event, function() {
 				switch($(this).prop("tagName").toLowerCase()) {
 					case "checkbox":
 						val = $(this).attr("checked");

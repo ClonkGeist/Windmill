@@ -38,26 +38,25 @@ class ConfigEntry extends WindmillObject {
 			case "boolean":
 			case "bool":
 				let valup;
-				if(typeof this._value == "string")
-					valup = this._value.toUpperCase();
+				if(typeof this.tempvalue == "string")
+					valup = this.tempvalue.toUpperCase();
 				else 
-					return this._value;
+					return this.tempvalue;
 				if(valup != "FALSE" && valup != "UNDEFINED" && valup != "NULL" && valup != "0" && valup.length)
 					return true;
 				return false;
 
 			case "path":
-				return formatPath(this._value);
+				return formatPath(this.tempvalue);
 
 			case "int":
 			case "integer":
 			case "number":
-				return parseInt(this._value);
+				return parseInt(this.tempvalue);
 
 			default:
-				return this._value;
+				return this.tempvalue;
 		}
-		return this.tempvalue;
 	}
 	set value(val) {
 		if(this.readOnly) {

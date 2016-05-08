@@ -70,9 +70,11 @@
 				<vbox id="settings-page-oc" class="settings-page" top="0" bottom="0">
 					<caption class="big" label="Open Clonk" />
 					
-					<description flex="1">
-						&lt;Hier kommt spaeter eine Main-Clonkdir-Auswahl hin etc. Bis dahin muss hierfuer allerdings der CIDE-Explorer verwendet werden.&gt;
-					</description>
+					<caption label="$Masterserver$" />
+					<hbox>
+						<label flex="1" value="$MasterserverURL$" />
+						<textbox flex="3" class="autoinit" default-cfgsect="ShowGame" default-cfgkey="MasterserverURL"/>
+					</hbox>
 					<!--
 					<caption label="$OCDir$" />
 					<hbox>
