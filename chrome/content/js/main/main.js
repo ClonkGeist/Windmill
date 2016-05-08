@@ -543,19 +543,24 @@ function maximizeWindow() {
 	// save old state
 	saveWindowInformation();
 	
-	window.moveTo(0, 0);
-	window.resizeTo(screen.availWidth, screen.availHeight);
+	let scr = _sc.screenmgr().screenForRect(window.screenX, window.screenY, getWindowWidth(), getWindowHeight());
+	let x = {}, y = {}, wdt = {}, hgt = {};
+	scr.GetAvailRect(x, y, wdt, hgt);
+	window.moveTo(x.value, y.value);
+	window.resizeTo(wdt.value, hgt.value);
 	$("window").addClass("maximized");
 }
 
-function restoreWindow(fOnlySize) {
+function getWindowWidth()  { return document.getElementById("window-w").getAttribute("data-value") || 
+									document.getElementById("main").getAttribute("width"); }
+function getWindowHeight() { return document.getElementById("window-h").getAttribute("data-value") ||
+									document.getElementById("main").getAttribute("height"); }
 
+function restoreWindow(fOnlySize) {
 	if(restoreHeight == undefined)
-		restoreHeight = document.getElementById("window-h").getAttribute("data-value") ||
-			document.getElementById("main").getAttribute("height");
+		restoreHeight = getWindowHeight();
 	if(restoreWidth == undefined)
-		restoreWidth = document.getElementById("window-w").getAttribute("data-value") ||
-			document.getElementById("main").getAttribute("width");
+		restoreWidth = getWindowWidth();
 	if(restoreLeft == undefined)
 		restoreLeft = document.getElementById("window-l").getAttribute("data-value") ||
 			document.getElementById("main").getAttribute("screenX");
