@@ -87,6 +87,8 @@ $(window).ready(function() {
 		_mainwindow.outerHeight = 600;
 		_mainwindow.location.reload();
 	});
+	if(!getConfigData("Global", "DevMode"))
+		$("#resetcfgvar").hide();
 });
 
 function showPage(id) {
