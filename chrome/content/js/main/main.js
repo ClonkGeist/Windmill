@@ -578,7 +578,6 @@ function restoreWindow(fOnlySize, mouse_event) {
 		let x = {}, y = {}, wdt = {}, hgt = {};
 		scr.GetAvailRect(x, y, wdt, hgt);
 		let newx = Math.min(Math.max(mouse_event.screenX-restoreWidth/2, 0), wdt.value-restoreWidth);
-		log(`${mouse_event.screenX}, ${restoreWidth}, ${wdt.value} === ${newx}`);
 		window.moveTo(newx, 0);
 		return newx;
 	}
