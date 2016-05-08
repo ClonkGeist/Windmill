@@ -124,7 +124,7 @@ class _ContextMenuEntry {
 								$(".contextmenu").prop("contextmenu_obj").hideMenu();
 						}, function(err) {
 							log(err);					
-							_this.unlock();							
+							_this.unlock();
 							if($(".contextmenu").prop("contextmenu_obj"))
 								$(".contextmenu").prop("contextmenu_obj").hideMenu();
 						});	
@@ -185,10 +185,10 @@ class _ContextMenu {
 		this.langpre = langpre;
 		this.options = options;
 		this.direction = DIR_Right;
-		
+
 		for(var i = 0; i < entryarray.length; i++) {
 			var entry = entryarray[i];
-			
+
 			if(entry == "seperator")
 				this.addSeperator();
 			else
@@ -231,7 +231,7 @@ class _ContextMenu {
 				this.showMenu(e.clientX, e.clientY, e.currentTarget, e.screenX, e.screenY);
 				return !forced;
 			}
-			
+
 			return true;
 		});
 	}
@@ -240,22 +240,22 @@ class _ContextMenu {
 		if(!this.submenu)
 			if($(".contextmenu").prop("contextmenu_obj"))
 				$(".contextmenu").prop("contextmenu_obj").hideMenu();
-	
+
 		if(typeof this.showing == "function")
 			this.showing(obj_by);
-	
+
 		if(menuitemobj && menuitemobj.topMenu)
 			this.topMenu = menuitemobj.topMenu;
 
 		if(MODULE_LANG == "xul") {
-			this.element = $("<panel class='contextmenu' noautohide='true'></panel>")[0];
+			this.element = $("<panel class='contextmenu' noautohide='true' noautofocus='true'></panel>")[0];
 			$(this.element).appendTo($(document.documentElement));
 			this.element.openPopup();
 
 			this.body = $("<vbox class='ctx-wrapper'></vbox>")[0];
 			$(this.element).append(this.body);
 			var last_element_seperator = false;
-			
+
 			for(var entry in this.entries) { // Menü füllen
 				if(this.entries[entry].seperator) {
 					if(!last_element_seperator)
@@ -266,7 +266,7 @@ class _ContextMenu {
 				if(this.entries[entry].seperator || this.entries[entry].visible)
 					last_element_seperator = this.entries[entry].seperator;
 			}
-			
+
 			var pscr = _sc.screenmgr().screenForRect(screenX, screenY, 1, 1);
 			var scx = {}, scy = {}, scwdt = {}, schgt = {};
 			pscr.GetAvailRect(scx,scy,scwdt,schgt);
@@ -281,7 +281,7 @@ class _ContextMenu {
 			else if(!menuitem) {
 				this.direction = DIR_Right;
 			}
-			
+
 			if(screenY+$(this.element).outerHeight() > schgt.value)
 				screenY -= $(this.element).outerHeight()-((schgt.value)-screenY);
 
@@ -332,7 +332,10 @@ class _ContextMenu {
 		for(var i = 0; i < this.entries.length; i++)
 			this.entries[i].hideMenu();
 
-		$(this.element).remove();
+		if(MODULE_LANG == "XUL")
+			this.element.hidePopup();
+		else
+			$(this.element).remove();
 		this.element = 0;
 
 		$(this.opened_by).focus();
