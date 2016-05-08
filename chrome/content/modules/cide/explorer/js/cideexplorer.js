@@ -48,7 +48,7 @@ function explorerLoadWorkEnvironments(parentWorkEnv, container) {
 		return;
 
 	let we_namelist = [];
-	for(var i = 0, first = !parentWorkEnv; i < workenvs.length; i++) {
+	for(var i = 0; i < workenvs.length; i++) {
 		if(!parentWorkEnv && workenvs[i].isChildWorkEnv)
 			continue;
 		if(parentWorkEnv && workenvs[i].type != _mainwindow.WORKENV_TYPE_Workspace)
@@ -58,10 +58,9 @@ function explorerLoadWorkEnvironments(parentWorkEnv, container) {
 		let id;
 		if(workenvs[i].options.identifier == "UserData")
 			id = createWorkEnvironmentEntry(workenvs[i]);
-		else {
-			id = createWorkEnvironmentEntry(workenvs[i], first, container);
-			first = false;
-		}
+		else
+			id = createWorkEnvironmentEntry(workenvs[i], (workenvs[i].path == _sc.clonkpath()), container);
+
 		let blacklist = explorerLoadWorkEnvironments(workenvs[i], getTreeCntById(id));
 
 		let c = i;
