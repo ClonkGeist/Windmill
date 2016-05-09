@@ -905,7 +905,10 @@ function handleTreeEntry(obj, open_sidedeck) {
 			break;
 		
 		default:
-			parent.openFileInDeck(file, open_sidedeck);
+			if(parent.openFileInDeck)
+				parent.openFileInDeck(file, open_sidedeck);
+			else
+				return -1;
 			break;
 	}
 	

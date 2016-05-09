@@ -113,8 +113,8 @@ $(window).load(function() {
 
 	//Start Game button
 	$("#btn-startgame").click(function() {
-		if($(current_selection)[0])
-			handleTreeEntry($(current_selection));
+		if(!$(current_selection)[0] || handleTreeEntry($(current_selection)) == -1)
+			EventInfo("No scenario selected");
 	});
 
 	//Toggle game mode
