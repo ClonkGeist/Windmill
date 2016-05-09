@@ -385,6 +385,18 @@
 .icon-auto-scan-side:before {
   content: "AutoS"; }
 
+.icon-singleplayer:before {
+  content: "\e62a"; }
+
+.icon-password:before {
+  content: "Pw"; }
+
+.icon-comment:before {
+  content: "C"; }
+
+.icon-startgame:before {
+  content: "St"; }
+
 window {
   background-color: #fafafa;
   font-family: "Segoe UI", "Trebuchet MS", sans-serif; }

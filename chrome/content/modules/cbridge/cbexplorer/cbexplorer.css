@@ -501,6 +501,18 @@ li:focus *, li:focus {
 .icon-auto-scan-side:before {
   content: "AutoS"; }
 
+.icon-singleplayer:before {
+  content: "\e62a"; }
+
+.icon-password:before {
+  content: "Pw"; }
+
+.icon-comment:before {
+  content: "C"; }
+
+.icon-startgame:before {
+  content: "St"; }
+
 splitter {
   -moz-appearance: none;
   background-color: #fafafa;
@@ -572,16 +584,73 @@ textbox.deactivated {
   pointer-events: none;
   /*cursor: none;*/ }
 
-.selectgamemode {
-  border-top: 3px solid #b4b4b4;
-  background-color: gainsboro;
-  color: #282828; }
+/*.selectgamemode {
+	border-top: 3px solid rgb(180, 180, 180);
+	background-color: rgb(220, 220, 220);
+	color: rgb(40, 40, 40);
+}
 
 .selectgamemode.selected {
-  border-top-color: #db4631; }
+	border-top-color: rgb(219, 70, 49);
+}*/
+.hostgame-nav-item {
+  height: 70px;
+  width: 190px;
+  padding: 0 6px; }
+  .hostgame-nav-item:hover {
+    background-color: #f4f4f4; }
+    .hostgame-nav-item:hover .hostgame-nav-label {
+      color: black; }
+  .hostgame-nav-item.active {
+    color: #dc4632; }
+    .hostgame-nav-item.active .hostgame-nav-label {
+      color: #dc4632; }
+  .hostgame-nav-item#btn-startgame {
+    cursor: pointer;
+    color: white;
+    background-color: #dc4632; }
+    .hostgame-nav-item#btn-startgame .hostgame-nav-label {
+      color: white; }
+
+#togglegamemode.singleplayer .nwg-item {
+  display: none; }
+
+#togglegamemode:not(.singleplayer) .sp-item {
+  display: none; }
+
+.hostgame-nav-icon {
+  width: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3em; }
 
 #hostsettings {
-  padding: 15px 10px; }
+  padding: 15px 20px;
+  width: 190px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap-reverse;
+  justify-content: space-around;
+  background: white;
+  border-left: 2px solid gainsboro;
+  cursor: default;
+  -moz-user-select: none; }
+
+.hostgame-nav-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column; }
+  .hostgame-nav-content .hostgame-nav-label {
+    font-size: 1.4em;
+    color: grey; }
+
+@media screen and (max-width: 900px) {
+  .hostgame-nav-item {
+    width: 60px; }
+  .hostgame-nav-content {
+    display: none; } }
 
 #general-container .icon-32 {
   color: grey;
@@ -603,12 +672,6 @@ textbox.deactivated {
   text-align: center;
   cursor: default;
   padding: 5px; }
-
-#btn-startgame {
-  background-color: #db4631;
-  color: white;
-  padding: 4px 10px;
-  font-size: 16px; }
 
 #preview {
   padding: 40px; }
