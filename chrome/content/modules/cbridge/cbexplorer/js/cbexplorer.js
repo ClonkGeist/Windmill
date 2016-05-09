@@ -98,6 +98,9 @@ $(window).load(function() {
 			$(id).addClass("active");
 
 		return function(e) { 
+			if($(this).parent().hasClass("inactive"))
+				return;
+
 			$(this)[$(this).hasClass("active")?"removeClass":"addClass"]("active");
 			setConfigData(sect, key, $(this).hasClass("active")==!reversed, true);
 		};
