@@ -280,13 +280,13 @@ class WorkEnvironment {
 	set index(index) { this.header.Workspace.Index = index; }
 	
 	get icon() {
-		let img = "chrome://windmill/content/img/icon-workenvironment-ws.png";
+		let img = "chrome://windmill/content/img/explorer/icon-workenvironment-ws.png";
 		if(this.type == WORKENV_TYPE_ClonkPath)
-			img = "chrome://windmill/content/img/icon-workenvironment-clonkdir.png";
+			img = "chrome://windmill/content/img/explorer/icon-workenvironment-clonkdir.png";
 		if(this.repository)
-			img = "chrome://windmill/content/img/icon-workenvironment-git.png";
+			img = "chrome://windmill/content/img/explorer/icon-workenvironment-git.png";
 		if(this.options.identifier == "UserData")
-			img = "chrome://windmill/content/img/icon-workenvironment-user.png";
+			img = "chrome://windmill/content/img/explorer/icon-workenvironment-user.png";
 		return img;
 	}
 }

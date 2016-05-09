@@ -403,6 +403,6 @@ function getOCStartArguments(path) {
 }
 
 var specialData = {
-	0: {ext: "ocf", img: "chrome://windmill/content/img/icon-fileext-ocf.png"},
-	1: {ext: "ocs", img: "chrome://windmill/content/img/icon-fileext-ocs.png"},
+	0: {ext: "ocf", img: "chrome://windmill/content/img/explorer/icon-fileext-ocf.png"},
+	1: {ext: "ocs", img: "chrome://windmill/content/img/explorer/icon-fileext-ocs.png"},
 }

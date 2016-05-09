@@ -451,7 +451,7 @@ function addFileTreeEntry(entry, parentobj, sort_container) {
 			
 			//Standard Ordnericon verwenden
 			if(!fSpecial && !icon)
-				icon = "chrome://windmill/content/img/icon-directory.png";
+				icon = "chrome://windmill/content/img/explorer/icon-directory.png";
 		}
 		else if(getConfigData("CIDE", "HideUnsupportedFiles") && !fSpecial)
 			return false;
@@ -462,7 +462,7 @@ function addFileTreeEntry(entry, parentobj, sort_container) {
 			container = false;
 
 		if(!icon)
-			icon = "chrome://windmill/content/img/icon-fileext-other.png";
+			icon = "chrome://windmill/content/img/explorer/icon-fileext-other.png";
 
 		if(index === undefined || isNaN(index))
 			index = -1;
