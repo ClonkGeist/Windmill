@@ -124,6 +124,13 @@ textbox.deactivated {
 	}
 }
 
+.hostgame-group {
+	transition: opacity 0.5s;
+	&.networkgame.inactive {
+		opacity: 0;
+	}
+}
+
 #togglegamemode {
 	&.singleplayer {
 		.nwg-item {

@@ -118,6 +118,10 @@ $(window).load(function() {
 	$("#togglegamemode").mousedown(function() {
 		$(this).toggleClass("singleplayer");
 		setConfigData("HostGame", "Network", !$(this).hasClass("singleplayer"), true);
+		if($(this).hasClass("singleplayer"))
+			$(".hostgame-group.networkgame").addClass("inactive");
+		else
+			$(".hostgame-group.networkgame").removeClass("inactive");
 	});
 
 	//Vorauswählen
