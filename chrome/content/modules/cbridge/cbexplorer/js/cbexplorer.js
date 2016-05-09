@@ -126,7 +126,7 @@ $(window).load(function() {
 
 	//Vorauswählen
 	if(!getConfigData("HostGame", "Network"))
-		$("#togglegamemode").addClass("singleplayer");
+		$("#togglegamemode").mousedown();
 });
 
 function initializeContextMenu() {}

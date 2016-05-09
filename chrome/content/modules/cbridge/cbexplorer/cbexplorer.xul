@@ -13,7 +13,7 @@
 			<vbox flex="1" class="labelbtn selectgamemode" id="select-spgame">$Singleplayer$</vbox>
 		</hbox>-->
 	<hbox flex="1">
-		<vbox style="width: 400px">
+		<vbox style="width: 300px">
 			<vbox id="filecontainer" context="clipmenu" flex="1">
 				<html:ul id="maintree" class="workenvironment">
 					

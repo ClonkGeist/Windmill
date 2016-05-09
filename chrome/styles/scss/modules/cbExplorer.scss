@@ -113,6 +113,11 @@ textbox.deactivated {
 		.hostgame-nav-label {
 			color: $interact-red;
 		}
+		&:hover {
+			.hostgame-nav-label {
+				color: rgb(140, 20, 10);
+			}
+		}
 	}
 	&#btn-startgame {
 		cursor: pointer;

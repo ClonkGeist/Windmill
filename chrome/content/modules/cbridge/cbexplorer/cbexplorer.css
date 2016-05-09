@@ -605,6 +605,8 @@ textbox.deactivated {
     color: #dc4632; }
     .hostgame-nav-item.active .hostgame-nav-label {
       color: #dc4632; }
+    .hostgame-nav-item.active:hover .hostgame-nav-label {
+      color: #8c140a; }
   .hostgame-nav-item#btn-startgame {
     cursor: pointer;
     color: white;
