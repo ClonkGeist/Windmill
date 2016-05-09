@@ -150,6 +150,7 @@ _sc.clonkpath = function(index = 0, findnext = true) {
 	if(clonkdirs[index])
 		return formatPath(clonkdirs[index].path);
 };
+_sc.clonkpathlength = function() { return getConfigData("Global", "ClonkDirectories").length; }
 
 function addConfigString(section, key, defaultval, ...pars) {
 	if(!CONFIG[section])

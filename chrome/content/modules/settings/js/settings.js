@@ -445,23 +445,20 @@ function saveSettings() {
 function filePickerOptions(id) {
 	var r = {};
 	switch(id) {
-		case 'oc-path':
+		case 'c4group-path':
 			r = { 
 				cfgsect: "Global",
-				cfgkey: "ClonkPath",
-				title: "$choose_ocdir$",
-				callback: function(fpfile) {
-					//Überprüfen ob openclonk.exe vorhanden ist
-					var filename = "openclonk";
+				cfgkey: "C4GroupPath",
+				title: "$ChooseC4GroupFile$",
+				callback: function(file) {
+					let expected_filename = "c4group";
 					if(OS_TARGET == "WINNT")
-						filename = "openclonk.exe";
-
-					if(!(_sc.file(fpfile.path+"/"+filename).exists())) {
-						warn("$err_ocexecutable_not_found$");
-
+						expected_filename = "c4group.exe";
+					if(file.leafName != expected_filename || !file.isExecutable())
 						return -1;
-					}
-				}
+				},
+				mode: Ci.nsIFilePicker.modeOpen,
+				filters: Ci.nsIFilePicker.filterApps
 			};
 			break;
 
@@ -477,8 +474,10 @@ function openPathDialog(id) {
 	var options = filePickerOptions(id);
 
 	//Filepicker öffnen
-	var fp = _sc.filepicker();
-	fp.init(window, Locale(options.title), Ci.nsIFilePicker.modeGetFolder);
+	let fp = _sc.filepicker(), mode = options.mode;
+	if(mode == undefined)
+		mode = Ci.nsIFilePicker.modeGetFolder;
+	fp.init(window, Locale(options.title), mode);
 
 	var current_path = getConfigData(options.cfgsect, options.cfgkey);
 	if(current_path) {
@@ -486,6 +485,8 @@ function openPathDialog(id) {
 		if(dir.exists())
 			fp.displayDirectory = dir;
 	}
+	if(options.filters)
+		fp.appendFilters(options.filters);
 
 	var rv = fp.show();
 
