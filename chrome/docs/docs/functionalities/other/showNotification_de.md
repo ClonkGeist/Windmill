@@ -6,8 +6,8 @@ Bei den Benachrichtigungen handelt es sich um Desktop-Notifications (in Form von
 
 Benachrichtigungen stapeln sich, falls mehrere vorhanden sind und werden nach einer Zeit automatisch gelöscht.
 
-```javascript
-<jQueryObject> showNotification(string color, string title, string description, [opt] string code);
+```fnpreview
+jQueryObject showNotification(string color, string title, string description, [opt] string code);
 ```
 
 * **color:**

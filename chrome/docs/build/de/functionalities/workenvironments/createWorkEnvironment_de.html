@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Windmill Documentation - Weitere Funktionen</title>
+		<title>Windmill Documentation - createWorkEnvironment</title>
 		<link href="../../../windmillDocs.css" rel="stylesheet">
 		<link href="../../../prism.css" rel="stylesheet">
 		<meta charset="UTF-8">
@@ -31,16 +31,16 @@
 					<li class="navigation-elm"><a href="../../_home/__head_de.html">Startseite</a></li><ul class="navigation-sublist">
 </ul>
 <li class="navigation-elm"><a href="../__head_de.html">Funktionalitäten</a></li><ul class="navigation-sublist">
-<li class="navigation-elm"><a href="../workenvironments/__head_de.html">Arbeitsumgebungen</a></li><ul class="navigation-sublist">
-<li class="navigation-elm"><a href="../workenvironments/saveWorkEnvironment_de.html">saveWorkEnvironment</a></li>
-<li class="navigation-elm"><a href="../workenvironments/loadWorkEnvironment_de.html">loadWorkEnvironment</a></li>
-<li class="navigation-elm"><a href="../workenvironments/getWorkEnvironments_de.html">getWorkEnvironments</a></li>
-<li class="navigation-elm"><a href="../workenvironments/getWorkEnvironmentByPath_de.html">getWorkEnvironmentByPath</a></li>
-<li class="navigation-elm"><a href="../workenvironments/createWorkEnvironment_de.html">createWorkEnvironment</a></li>
-<li class="navigation-elm"><a href="../workenvironments/class_WorkEnvironment_de.html">class WorkEnvironment</a></li>
+<li class="navigation-elm"><a href="__head_de.html">Arbeitsumgebungen</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="saveWorkEnvironment_de.html">saveWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="loadWorkEnvironment_de.html">loadWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="getWorkEnvironments_de.html">getWorkEnvironments</a></li>
+<li class="navigation-elm"><a href="getWorkEnvironmentByPath_de.html">getWorkEnvironmentByPath</a></li>
+<li class="navigation-elm"><a href="createWorkEnvironment_de.html">createWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="class_WorkEnvironment_de.html">class WorkEnvironment</a></li>
 </ul>
-<li class="navigation-elm"><a href="__head_de.html">Weitere Funktionen</a></li><ul class="navigation-sublist">
-<li class="navigation-elm"><a href="showNotification_de.html">showNotification</a></li>
+<li class="navigation-elm"><a href="../other/__head_de.html">Weitere Funktionen</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../other/showNotification_de.html">showNotification</a></li>
 </ul>
 <li class="navigation-elm"><a href="../dialogs/__head_de.html">Dialoge</a></li><ul class="navigation-sublist">
 </ul>
@@ -66,7 +66,16 @@
 				</ul>
 			</nav>
 			<div id="content">
-				<p>[!INFO]</p>
+				<h1 id="createworkenvironment">createWorkEnvironment</h1>
+<pre>WorkEnvironment createWorkEnvironment(string path, int type, bool forceload, object options);
+</pre>
+<p>Erzeugt ein <code>WorkEnvironment</code>-Objekt der Arbeitsumgebung mit den angegebenen Parametern. Hierbei ist zu beachten, dass dadurch auf der Festplatte keine neue Arbeitsumgebung erzeugt wird. Dafuer sollte <a href="#">createNewWorkEnvironment</a> verwendet werden.</p>
+<ul>
+<li><strong>path:</strong><br>Pfad zum Hauptverzeichnis der Arbeitsumgebung. (Welches die .windmillheader-Datei enthaelt)</li>
+<li><strong>type:</strong><br>Art der Arbeitsumgebung. (<code>WORKENV_TYPE_ClonkPath</code> oder <code>WORKENV_TYPE_Workspace</code>)</li>
+<li><strong>forceload:</strong><br>Falls <code>true</code>, so wird die Arbeitsumgebung auch geladen, wenn im Header <code>Unloaded</code> auf <code>true</code> gesetzt ist. Andernfalls wird das erstellte Objekt entfernt und die Funktion gibt <code>undefined</code> zurueck.</li>
+<li><strong>options:</strong><br>Weitere Optionen der Arbeitsumgebung. s. <a href="#">class WorkEnvironment</a></li>
+</ul>
 
 			</div>
 		</div>

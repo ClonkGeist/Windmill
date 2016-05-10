@@ -380,8 +380,6 @@ function createWorkEnvironment(path, type, forceload, options) {
 		return;
 
 	WORKENV_List.push(env);
-	if(!getCurrentWorkEnvironment())
-		setCurrentWorkEnvironment(env);
 
 	execHook("onWorkenvCreated", env);
 	return env;
@@ -405,8 +403,6 @@ function getWorkEnvironmentByPath(path) {
 	return;
 }
 
-function setCurrentWorkEnvironment(work_env) { WORKENV_Current = work_env; }
-function getCurrentWorkEnvironment() { return WORKENV_Current; }
 function getWorkEnvironments() {
 	var result = [];
 	//Garantieren dass keine undefined WorkEnvironments zurueckgegeben werden
@@ -438,11 +434,11 @@ _sc.workpath = function(by) {
 		}
 		return match;
 	}
-	else if(getCurrentWorkEnvironment && getCurrentWorkEnvironment())
-		return getCurrentWorkEnvironment().path;
+	else
+		return WORKENV_List[0];
 }
 
-function inheritFuncs() { return ["getWorkEnvironments", "getCurrentWorkEnvironment", "setCurrentWorkEnvironment", "createNewWorkEnvironment", "createWorkEnvironment"]; }
+function inheritFuncs() { return ["getWorkEnvironments", "createNewWorkEnvironment", "createWorkEnvironment"]; }
 
 registerInheritableObject("getWorkEnvironmentByPath");
 

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Windmill Documentation - class WorkEnvironment</title>
+		<link href="../../../windmillDocs.css" rel="stylesheet">
+		<link href="../../../prism.css" rel="stylesheet">
+		<meta charset="UTF-8">
+		<script>
+			//Windmillinterner Workaround: Da Windmill das Oeffnen externer Links sperrt (sodass diese in einem externen Browser geoffnet werden koennen)
+			//wird hier fuer Windmill das anders geloest.
+			if(navigator.userAgent.search(/\bwindmill\b/) != -1) {
+				window.addEventListener("load", function() {
+					let elements = document.getElementsByTagName("a");
+					for(var i = 0; i < elements.length; i++) {
+						elements[i].onclick = function(e) {
+							window.location.href = this.href;
+							e.preventDefault();
+						};
+					}
+				});
+			}
+		</script>
+	</head>
+	<body>
+		<div id="header">
+			Windmill Documentation
+		</div>
+		<div id="wrapper">
+			<nav id="navigation">
+				<ul>
+					<li class="navigation-elm"><a href="../../_home/__head_de.html">Startseite</a></li><ul class="navigation-sublist">
+</ul>
+<li class="navigation-elm"><a href="../__head_de.html">Funktionalitäten</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="__head_de.html">Arbeitsumgebungen</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="saveWorkEnvironment_de.html">saveWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="loadWorkEnvironment_de.html">loadWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="getWorkEnvironments_de.html">getWorkEnvironments</a></li>
+<li class="navigation-elm"><a href="getWorkEnvironmentByPath_de.html">getWorkEnvironmentByPath</a></li>
+<li class="navigation-elm"><a href="createWorkEnvironment_de.html">createWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="class_WorkEnvironment_de.html">class WorkEnvironment</a></li>
+</ul>
+<li class="navigation-elm"><a href="../other/__head_de.html">Weitere Funktionen</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../other/showNotification_de.html">showNotification</a></li>
+</ul>
+<li class="navigation-elm"><a href="../dialogs/__head_de.html">Dialoge</a></li><ul class="navigation-sublist">
+</ul>
+<li class="navigation-elm"><a href="../config/__head_de.html">config.js</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../config/setConfigData_de.html">setConfigData</a></li>
+<li class="navigation-elm"><a href="../config/setClonkPath_de.html">setClonkPath</a></li>
+<li class="navigation-elm"><a href="../config/sc.clonkpath_de.html">_sc.clonkpath</a></li>
+<li class="navigation-elm"><a href="../config/saveConfig_de.html">saveConfig</a></li>
+<li class="navigation-elm"><a href="../config/loadConfig_de.html">loadConfig</a></li>
+<li class="navigation-elm"><a href="../config/getConfig_de.html">getConfig</a></li>
+<li class="navigation-elm"><a href="../config/getConfigData_de.html">getConfigData</a></li>
+<li class="navigation-elm"><a href="../config/class_ConfigEntry_de.html">class ConfigEntry</a></li>
+<li class="navigation-elm"><a href="../config/addConfigString_de.html">addConfigString</a></li>
+</ul>
+</ul>
+<li class="navigation-elm"><a href="../../externalapplications/__head_de.html">Externe Anwendungen</a></li><ul class="navigation-sublist">
+</ul>
+<li class="navigation-elm"><a href="../../ctypes/__head_de.html">CTypes / Windmill Interface</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../ctypes/wmIProcess_de.html">wmIProcess</a></li>
+<li class="navigation-elm"><a href="../../ctypes/WindmillInterface_de.html">Windmill Interface</a></li>
+</ul>
+
+				</ul>
+			</nav>
+			<div id="content">
+				<h1 id="class-workenvironment">class WorkEnvironment</h1>
+<pre>constructor WorkEnvironment(string path, int Type, id, [opt] object options);
+</pre>
+<p>Erstellt eine WorkEnvironment-Instanz mit den angegebenen Werten.</p>
+<ul>
+<li><strong>path:</strong><br>Pfad zum Arbeitsverzeichnis.</li>
+<li><strong>Type:</strong><br>Sorte des Arbeitsverzeichnisses. Gültige Werte: <code>WORKENV_TYPE_ClonkPath</code> (1) und <code>WORKENV_TYPE_Workspace</code> (2).</li>
+<li><strong>id:</strong><br>ID des Arbeitsverzeichnisses.</li>
+<li><strong>options:</strong><br>Weitere Optionen. Siehe das <code>options</code>-Attribut für weitere Erklärungen.</li>
+</ul>
+<pre>void setOptions(object options);
+</pre>
+<p>Setzt die Optionen.</p>
+<ul>
+<li><strong>options:</strong><br>Die Optionen die zu Setzen sind. Siehe das <code>options</code>-Attrbut für weitere Erklärungen.</li>
+</ul>
+<pre>bool isValid(string path, [opt] object options);
+</pre>
+<p>Prüft, ob der angegebene Pfad ein gültiger Pfad zu einem Arbeitsverzeichnis ist. Dabei wird auch auf schon vorhandene Arbeitsverzeichnisse und auf Hierarche geprüft, letzteres heißt also dass neue Arbeitsverzeichnisse nur als Unterverzeichnis eines anderen Arbeitsverzeichnisses gelten können, wenn diese spezifisch als Elternarbeitsverzeichnis festgelegt sind.</p>
+<ul>
+<li><strong>path:</strong><br>Pfad der geprüft werden soll.</li>
+<li><strong>options:</strong><br>Weitere Optionen:<ul>
+<li><strong>parent:</strong><br>Das jeweilige Elternarbeitsverzeichnis, dem das neue Arbeitsverzeichnis untergeordnet werden soll.</li>
+</ul>
+</li>
+</ul>
+<pre>bool setupWorkEnvironment([opt] array filelist, [opt] object options);
+</pre>
+<p>Erstellt das Arbeitsverzeichnis auf der Festplatte und migriert die angegebenen Dateien in das neue Verzeichnis rüber bzw. clonet stattdessen das angegebene Git Repository falls <code>options.repository</code> angegeben ist.</p>
+<ul>
+<li><strong>filelist:</strong><br>Array von Dateinamen ausgehend von <code>options.sourcedir</code>. (<code>options.sourcedir</code> muss hierfür gesetzt sein)</li>
+<li><strong>options:</strong><br>Weitere Optionen:<ul>
+<li><strong>parent:</strong><br>Gibt das Elternarbeitsverzeichnis an.</li>
+<li><strong>repository:</strong><br>Gibt an, ob das Arbeitsverzeichnis ein (Git-)Repository ist und startet entsprechend den Clone-Prozess.</li>
+<li><strong>userinfo:</strong><br>Gibt die Benutzerdaten für den Repository-Zugriff (<code>userinfo.username</code> und <code>userinfo.password</code>) an.</li>
+<li><strong>userconfig:</strong><br>Gibt weitere Benutzerkonfigurationen für das Repository (<code>userconfig.username</code> und <code>userconfig.email</code>) an. Diese werden in der Git Config lokal gespeichert.</li>
+<li><strong>cloneurl:</strong><br>URL die zum Clonen benutzt wird.</li>
+<li><strong>sourcedir:</strong><br>Ursprungsverzeichnis aus dem die Dateien aus <code>filelist</code> genommen werden sollen.</li>
+<li><strong>success:</strong><br>Callback der aufgerufen wird, wenn der jeweilige Prozess erfolgreich abgeschlossen wurde. Erhält das WorkEnvironment-Objekt als Parameter.</li>
+<li><strong>rejected:</strong><br>Callback der aufgerufen wird, wenn der jeweilige Prozess fehlschlägt.</li>
+</ul>
+</li>
+</ul>
+<pre>void loadHeader();
+</pre>
+<p>Liest die Headerdatei des jeweiligen Arbeitsverzeichnisses ein.</p>
+<pre>void saveHeader();
+</pre>
+<p>Speichert die Headerdatei des Arbeitsverzeichnisses.</p>
+<pre>void unload();
+</pre>
+<p>Lädt das Arbeitsverzeichnis wieder aus. Clonkverzeichnisse werden auch aus <code>Global::ClonkDirectories</code> entfernt.</p>
+<pre>void addChildWorkEnv(<WorkEnvironment> workenv);
+</pre>
+<p>Fügt das angegebene Arbeitsverzeichnis als Kinder-Arbeitsverzeichnis hinzu.</p>
+<pre>array getWorkEnvChildren();
+</pre>
+<p>Gibt einen lückenlosen Array mit allen Kinder-Arbeitsverzeichnissen zurück.</p>
+<h2 id="attribute">Attribute</h2>
+<table>
+<thead>
+<tr>
+<th>Attrbute</th>
+<th>Typ</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>any</td>
+<td>ID des Arbeitsverzeichnisses</td>
+</tr>
+<tr>
+<td>header</td>
+<td>object</td>
+<td>Enthält die Inhalte der Headerdatei.</td>
+</tr>
+<tr>
+<td>path</td>
+<td>string</td>
+<td>Pfad zum jeweiligen Arbeitsverzeichnis. Verknüpfte Arbeitsverzeichnisse werden dabei auch berücksichtigt.</td>
+</tr>
+<tr>
+<td>truepath</td>
+<td>string</td>
+<td>Gibt den tatsächlichen Pfad zum Arbeitsverzeichnis zurück. Dies ist nützlich um bspw. auf die Headerdatei bei verknüpften Arbeitsverzeichnissen zuzugreifen, da <code>path</code> in solchen Fällen den verlinkten Pfad zurückgibt.</td>
+</tr>
+<tr>
+<td>type</td>
+<td>int</td>
+<td>Gibt die Art des Arbeitsverzeichnisses wieder. Gültige Werte: <code>WORKENV_TYPE_ClonkPath</code> (1) und <code>WORKENV_TYPE_Workspace</code> (2).</td>
+</tr>
+<tr>
+<td>alwaysexplode</td>
+<td>bool</td>
+<td>Gibt an, ob Groupdateien im Arbeitsverzeichnis immer zerlegt werden sollen. Nur gültig falls <code>type</code> auf <code>WORKENV_TYPE_ClonkPath</code> gesetzt ist, da es andernfalls Standardverhalten ist.</td>
+</tr>
+<tr>
+<td>linkedTo</td>
+<td>string</td>
+<td>Gibt den Pfad der Verknüpfung zu dem eigentlichen Arbeitsverzeichnis an. </td>
+</tr>
+<tr>
+<td>unloaded</td>
+<td>bool</td>
+<td>Gibt an, ob das geladene Arbeitsverzeichnis ausgeladen worden ist. In dem Falle ist das <code>WorkEnvironment</code>-Objekt weitgehend unbrauchbar.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="events">Events</h2>
+<p><strong>onWorkenvSetup</strong>: [!INFO]</p>
+<p><strong>onWorkenvUnloaded</strong>: [!INFO]</p>
+
+			</div>
+		</div>
+	</body>
+</html>

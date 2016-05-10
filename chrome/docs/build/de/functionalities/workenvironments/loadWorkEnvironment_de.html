@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Windmill Documentation - Weitere Funktionen</title>
+		<title>Windmill Documentation - loadWorkEnvironment</title>
 		<link href="../../../windmillDocs.css" rel="stylesheet">
 		<link href="../../../prism.css" rel="stylesheet">
 		<meta charset="UTF-8">
@@ -31,16 +31,16 @@
 					<li class="navigation-elm"><a href="../../_home/__head_de.html">Startseite</a></li><ul class="navigation-sublist">
 </ul>
 <li class="navigation-elm"><a href="../__head_de.html">Funktionalitäten</a></li><ul class="navigation-sublist">
-<li class="navigation-elm"><a href="../workenvironments/__head_de.html">Arbeitsumgebungen</a></li><ul class="navigation-sublist">
-<li class="navigation-elm"><a href="../workenvironments/saveWorkEnvironment_de.html">saveWorkEnvironment</a></li>
-<li class="navigation-elm"><a href="../workenvironments/loadWorkEnvironment_de.html">loadWorkEnvironment</a></li>
-<li class="navigation-elm"><a href="../workenvironments/getWorkEnvironments_de.html">getWorkEnvironments</a></li>
-<li class="navigation-elm"><a href="../workenvironments/getWorkEnvironmentByPath_de.html">getWorkEnvironmentByPath</a></li>
-<li class="navigation-elm"><a href="../workenvironments/createWorkEnvironment_de.html">createWorkEnvironment</a></li>
-<li class="navigation-elm"><a href="../workenvironments/class_WorkEnvironment_de.html">class WorkEnvironment</a></li>
+<li class="navigation-elm"><a href="__head_de.html">Arbeitsumgebungen</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="saveWorkEnvironment_de.html">saveWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="loadWorkEnvironment_de.html">loadWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="getWorkEnvironments_de.html">getWorkEnvironments</a></li>
+<li class="navigation-elm"><a href="getWorkEnvironmentByPath_de.html">getWorkEnvironmentByPath</a></li>
+<li class="navigation-elm"><a href="createWorkEnvironment_de.html">createWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="class_WorkEnvironment_de.html">class WorkEnvironment</a></li>
 </ul>
-<li class="navigation-elm"><a href="__head_de.html">Weitere Funktionen</a></li><ul class="navigation-sublist">
-<li class="navigation-elm"><a href="showNotification_de.html">showNotification</a></li>
+<li class="navigation-elm"><a href="../other/__head_de.html">Weitere Funktionen</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../other/showNotification_de.html">showNotification</a></li>
 </ul>
 <li class="navigation-elm"><a href="../dialogs/__head_de.html">Dialoge</a></li><ul class="navigation-sublist">
 </ul>
@@ -66,7 +66,15 @@
 				</ul>
 			</nav>
 			<div id="content">
-				<p>[!INFO]</p>
+				<h1 id="loadworkenvironment">loadWorkEnvironment</h1>
+<pre>void loadWorkEnvironment();
+</pre>
+<p>Laedt saemtliche Arbeitsumgebungen inkl. untergeordneten Arbeitsumgebungen aus den folgenden Bereichen:</p>
+<ul>
+<li>APPDATA</li>
+<li><code>Global::ClonkDirectories</code></li>
+<li><code>CIDE::WorkspaceParentDirectory</code></li>
+</ul>
 
 			</div>
 		</div>
