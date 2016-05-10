@@ -385,6 +385,18 @@
 .icon-auto-scan-side:before {
   content: "AutoS"; }
 
+.icon-singleplayer:before {
+  content: "\e62a"; }
+
+.icon-password:before {
+  content: "Pw"; }
+
+.icon-comment:before {
+  content: "C"; }
+
+.icon-startgame:before {
+  content: "St"; }
+
 window {
   background-color: #fafafa;
   font-family: "Segoe UI", "Trebuchet MS", sans-serif; }
@@ -438,6 +450,11 @@ button:focus * {
     background-color: #ebebeb; }
   #settings-nav .active {
     border-left: 5px solid #505050; }
+
+#clear-temp-data:after {
+  color: #808080;
+  content: "(" attr(data-additional) ")";
+  font-size: 0.8em; }
 
 #settings-deck button,
 listbox {

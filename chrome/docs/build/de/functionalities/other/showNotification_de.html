@@ -32,6 +32,11 @@
 </ul>
 <li class="navigation-elm"><a href="../__head_de.html">Funktionalitäten</a></li><ul class="navigation-sublist">
 <li class="navigation-elm"><a href="../workenvironments/__head_de.html">Arbeitsumgebungen</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../workenvironments/saveWorkEnvironment_de.html">saveWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="../workenvironments/loadWorkEnvironment_de.html">loadWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="../workenvironments/getWorkEnvironments_de.html">getWorkEnvironments</a></li>
+<li class="navigation-elm"><a href="../workenvironments/getWorkEnvironmentByPath_de.html">getWorkEnvironmentByPath</a></li>
+<li class="navigation-elm"><a href="../workenvironments/createWorkEnvironment_de.html">createWorkEnvironment</a></li>
 <li class="navigation-elm"><a href="../workenvironments/class_WorkEnvironment_de.html">class WorkEnvironment</a></li>
 </ul>
 <li class="navigation-elm"><a href="__head_de.html">Weitere Funktionen</a></li><ul class="navigation-sublist">
@@ -64,8 +69,8 @@
 				<h1 id="shownotification">showNotification</h1>
 <p>Bei den Benachrichtigungen handelt es sich um Desktop-Notifications (in Form von XUL-Panels) die sich einfach über <code>showNotification</code> erstellen lassen. Hierbei ist zu Beachten, dass damit nicht die WebNotification API gemeint ist und daher auch keine Erlaubnis vom Benutzer benötigt wird.</p>
 <p>Benachrichtigungen stapeln sich, falls mehrere vorhanden sind und werden nach einer Zeit automatisch gelöscht.</p>
-<pre><code class="lang-javascript"><span class="token operator" >&lt;</span>jQueryObject<span class="token operator" >></span> <span class="token function" >showNotification</span><span class="token punctuation" >(</span>string color<span class="token punctuation" >,</span> string title<span class="token punctuation" >,</span> string description<span class="token punctuation" >,</span> <span class="token punctuation" >[</span>opt<span class="token punctuation" >]</span> string code<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
-</code></pre>
+<pre>jQueryObject showNotification(string color, string title, string description, [opt] string code);
+</pre>
 <ul>
 <li><strong>color:</strong><br>Ein CSS-kompatibler String der die Färbung der Markierung angibt. Folgende Konstanten sind zusätzlich zur Auswahl:<ul>
 <li><strong>NOTIFICATION_COLOR_INFO:</strong> <code>#0D6F07</code> Für Benachrichtigungen die den Benutzer allgemein informieren sollen. (Standardwert)</li>

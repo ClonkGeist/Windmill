@@ -150,11 +150,19 @@ function navigateToPath(path, open_and_select) {
 }
 
 function PrepareDirectory(path, call) {
-	//c4group suchen
-	let c4group;
+	//c4group & openclonk suchen
+	let c4group, openclonk;
 
-	var nodir = false, noc4group = false;
-	if(!_sc.clonkpath())
+	let nodir = false, noc4group = false, noopenclonk = false;
+	if(!_sc.clonkpath()) {
+		noopenclonk = true;
+	}
+	else {
+		openclonk = _sc.file(getClonkExecutablePath());
+		if(!openclonk.exists() || !openclonk.isExecutable())
+			noopenclonk = true;
+	}
+	if(!getConfigData("Global", "C4GroupPath") && !_sc.clonkpath())
 		noc4group = true;
 	else {
 		c4group = _sc.file(getC4GroupPath());
@@ -168,16 +176,18 @@ function PrepareDirectory(path, call) {
 		if(!dir.exists())
 			nodir = true;
 	}
-	
-	if(noc4group || nodir) {
+
+	if(noopenclonk || noc4group || nodir) {
 		if(!getConfigData("CIDE", "DirsNotFoundDlg")) {
 			addConfigString("CIDE", "DirsNotFoundDlg", true, "boolean", { runTimeOnly: true });
 			//Dialog oeffnen
 			var dlg = new WDialog("$DlgErrMissingDirectoryInfo$", "DEX", { modal: true, css: { "width": "450px" }, btnright: ["accept"]});
 
 			var content = "<hbox><description>$DlgErrMissingDirectoryInfoDesc$</description></hbox>";
-			if(noc4group)
+			if(noopenclonk)
 				content += "<hbox><description style='margin-top: 1em'>$DlgErrMissingClonkDirDesc$</description></hbox>";
+			if(noc4group)
+				content += "<hbox><description style='margin-top: 1em'>$DlgErrMissingC4GroupFileDesc$</description></hbox>";
 			if(nodir)
 				content += "<hbox><description style='margin-top: 1em'>$DlgErrMissingWEDirDesc$</description></hbox>";
 
@@ -441,7 +451,7 @@ function addFileTreeEntry(entry, parentobj, sort_container) {
 			
 			//Standard Ordnericon verwenden
 			if(!fSpecial && !icon)
-				icon = "chrome://windmill/content/img/icon-directory.png";
+				icon = "chrome://windmill/content/img/explorer/icon-directory.png";
 		}
 		else if(getConfigData("CIDE", "HideUnsupportedFiles") && !fSpecial)
 			return false;
@@ -452,7 +462,7 @@ function addFileTreeEntry(entry, parentobj, sort_container) {
 			container = false;
 
 		if(!icon)
-			icon = "chrome://windmill/content/img/icon-fileext-other.png";
+			icon = "chrome://windmill/content/img/explorer/icon-fileext-other.png";
 
 		if(index === undefined || isNaN(index))
 			index = -1;

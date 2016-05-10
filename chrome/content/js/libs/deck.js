@@ -389,6 +389,9 @@ class Deck extends WindmillObject {
 				log(e, true);
 			}
 		}
+		else if(this.items[itemId].contentWindow && this.items[itemId].contentWindow.showDeckItem)
+			this.items[itemId].contentWindow.showDeckItem(itemId);
+			
 		
 		try {
 			if(this.items[itemId].contentWindow.frameWindowTitle 

@@ -8,10 +8,11 @@ Components.utils.import("resource://gre/modules/Task.jsm");
 const OCGRP_FILEEXTENSIONS = ["ocd", "ocs","ocg","ocf","ocs", "oci", "ocp"];
 
 //Hilfsfunktion zum loggen
-function log(str, hidden, type) {	
+function log(str, hidden, type) {
 	var clone = _mainwindow.$("#developerlog .log-listitem.draft").clone();
 	clone.removeClass("draft");
 	clone.appendTo(_mainwindow.$("#log-entrylist"));
+	_mainwindow.$("#startup-errorlog > vbox").append(str+"\n");
 
 	//Ggf. nur loggen wenn mans wirklich will.
 	if(type == -1 && !getConfigData("Global", "ShowHiddenLogs"))

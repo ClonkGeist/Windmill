@@ -55,6 +55,9 @@ function initModelviewer(file, idMdl) {
 function createCideToolbar() {}
 
 function showDeckItem(idMdl) {
+	if(!scenes[idMdl])
+		return;
+
 	scenes[idMdl].show();
 	
 	var path = scenes[idMdl].fpath.substr(_sc.workpath(idMdl).length+1);

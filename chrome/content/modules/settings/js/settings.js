@@ -202,25 +202,31 @@ hook("load", function() {
 			});
 		}
 
+		//Simplere Einstellungselemente automatisch initialisieren
 		$(".autoinit").each(function() {
-			var sect = $(this).attr("default-cfgsect");
-			var key = $(this).attr("default-cfgkey");
+			let sect = $(this).attr("default-cfgsect");
+			let key = $(this).attr("default-cfgkey");
 			if(!sect || !key)
 				throw "No section or key for auto initialized settings element defined.";
-			var val = getConfigData(sect, key);
+			let val = getConfigData(sect, key), event = "command";
 
+			//Wert und Event je nach Elementart setzen
 			switch($(this).prop("tagName").toLowerCase()) {
 				case "checkbox":
 					$(this).attr("checked", val);
+					break;
+
+				case "textbox":
+					event = "input";
+					$(this).val(val);
 					break;
 
 				default:
 					$(this).val(val);
 					break;
 			}
-			$(this).on("command", function() {
-				var sect = $(this).attr("default-cfgsect"), key = $(this).attr("default-cfgkey"), val;
-
+			//Bei Veraenderung diese in der Config temporaer speichern
+			$(this).on(event, function() {
 				switch($(this).prop("tagName").toLowerCase()) {
 					case "checkbox":
 						val = $(this).attr("checked");
@@ -246,6 +252,86 @@ hook("load", function() {
 		});
 	}, 1);
 });
+
+const TEMPORARY_DATA_PATH = _sc.profd+"/tmp";
+let clearTempDataTask;
+
+function showDeckItem() {
+	if(clearTempDataTask)
+		return;
+
+	clearTempDataTask = Task.spawn(function*() {
+		$("#clear-temp-data").attr("data-additional", Locale("$Calculating$"));
+		function* calcDirSize(fpath) {
+			if(clearTempDataTask == -2)
+				return -1;
+			let size = 0;
+			let iterator = new OS.File.DirectoryIterator(fpath);
+			entries = yield iterator.nextBatch();
+			iterator.close();
+			for(var i = 0; i < entries.length; i++) {
+				if(entries[i].isDir)
+					size += yield* calcDirSize(entries[i].path);
+				else {
+					let info = yield OS.File.stat(entries[i].path);
+					size += info.size;
+				}
+				if(clearTempDataTask == 2)
+					return -1;
+			}
+
+			return size;
+		}
+		let totalsize = yield* calcDirSize(TEMPORARY_DATA_PATH);
+		if(totalsize == -1)
+			return -1;
+
+		if(!totalsize)
+			$("#clear-temp-data").attr("data-additional", Locale("$Empty$"));
+		else {
+			totalsize /= 1024;
+			let unit = "KB";
+			if(totalsize > 1024) {
+				totalsize /= 1024;
+				unit = "MB";
+				if(totalsize > 1024) {
+					totalsize /= 1024;
+					unit = "GB";
+				}
+			}
+			$("#clear-temp-data").attr("data-additional", Math.floor(totalsize)+" "+unit);
+		}
+	});
+	clearTempDataTask.then(function(val) {
+		if(val != -1)
+			clearTempDataTask = false;
+	}, function(reason) {
+		log("Temp Data calculation failed: " + reason);
+		clearTempDataTask = false;
+		$("#clear-temp-data").attr("data-additional", Locale("$Failed$"));
+	});
+}
+
+function clearTemporaryData() {
+	clearTempDataTask = 2;
+	Task.spawn(function*() {
+		let iterator = new OS.File.DirectoryIterator(TEMPORARY_DATA_PATH);
+		entries = yield iterator.nextBatch();
+		iterator.close();
+		for(var i = 0; i < entries.length; i++) {
+			if(entries[i].isDir)
+				yield OS.File.removeDir(entries[i].path, {ignoreAbsent: true});
+			else
+				yield OS.File.remove(entries[i].path, {ignoreAbsent: true});
+		}
+		$("#clear-temp-data").attr("data-additional", Locale("$Empty$"));
+		EventInfo("$EI_TempCleared$");
+		clearTempDataTask = false;
+	}).then(null, function(reason) {
+		log("Clearing temporary data failed: " + reason);
+		EventInfo("An error occured while trying to clear temporary data.");
+	});
+}
 
 function rejectDeckPageLeave(deck, newPageId) {
 	let changed = keybinding_changes, cfg = getConfig();
@@ -359,23 +445,20 @@ function saveSettings() {
 function filePickerOptions(id) {
 	var r = {};
 	switch(id) {
-		case 'oc-path':
+		case 'c4group-path':
 			r = { 
 				cfgsect: "Global",
-				cfgkey: "ClonkPath",
-				title: "$choose_ocdir$",
-				callback: function(fpfile) {
-					//Überprüfen ob openclonk.exe vorhanden ist
-					var filename = "openclonk";
+				cfgkey: "C4GroupPath",
+				title: "$ChooseC4GroupFile$",
+				callback: function(file) {
+					let expected_filename = "c4group";
 					if(OS_TARGET == "WINNT")
-						filename = "openclonk.exe";
-
-					if(!(_sc.file(fpfile.path+"/"+filename).exists())) {
-						warn("$err_ocexecutable_not_found$");
-
+						expected_filename = "c4group.exe";
+					if(file.leafName != expected_filename || !file.isExecutable())
 						return -1;
-					}
-				}
+				},
+				mode: Ci.nsIFilePicker.modeOpen,
+				filters: Ci.nsIFilePicker.filterApps
 			};
 			break;
 
@@ -391,8 +474,10 @@ function openPathDialog(id) {
 	var options = filePickerOptions(id);
 
 	//Filepicker öffnen
-	var fp = _sc.filepicker();
-	fp.init(window, Locale(options.title), Ci.nsIFilePicker.modeGetFolder);
+	let fp = _sc.filepicker(), mode = options.mode;
+	if(mode == undefined)
+		mode = Ci.nsIFilePicker.modeGetFolder;
+	fp.init(window, Locale(options.title), mode);
 
 	var current_path = getConfigData(options.cfgsect, options.cfgkey);
 	if(current_path) {
@@ -400,6 +485,8 @@ function openPathDialog(id) {
 		if(dir.exists())
 			fp.displayDirectory = dir;
 	}
+	if(options.filters)
+		fp.appendFilters(options.filters);
 
 	var rv = fp.show();
 

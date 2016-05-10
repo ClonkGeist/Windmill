@@ -79,7 +79,12 @@ button:focus *
 		border-left: 5px solid $ui-text-clr;
 	}
 }
- 
+
+#clear-temp-data:after {
+	color: #808080;
+	content: "("attr(data-additional)")";
+	font-size: 0.8em;
+}
 
 #settings-deck button,
 listbox

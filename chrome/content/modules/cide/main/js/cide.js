@@ -670,7 +670,7 @@ function addAudioplayer(path) {
 	}
 
 	var t = path.split("/").pop().split('.'), fext = t[t.length-1];
-	var iconstr = "chrome://windmill/content/img/icon-fileext-"+fext+".png";
+	var iconstr = "chrome://windmill/content/img/explorer/icon-fileext-"+fext+".png";
 
 	if(!module.contentWindow.readyState) {
 		module.contentWindow.addEventListener("load", function() {
@@ -729,7 +729,7 @@ function addTexteditor(file, lang, deck) {
 		return;
 
 	var t = file.leafName.split('.'), fext = t[t.length-1];
-	var icon = "chrome://windmill/content/img/icon-fileext-"+fext+".png";
+	var icon = "chrome://windmill/content/img/explorer/icon-fileext-"+fext+".png";
 
 	// we have to insert the text after the libraries have been read out
 	if(!module.contentWindow.readyState) {
@@ -756,14 +756,14 @@ function addMeshviewer(file, deck) {
 
 	if(!module.contentWindow.readyState) {
 		module.contentWindow.addEventListener("load", function(){
-			var index = deck.add(module, file.leafName, true, true, false, {altLabel: file.parent.leafName, switchLabels: true, icon: "chrome://windmill/content/img/icon-fileext-mesh.png", filepath: file.path });
+			var index = deck.add(module, file.leafName, true, true, false, {altLabel: file.parent.leafName, switchLabels: true, icon: "chrome://windmill/content/img/explorer/icon-fileext-mesh.png", filepath: file.path });
 
 			this.initModelviewer(file, index);
 			updateFrameWindowTitleDeck(deck, index);
 		});
 	}
 	else {
-		var index = deck.add(module, file.leafName, true, true, false, {altLabel: file.parent.leafName, switchLabels: true, icon: "chrome://windmill/content/img/icon-fileext-mesh.png", filepath: file.path });
+		var index = deck.add(module, file.leafName, true, true, false, {altLabel: file.parent.leafName, switchLabels: true, icon: "chrome://windmill/content/img/explorer/icon-fileext-mesh.png", filepath: file.path });
 
 		module.contentWindow.initModelviewer(file, index);
 	}
@@ -787,7 +787,7 @@ function addImgEditor(file, fBMP, deck) {
 		return;
 
 	var t = file.leafName.split('.'), fext = t[t.length-1];
-	var icon = "chrome://windmill/content/img/icon-fileext-"+fext+".png";
+	var icon = "chrome://windmill/content/img/explorer/icon-fileext-"+fext+".png";
 
 	if(!module.contentWindow.readyState) {
 		var index = deck.add(module, file.leafName, true, true, false, {altLabel: file.parent.leafName, switchLabels: true, icon, filepath: file.path });

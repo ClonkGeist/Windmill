@@ -46,7 +46,7 @@
 <resizer dir="top" width="2"/>
 <!-- res save mode content - disabled by default -->
 <vbox flex="1" id="showgames-wrapper">
-	<hbox class="window-buttons-container header-ctrl" pack="end">
+	<hbox class="window-buttons-container header-ctrl" pack="end" allowevents="true">
 		<box class="window-button icon-minimize" onclick="window.minimize();"/>
 		<box class="maximize-window window-button icon-maximize" onclick="maximizeWindow();"/>
 		<box class="restore-window window-button icon-restore" onclick="restoreWindow();"/>
@@ -59,9 +59,9 @@
 	<!-- page -->
 	<vbox flex="1" id="wrapper">
 		<stack id="titlestack">
-			<box id="header" class="header-ctrl">
+			<hbox id="header" class="header-ctrl">
 				<description id="window-title" value="Windmill" style="pointer-events: none;" flex="1" />
-			</box>
+			</hbox>
 			<vbox style="pointer-events: none;">
 				<hbox class="window-buttons-container" pack="end">
 					<!-- the classico of three buttons-->

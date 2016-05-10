@@ -13,19 +13,19 @@
 			<vbox flex="1" class="labelbtn selectgamemode" id="select-spgame">$Singleplayer$</vbox>
 		</hbox>-->
 	<hbox flex="1">
-		<box flex="1">
+		<vbox style="width: 300px">
 			<vbox id="filecontainer" context="clipmenu" flex="1">
 				<html:ul id="maintree" class="workenvironment">
 					
 				</html:ul>
 			</vbox>
 			<!-- build explorer here -->
-		</box>
+		</vbox>
 		
-		<box flex="5" id="wrapper1" style="-moz-box-orient: horizontal">
-			<vbox flex="10" id="preview">
+		<hbox flex="1" id="wrapper1">
+			<vbox flex="1" id="preview">
 				<vbox><image id="previewimage"></image></vbox>
-				<vbox style="max-width: 300px">
+				<vbox>
 					<div xmlns="http://www.w3.org/1999/xhtml" id="previewdesc">
 						
 					</div>
@@ -40,7 +40,94 @@
 					</hbox>
 				</vbox>
 			</vbox>
-			<vbox flex="6" id="hostsettings" class="singleplayer">
+			<vbox id="hostsettings">
+				<vbox class="hostgame-group">
+					<hbox class="hostgame-nav-item" id="togglegamemode">
+						<vbox class="hostgame-nav-icon">
+							<box class="icon-players nwg-item"></box>
+							<box class="icon-singleplayer sp-item"></box>
+						</vbox>
+						<vbox class="hostgame-nav-content" flex="1">
+							<hbox class="hostgame-nav-label nwg-item">$Networkgame$</hbox>
+							<hbox class="hostgame-nav-label sp-item">$Singleplayer$</hbox>
+						</vbox>
+					</hbox>
+				</vbox>
+				<vbox class="hostgame-group">
+					<hbox id="set-password" class="hostgame-nav-item">
+						<vbox class="hostgame-nav-icon">
+							PW
+						</vbox>
+						<vbox class="hostgame-nav-content" flex="1">
+							<hbox class="hostgame-nav-label">$password$</hbox>
+						</vbox>
+					</hbox>
+					<hbox id="set-comment" class="hostgame-nav-item">
+						<vbox class="hostgame-nav-icon">
+							C
+						</vbox>
+						<vbox class="hostgame-nav-content" flex="1">
+							<hbox class="hostgame-nav-label">$comment$</hbox>
+						</vbox>
+					</hbox>
+				</vbox>
+				<vbox class="hostgame-group networkgame">
+					<hbox id="set-gleague" class="hostgame-nav-item">
+						<vbox class="hostgame-nav-icon">
+							<box class="icon-trophy"></box>
+						</vbox>
+						<vbox class="hostgame-nav-content" flex="1">
+							<hbox class="hostgame-nav-label">$league$</hbox>
+						</vbox>
+					</hbox>
+					<hbox id="set-ginternet" class="hostgame-nav-item">
+						<vbox class="hostgame-nav-icon">
+							<box class="icon-world"></box>
+						</vbox>
+						<vbox class="hostgame-nav-content" flex="1">
+							<hbox class="hostgame-nav-label">$internet$</hbox>
+						</vbox>
+					</hbox>
+					<hbox id="set-grtj" class="hostgame-nav-item">
+						<vbox class="hostgame-nav-icon">
+							<box class="icon-runtimejoin"></box>
+						</vbox>
+						<vbox class="hostgame-nav-content" flex="1">
+							<hbox class="hostgame-nav-label">$rtj$</hbox>
+						</vbox>
+					</hbox>
+				</vbox>
+				<vbox class="hostgame-group">
+					<hbox id="set-grecord" class="hostgame-nav-item">
+						<vbox class="hostgame-nav-icon">
+							<box  class="icon-cam"></box>
+						</vbox>
+						<vbox class="hostgame-nav-content" flex="1">
+							<hbox class="hostgame-nav-label">$record$</hbox>
+						</vbox>
+					</hbox>
+					<hbox id="set-geditor" class="hostgame-nav-item">
+						<vbox class="hostgame-nav-icon">
+							<box class="icon-editor-frame"></box>
+						</vbox>
+						<vbox class="hostgame-nav-content" flex="1">
+							<hbox class="hostgame-nav-label">$editor$</hbox>
+						</vbox>
+					</hbox>
+				</vbox>
+				<vbox class="hostgame-group">
+					<hbox class="hostgame-nav-item" id="btn-startgame">
+						<vbox class="hostgame-nav-icon">
+							St
+						</vbox>
+						<vbox class="hostgame-nav-content" flex="1">
+							<hbox class="hostgame-nav-label">$startgame$</hbox>
+						</vbox>
+					</hbox>
+				</vbox>
+				
+			</vbox>
+			<!--<vbox flex="6" id="hostsettings" class="singleplayer">
 				<hbox id="game-mode-selection">
 					<box flex="1" id="select-spgame" class="selectgamemode">$Singleplayer$</box>
 					<box flex="1" id="select-nwgame" class="selectgamemode">$Networkgame$</box>
@@ -105,7 +192,7 @@
 					<box><label value="$startgame$" id="btn-startgame" class="labelbtn" /></box>
 					<spacer flex="1" />
 				</hbox>
-			</vbox>
-		</box>
+			</vbox>-->
+		</hbox>
 	</hbox>
 </window>

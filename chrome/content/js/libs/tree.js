@@ -842,9 +842,9 @@ function renameTreeObj(obj) {
 				$(obj).attr("filename", val);
 
 			if(!obj.hasClass("workenvironment")) {
-				let img = "chrome://windmill/content/img/icon-fileext-other.png";
+				let img = "chrome://windmill/content/img/explorer/icon-fileext-other.png";
 				if(info.isDir)
-					img = "chrome://windmill/content/img/icon-directory.png";
+					img = "chrome://windmill/content/img/explorer/icon-directory.png";
 
 				let fext = val.split(".").pop();
 				for(var p in specialData) {
@@ -905,7 +905,10 @@ function handleTreeEntry(obj, open_sidedeck) {
 			break;
 		
 		default:
-			parent.openFileInDeck(file, open_sidedeck);
+			if(parent.openFileInDeck)
+				parent.openFileInDeck(file, open_sidedeck);
+			else
+				return -1;
 			break;
 	}
 	
