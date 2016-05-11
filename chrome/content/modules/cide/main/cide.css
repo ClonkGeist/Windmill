@@ -447,6 +447,8 @@ toolbox {
 
 .deck-nav-elm.state-unsaved {
   color: #dc4632; }
+  .deck-nav-elm.state-unsaved:hover {
+    color: #c8321e; }
 
 .deck-nav-elm:hover {
   background-color: #fafafa; }

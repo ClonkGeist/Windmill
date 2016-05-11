@@ -60,6 +60,9 @@ toolbox {
 
 .deck-nav-elm.state-unsaved {
 	color: $interact_red;
+	&:hover {
+		color: $interact-red-dark;
+	}
 }
 
 .deck-nav-elm:hover {

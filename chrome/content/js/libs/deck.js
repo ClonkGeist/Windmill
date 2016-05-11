@@ -220,7 +220,7 @@ class Deck extends WindmillObject {
 					}
 
 					var ovdata = workpathov(data);
-					if(noWorkspaceName)
+					if(ovdata && noWorkspaceName)
 						ovdata = ovdata.replace(/\/[^/]+$/g, "");
 
 					return ovdata;

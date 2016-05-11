@@ -434,8 +434,8 @@ _sc.workpath = function(by) {
 		}
 		return match;
 	}
-	else
-		return WORKENV_List[0];
+	else if(WORKENV_List[0])
+		return WORKENV_List[0].path;
 }
 
 function inheritFuncs() { return ["getWorkEnvironments", "createNewWorkEnvironment", "createWorkEnvironment"]; }

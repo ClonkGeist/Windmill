@@ -101,6 +101,8 @@ function showDeckItem(id) {
 	
 	// set pointer
 	a_E = editors[CM_ACTIVEID];
+	if(!a_E)
+		return;
 	a_E.focus();
 	
 	hideParamlist();

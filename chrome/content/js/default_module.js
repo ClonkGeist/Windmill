@@ -23,13 +23,16 @@ function log(str, hidden, type) {
 	if(hidden)
 		clone.addClass("hidden");
 	if(typeof str == "object") {
+		let str2 = str;
 		clone.click(function() {
 			var dlg = new WDialog("Object Information", "DEX", { modal: true, css: { "width": "450px" }, btnright: ["accept"]});
-			dlg.setContent('<box style="word-wrap: break-word; white-space: pre-wrap; overflow-y: scroll; height: 360px" flex="1">'+showObj3(str)+"</box>");
+			dlg.setContent('<box style="word-wrap: break-word; white-space: pre-wrap; overflow-y: scroll; height: 360px" flex="1">'+showObj3(str2)+"</box>");
 			dlg.show();
 			dlg = 0;
 		});
 		clone.addClass("object");
+		if(!str.toString || str.toString().length == 0)
+			str = "[object " + str.constructor.name + "]";
 	}
 
 	clone.find(".log-listitem-content").text(str+"\n");
