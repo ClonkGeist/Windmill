@@ -82,6 +82,16 @@ window.addEventListener("load", function(){
 
 		//Dragdaten setzen
 		btn.addEventListener("dragstart", function(e) {
+			let other_deck = deck==maindeck?sidedeck:maindeck;
+			if(other_deck.isEmpty()) {
+				let cnt = 0;
+				for(let i = 0; i < deck.items.length; i++)
+					if(deck.items[i])
+						cnt++;
+
+				if(cnt == 1)
+					return;
+			}
 			e.dataTransfer.setData('text/cidecontent', deck.id + "|" + id + "|" + $(btn).text());
 			cide_dragdata = deck.id + "|" + id + "|" + $(btn).text();
 

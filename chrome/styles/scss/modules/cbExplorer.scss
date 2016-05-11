@@ -115,7 +115,7 @@ textbox.deactivated {
 		}
 		&:hover {
 			.hostgame-nav-label {
-				color: rgb(140, 20, 10);
+				color: $interact-red-darker;
 			}
 		}
 	}
