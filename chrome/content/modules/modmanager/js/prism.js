@@ -8,8 +8,9 @@ Prism.languages.javascript=Prism.languages.extend("clike",{keyword:/\b(as|async|
 
 Prism.languages.fnpreview = {
 	'eventname': /^\w+?(?=:[^:])/,
-	'fnname': /(function(?=\()|\W.+?(?=\())/,
-	'datatype': /(string|int|void|bool|boolean|any|object|function|array|Array|Promise|XULElement|jQueryObject|WorkEnvironment|ConfigEntry|ExtApplication|wmIProcess)/,
+	'fnname': /(function(?=\()|[ ].+?(?=\())/,
+	'datatype': /(string|int|void|bool|boolean|any|object|function|array|Array|Promise|HTMLElement|XULElement|Task|jQueryObject|WorkEnvironment|ConfigEntry|ExtApplication|wmIProcess|_module)/,
 	'keyword': /(class|constructor|extends)/,
-	'optional': /\[opt\]/
+	'optional': /\[opt\]/,
+	'punctuation': /[{}();,<>/]/
 };

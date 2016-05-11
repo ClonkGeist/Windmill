@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Windmill Documentation - getConfigData</title>
+		<title>Windmill Documentation - createNewWorkEnvironment</title>
 		<link href="../../../windmillDocs.css" rel="stylesheet">
 		<link href="../../../prism.css" rel="stylesheet">
 		<meta charset="UTF-8">
@@ -39,14 +39,14 @@
 					<li class="navigation-elm"><a href="../../_home/__head_de.html">Startseite</a></li><ul class="navigation-sublist">
 </ul>
 <li class="navigation-elm"><a href="../__head_de.html">Funktionalitäten</a></li><ul class="navigation-sublist">
-<li class="navigation-elm"><a href="../workenvironments/__head_de.html">Arbeitsumgebungen</a></li><ul class="navigation-sublist">
-<li class="navigation-elm"><a href="../workenvironments/saveWorkEnvironment_de.html">saveWorkEnvironment</a></li>
-<li class="navigation-elm"><a href="../workenvironments/loadWorkEnvironment_de.html">loadWorkEnvironment</a></li>
-<li class="navigation-elm"><a href="../workenvironments/getWorkEnvironments_de.html">getWorkEnvironments</a></li>
-<li class="navigation-elm"><a href="../workenvironments/getWorkEnvironmentByPath_de.html">getWorkEnvironmentByPath</a></li>
-<li class="navigation-elm"><a href="../workenvironments/createWorkEnvironment_de.html">createWorkEnvironment</a></li>
-<li class="navigation-elm"><a href="../workenvironments/createNewWorkEnvironment_de.html">createNewWorkEnvironment</a></li>
-<li class="navigation-elm"><a href="../workenvironments/class_WorkEnvironment_de.html">class WorkEnvironment</a></li>
+<li class="navigation-elm"><a href="__head_de.html">Arbeitsumgebungen</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="saveWorkEnvironment_de.html">saveWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="loadWorkEnvironment_de.html">loadWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="getWorkEnvironments_de.html">getWorkEnvironments</a></li>
+<li class="navigation-elm"><a href="getWorkEnvironmentByPath_de.html">getWorkEnvironmentByPath</a></li>
+<li class="navigation-elm"><a href="createWorkEnvironment_de.html">createWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="createNewWorkEnvironment_de.html">createNewWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="class_WorkEnvironment_de.html">class WorkEnvironment</a></li>
 </ul>
 <li class="navigation-elm"><a href="../other/__head_de.html">Weitere Funktionen</a></li><ul class="navigation-sublist">
 <li class="navigation-elm"><a href="../other/showNotification_de.html">showNotification</a></li>
@@ -65,16 +65,16 @@
 </ul>
 <li class="navigation-elm"><a href="../dialogs/__head_de.html">Dialoge</a></li><ul class="navigation-sublist">
 </ul>
-<li class="navigation-elm"><a href="__head_de.html">config.js</a></li><ul class="navigation-sublist">
-<li class="navigation-elm"><a href="setConfigData_de.html">setConfigData</a></li>
-<li class="navigation-elm"><a href="setClonkPath_de.html">setClonkPath</a></li>
-<li class="navigation-elm"><a href="sc.clonkpath_de.html">_sc.clonkpath</a></li>
-<li class="navigation-elm"><a href="saveConfig_de.html">saveConfig</a></li>
-<li class="navigation-elm"><a href="loadConfig_de.html">loadConfig</a></li>
-<li class="navigation-elm"><a href="getConfig_de.html">getConfig</a></li>
-<li class="navigation-elm"><a href="getConfigData_de.html">getConfigData</a></li>
-<li class="navigation-elm"><a href="class_ConfigEntry_de.html">class ConfigEntry</a></li>
-<li class="navigation-elm"><a href="addConfigString_de.html">addConfigString</a></li>
+<li class="navigation-elm"><a href="../config/__head_de.html">config.js</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../config/setConfigData_de.html">setConfigData</a></li>
+<li class="navigation-elm"><a href="../config/setClonkPath_de.html">setClonkPath</a></li>
+<li class="navigation-elm"><a href="../config/sc.clonkpath_de.html">_sc.clonkpath</a></li>
+<li class="navigation-elm"><a href="../config/saveConfig_de.html">saveConfig</a></li>
+<li class="navigation-elm"><a href="../config/loadConfig_de.html">loadConfig</a></li>
+<li class="navigation-elm"><a href="../config/getConfig_de.html">getConfig</a></li>
+<li class="navigation-elm"><a href="../config/getConfigData_de.html">getConfigData</a></li>
+<li class="navigation-elm"><a href="../config/class_ConfigEntry_de.html">class ConfigEntry</a></li>
+<li class="navigation-elm"><a href="../config/addConfigString_de.html">addConfigString</a></li>
 </ul>
 </ul>
 <li class="navigation-elm"><a href="../../externalapplications/__head_de.html">Externe Anwendungen</a></li><ul class="navigation-sublist">
@@ -88,14 +88,14 @@
 				</ul>
 			</nav>
 			<div id="content">
-				<h1 id="getconfigdata">getConfigData</h1>
-<pre><code class="lang-fnpreview"><span class="token datatype" >any</span><span class="token fnname" > getConfigData</span><span class="token punctuation" >(</span><span class="token datatype" >string</span> section<span class="token punctuation" >,</span> <span class="token datatype" >string</span> key<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >bool</span> cfg<span class="token datatype" >object</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+				<h1 id="createnewworkenvironment">createNewWorkEnvironment</h1>
+<pre><code class="lang-fnpreview"><span class="token datatype" >WorkEnvironment</span><span class="token fnname" > createNewWorkEnvironment</span><span class="token punctuation" >(</span><span class="token datatype" >string</span> path<span class="token punctuation" >,</span> <span class="token datatype" >int</span> type<span class="token punctuation" >,</span> <span class="token datatype" >object</span> options<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 </code></pre>
-<p>Gibt den Inhalt des Eintrags bzw. den Eintrag selbst unter der Sektion <code>section</code> mit dem Key <code>key</code> zurück.</p>
+<p>Erstellt eine neue Arbeitsumgebung auf der Festplatte.</p>
 <ul>
-<li><strong>section:</strong><br>Sektion, unter der sich der Eintrag befindet.</li>
-<li><strong>key:</strong><br>Key des Eintrags.</li>
-<li><strong>[opt] cfgobject:</strong><br>Falls <code>true</code>, wird statt des Wertes des Eintrags der Eintrag selbst zurückgegeben.</li>
+<li><strong>path:</strong><br>Pfad zum Hauptverzeichnis der Arbeitsumgebung, in der die .windmillheader hinterlegt wird.</li>
+<li><strong>type:</strong><br>Art der Arbeitsumgebung. (<code>WORKENV_TYPE_ClonkPath</code> oder <code>WORKENV_TYPE_Workspace</code>)</li>
+<li><strong>options:</strong><br>Weitere Optionen der Arbeitsumgebung. s. <a href="#">class WorkEnvironment</a></li>
 </ul>
 
 			</div>

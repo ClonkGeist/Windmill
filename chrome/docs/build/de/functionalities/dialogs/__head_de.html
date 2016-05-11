@@ -45,10 +45,23 @@
 <li class="navigation-elm"><a href="../workenvironments/getWorkEnvironments_de.html">getWorkEnvironments</a></li>
 <li class="navigation-elm"><a href="../workenvironments/getWorkEnvironmentByPath_de.html">getWorkEnvironmentByPath</a></li>
 <li class="navigation-elm"><a href="../workenvironments/createWorkEnvironment_de.html">createWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="../workenvironments/createNewWorkEnvironment_de.html">createNewWorkEnvironment</a></li>
 <li class="navigation-elm"><a href="../workenvironments/class_WorkEnvironment_de.html">class WorkEnvironment</a></li>
 </ul>
 <li class="navigation-elm"><a href="../other/__head_de.html">Weitere Funktionen</a></li><ul class="navigation-sublist">
 <li class="navigation-elm"><a href="../other/showNotification_de.html">showNotification</a></li>
+</ul>
+<li class="navigation-elm"><a href="../modules/__head_de.html">Module</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../modules/readModuleInfo_de.html">readModuleInfo</a></li>
+<li class="navigation-elm"><a href="../modules/loadModules_de.html">loadModules</a></li>
+<li class="navigation-elm"><a href="../modules/getModule_de.html">getModule</a></li>
+<li class="navigation-elm"><a href="../modules/getModulesIdByName_de.html">getModulesIdByName</a></li>
+<li class="navigation-elm"><a href="../modules/getModulesByName_de.html">getModulesByName</a></li>
+<li class="navigation-elm"><a href="../modules/getModuleDef_de.html">getModuleDef</a></li>
+<li class="navigation-elm"><a href="../modules/getModuleDefByPrefix_de.html">getModuleDefByPrefix</a></li>
+<li class="navigation-elm"><a href="../modules/getModuleByName_de.html">getModuleByName</a></li>
+<li class="navigation-elm"><a href="../modules/createModule_de.html">createModule</a></li>
+<li class="navigation-elm"><a href="../modules/class__module_de.html">class _module</a></li>
 </ul>
 <li class="navigation-elm"><a href="__head_de.html">Dialoge</a></li><ul class="navigation-sublist">
 </ul>
@@ -90,7 +103,7 @@
 <p>Um auf die Elemente des Dialog-Wrappers zugreifen zu können, kann auf die Eigenschaft <code>element</code> des Dialog-Objekts zugegriffen werden, welches das aktuelle Dialog-Element (falls angezeigt) zurückgibt. So lassen sich weitere Funktionalitäten hinzufügen.</p>
 <h3 id="wdialog-konstruktor">WDialog-Konstruktor</h3>
 <p>Hier ein näherer Einblick auf den WDialog-Konstruktor:</p>
-<pre><code class="lang-fnpreview"><span class="token keyword" >constructor</span><span class="token fnname" > WDialog</span>(<span class="token datatype" >string</span> title, <span class="token optional" >[opt]</span> <span class="token datatype" >string</span> langpre, <span class="token optional" >[opt]</span> <span class="token datatype" >object</span> options);
+<pre><code class="lang-fnpreview"><span class="token keyword" >constructor</span><span class="token fnname" > WDialog</span><span class="token punctuation" >(</span><span class="token datatype" >string</span> title<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >string</span> langpre<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >object</span> options<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 </code></pre>
 <p>Während die ersten beiden Parameter relativ offensichtlich sein sollten (für <code>langpre</code> gilt wie immer: Falls 0 wird die Moduleigene Lokalisierung geladen, bei -1 die aus dem Mainwindow und ansonsten mit dem angegebenen Präfix), befindet sich in <code>options</code> das eigentlich Interessante.</p>
 <p><code>options</code> kann folgende Werte haben:</p>
@@ -135,47 +148,47 @@ dlg<span class="token punctuation" >.</span><span class="token function" >show</
 <p>Es lassen sich auch gestylte Infoboxen über ein hbox-Element mit der Klasse <code>dlg_infobox</code> (soll aus Konsistenzgründen <code>dlg-infobox</code> werden) erstellen und mit zusätzlichen Klassen zur Art der Information ausstatten. Aktuell wird nur die Klasse <code>error</code> unterstützt, um Fehler anzuzeigen.</p>
 <p>Die Infobox wird dabei automatisch sichtbar bzw. unsichtbar, wenn Text hinzugefügt oder entfernt wird.</p>
 <h2 id="funktionsreferenz">Funktionsreferenz</h2>
-<pre><code class="lang-fnpreview"><span class="token keyword" >constructor</span><span class="token fnname" > WDialog</span>(<span class="token datatype" >string</span> title, <span class="token optional" >[opt]</span> <span class="token datatype" >string</span> langpre, <span class="token optional" >[opt]</span> <span class="token datatype" >object</span> options);
+<pre><code class="lang-fnpreview"><span class="token keyword" >constructor</span><span class="token fnname" > WDialog</span><span class="token punctuation" >(</span><span class="token datatype" >string</span> title<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >string</span> langpre<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >object</span> options<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 </code></pre>
 <p>Erstellt ein Dialogobjekt. Fuer genauere Angaben zu den einzelnen Parametern siehe oben.</p>
-<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > setContent</span>(<span class="token datatype" >string</span> content);
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > setContent</span><span class="token punctuation" >(</span><span class="token datatype" >string</span> content<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 </code></pre>
 <p>Setzt den Inhalt der in <code>.main-wdialog-content</code> angezeigt werden soll.</p>
-<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > setFooter</span>(<span class="token datatype" >string</span> content);
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > setFooter</span><span class="token punctuation" >(</span><span class="token datatype" >string</span> content<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 </code></pre>
 <p>Setzt den Inhalt der in <code>.main-wdialog-footer</code> angezeigt werden soll. Falls gesetzt, werden die Buttons nicht mehr erstellt.</p>
-<pre><code class="lang-fnpreview"><span class="token datatype" >jQueryObject</span><span class="token fnname" > getFooterElm</span>();
+<pre><code class="lang-fnpreview"><span class="token datatype" >jQueryObject</span><span class="token fnname" > getFooterElm</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 </code></pre>
 <p>Gibt ein jQueryObject zum <code>.main-wdialog-footer</code>-Element zurück.</p>
-<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > setBtnLeft</span>(<span class="token datatype" >Array</span> buttons);
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > setBtnLeft</span><span class="token punctuation" >(</span><span class="token datatype" >Array</span> buttons<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 </code></pre>
 <p>Erstellt die im Array übergebenen Button-Definitionen links unten im Dialog.</p>
-<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > setBtnRight</span>(<span class="token datatype" >Array</span> buttons);
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > setBtnRight</span><span class="token punctuation" >(</span><span class="token datatype" >Array</span> buttons<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 </code></pre>
 <p>Erstellt die im Array übergebenen Button-Definitionen rechts unten im Dialog.</p>
-<pre><code class="lang-fnpreview"><span class="token datatype" >XULElement</span><span class="token fnname" > addButtons</span>(<span class="token datatype" >string</span>/<span class="token datatype" >object</span> btnobj, <span class="token optional" >[opt]</span> <span class="token datatype" >bool</span> left);
+<pre><code class="lang-fnpreview"><span class="token datatype" >XULElement</span><span class="token fnname" > addButtons</span><span class="token punctuation" >(</span><span class="token datatype" >string</span><span class="token punctuation" >/</span><span class="token datatype" >object</span> btnobj<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >bool</span> left<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 </code></pre>
 <p>Erstellt den angegebenen Button im Dialog und gibt diesen zurück.</p>
 <ul>
 <li><strong>btnobj:</strong><br>Button-Definition des zu erstellenden Buttons. Kann alternativ auch ein String zu einem Preset sein.</li>
 <li><strong>left:</strong><br>Erstellt den Button links unten im Dialog.</li>
 </ul>
-<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > lock</span>();
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > lock</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 </code></pre>
 <p>Sperrt das Dialog.</p>
-<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > unlock</span>();
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > unlock</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 </code></pre>
 <p>Entsperrt das Dialog.</p>
-<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > show</span>();
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > show</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 </code></pre>
 <p>Erstellt das Dialog-Element im Mainwindow.</p>
-<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > updatePseudoElements</span>();
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > updatePseudoElements</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 </code></pre>
 <p>Aktualisiert die Dialog-GUI-Elemente in der Funktionsweise. Dies kann nötig sein, falls neue Dialog-GUI-Elemente während das Dialog-Element aktiv ist, hinzugefügt werden. GUI-Elemente wie die Listen und die Infobox aktualisieren allerdings ihren eigenen Inhalt automatisch.</p>
-<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > updateTextNodes</span>(<span class="token datatype" >jQueryObject</span> <span class="token datatype" >object</span>s);
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > updateTextNodes</span><span class="token punctuation" >(</span><span class="token datatype" >jQueryObject</span> <span class="token datatype" >object</span>s<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 </code></pre>
 <p>Passt die Breite der angegebenen Elemente an das Dialog an. Dies kann insbesondere im Zusammenhang mit den <code>description</code>-Elementen von Nöten sein, da sie teilweise aus dem Dialog herausragen und das Dialog dadurch falsch dargestellt wird.</p>
-<pre><code class="lang-fnpreview"><span class="token datatype" >bool</span><span class="token fnname" > hide</span>();
+<pre><code class="lang-fnpreview"><span class="token datatype" >bool</span><span class="token fnname" > hide</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 </code></pre>
 <p>Schließt das Dialog-Element und gibt, falls erfolgreich, <code>true</code> zurück.</p>
 

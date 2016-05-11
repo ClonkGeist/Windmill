@@ -45,10 +45,23 @@
 <li class="navigation-elm"><a href="../functionalities/workenvironments/getWorkEnvironments_de.html">getWorkEnvironments</a></li>
 <li class="navigation-elm"><a href="../functionalities/workenvironments/getWorkEnvironmentByPath_de.html">getWorkEnvironmentByPath</a></li>
 <li class="navigation-elm"><a href="../functionalities/workenvironments/createWorkEnvironment_de.html">createWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="../functionalities/workenvironments/createNewWorkEnvironment_de.html">createNewWorkEnvironment</a></li>
 <li class="navigation-elm"><a href="../functionalities/workenvironments/class_WorkEnvironment_de.html">class WorkEnvironment</a></li>
 </ul>
 <li class="navigation-elm"><a href="../functionalities/other/__head_de.html">Weitere Funktionen</a></li><ul class="navigation-sublist">
 <li class="navigation-elm"><a href="../functionalities/other/showNotification_de.html">showNotification</a></li>
+</ul>
+<li class="navigation-elm"><a href="../functionalities/modules/__head_de.html">Module</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../functionalities/modules/readModuleInfo_de.html">readModuleInfo</a></li>
+<li class="navigation-elm"><a href="../functionalities/modules/loadModules_de.html">loadModules</a></li>
+<li class="navigation-elm"><a href="../functionalities/modules/getModule_de.html">getModule</a></li>
+<li class="navigation-elm"><a href="../functionalities/modules/getModulesIdByName_de.html">getModulesIdByName</a></li>
+<li class="navigation-elm"><a href="../functionalities/modules/getModulesByName_de.html">getModulesByName</a></li>
+<li class="navigation-elm"><a href="../functionalities/modules/getModuleDef_de.html">getModuleDef</a></li>
+<li class="navigation-elm"><a href="../functionalities/modules/getModuleDefByPrefix_de.html">getModuleDefByPrefix</a></li>
+<li class="navigation-elm"><a href="../functionalities/modules/getModuleByName_de.html">getModuleByName</a></li>
+<li class="navigation-elm"><a href="../functionalities/modules/createModule_de.html">createModule</a></li>
+<li class="navigation-elm"><a href="../functionalities/modules/class__module_de.html">class _module</a></li>
 </ul>
 <li class="navigation-elm"><a href="../functionalities/dialogs/__head_de.html">Dialoge</a></li><ul class="navigation-sublist">
 </ul>
@@ -79,7 +92,7 @@
 <p><strong>Unterstützte Betriebssysteme:</strong> Windows.</p>
 <p>wmIProcess ist das auf js-ctypes basierte, Windmilleigene Prozessinterface welches die Funktionen des XPCOM Prozessinterfaces <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIProcess">nsIProcess</a> um Funktionen wie die Inter Process Communication erweitert.</p>
 <h2 id="class-wmiprocess">class wmIProcess</h2>
-<pre><code class="lang-fnpreview"><span class="token keyword" >class</span><span class="token fnname" > wmIProcess extends [WindmillInterface]</span>(#)
+<pre><code class="lang-fnpreview"><span class="token keyword" >class</span><span class="token fnname" > wmIProcess extends [WindmillInterface]</span><span class="token punctuation" >(</span>#<span class="token punctuation" >)</span>
 </code></pre>
 <h3 id="attribute">Attribute</h3>
 <table>
@@ -114,13 +127,13 @@
 </tbody>
 </table>
 <h3 id="methoden">Methoden</h3>
-<pre><code class="lang-fnpreview"><span class="token keyword" >constructor</span><span class="token fnname" > wmIProcess</span>(file);
+<pre><code class="lang-fnpreview"><span class="token keyword" >constructor</span><span class="token fnname" > wmIProcess</span><span class="token punctuation" >(</span>file<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 </code></pre>
 <p>Erstellt eine wmIProcess Instanz.</p>
 <ul>
 <li><strong>file:</strong><br>Kann ein als String übergebener Dateipfad oder eine Instanz von <a href="#">nsIFile</a> sein, die auf die auszuführende Datei zeigt.</li>
 </ul>
-<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > create</span>(<span class="token datatype" >Array</span> args, <span class="token datatype" >int</span> flags, <span class="token optional" >[opt]</span> <span class="token datatype" >function</span> onProcessClosed, <span class="token optional" >[opt]</span> <span class="token datatype" >function</span> outputListener);
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > create</span><span class="token punctuation" >(</span><span class="token datatype" >Array</span> args<span class="token punctuation" >,</span> <span class="token datatype" >int</span> flags<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >function</span> onProcessClosed<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >function</span> outputListener<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 </code></pre>
 <p>Erstellt die Prozessinstanz mit den übergebenen Argumenten und Flags.</p>
 <ul>
@@ -152,7 +165,7 @@
 <li><strong>[opt] onProcessClosed:</strong><br>Callback-Funktion die an das <code>closed</code> Event gebindet wird. Weitere Informationen in der Event-Liste.</li>
 <li><strong>[opt] outputListener:</strong><br>Callback-Funktion die an das <code>stdout</code> Event gebindet wird. Weitere Informationen in der Event-Liste.</li>
 </ul>
-<pre><code class="lang-fnpreview"><span class="token datatype" >Promise</span><span class="token fnname" > createPromise</span>(<span class="token datatype" >array</span> args, <span class="token datatype" >int</span> flags, <span class="token optional" >[opt]</span> <span class="token datatype" >function</span> onProcessClosed, <span class="token optional" >[opt]</span> <span class="token datatype" >function</span> outputListener);
+<pre><code class="lang-fnpreview"><span class="token datatype" >Promise</span><span class="token fnname" > createPromise</span><span class="token punctuation" >(</span><span class="token datatype" >array</span> args<span class="token punctuation" >,</span> <span class="token datatype" >int</span> flags<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >function</span> onProcessClosed<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >function</span> outputListener<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 </code></pre>
 <p>Erstellt die Prozessinstanz mit den übergebenen Argumenten und Flags und gibt einen Promise zurück, der gelöst wird sobald der Prozess geendet hat. Dabei wird die komplette Ausgabe des Prozesses einschließlich des ExitCodes und der wmIProcess-Instanz übergeben.</p>
 <pre><code class="lang-javascript"><span class="token keyword" >let</span> process <span class="token operator" >=</span> _ws<span class="token punctuation" >.</span><span class="token function" >pr</span><span class="token punctuation" >(</span><span class="token function" >getC4GroupPath</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
@@ -163,27 +176,27 @@ promise<span class="token punctuation" >.</span><span class="token function" >th
 </code></pre>
 <p>Erstellt eine C4Group-Instanz die <code>Objects.ocd</code> exploden soll und gibt dessen Ausgabe in die Konsole aus.</p>
 <p>Für eine Erklärung der Parameter, siehe <code>create</code>.</p>
-<pre><code class="lang-fnpreview"><span class="token datatype" >bool</span><span class="token fnname" > is_running</span>();
+<pre><code class="lang-fnpreview"><span class="token datatype" >bool</span><span class="token fnname" > is_running</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 </code></pre>
 <p>Gibt zurück, ob der Prozess noch am laufen ist oder nicht.</p>
-<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > pipe_write</span>(<span class="token datatype" >string</span> data);
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > pipe_write</span><span class="token punctuation" >(</span><span class="token datatype" >string</span> data<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 </code></pre>
 <p>Schreibt Daten in die stdin-Pipe des Prozesses.</p>
 <ul>
 <li><strong>data:</strong><br>Daten die zu Schreiben sind.</li>
 </ul>
-<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > close</span>();
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > close</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 </code></pre>
 <p>Schließt die offene Prozessinstanz.</p>
 <h3 id="events">Events</h3>
-<pre><code class="lang-fnpreview"><span class="token eventname" >stdout</span><span class="token fnname" >: function</span>(data, status);
+<pre><code class="lang-fnpreview"><span class="token eventname" >stdout</span>:<span class="token fnname" > function</span><span class="token punctuation" >(</span>data<span class="token punctuation" >,</span> status<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 </code></pre>
 <p>Wird jedes Mal beim Lesen der stdout-Pipe aufgerufen. (alle 250ms)</p>
 <ul>
 <li><strong>data:</strong><br>Gibt den neuen Inhalt der stdout-Pipe an.</li>
 <li><strong>status:</strong><br>Gibt den Status der wmIProcess-Instanz an. Siehe das <code>status</code>-Attribut.</li>
 </ul>
-<pre><code class="lang-fnpreview"><span class="token eventname" >closed</span><span class="token fnname" >: function</span>(exitCode);
+<pre><code class="lang-fnpreview"><span class="token eventname" >closed</span>:<span class="token fnname" > function</span><span class="token punctuation" >(</span>exitCode<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 </code></pre>
 <p>Wird aufgerufen wenn der Prozess geendet hat bzw. manuell beendet worden ist.</p>
 <ul>

@@ -118,3 +118,6 @@ code.lang-fnpreview .token.eventname {
 
 code.lang-fnpreview .token.fnname {
   font-weight: bold; }
+
+code.lang-fnpreview .token.punctuation {
+  color: #777; }

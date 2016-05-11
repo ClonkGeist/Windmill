@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Windmill Documentation - getConfigData</title>
+		<title>Windmill Documentation - loadModules</title>
 		<link href="../../../windmillDocs.css" rel="stylesheet">
 		<link href="../../../prism.css" rel="stylesheet">
 		<meta charset="UTF-8">
@@ -51,30 +51,30 @@
 <li class="navigation-elm"><a href="../other/__head_de.html">Weitere Funktionen</a></li><ul class="navigation-sublist">
 <li class="navigation-elm"><a href="../other/showNotification_de.html">showNotification</a></li>
 </ul>
-<li class="navigation-elm"><a href="../modules/__head_de.html">Module</a></li><ul class="navigation-sublist">
-<li class="navigation-elm"><a href="../modules/readModuleInfo_de.html">readModuleInfo</a></li>
-<li class="navigation-elm"><a href="../modules/loadModules_de.html">loadModules</a></li>
-<li class="navigation-elm"><a href="../modules/getModule_de.html">getModule</a></li>
-<li class="navigation-elm"><a href="../modules/getModulesIdByName_de.html">getModulesIdByName</a></li>
-<li class="navigation-elm"><a href="../modules/getModulesByName_de.html">getModulesByName</a></li>
-<li class="navigation-elm"><a href="../modules/getModuleDef_de.html">getModuleDef</a></li>
-<li class="navigation-elm"><a href="../modules/getModuleDefByPrefix_de.html">getModuleDefByPrefix</a></li>
-<li class="navigation-elm"><a href="../modules/getModuleByName_de.html">getModuleByName</a></li>
-<li class="navigation-elm"><a href="../modules/createModule_de.html">createModule</a></li>
-<li class="navigation-elm"><a href="../modules/class__module_de.html">class _module</a></li>
+<li class="navigation-elm"><a href="__head_de.html">Module</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="readModuleInfo_de.html">readModuleInfo</a></li>
+<li class="navigation-elm"><a href="loadModules_de.html">loadModules</a></li>
+<li class="navigation-elm"><a href="getModule_de.html">getModule</a></li>
+<li class="navigation-elm"><a href="getModulesIdByName_de.html">getModulesIdByName</a></li>
+<li class="navigation-elm"><a href="getModulesByName_de.html">getModulesByName</a></li>
+<li class="navigation-elm"><a href="getModuleDef_de.html">getModuleDef</a></li>
+<li class="navigation-elm"><a href="getModuleDefByPrefix_de.html">getModuleDefByPrefix</a></li>
+<li class="navigation-elm"><a href="getModuleByName_de.html">getModuleByName</a></li>
+<li class="navigation-elm"><a href="createModule_de.html">createModule</a></li>
+<li class="navigation-elm"><a href="class__module_de.html">class _module</a></li>
 </ul>
 <li class="navigation-elm"><a href="../dialogs/__head_de.html">Dialoge</a></li><ul class="navigation-sublist">
 </ul>
-<li class="navigation-elm"><a href="__head_de.html">config.js</a></li><ul class="navigation-sublist">
-<li class="navigation-elm"><a href="setConfigData_de.html">setConfigData</a></li>
-<li class="navigation-elm"><a href="setClonkPath_de.html">setClonkPath</a></li>
-<li class="navigation-elm"><a href="sc.clonkpath_de.html">_sc.clonkpath</a></li>
-<li class="navigation-elm"><a href="saveConfig_de.html">saveConfig</a></li>
-<li class="navigation-elm"><a href="loadConfig_de.html">loadConfig</a></li>
-<li class="navigation-elm"><a href="getConfig_de.html">getConfig</a></li>
-<li class="navigation-elm"><a href="getConfigData_de.html">getConfigData</a></li>
-<li class="navigation-elm"><a href="class_ConfigEntry_de.html">class ConfigEntry</a></li>
-<li class="navigation-elm"><a href="addConfigString_de.html">addConfigString</a></li>
+<li class="navigation-elm"><a href="../config/__head_de.html">config.js</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../config/setConfigData_de.html">setConfigData</a></li>
+<li class="navigation-elm"><a href="../config/setClonkPath_de.html">setClonkPath</a></li>
+<li class="navigation-elm"><a href="../config/sc.clonkpath_de.html">_sc.clonkpath</a></li>
+<li class="navigation-elm"><a href="../config/saveConfig_de.html">saveConfig</a></li>
+<li class="navigation-elm"><a href="../config/loadConfig_de.html">loadConfig</a></li>
+<li class="navigation-elm"><a href="../config/getConfig_de.html">getConfig</a></li>
+<li class="navigation-elm"><a href="../config/getConfigData_de.html">getConfigData</a></li>
+<li class="navigation-elm"><a href="../config/class_ConfigEntry_de.html">class ConfigEntry</a></li>
+<li class="navigation-elm"><a href="../config/addConfigString_de.html">addConfigString</a></li>
 </ul>
 </ul>
 <li class="navigation-elm"><a href="../../externalapplications/__head_de.html">Externe Anwendungen</a></li><ul class="navigation-sublist">
@@ -88,15 +88,10 @@
 				</ul>
 			</nav>
 			<div id="content">
-				<h1 id="getconfigdata">getConfigData</h1>
-<pre><code class="lang-fnpreview"><span class="token datatype" >any</span><span class="token fnname" > getConfigData</span><span class="token punctuation" >(</span><span class="token datatype" >string</span> section<span class="token punctuation" >,</span> <span class="token datatype" >string</span> key<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >bool</span> cfg<span class="token datatype" >object</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+				<h1 id="loadmodules">loadModules</h1>
+<pre><code class="lang-fnpreview"><span class="token datatype" >Task</span><span class="token fnname" > loadModules</span><span class="token punctuation" >(</span><span class="token datatype" >string</span> path<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 </code></pre>
-<p>Gibt den Inhalt des Eintrags bzw. den Eintrag selbst unter der Sektion <code>section</code> mit dem Key <code>key</code> zurück.</p>
-<ul>
-<li><strong>section:</strong><br>Sektion, unter der sich der Eintrag befindet.</li>
-<li><strong>key:</strong><br>Key des Eintrags.</li>
-<li><strong>[opt] cfgobject:</strong><br>Falls <code>true</code>, wird statt des Wertes des Eintrags der Eintrag selbst zurückgegeben.</li>
-</ul>
+<p>Startet ausgehend vom angegebenen Pfad eine rekursive Suche nach <code>module.ini</code>-Dateien und liest diese ggf. ein.</p>
 
 			</div>
 		</div>
