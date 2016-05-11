@@ -5,7 +5,10 @@
 
 wmIProcess ist das auf js-ctypes basierte, Windmilleigene Prozessinterface welches die Funktionen des XPCOM Prozessinterfaces [nsIProcess](https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIProcess) um Funktionen wie die Inter Process Communication erweitert.
 
-## class wmIProcess extends [WindmillInterface](WindmillInterface_de.html)
+## class wmIProcess
+```fnpreview
+class wmIProcess extends [WindmillInterface](#)
+```
 
 ### Attribute
 
@@ -18,13 +21,17 @@ wmIProcess ist das auf js-ctypes basierte, Windmilleigene Prozessinterface welch
 
 ### Methoden
 
-**constructor** wmIProcess(file);
+```fnpreview
+constructor wmIProcess(file);
+```
 Erstellt eine wmIProcess Instanz.
 
 - **file:**
   Kann ein als String übergebener Dateipfad oder eine Instanz von [nsIFile](#) sein, die auf die auszuführende Datei zeigt.
 
-**void** create(**array** args, **int** flags, [opt] **function** onProcessClosed, [opt] **function** outputListener);
+```fnpreview
+void create(Array args, int flags, [opt] function onProcessClosed, [opt] function outputListener);
+```
 Erstellt die Prozessinstanz mit den übergebenen Argumenten und Flags.
 
 - **args:**
@@ -42,7 +49,9 @@ Erstellt die Prozessinstanz mit den übergebenen Argumenten und Flags.
 - **[opt] outputListener:**
   Callback-Funktion die an das ```stdout``` Event gebindet wird. Weitere Informationen in der Event-Liste.
 
-**<Promise>** createPromise(**array** args, **int** flags, [opt] **function** onProcessClosed, [opt] **function** outputListener);
+```fnpreview
+Promise createPromise(array args, int flags, [opt] function onProcessClosed, [opt] function outputListener);
+```
 Erstellt die Prozessinstanz mit den übergebenen Argumenten und Flags und gibt einen Promise zurück, der gelöst wird sobald der Prozess geendet hat. Dabei wird die komplette Ausgabe des Prozesses einschließlich des ExitCodes und der wmIProcess-Instanz übergeben.
 
 ```javascript
@@ -56,21 +65,29 @@ Erstellt eine C4Group-Instanz die ```Objects.ocd``` exploden soll und gibt desse
 
 Für eine Erklärung der Parameter, siehe ```create```.
 
-**bool** is_running();
+```fnpreview
+bool is_running();
+```
 Gibt zurück, ob der Prozess noch am laufen ist oder nicht.
 
-**void** pipe_write(**string** data);
+```fnpreview
+void pipe_write(string data);
+```
 Schreibt Daten in die stdin-Pipe des Prozesses.
 
 - **data:**
   Daten die zu Schreiben sind.
 
-**void** close();
+```fnpreview
+void close();
+```
 Schließt die offene Prozessinstanz.
 
 ### Events
 
-**stdout:** function(data, status);
+```fnpreview
+stdout: function(data, status);
+```
 Wird jedes Mal beim Lesen der stdout-Pipe aufgerufen. (alle 250ms)
 
 - **data:**
@@ -78,7 +95,9 @@ Wird jedes Mal beim Lesen der stdout-Pipe aufgerufen. (alle 250ms)
 - **status:**
   Gibt den Status der wmIProcess-Instanz an. Siehe das ```status```-Attribut.
 
-**closed:** function(exitCode);
+```fnpreview
+closed: function(exitCode);
+```
 Wird aufgerufen wenn der Prozess geendet hat bzw. manuell beendet worden ist.
 
 - **exitCode:**

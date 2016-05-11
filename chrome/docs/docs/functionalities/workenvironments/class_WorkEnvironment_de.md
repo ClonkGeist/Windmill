@@ -37,7 +37,7 @@ Prüft, ob der angegebene Pfad ein gültiger Pfad zu einem Arbeitsverzeichnis is
     Das jeweilige Elternarbeitsverzeichnis, dem das neue Arbeitsverzeichnis untergeordnet werden soll.
 
 ```fnpreview
-bool setupWorkEnvironment([opt] array filelist, [opt] object options);
+bool setupWorkEnvironment([opt] Array filelist, [opt] object options);
 ```
 Erstellt das Arbeitsverzeichnis auf der Festplatte und migriert die angegebenen Dateien in das neue Verzeichnis rüber bzw. clonet stattdessen das angegebene Git Repository falls ```options.repository``` angegeben ist.
 
@@ -78,12 +78,12 @@ void unload();
 Lädt das Arbeitsverzeichnis wieder aus. Clonkverzeichnisse werden auch aus ```Global::ClonkDirectories``` entfernt.
 
 ```fnpreview
-void addChildWorkEnv(<WorkEnvironment> workenv);
+void addChildWorkEnv(WorkEnvironment workenv);
 ```
 Fügt das angegebene Arbeitsverzeichnis als Kinder-Arbeitsverzeichnis hinzu.
 
 ```fnpreview
-array getWorkEnvChildren();
+Array getWorkEnvChildren();
 ```
 Gibt einen lückenlosen Array mit allen Kinder-Arbeitsverzeichnissen zurück.
 
@@ -102,8 +102,14 @@ Gibt einen lückenlosen Array mit allen Kinder-Arbeitsverzeichnissen zurück.
 
 ## Events
 
-**onWorkenvSetup**: [!INFO]
+### Globale Events
 
-**onWorkenvUnloaded**: [!INFO]
+```fnpreview
+onWorkenvSetup: function(WorkEnvironment workenv);
+```
+Wird aufgerufen, nachdem die Einrichtung einer Arbeitsumgebung ([setupWorkEnvironment](#)) abgeschlossen worden ist.
 
-
+```fnpreview
+onWorkenvUnloaded: function(WorkEnvironment workenv);
+```
+Wird aufgerufen, wenn eine Arbeitsumgebung ausgeladen worden ist. Die Arbeitsumgebung ist zu dem Zeitpunkt bereits nicht mehr im Array aller Arbeitsumgebungen vorhanden und wird der Garbage Collection überlassen.

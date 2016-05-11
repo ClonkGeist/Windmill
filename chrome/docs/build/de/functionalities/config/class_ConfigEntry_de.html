@@ -9,7 +9,7 @@
 			//Windmillinterner Workaround: Da Windmill das Oeffnen externer Links sperrt (sodass diese in einem externen Browser geoffnet werden koennen)
 			//wird hier fuer Windmill das anders geloest.
 			if(navigator.userAgent.search(/\bwindmill\b/) != -1) {
-				window.addEventListener("load", function() {
+				document.addEventListener("DOMContentLoaded", function() {
 					let elements = document.getElementsByTagName("a");
 					for(var i = 0; i < elements.length; i++) {
 						elements[i].onclick = function(e) {
@@ -19,6 +19,14 @@
 					}
 				});
 			}
+			document.addEventListener("DOMContentLoaded", function() {
+				let code_elements = document.querySelectorAll("code");
+				for(let i = 0; i < code_elements.length; i++) {
+					let elm = code_elements[i];
+					if(elm.className.search("lang-fnpreview") != -1)
+						elm.parentNode.className += "lang-fnpreview";
+				}
+			});
 		</script>
 	</head>
 	<body>
@@ -57,6 +65,7 @@
 </ul>
 </ul>
 <li class="navigation-elm"><a href="../../externalapplications/__head_de.html">Externe Anwendungen</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../externalapplications/class_ExtApplication_de.html">class ExtApplication</a></li>
 </ul>
 <li class="navigation-elm"><a href="../../ctypes/__head_de.html">CTypes / Windmill Interface</a></li><ul class="navigation-sublist">
 <li class="navigation-elm"><a href="../../ctypes/wmIProcess_de.html">wmIProcess</a></li>
@@ -68,7 +77,8 @@
 			<div id="content">
 				<h1 id="class-configentry">class ConfigEntry</h1>
 <p><strong>extends</strong> <a href="">WindmillObject</a></p>
-<p><strong>constructor</strong> ConfigEntry(<strong>string</strong> section, <strong>string</strong> key, <strong>any</strong> value, [opt] <strong>string</strong> type, [opt] <strong>object</strong> options);</p>
+<pre><code class="lang-fnpreview"><span class="token keyword" >constructor</span><span class="token fnname" > ConfigEntry</span>(<span class="token datatype" >string</span> section, <span class="token datatype" >string</span> key, value, <span class="token optional" >[opt]</span> <span class="token datatype" >string</span> type, <span class="token optional" >[opt]</span> <span class="token datatype" >object</span> options);
+</code></pre>
 <ul>
 <li><strong>section</strong>:<br>Section des Config-Eintrags</li>
 <li><strong>key</strong>:<br>Key des Config-Eintrags</li>
@@ -81,8 +91,12 @@
 </ul>
 </li>
 </ul>
-<p><strong>function</strong> apply(<strong>void</strong>);<br>Setzt den temporär gespeicherten Wert als festen Wert. (Ohne auf die Festplatte zu schreiben)</p>
-<p><strong>function</strong> reset(<strong>bool</strong> apply);<br>Setzt den Wert auf den Standardwert zurück.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > apply</span>();
+</code></pre>
+<p>Setzt den temporär gespeicherten Wert als festen Wert. (Ohne auf die Festplatte zu schreiben)</p>
+<pre><code class="lang-fnpreview">reset(<span class="token datatype" >bool</span> apply);
+</code></pre>
+<p>Setzt den Wert auf den Standardwert zurück.</p>
 <ul>
 <li><strong>apply:</strong><br>Falls <code>true</code> wird <code>apply()</code> anschließend aufgerufen.</li>
 </ul>

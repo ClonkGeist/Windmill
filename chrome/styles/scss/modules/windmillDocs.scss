@@ -53,10 +53,18 @@ td {
 	border-right: 1px solid whitesmoke;
 }
 
+code {
+	font-family: Consolas, monospace;
+}
 pre {
 	background: hsl(0, 0%, 95%);
 	padding: 10px;
 	border: 1px dashed #a8a8a8;
+	&.lang-fnpreview {
+		border: 1px solid gainsboro;
+		background: none;
+		font-size: 1.2em;
+	}
 }
 
 :not(pre) > code {
@@ -66,9 +74,28 @@ pre {
 	border-radius: 4px;
 }
 
-code.lang-javascript:before {
+/*code.lang-javascript:before {
 	content: "<JavaScript>";
 	float: right;
 	color: #8F8F8F;
 	font-size: 0.9em;
+}*/
+code.lang-fnpreview {
+	.token.datatype {
+		color: #1f77d6;
+		font-weight: bold;
+	}
+	.token.optional {
+		color: #adadad;
+	}
+	.token.keyword {
+		color: #0057b6;
+		font-weight: bold;
+	}
+	.token.eventname {
+		color: #a0a300;
+	}
+	.token.fnname {
+		font-weight: bold;
+	}
 }

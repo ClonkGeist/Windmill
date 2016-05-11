@@ -14,10 +14,7 @@ onmessage = function(event) {
 		let content = match[2];
 		
 		let c = i;
-		if(lang != "fnpreview")
-			result[i] = '<code class="lang-'+lang+'">'+Prism.highlight(content, Prism.languages[lang])+'</code>';
-		else
-			result[i] = content;
+		result[i] = '<code class="lang-'+lang+'">'+Prism.highlight(content, Prism.languages[lang])+'</code>';
 	}
 	postMessage(result);
 }

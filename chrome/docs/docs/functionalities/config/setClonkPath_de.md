@@ -1,7 +1,9 @@
 <<<setClonkPath
 # setClonkPath
 
-**void** setClonkPath(value);
+```fnpreview
+void setClonkPath(value);
+```
 Setzt den aktiven Clonkpfad auf den angegebenen Wert.
 
 - **value:**

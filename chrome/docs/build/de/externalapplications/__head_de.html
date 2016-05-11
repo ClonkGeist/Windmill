@@ -9,7 +9,7 @@
 			//Windmillinterner Workaround: Da Windmill das Oeffnen externer Links sperrt (sodass diese in einem externen Browser geoffnet werden koennen)
 			//wird hier fuer Windmill das anders geloest.
 			if(navigator.userAgent.search(/\bwindmill\b/) != -1) {
-				window.addEventListener("load", function() {
+				document.addEventListener("DOMContentLoaded", function() {
 					let elements = document.getElementsByTagName("a");
 					for(var i = 0; i < elements.length; i++) {
 						elements[i].onclick = function(e) {
@@ -19,6 +19,14 @@
 					}
 				});
 			}
+			document.addEventListener("DOMContentLoaded", function() {
+				let code_elements = document.querySelectorAll("code");
+				for(let i = 0; i < code_elements.length; i++) {
+					let elm = code_elements[i];
+					if(elm.className.search("lang-fnpreview") != -1)
+						elm.parentNode.className += "lang-fnpreview";
+				}
+			});
 		</script>
 	</head>
 	<body>
@@ -57,6 +65,7 @@
 </ul>
 </ul>
 <li class="navigation-elm"><a href="__head_de.html">Externe Anwendungen</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="class_ExtApplication_de.html">class ExtApplication</a></li>
 </ul>
 <li class="navigation-elm"><a href="../ctypes/__head_de.html">CTypes / Windmill Interface</a></li><ul class="navigation-sublist">
 <li class="navigation-elm"><a href="../ctypes/wmIProcess_de.html">wmIProcess</a></li>
@@ -137,74 +146,18 @@
 <span class="token punctuation" >}</span>
 </code></pre>
 <h2 id="funktionsreferenz">Funktionsreferenz</h2>
-<p><strong>[ExtApplication]</strong> getAppById(<strong>string</strong> identifier);</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >ExtApplication</span><span class="token fnname" > getAppById</span>(<span class="token datatype" >string</span> identifier);
+</code></pre>
 <p>Gibt ein ExtApplication-Objekt der jeweiligen Anwendung zurück.</p>
 <ul>
 <li><strong>identifier:</strong><br>ID der Anwendung aus der JSON-Definition.</li>
 </ul>
-<p><strong>void</strong> registerNewApplication(<strong>string</strong> application_obj);</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > registerNewApplication</span>(<span class="token datatype" >string</span> application_obj);
+</code></pre>
 <p>Lädt eine als String übergebene JSON-Definition zu einer externen Anwendung in die interne Liste.</p>
 <ul>
 <li><strong>application_obj:</strong><br>Als String übergebene JSON-Definition.</li>
 </ul>
-<h3 id="class-extapplication">class ExtApplication</h3>
-<h3 id="attribute">Attribute</h3>
-<table>
-<thead>
-<tr>
-<th>Attribut</th>
-<th>Typ</th>
-<th>Beschreibung</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>path</td>
-<td>string</td>
-<td>Der in den Einstellungen eingestellte Dateipfad zur Anwendung.</td>
-</tr>
-<tr>
-<td>needed_file</td>
-<td>string</td>
-<td>Dateiname der auf dem aktuellen Betriebssystem auszuführenden Datei, der in der JSON-Definition eingestellt wird. <strong>Read-only.</strong></td>
-</tr>
-</tbody>
-</table>
-<h3 id="funktionen">Funktionen</h3>
-<p><strong>constructor</strong> ExtApplication(<strong>object</strong> data);</p>
-<p><strong>data:</strong><br>  JSON-Objekt mit den o.g. Werten.</p>
-<p><strong>bool</strong> isAvailable();</p>
-<p>Gibt <code>true</code> zurück, wenn ein gültiger Programmpfad zu einer existierenden Datei angegeben worden ist und die Anwendung somit verfügbar ist.</p>
-<p><strong>void</strong> showError();</p>
-<p>Gibt eine formatierte und lokalisierte Fehlermeldung mit Informationen zur Beschaffung der jeweiligen Anwendung aus.</p>
-<p><strong>[wmIProcess]</strong> create(...pars);</p>
-<p>Erstellt eine Prozessinstanz zur jeweiligen Anwedung, allerdings mit vorheriger Prüfungen auf die Richtigkeit der Angaben und entsprechender Fehlermeldungsausgabe.<br>Die Parameter werden direkt an die <code>create</code>-Funktion des erstellten <code>wmIProcess</code>-Objekts weitergegeben, sind somit die gleichen.</p>
-<h2 id="beispiel">Beispiel</h2>
-<pre><code class="lang-javascript"><span class="token keyword" >let</span> git <span class="token operator" >=</span> <span class="token function" >getAppByID</span><span class="token punctuation" >(</span><span class="token string" >"git"</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
-<span class="token comment" spellcheck="true">//Prüfen ob Git verfügbar ist</span>
-<span class="token keyword" >if</span><span class="token punctuation" >(</span>git<span class="token punctuation" >.</span><span class="token function" >isAvailable</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >)</span>
-    <span class="token comment" spellcheck="true">//Falls ja, Prozess erstellen und clonen</span>
-    git<span class="token punctuation" >.</span><span class="token function" >create</span><span class="token punctuation" >(</span><span class="token punctuation" >[</span><span class="token string" >"clone"</span><span class="token punctuation" >,</span> <span class="token keyword" >this</span><span class="token punctuation" >.</span>cloneurl<span class="token punctuation" >,</span> <span class="token keyword" >this</span><span class="token punctuation" >.</span>path<span class="token punctuation" >]</span><span class="token punctuation" >,</span> <span class="token number" >0x1</span><span class="token punctuation" >,</span> <span class="token punctuation" >(</span>exitCode<span class="token punctuation" >)</span> <span class="token operator" >=</span><span class="token operator" >></span> <span class="token punctuation" >{</span> 
-        <span class="token comment" spellcheck="true">//Wenn kein Fehler aufgetreten ist, Erstellungsprozess abschließen und Git Configwerte für Usename und Email setzen.</span>
-        <span class="token keyword" >if</span><span class="token punctuation" >(</span><span class="token operator" >!</span>exitCode<span class="token punctuation" >)</span> <span class="token punctuation" >{</span>
-            <span class="token keyword" >if</span><span class="token punctuation" >(</span>options<span class="token punctuation" >.</span>success<span class="token punctuation" >)</span>
-                options<span class="token punctuation" >.</span><span class="token function" >success</span><span class="token punctuation" >(</span><span class="token keyword" >this</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
-
-            <span class="token function" >unlockModule</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
-            git<span class="token punctuation" >.</span><span class="token function" >create</span><span class="token punctuation" >(</span><span class="token punctuation" >[</span><span class="token string" >"config"</span><span class="token punctuation" >,</span> <span class="token string" >"-f"</span><span class="token punctuation" >,</span> _this<span class="token punctuation" >.</span>path<span class="token operator" >+</span><span class="token string" >"/.git/config"</span><span class="token punctuation" >,</span> <span class="token string" >"user.name"</span><span class="token punctuation" >,</span> options<span class="token punctuation" >.</span>userconfig<span class="token punctuation" >.</span>username<span class="token punctuation" >]</span><span class="token punctuation" >,</span> <span class="token number" >0x2</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
-            git<span class="token punctuation" >.</span><span class="token function" >create</span><span class="token punctuation" >(</span><span class="token punctuation" >[</span><span class="token string" >"config"</span><span class="token punctuation" >,</span> <span class="token string" >"-f"</span><span class="token punctuation" >,</span> _this<span class="token punctuation" >.</span>path<span class="token operator" >+</span><span class="token string" >"/.git/config"</span><span class="token punctuation" >,</span> <span class="token string" >"user.email"</span><span class="token punctuation" >,</span> options<span class="token punctuation" >.</span>userconfig<span class="token punctuation" >.</span>email<span class="token punctuation" >]</span><span class="token punctuation" >,</span> <span class="token number" >0x2</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
-
-            <span class="token operator" >/</span>Header speichern
-            <span class="token keyword" >this</span><span class="token punctuation" >.</span><span class="token function" >saveHeader</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
-        <span class="token punctuation" >}</span>
-        <span class="token keyword" >else</span>
-            options<span class="token punctuation" >.</span><span class="token function" >rejected</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
-    <span class="token punctuation" >}</span><span class="token punctuation" >,</span> <span class="token keyword" >function</span><span class="token punctuation" >(</span>data<span class="token punctuation" >)</span> <span class="token punctuation" >{</span>
-        <span class="token comment" spellcheck="true">//Ausgabe von Git in die Git Konsole loggen</span>
-        <span class="token function" >logToGitConsole</span><span class="token punctuation" >(</span>data<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
-    <span class="token punctuation" >}</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
-</code></pre>
-<p>Führt, falls Git verfügbar ist, einen Repository-Clone-Prozess durch.</p>
 
 			</div>
 		</div>

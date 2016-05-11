@@ -1,7 +1,9 @@
 <<<setConfigData
 # setConfigData
 
-**<ConfigEntry>** setConfigData(**string** section, **string** key, val, **bool** save, ...);
+```fnpreview
+ConfigEntry setConfigData(string section, string key, val, bool save, ...);
+```
 Setzt den Wert des jeweiligen Konfigurationseintrags. Falls der Eintrag noch nicht vorhanden ist, wird dieser neu erstellt.
 
 - **section:**

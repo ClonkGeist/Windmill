@@ -1,7 +1,9 @@
 <<<_sc.clonkpath
 # _sc.clonkpath (Shortcut-Objekt)
 
-**string** _sc.clonkpath(**int** index, **bool** findnext);
+```fnpreview
+string _sc.clonkpath(int index, bool findnext);
+```
 Gibt einen Pfad zum Clonkverzeichnis zurück. Dabei steht der Index 0 immer für das **aktuell ausgewählte Clonkverzeichnis**.
 
 - **index:**

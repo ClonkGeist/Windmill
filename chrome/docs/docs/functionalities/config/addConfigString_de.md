@@ -2,7 +2,9 @@
 
 # addConfigString
 
-**<ConfigEntry>** addConfigString(**string** section, **string** key, defaultval, ...);
+```fnpreview
+ConfigEntry addConfigString(string section, string key, defaultval, ...);
+```
 Erstellt einen Eintrag für die Konfigurationsdatei inkl. Standardwert.
 
 - **section:**

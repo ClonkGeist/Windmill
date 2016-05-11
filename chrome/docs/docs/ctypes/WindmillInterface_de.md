@@ -5,9 +5,13 @@ Das Windmill Interface liefert grundlegende Funktionalitäten zu allen Interface
 
 ### class WindmillInterface
 
-**void** hook(**string** eventName, **function** fn);
+```fnpreview
+void hook(string eventName, function fn);
+```
 Bindet eine Funktion ```fn``` an ein Event ```eventName```.
 
-**void** execHook(**string** eventName, ...);
+```fnpreview
+void execHook(string eventName, ...);
+```
 Führt alle mit ```hook``` an das Event ```eventName``` gebindete Funktionen aus.
 

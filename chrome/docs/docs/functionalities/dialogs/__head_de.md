@@ -26,8 +26,9 @@ Um auf die Elemente des Dialog-Wrappers zugreifen zu können, kann auf die Eigen
 
 Hier ein näherer Einblick auf den WDialog-Konstruktor:
 
-**constructor** WDialog(**string** title, [opt] **string** langpre, [opt] **object** options);
-
+```fnpreview
+constructor WDialog(string title, [opt] string langpre, [opt] object options);
+```
 Während die ersten beiden Parameter relativ offensichtlich sein sollten (für ```langpre``` gilt wie immer: Falls 0 wird die Moduleigene Lokalisierung geladen, bei -1 die aus dem Mainwindow und ansonsten mit dem angegebenen Präfix), befindet sich in ```options``` das eigentlich Interessante.
 
 ```options``` kann folgende Werte haben:
@@ -103,25 +104,39 @@ Die Infobox wird dabei automatisch sichtbar bzw. unsichtbar, wenn Text hinzugef�
 
 ## Funktionsreferenz
 
-**constructor** WDialog(**string** title, [opt] **string** langpre, [opt] **object** options);
+```fnpreview
+constructor WDialog(string title, [opt] string langpre, [opt] object options);
+```
 Erstellt ein Dialogobjekt. Fuer genauere Angaben zu den einzelnen Parametern siehe oben.
 
-**void** setContent(**string** content);
+```fnpreview
+void setContent(string content);
+```
 Setzt den Inhalt der in ```.main-wdialog-content``` angezeigt werden soll.
 
-**void** setFooter(**string** content);
+```fnpreview
+void setFooter(string content);
+```
 Setzt den Inhalt der in ```.main-wdialog-footer``` angezeigt werden soll. Falls gesetzt, werden die Buttons nicht mehr erstellt.
 
-**<jQueryObject>** getFooterElm();
+```fnpreview
+jQueryObject getFooterElm();
+```
 Gibt ein jQueryObject zum ```.main-wdialog-footer```-Element zurück.
 
-**void** setBtnLeft(**array** buttons);
+```fnpreview
+void setBtnLeft(Array buttons);
+```
 Erstellt die im Array übergebenen Button-Definitionen links unten im Dialog.
 
-**void** setBtnRight(**array** buttons);
+```fnpreview
+void setBtnRight(Array buttons);
+```
 Erstellt die im Array übergebenen Button-Definitionen rechts unten im Dialog.
 
-**<XULElement>** addButtons(**string/object** btnobj, [opt] **bool** left);
+```fnpreview
+XULElement addButtons(string/object btnobj, [opt] bool left);
+```
 Erstellt den angegebenen Button im Dialog und gibt diesen zurück.
 
 * **btnobj:**
@@ -129,20 +144,32 @@ Erstellt den angegebenen Button im Dialog und gibt diesen zurück.
 * **left:**
   Erstellt den Button links unten im Dialog.
 
-**void** lock();
+```fnpreview
+void lock();
+```
 Sperrt das Dialog.
 
-**void** unlock();
+```fnpreview
+void unlock();
+```
 Entsperrt das Dialog.
 
-**void** show();
+```fnpreview
+void show();
+```
 Erstellt das Dialog-Element im Mainwindow.
 
-**void** updatePseudoElements();
+```fnpreview
+void updatePseudoElements();
+```
 Aktualisiert die Dialog-GUI-Elemente in der Funktionsweise. Dies kann nötig sein, falls neue Dialog-GUI-Elemente während das Dialog-Element aktiv ist, hinzugefügt werden. GUI-Elemente wie die Listen und die Infobox aktualisieren allerdings ihren eigenen Inhalt automatisch.
 
-**void** updateTextNodes(**<jQueryObject>** objects);
+```fnpreview
+void updateTextNodes(jQueryObject objects);
+```
 Passt die Breite der angegebenen Elemente an das Dialog an. Dies kann insbesondere im Zusammenhang mit den ```description```-Elementen von Nöten sein, da sie teilweise aus dem Dialog herausragen und das Dialog dadurch falsch dargestellt wird.
 
-**bool** hide();
+```fnpreview
+bool hide();
+```
 Schließt das Dialog-Element und gibt, falls erfolgreich, ```true``` zurück.

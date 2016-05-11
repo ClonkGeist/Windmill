@@ -9,7 +9,7 @@
 			//Windmillinterner Workaround: Da Windmill das Oeffnen externer Links sperrt (sodass diese in einem externen Browser geoffnet werden koennen)
 			//wird hier fuer Windmill das anders geloest.
 			if(navigator.userAgent.search(/\bwindmill\b/) != -1) {
-				window.addEventListener("load", function() {
+				document.addEventListener("DOMContentLoaded", function() {
 					let elements = document.getElementsByTagName("a");
 					for(var i = 0; i < elements.length; i++) {
 						elements[i].onclick = function(e) {
@@ -19,6 +19,14 @@
 					}
 				});
 			}
+			document.addEventListener("DOMContentLoaded", function() {
+				let code_elements = document.querySelectorAll("code");
+				for(let i = 0; i < code_elements.length; i++) {
+					let elm = code_elements[i];
+					if(elm.className.search("lang-fnpreview") != -1)
+						elm.parentNode.className += "lang-fnpreview";
+				}
+			});
 		</script>
 	</head>
 	<body>
@@ -57,6 +65,7 @@
 </ul>
 </ul>
 <li class="navigation-elm"><a href="../../externalapplications/__head_de.html">Externe Anwendungen</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../externalapplications/class_ExtApplication_de.html">class ExtApplication</a></li>
 </ul>
 <li class="navigation-elm"><a href="../../ctypes/__head_de.html">CTypes / Windmill Interface</a></li><ul class="navigation-sublist">
 <li class="navigation-elm"><a href="../../ctypes/wmIProcess_de.html">wmIProcess</a></li>
@@ -67,7 +76,9 @@
 			</nav>
 			<div id="content">
 				<h1 id="getconfigdata">getConfigData</h1>
-<p><strong>any</strong> getConfigData(<strong>string</strong> section, <strong>string</strong> key, [opt] <strong>bool</strong> cfgobject);<br>Gibt den Inhalt des Eintrags bzw. den Eintrag selbst unter der Sektion <code>section</code> mit dem Key <code>key</code> zurück.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >any</span><span class="token fnname" > getConfigData</span>(<span class="token datatype" >string</span> section, <span class="token datatype" >string</span> key, <span class="token optional" >[opt]</span> <span class="token datatype" >bool</span> cfg<span class="token datatype" >object</span>);
+</code></pre>
+<p>Gibt den Inhalt des Eintrags bzw. den Eintrag selbst unter der Sektion <code>section</code> mit dem Key <code>key</code> zurück.</p>
 <ul>
 <li><strong>section:</strong><br>Sektion, unter der sich der Eintrag befindet.</li>
 <li><strong>key:</strong><br>Key des Eintrags.</li>

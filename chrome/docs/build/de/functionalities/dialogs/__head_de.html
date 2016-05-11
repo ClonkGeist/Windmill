@@ -9,7 +9,7 @@
 			//Windmillinterner Workaround: Da Windmill das Oeffnen externer Links sperrt (sodass diese in einem externen Browser geoffnet werden koennen)
 			//wird hier fuer Windmill das anders geloest.
 			if(navigator.userAgent.search(/\bwindmill\b/) != -1) {
-				window.addEventListener("load", function() {
+				document.addEventListener("DOMContentLoaded", function() {
 					let elements = document.getElementsByTagName("a");
 					for(var i = 0; i < elements.length; i++) {
 						elements[i].onclick = function(e) {
@@ -19,6 +19,14 @@
 					}
 				});
 			}
+			document.addEventListener("DOMContentLoaded", function() {
+				let code_elements = document.querySelectorAll("code");
+				for(let i = 0; i < code_elements.length; i++) {
+					let elm = code_elements[i];
+					if(elm.className.search("lang-fnpreview") != -1)
+						elm.parentNode.className += "lang-fnpreview";
+				}
+			});
 		</script>
 	</head>
 	<body>
@@ -57,6 +65,7 @@
 </ul>
 </ul>
 <li class="navigation-elm"><a href="../../externalapplications/__head_de.html">Externe Anwendungen</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../externalapplications/class_ExtApplication_de.html">class ExtApplication</a></li>
 </ul>
 <li class="navigation-elm"><a href="../../ctypes/__head_de.html">CTypes / Windmill Interface</a></li><ul class="navigation-sublist">
 <li class="navigation-elm"><a href="../../ctypes/wmIProcess_de.html">wmIProcess</a></li>
@@ -81,7 +90,8 @@
 <p>Um auf die Elemente des Dialog-Wrappers zugreifen zu können, kann auf die Eigenschaft <code>element</code> des Dialog-Objekts zugegriffen werden, welches das aktuelle Dialog-Element (falls angezeigt) zurückgibt. So lassen sich weitere Funktionalitäten hinzufügen.</p>
 <h3 id="wdialog-konstruktor">WDialog-Konstruktor</h3>
 <p>Hier ein näherer Einblick auf den WDialog-Konstruktor:</p>
-<p><strong>constructor</strong> WDialog(<strong>string</strong> title, [opt] <strong>string</strong> langpre, [opt] <strong>object</strong> options);</p>
+<pre><code class="lang-fnpreview"><span class="token keyword" >constructor</span><span class="token fnname" > WDialog</span>(<span class="token datatype" >string</span> title, <span class="token optional" >[opt]</span> <span class="token datatype" >string</span> langpre, <span class="token optional" >[opt]</span> <span class="token datatype" >object</span> options);
+</code></pre>
 <p>Während die ersten beiden Parameter relativ offensichtlich sein sollten (für <code>langpre</code> gilt wie immer: Falls 0 wird die Moduleigene Lokalisierung geladen, bei -1 die aus dem Mainwindow und ansonsten mit dem angegebenen Präfix), befindet sich in <code>options</code> das eigentlich Interessante.</p>
 <p><code>options</code> kann folgende Werte haben:</p>
 <ul>
@@ -125,23 +135,49 @@ dlg<span class="token punctuation" >.</span><span class="token function" >show</
 <p>Es lassen sich auch gestylte Infoboxen über ein hbox-Element mit der Klasse <code>dlg_infobox</code> (soll aus Konsistenzgründen <code>dlg-infobox</code> werden) erstellen und mit zusätzlichen Klassen zur Art der Information ausstatten. Aktuell wird nur die Klasse <code>error</code> unterstützt, um Fehler anzuzeigen.</p>
 <p>Die Infobox wird dabei automatisch sichtbar bzw. unsichtbar, wenn Text hinzugefügt oder entfernt wird.</p>
 <h2 id="funktionsreferenz">Funktionsreferenz</h2>
-<p><strong>constructor</strong> WDialog(<strong>string</strong> title, [opt] <strong>string</strong> langpre, [opt] <strong>object</strong> options);<br>Erstellt ein Dialogobjekt. Fuer genauere Angaben zu den einzelnen Parametern siehe oben.</p>
-<p><strong>void</strong> setContent(<strong>string</strong> content);<br>Setzt den Inhalt der in <code>.main-wdialog-content</code> angezeigt werden soll.</p>
-<p><strong>void</strong> setFooter(<strong>string</strong> content);<br>Setzt den Inhalt der in <code>.main-wdialog-footer</code> angezeigt werden soll. Falls gesetzt, werden die Buttons nicht mehr erstellt.</p>
-<p><strong>&lt;jQueryObject&gt;</strong> getFooterElm();<br>Gibt ein jQueryObject zum <code>.main-wdialog-footer</code>-Element zurück.</p>
-<p><strong>void</strong> setBtnLeft(<strong>array</strong> buttons);<br>Erstellt die im Array übergebenen Button-Definitionen links unten im Dialog.</p>
-<p><strong>void</strong> setBtnRight(<strong>array</strong> buttons);<br>Erstellt die im Array übergebenen Button-Definitionen rechts unten im Dialog.</p>
-<p><strong>&lt;XULElement&gt;</strong> addButtons(<strong>string/object</strong> btnobj, [opt] <strong>bool</strong> left);<br>Erstellt den angegebenen Button im Dialog und gibt diesen zurück.</p>
+<pre><code class="lang-fnpreview"><span class="token keyword" >constructor</span><span class="token fnname" > WDialog</span>(<span class="token datatype" >string</span> title, <span class="token optional" >[opt]</span> <span class="token datatype" >string</span> langpre, <span class="token optional" >[opt]</span> <span class="token datatype" >object</span> options);
+</code></pre>
+<p>Erstellt ein Dialogobjekt. Fuer genauere Angaben zu den einzelnen Parametern siehe oben.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > setContent</span>(<span class="token datatype" >string</span> content);
+</code></pre>
+<p>Setzt den Inhalt der in <code>.main-wdialog-content</code> angezeigt werden soll.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > setFooter</span>(<span class="token datatype" >string</span> content);
+</code></pre>
+<p>Setzt den Inhalt der in <code>.main-wdialog-footer</code> angezeigt werden soll. Falls gesetzt, werden die Buttons nicht mehr erstellt.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >jQueryObject</span><span class="token fnname" > getFooterElm</span>();
+</code></pre>
+<p>Gibt ein jQueryObject zum <code>.main-wdialog-footer</code>-Element zurück.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > setBtnLeft</span>(<span class="token datatype" >Array</span> buttons);
+</code></pre>
+<p>Erstellt die im Array übergebenen Button-Definitionen links unten im Dialog.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > setBtnRight</span>(<span class="token datatype" >Array</span> buttons);
+</code></pre>
+<p>Erstellt die im Array übergebenen Button-Definitionen rechts unten im Dialog.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >XULElement</span><span class="token fnname" > addButtons</span>(<span class="token datatype" >string</span>/<span class="token datatype" >object</span> btnobj, <span class="token optional" >[opt]</span> <span class="token datatype" >bool</span> left);
+</code></pre>
+<p>Erstellt den angegebenen Button im Dialog und gibt diesen zurück.</p>
 <ul>
 <li><strong>btnobj:</strong><br>Button-Definition des zu erstellenden Buttons. Kann alternativ auch ein String zu einem Preset sein.</li>
 <li><strong>left:</strong><br>Erstellt den Button links unten im Dialog.</li>
 </ul>
-<p><strong>void</strong> lock();<br>Sperrt das Dialog.</p>
-<p><strong>void</strong> unlock();<br>Entsperrt das Dialog.</p>
-<p><strong>void</strong> show();<br>Erstellt das Dialog-Element im Mainwindow.</p>
-<p><strong>void</strong> updatePseudoElements();<br>Aktualisiert die Dialog-GUI-Elemente in der Funktionsweise. Dies kann nötig sein, falls neue Dialog-GUI-Elemente während das Dialog-Element aktiv ist, hinzugefügt werden. GUI-Elemente wie die Listen und die Infobox aktualisieren allerdings ihren eigenen Inhalt automatisch.</p>
-<p><strong>void</strong> updateTextNodes(<strong>&lt;jQueryObject&gt;</strong> objects);<br>Passt die Breite der angegebenen Elemente an das Dialog an. Dies kann insbesondere im Zusammenhang mit den <code>description</code>-Elementen von Nöten sein, da sie teilweise aus dem Dialog herausragen und das Dialog dadurch falsch dargestellt wird.</p>
-<p><strong>bool</strong> hide();<br>Schließt das Dialog-Element und gibt, falls erfolgreich, <code>true</code> zurück.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > lock</span>();
+</code></pre>
+<p>Sperrt das Dialog.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > unlock</span>();
+</code></pre>
+<p>Entsperrt das Dialog.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > show</span>();
+</code></pre>
+<p>Erstellt das Dialog-Element im Mainwindow.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > updatePseudoElements</span>();
+</code></pre>
+<p>Aktualisiert die Dialog-GUI-Elemente in der Funktionsweise. Dies kann nötig sein, falls neue Dialog-GUI-Elemente während das Dialog-Element aktiv ist, hinzugefügt werden. GUI-Elemente wie die Listen und die Infobox aktualisieren allerdings ihren eigenen Inhalt automatisch.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > updateTextNodes</span>(<span class="token datatype" >jQueryObject</span> <span class="token datatype" >object</span>s);
+</code></pre>
+<p>Passt die Breite der angegebenen Elemente an das Dialog an. Dies kann insbesondere im Zusammenhang mit den <code>description</code>-Elementen von Nöten sein, da sie teilweise aus dem Dialog herausragen und das Dialog dadurch falsch dargestellt wird.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >bool</span><span class="token fnname" > hide</span>();
+</code></pre>
+<p>Schließt das Dialog-Element und gibt, falls erfolgreich, <code>true</code> zurück.</p>
 
 			</div>
 		</div>

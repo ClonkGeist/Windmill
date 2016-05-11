@@ -3,7 +3,9 @@
 
 **extends** [WindmillObject]()
 
-**constructor** ConfigEntry(**string** section, **string** key, **any** value, [opt] **string** type, [opt] **object** options);
+```fnpreview
+constructor ConfigEntry(string section, string key, value, [opt] string type, [opt] object options);
+```
  * **section**:
    Section des Config-Eintrags
  * **key**:
@@ -18,10 +20,14 @@
 	 * **alwaysSave:** Der Config-Eintrag speichert Änderungen am Wert nicht nur temporär sondern als tatsächlichen Wert. (Damit ist kein Schreiben auf der Festplatte verbunden)
 	 * **runTimeOnly:** Falls `true`, wird der Config-Eintrag nie in der Config-Datei gespeichert sondern existiert nur zur Laufzeit.
 
-**function** apply(**void**);
+```fnpreview
+void apply();
+```
 Setzt den temporär gespeicherten Wert als festen Wert. (Ohne auf die Festplatte zu schreiben)
 
-**function** reset(**bool** apply);
+```fnpreview
+reset(bool apply);
+```
 Setzt den Wert auf den Standardwert zurück.
  * **apply:**
    Falls `true` wird `apply()` anschließend aufgerufen.

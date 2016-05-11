@@ -1,7 +1,9 @@
 <<<saveConfig
 # saveConfig
 
-**<Promise>** saveConfig([opt] **array** special);
+```fnpreview
+Promise saveConfig([opt] array special);
+```
 Speichert die Konfigurationsdatei. Falls ```special``` angegeben ist, werden nur Veränderungen der angegebenen Einträgen gespeichert.
 
 - [opt] **special:**
