@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Windmill Documentation - loadConfig</title>
+		<title>Windmill Documentation - getKeyBindingObjById</title>
 		<link href="../../../windmillDocs.css" rel="stylesheet">
 		<link href="../../../prism.css" rel="stylesheet">
 		<meta charset="UTF-8">
@@ -69,28 +69,28 @@
 <li class="navigation-elm"><a href="../localization/Locale_de.html">Locale</a></li>
 <li class="navigation-elm"><a href="../localization/initializeLanguage_de.html">initializeLanguage</a></li>
 </ul>
-<li class="navigation-elm"><a href="../keybindings/__head_de.html">Key Bindings</a></li><ul class="navigation-sublist">
-<li class="navigation-elm"><a href="../keybindings/_keybinderGetKeysByIdentifier_de.html">_keybinderGetKeysByIdentifier</a></li>
-<li class="navigation-elm"><a href="../keybindings/_keybinderCheckKeyBind_de.html">_keybinderCheckKeyBind</a></li>
-<li class="navigation-elm"><a href="../keybindings/saveKeyBindings_de.html">saveKeyBindings</a></li>
-<li class="navigation-elm"><a href="../keybindings/loadKeyBindings_de.html">loadKeyBindings</a></li>
-<li class="navigation-elm"><a href="../keybindings/getKeyCodeIdentifier_de.html">getKeyCodeIdentifier</a></li>
-<li class="navigation-elm"><a href="../keybindings/getKeyBindingObjById_de.html">getKeyBindingObjById</a></li>
-<li class="navigation-elm"><a href="../keybindings/class__KeyBinding_de.html">class _KeyBinding</a></li>
-<li class="navigation-elm"><a href="../keybindings/bindKeyToObj_de.html">bindKeyToObj</a></li>
+<li class="navigation-elm"><a href="__head_de.html">Key Bindings</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="_keybinderGetKeysByIdentifier_de.html">_keybinderGetKeysByIdentifier</a></li>
+<li class="navigation-elm"><a href="_keybinderCheckKeyBind_de.html">_keybinderCheckKeyBind</a></li>
+<li class="navigation-elm"><a href="saveKeyBindings_de.html">saveKeyBindings</a></li>
+<li class="navigation-elm"><a href="loadKeyBindings_de.html">loadKeyBindings</a></li>
+<li class="navigation-elm"><a href="getKeyCodeIdentifier_de.html">getKeyCodeIdentifier</a></li>
+<li class="navigation-elm"><a href="getKeyBindingObjById_de.html">getKeyBindingObjById</a></li>
+<li class="navigation-elm"><a href="class__KeyBinding_de.html">class _KeyBinding</a></li>
+<li class="navigation-elm"><a href="bindKeyToObj_de.html">bindKeyToObj</a></li>
 </ul>
 <li class="navigation-elm"><a href="../dialogs/__head_de.html">Dialoge</a></li><ul class="navigation-sublist">
 </ul>
-<li class="navigation-elm"><a href="__head_de.html">config.js</a></li><ul class="navigation-sublist">
-<li class="navigation-elm"><a href="setConfigData_de.html">setConfigData</a></li>
-<li class="navigation-elm"><a href="setClonkPath_de.html">setClonkPath</a></li>
-<li class="navigation-elm"><a href="sc.clonkpath_de.html">_sc.clonkpath</a></li>
-<li class="navigation-elm"><a href="saveConfig_de.html">saveConfig</a></li>
-<li class="navigation-elm"><a href="loadConfig_de.html">loadConfig</a></li>
-<li class="navigation-elm"><a href="getConfig_de.html">getConfig</a></li>
-<li class="navigation-elm"><a href="getConfigData_de.html">getConfigData</a></li>
-<li class="navigation-elm"><a href="class_ConfigEntry_de.html">class ConfigEntry</a></li>
-<li class="navigation-elm"><a href="addConfigString_de.html">addConfigString</a></li>
+<li class="navigation-elm"><a href="../config/__head_de.html">config.js</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../config/setConfigData_de.html">setConfigData</a></li>
+<li class="navigation-elm"><a href="../config/setClonkPath_de.html">setClonkPath</a></li>
+<li class="navigation-elm"><a href="../config/sc.clonkpath_de.html">_sc.clonkpath</a></li>
+<li class="navigation-elm"><a href="../config/saveConfig_de.html">saveConfig</a></li>
+<li class="navigation-elm"><a href="../config/loadConfig_de.html">loadConfig</a></li>
+<li class="navigation-elm"><a href="../config/getConfig_de.html">getConfig</a></li>
+<li class="navigation-elm"><a href="../config/getConfigData_de.html">getConfigData</a></li>
+<li class="navigation-elm"><a href="../config/class_ConfigEntry_de.html">class ConfigEntry</a></li>
+<li class="navigation-elm"><a href="../config/addConfigString_de.html">addConfigString</a></li>
 </ul>
 </ul>
 <li class="navigation-elm"><a href="../../externalapplications/__head_de.html">Externe Anwendungen</a></li><ul class="navigation-sublist">
@@ -104,10 +104,10 @@
 				</ul>
 			</nav>
 			<div id="content">
-				<h1 id="loadconfig">loadConfig</h1>
-<pre><code class="lang-fnpreview"><span class="token datatype" >Promise</span><span class="token fnname" > loadConfig</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+				<h1 id="getkeybindingobjbyid">getKeyBindingObjById</h1>
+<pre><code class="lang-fnpreview"><span class="token datatype" >_KeyBinding</span><span class="token fnname" > getKeyBindingObjById</span><span class="token punctuation" >(</span><span class="token datatype" >string</span> id<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 </code></pre>
-<p>Liest die Konfigurationsdatei ein und erstellt daraus die entsprechenden Konfigurationseinträge.</p>
+<p>Gibt das <code>_KeyBinding</code>-Objekt der angegebenen ID zurück.</p>
 
 			</div>
 		</div>

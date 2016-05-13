@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Windmill Documentation - Key Bindings</title>
+		<link href="../../../windmillDocs.css" rel="stylesheet">
+		<link href="../../../prism.css" rel="stylesheet">
+		<meta charset="UTF-8">
+		<script>
+			//Windmillinterner Workaround: Da Windmill das Oeffnen externer Links sperrt (sodass diese in einem externen Browser geoffnet werden koennen)
+			//wird hier fuer Windmill das anders geloest.
+			if(navigator.userAgent.search(/\bwindmill\b/) != -1) {
+				document.addEventListener("DOMContentLoaded", function() {
+					let elements = document.getElementsByTagName("a");
+					for(var i = 0; i < elements.length; i++) {
+						elements[i].onclick = function(e) {
+							window.location.href = this.href;
+							e.preventDefault();
+						};
+					}
+				});
+			}
+			document.addEventListener("DOMContentLoaded", function() {
+				let code_elements = document.querySelectorAll("code");
+				for(let i = 0; i < code_elements.length; i++) {
+					let elm = code_elements[i];
+					if(elm.className.search("lang-fnpreview") != -1)
+						elm.parentNode.className += "lang-fnpreview";
+				}
+			});
+		</script>
+	</head>
+	<body>
+		<div id="header">
+			Windmill Documentation
+		</div>
+		<div id="wrapper">
+			<nav id="navigation">
+				<ul>
+					<li class="navigation-elm"><a href="../../_home/__head_de.html">Startseite</a></li><ul class="navigation-sublist">
+</ul>
+<li class="navigation-elm"><a href="../__head_de.html">Funktionalitäten</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../workenvironments/__head_de.html">Arbeitsumgebungen</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../workenvironments/saveWorkEnvironment_de.html">saveWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="../workenvironments/loadWorkEnvironment_de.html">loadWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="../workenvironments/getWorkEnvironments_de.html">getWorkEnvironments</a></li>
+<li class="navigation-elm"><a href="../workenvironments/getWorkEnvironmentByPath_de.html">getWorkEnvironmentByPath</a></li>
+<li class="navigation-elm"><a href="../workenvironments/createWorkEnvironment_de.html">createWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="../workenvironments/createNewWorkEnvironment_de.html">createNewWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="../workenvironments/class_WorkEnvironment_de.html">class WorkEnvironment</a></li>
+</ul>
+<li class="navigation-elm"><a href="../other/__head_de.html">Weitere Funktionen</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../other/showNotification_de.html">showNotification</a></li>
+</ul>
+<li class="navigation-elm"><a href="../modules/__head_de.html">Module</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../modules/readModuleInfo_de.html">readModuleInfo</a></li>
+<li class="navigation-elm"><a href="../modules/loadModules_de.html">loadModules</a></li>
+<li class="navigation-elm"><a href="../modules/getModule_de.html">getModule</a></li>
+<li class="navigation-elm"><a href="../modules/getModulesIdByName_de.html">getModulesIdByName</a></li>
+<li class="navigation-elm"><a href="../modules/getModulesByName_de.html">getModulesByName</a></li>
+<li class="navigation-elm"><a href="../modules/getModuleDef_de.html">getModuleDef</a></li>
+<li class="navigation-elm"><a href="../modules/getModuleDefByPrefix_de.html">getModuleDefByPrefix</a></li>
+<li class="navigation-elm"><a href="../modules/getModuleByName_de.html">getModuleByName</a></li>
+<li class="navigation-elm"><a href="../modules/createModule_de.html">createModule</a></li>
+<li class="navigation-elm"><a href="../modules/class__module_de.html">class _module</a></li>
+</ul>
+<li class="navigation-elm"><a href="../localization/__head_de.html">Lokalisierung</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../localization/readLanguageInfo_de.html">readLanguageInfo</a></li>
+<li class="navigation-elm"><a href="../localization/localizeModule_de.html">localizeModule</a></li>
+<li class="navigation-elm"><a href="../localization/Locale_de.html">Locale</a></li>
+<li class="navigation-elm"><a href="../localization/initializeLanguage_de.html">initializeLanguage</a></li>
+</ul>
+<li class="navigation-elm"><a href="__head_de.html">Key Bindings</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="_keybinderGetKeysByIdentifier_de.html">_keybinderGetKeysByIdentifier</a></li>
+<li class="navigation-elm"><a href="_keybinderCheckKeyBind_de.html">_keybinderCheckKeyBind</a></li>
+<li class="navigation-elm"><a href="saveKeyBindings_de.html">saveKeyBindings</a></li>
+<li class="navigation-elm"><a href="loadKeyBindings_de.html">loadKeyBindings</a></li>
+<li class="navigation-elm"><a href="getKeyCodeIdentifier_de.html">getKeyCodeIdentifier</a></li>
+<li class="navigation-elm"><a href="getKeyBindingObjById_de.html">getKeyBindingObjById</a></li>
+<li class="navigation-elm"><a href="class__KeyBinding_de.html">class _KeyBinding</a></li>
+<li class="navigation-elm"><a href="bindKeyToObj_de.html">bindKeyToObj</a></li>
+</ul>
+<li class="navigation-elm"><a href="../dialogs/__head_de.html">Dialoge</a></li><ul class="navigation-sublist">
+</ul>
+<li class="navigation-elm"><a href="../config/__head_de.html">config.js</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../config/setConfigData_de.html">setConfigData</a></li>
+<li class="navigation-elm"><a href="../config/setClonkPath_de.html">setClonkPath</a></li>
+<li class="navigation-elm"><a href="../config/sc.clonkpath_de.html">_sc.clonkpath</a></li>
+<li class="navigation-elm"><a href="../config/saveConfig_de.html">saveConfig</a></li>
+<li class="navigation-elm"><a href="../config/loadConfig_de.html">loadConfig</a></li>
+<li class="navigation-elm"><a href="../config/getConfig_de.html">getConfig</a></li>
+<li class="navigation-elm"><a href="../config/getConfigData_de.html">getConfigData</a></li>
+<li class="navigation-elm"><a href="../config/class_ConfigEntry_de.html">class ConfigEntry</a></li>
+<li class="navigation-elm"><a href="../config/addConfigString_de.html">addConfigString</a></li>
+</ul>
+</ul>
+<li class="navigation-elm"><a href="../../externalapplications/__head_de.html">Externe Anwendungen</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../externalapplications/class_ExtApplication_de.html">class ExtApplication</a></li>
+</ul>
+<li class="navigation-elm"><a href="../../ctypes/__head_de.html">CTypes / Windmill Interface</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../ctypes/wmIProcess_de.html">wmIProcess</a></li>
+<li class="navigation-elm"><a href="../../ctypes/WindmillInterface_de.html">Windmill Interface</a></li>
+</ul>
+
+				</ul>
+			</nav>
+			<div id="content">
+				<h1 id="key-bindings">Key Bindings</h1>
+<p>In Windmill können Module für sich selbst Key Bindings festlegen, die sich zentralisiert vom Benutzer in den Einstellungen einstellen lassen.</p>
+<p>Um Key Bindings zu erstellen, muss ein <code>_KeyBinding</code>-Objekt erstellt werden, dass anschließend über die Funktion <code>bindKeyToObj</code> an verschiedene Elemente gebunden werden kann. Beispiel:</p>
+<pre><code class="lang-javascript"><span class="token function" >bindKeyToObj</span><span class="token punctuation" >(</span><span class="token keyword" >new</span> <span class="token class-name" >KeyBinding</span><span class="token punctuation" >(</span><span class="token string" >"FullRefresh"</span><span class="token punctuation" >,</span> <span class="token string" >"Ctrl-F5"</span><span class="token punctuation" >,</span> <span class="token keyword" >function</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span> <span class="token punctuation" >{</span>
+    <span class="token function" >$</span><span class="token punctuation" >(</span>MAINTREE_OBJ<span class="token punctuation" >)</span><span class="token punctuation" >.</span><span class="token function" >empty</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+
+    <span class="token function" >initializeDirectory</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+<span class="token punctuation" >}</span><span class="token punctuation" >,</span> <span class="token number" >0</span><span class="token punctuation" >,</span> <span class="token string" >"DEX"</span><span class="token punctuation" >)</span><span class="token punctuation" >,</span> document<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Hier wird ein neues KeyBinding Objekt an das Dokument des Explorers gebunden, welches standardmäßig auf die <code>Ctrl-F5</code> Tastenkombination gelegt ist, sodass falls der Explorer im Fokus liegt und die Tastenkombination gedrückt wird, der Inhalt komplett neu geladen wird.</p>
+<p>Für die Tastenkombinationen kann eine Verkettung aus den Modifier-Tasten (Ctrl, Alt, Shift) und der jeweiligen Taste die durch Bindestriche jeweils miteinander verbunden werden (Z.B. <code>Ctrl-Shift-C</code>) angegeben werden. Speziellere Tasten, die nicht richtig anzeigbar sind, können über bestimmte KeyCode-Identifier angegeben werden, die weiter unten aufgelistet sind und in der folgenden Datei: <code>chrome://windmill/content/js/functionalities/keybindings.js</code> auch zu finden sind.</p>
+<p>KeyBindings werden erst bei Start des Moduls geladen, sodass KeyBindings von den Einstellungen nur erkannt werden, wenn sie bereits schon mal gespeichert worden sind. Das heißt also, dass neue KeyBinding-Einträge auch in den Standard-KeyBindings (<code>chrome://windmill/content/defaultfiles/keybinding.ini</code>) hinterlegt werden müssen, um in jedem Falle korrekt geladen zu werden.</p>
+<p>Die einzelnen Module können mit folgendem Format Übersetzungen für die KeyBinding-Einträge der Einstellungen festlegen: <code>{LPX}_KEYB_{KeyBinding Identifer}</code>. Dabei steht {LPX} für den Lokalisierungspräfix des jeweiligen Moduls und {KeyBinding Identifer} für den Identifier des KeyBindings. (Z.B. <code>DEX_KEYB_FullRefresh=Full refresh</code>)<br>Um den Titel des jeweiligen Abschnitts für die KeyBindings in den Einstellungen festzulegen, kann man für das jeweilige Modul den Schlüssel <code>{LPX}_KeyBindingsHeaderCaption</code> verwenden. (Z.B. <code>DEX_KeyBindingsHeaderCaption=Explorer</code>)</p>
+<h2 id="keycodes">KeyCodes</h2>
+<p>Im folgenden eine Liste von Namen für speziellere Tasten, die keine Zeichen/Weißraumzeichen darstellen. Anzeigbare Zeichen bleiben gleich, die Funktionstasten (F1 bis F24) können auch exakt so verwendet werden.</p>
+<p>Die häufiger genutzten Tasten werden in der Liste hervorgehoben angezeigt.</p>
+<table>
+<thead>
+<tr>
+<th>KeyCode</th>
+<th>Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3</td>
+<td>CANCEL</td>
+</tr>
+<tr>
+<td>6</td>
+<td>HELP</td>
+</tr>
+<tr>
+<td>8</td>
+<td><strong>BACK_SPACE</strong></td>
+</tr>
+<tr>
+<td>9</td>
+<td><strong>TAB</strong></td>
+</tr>
+<tr>
+<td>12</td>
+<td>CLEAR</td>
+</tr>
+<tr>
+<td>13</td>
+<td><strong>ENTER</strong></td>
+</tr>
+<tr>
+<td>14</td>
+<td>ENTER_SPECIAL</td>
+</tr>
+<tr>
+<td>16</td>
+<td>SHIFT</td>
+</tr>
+<tr>
+<td>17</td>
+<td>CONTROL</td>
+</tr>
+<tr>
+<td>18</td>
+<td>ALT</td>
+</tr>
+<tr>
+<td>19</td>
+<td>PAUSE</td>
+</tr>
+<tr>
+<td>20</td>
+<td><strong>CAPS_LOCK</strong></td>
+</tr>
+<tr>
+<td>21</td>
+<td>KANA</td>
+</tr>
+<tr>
+<td>22</td>
+<td>EISU</td>
+</tr>
+<tr>
+<td>23</td>
+<td>JUNJA</td>
+</tr>
+<tr>
+<td>24</td>
+<td>FINAL</td>
+</tr>
+<tr>
+<td>25</td>
+<td>HANJA</td>
+</tr>
+<tr>
+<td>27</td>
+<td><strong>ESCAPE</strong></td>
+</tr>
+<tr>
+<td>28</td>
+<td>CONVERT</td>
+</tr>
+<tr>
+<td>29</td>
+<td>NONCONVERT</td>
+</tr>
+<tr>
+<td>30</td>
+<td>ACCEPT</td>
+</tr>
+<tr>
+<td>31</td>
+<td>MODECHANGE</td>
+</tr>
+<tr>
+<td>32</td>
+<td><strong>SPACE</strong></td>
+</tr>
+<tr>
+<td>33</td>
+<td><strong>PAGE_UP</strong></td>
+</tr>
+<tr>
+<td>34</td>
+<td><strong>PAGE_DOWN</strong></td>
+</tr>
+<tr>
+<td>35</td>
+<td><strong>END</strong></td>
+</tr>
+<tr>
+<td>36</td>
+<td><strong>HOME</strong></td>
+</tr>
+<tr>
+<td>37</td>
+<td><strong>LEFT</strong></td>
+</tr>
+<tr>
+<td>38</td>
+<td><strong>UP</strong></td>
+</tr>
+<tr>
+<td>39</td>
+<td><strong>RIGHT</strong></td>
+</tr>
+<tr>
+<td>40</td>
+<td><strong>DOWN</strong></td>
+</tr>
+<tr>
+<td>41</td>
+<td>SELECT</td>
+</tr>
+<tr>
+<td>42</td>
+<td>PRINT</td>
+</tr>
+<tr>
+<td>43</td>
+<td>EXECUTE</td>
+</tr>
+<tr>
+<td>44</td>
+<td>PRINTSCREEN</td>
+</tr>
+<tr>
+<td>45</td>
+<td><strong>INSERT</strong></td>
+</tr>
+<tr>
+<td>46</td>
+<td><strong>DELETE</strong></td>
+</tr>
+<tr>
+<td>91</td>
+<td><strong>OS_KEY</strong> (Windows-Taste (Windows) oder Command-Taste (Mac))</td>
+</tr>
+<tr>
+<td>93</td>
+<td><strong>CONTEXT_MENU</strong> (Rechte Command-Taste unter Mac)</td>
+</tr>
+<tr>
+<td>95</td>
+<td>SLEEP</td>
+</tr>
+<tr>
+<td>96</td>
+<td><strong>NUMPAD0</strong></td>
+</tr>
+<tr>
+<td>97</td>
+<td><strong>NUMPAD1</strong></td>
+</tr>
+<tr>
+<td>98</td>
+<td><strong>NUMPAD2</strong></td>
+</tr>
+<tr>
+<td>99</td>
+<td><strong>NUMPAD3</strong></td>
+</tr>
+<tr>
+<td>100</td>
+<td><strong>NUMPAD4</strong></td>
+</tr>
+<tr>
+<td>101</td>
+<td><strong>NUMPAD5</strong></td>
+</tr>
+<tr>
+<td>102</td>
+<td><strong>NUMPAD6</strong></td>
+</tr>
+<tr>
+<td>103</td>
+<td><strong>NUMPAD7</strong></td>
+</tr>
+<tr>
+<td>104</td>
+<td><strong>NUMPAD8</strong></td>
+</tr>
+<tr>
+<td>105</td>
+<td><strong>NUMPAD9</strong></td>
+</tr>
+<tr>
+<td>106</td>
+<td><strong>NUMPAD *</strong></td>
+</tr>
+<tr>
+<td>107</td>
+<td><strong>NUMPAD +</strong></td>
+</tr>
+<tr>
+<td>108</td>
+<td>SEPERATOR</td>
+</tr>
+<tr>
+<td>109</td>
+<td><strong>NUMPAD -</strong></td>
+</tr>
+<tr>
+<td>110</td>
+<td><strong>NUMPAD .</strong></td>
+</tr>
+<tr>
+<td>111</td>
+<td><strong>NUMPAD /</strong></td>
+</tr>
+<tr>
+<td>144</td>
+<td>NUM_LOCK</td>
+</tr>
+<tr>
+<td>145</td>
+<td>SCROLL_LOCK</td>
+</tr>
+<tr>
+<td>146</td>
+<td>WIN_OEM_FJ_JISHO</td>
+</tr>
+<tr>
+<td>147</td>
+<td>WIN_OEM_FJ_MASSHOU</td>
+</tr>
+<tr>
+<td>148</td>
+<td>WIN_OEM_FJ_TOUROKU</td>
+</tr>
+<tr>
+<td>149</td>
+<td>WIN_OEM_FJ_LOYA</td>
+</tr>
+<tr>
+<td>150</td>
+<td>WIN_OEM_FJ_ROYA</td>
+</tr>
+<tr>
+<td>181</td>
+<td>VOLUME_MUTE</td>
+</tr>
+<tr>
+<td>182</td>
+<td>VOLUME_DOWN</td>
+</tr>
+<tr>
+<td>183</td>
+<td>VOLUME_UP</td>
+</tr>
+<tr>
+<td>224</td>
+<td>META</td>
+</tr>
+<tr>
+<td>225</td>
+<td>ALTGR</td>
+</tr>
+<tr>
+<td>227</td>
+<td>WIN_ICO_HELP</td>
+</tr>
+<tr>
+<td>228</td>
+<td>WIN_ICO_00</td>
+</tr>
+<tr>
+<td>230</td>
+<td>WIN_ICO_CLEAR</td>
+</tr>
+<tr>
+<td>233</td>
+<td>WIN_OEM_RESET</td>
+</tr>
+<tr>
+<td>234</td>
+<td>WIN_OEM_JUMP</td>
+</tr>
+<tr>
+<td>235</td>
+<td>WIN_OEM_PA1</td>
+</tr>
+<tr>
+<td>236</td>
+<td>WIN_OEM_PA2</td>
+</tr>
+<tr>
+<td>237</td>
+<td>WIN_OEM_PA3</td>
+</tr>
+<tr>
+<td>238</td>
+<td>WIN_OEM_WSCTRL</td>
+</tr>
+<tr>
+<td>239</td>
+<td>WIN_OEM_CUSEL</td>
+</tr>
+<tr>
+<td>240</td>
+<td>WIN_OEM_ATTN</td>
+</tr>
+<tr>
+<td>241</td>
+<td>WIN_OEM_FINISH</td>
+</tr>
+<tr>
+<td>242</td>
+<td>WIN_OEM_COPY</td>
+</tr>
+<tr>
+<td>243</td>
+<td>WIN_OEM_AUTO</td>
+</tr>
+<tr>
+<td>244</td>
+<td>WIN_OEM_ENLW</td>
+</tr>
+<tr>
+<td>245</td>
+<td>WIN_OEM_BACKTAB</td>
+</tr>
+<tr>
+<td>246</td>
+<td>ATTN</td>
+</tr>
+<tr>
+<td>247</td>
+<td>CRSEL</td>
+</tr>
+<tr>
+<td>248</td>
+<td>EXSEL</td>
+</tr>
+<tr>
+<td>249</td>
+<td>EREOF</td>
+</tr>
+<tr>
+<td>250</td>
+<td>PLAY</td>
+</tr>
+<tr>
+<td>251</td>
+<td>ZOOM</td>
+</tr>
+<tr>
+<td>253</td>
+<td>PA1</td>
+</tr>
+<tr>
+<td>254</td>
+<td>WIN_OEM_CLEAR</td>
+</tr>
+</tbody>
+</table>
+
+			</div>
+		</div>
+	</body>
+</html>

@@ -36,7 +36,7 @@ Setzt den Wert auf den Standardwert zurück.
 
 Attribute	| Typ | Beschreibung
 ------------|-----|---------------------
-**type:**	| string | Gibt den Datentyp des Config-Eintrags (in LowerCase) wieder.
-**value:**	| any | Gibt den gespeicherten Wert zurück und wandelt diesen - falls es sich um ein Objekt handelt - in einen JSON-konformen-String um.
+**type**	| string | Gibt den Datentyp des Config-Eintrags (in LowerCase) wieder.
+**value**	| any | Gibt den gespeicherten Wert zurück und wandelt diesen - falls es sich um ein Objekt handelt - in einen JSON-konformen-String um.
 
 

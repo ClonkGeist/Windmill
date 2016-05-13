@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Windmill Documentation - class _KeyBinding</title>
+		<link href="../../../windmillDocs.css" rel="stylesheet">
+		<link href="../../../prism.css" rel="stylesheet">
+		<meta charset="UTF-8">
+		<script>
+			//Windmillinterner Workaround: Da Windmill das Oeffnen externer Links sperrt (sodass diese in einem externen Browser geoffnet werden koennen)
+			//wird hier fuer Windmill das anders geloest.
+			if(navigator.userAgent.search(/\bwindmill\b/) != -1) {
+				document.addEventListener("DOMContentLoaded", function() {
+					let elements = document.getElementsByTagName("a");
+					for(var i = 0; i < elements.length; i++) {
+						elements[i].onclick = function(e) {
+							window.location.href = this.href;
+							e.preventDefault();
+						};
+					}
+				});
+			}
+			document.addEventListener("DOMContentLoaded", function() {
+				let code_elements = document.querySelectorAll("code");
+				for(let i = 0; i < code_elements.length; i++) {
+					let elm = code_elements[i];
+					if(elm.className.search("lang-fnpreview") != -1)
+						elm.parentNode.className += "lang-fnpreview";
+				}
+			});
+		</script>
+	</head>
+	<body>
+		<div id="header">
+			Windmill Documentation
+		</div>
+		<div id="wrapper">
+			<nav id="navigation">
+				<ul>
+					<li class="navigation-elm"><a href="../../_home/__head_de.html">Startseite</a></li><ul class="navigation-sublist">
+</ul>
+<li class="navigation-elm"><a href="../__head_de.html">Funktionalitäten</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../workenvironments/__head_de.html">Arbeitsumgebungen</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../workenvironments/saveWorkEnvironment_de.html">saveWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="../workenvironments/loadWorkEnvironment_de.html">loadWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="../workenvironments/getWorkEnvironments_de.html">getWorkEnvironments</a></li>
+<li class="navigation-elm"><a href="../workenvironments/getWorkEnvironmentByPath_de.html">getWorkEnvironmentByPath</a></li>
+<li class="navigation-elm"><a href="../workenvironments/createWorkEnvironment_de.html">createWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="../workenvironments/createNewWorkEnvironment_de.html">createNewWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="../workenvironments/class_WorkEnvironment_de.html">class WorkEnvironment</a></li>
+</ul>
+<li class="navigation-elm"><a href="../other/__head_de.html">Weitere Funktionen</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../other/showNotification_de.html">showNotification</a></li>
+</ul>
+<li class="navigation-elm"><a href="../modules/__head_de.html">Module</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../modules/readModuleInfo_de.html">readModuleInfo</a></li>
+<li class="navigation-elm"><a href="../modules/loadModules_de.html">loadModules</a></li>
+<li class="navigation-elm"><a href="../modules/getModule_de.html">getModule</a></li>
+<li class="navigation-elm"><a href="../modules/getModulesIdByName_de.html">getModulesIdByName</a></li>
+<li class="navigation-elm"><a href="../modules/getModulesByName_de.html">getModulesByName</a></li>
+<li class="navigation-elm"><a href="../modules/getModuleDef_de.html">getModuleDef</a></li>
+<li class="navigation-elm"><a href="../modules/getModuleDefByPrefix_de.html">getModuleDefByPrefix</a></li>
+<li class="navigation-elm"><a href="../modules/getModuleByName_de.html">getModuleByName</a></li>
+<li class="navigation-elm"><a href="../modules/createModule_de.html">createModule</a></li>
+<li class="navigation-elm"><a href="../modules/class__module_de.html">class _module</a></li>
+</ul>
+<li class="navigation-elm"><a href="../localization/__head_de.html">Lokalisierung</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../localization/readLanguageInfo_de.html">readLanguageInfo</a></li>
+<li class="navigation-elm"><a href="../localization/localizeModule_de.html">localizeModule</a></li>
+<li class="navigation-elm"><a href="../localization/Locale_de.html">Locale</a></li>
+<li class="navigation-elm"><a href="../localization/initializeLanguage_de.html">initializeLanguage</a></li>
+</ul>
+<li class="navigation-elm"><a href="__head_de.html">Key Bindings</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="_keybinderGetKeysByIdentifier_de.html">_keybinderGetKeysByIdentifier</a></li>
+<li class="navigation-elm"><a href="_keybinderCheckKeyBind_de.html">_keybinderCheckKeyBind</a></li>
+<li class="navigation-elm"><a href="saveKeyBindings_de.html">saveKeyBindings</a></li>
+<li class="navigation-elm"><a href="loadKeyBindings_de.html">loadKeyBindings</a></li>
+<li class="navigation-elm"><a href="getKeyCodeIdentifier_de.html">getKeyCodeIdentifier</a></li>
+<li class="navigation-elm"><a href="getKeyBindingObjById_de.html">getKeyBindingObjById</a></li>
+<li class="navigation-elm"><a href="class__KeyBinding_de.html">class _KeyBinding</a></li>
+<li class="navigation-elm"><a href="bindKeyToObj_de.html">bindKeyToObj</a></li>
+</ul>
+<li class="navigation-elm"><a href="../dialogs/__head_de.html">Dialoge</a></li><ul class="navigation-sublist">
+</ul>
+<li class="navigation-elm"><a href="../config/__head_de.html">config.js</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../config/setConfigData_de.html">setConfigData</a></li>
+<li class="navigation-elm"><a href="../config/setClonkPath_de.html">setClonkPath</a></li>
+<li class="navigation-elm"><a href="../config/sc.clonkpath_de.html">_sc.clonkpath</a></li>
+<li class="navigation-elm"><a href="../config/saveConfig_de.html">saveConfig</a></li>
+<li class="navigation-elm"><a href="../config/loadConfig_de.html">loadConfig</a></li>
+<li class="navigation-elm"><a href="../config/getConfig_de.html">getConfig</a></li>
+<li class="navigation-elm"><a href="../config/getConfigData_de.html">getConfigData</a></li>
+<li class="navigation-elm"><a href="../config/class_ConfigEntry_de.html">class ConfigEntry</a></li>
+<li class="navigation-elm"><a href="../config/addConfigString_de.html">addConfigString</a></li>
+</ul>
+</ul>
+<li class="navigation-elm"><a href="../../externalapplications/__head_de.html">Externe Anwendungen</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../externalapplications/class_ExtApplication_de.html">class ExtApplication</a></li>
+</ul>
+<li class="navigation-elm"><a href="../../ctypes/__head_de.html">CTypes / Windmill Interface</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../ctypes/wmIProcess_de.html">wmIProcess</a></li>
+<li class="navigation-elm"><a href="../../ctypes/WindmillInterface_de.html">Windmill Interface</a></li>
+</ul>
+
+				</ul>
+			</nav>
+			<div id="content">
+				<h1 id="class-_keybinding">class _KeyBinding</h1>
+<pre><code class="lang-fnpreview"><span class="token keyword" >constructor</span><span class="token fnname" > _KeyBinding</span><span class="token punctuation" >(</span><span class="token datatype" >string</span><span class="token punctuation" >/</span><span class="token datatype" >object</span> id<span class="token punctuation" >,</span> <span class="token datatype" >string</span> dks<span class="token punctuation" >,</span> <span class="token datatype" >function</span> exec<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >int</span> ct<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >string</span> pfx<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >object</span> opt<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+<span class="token keyword" >constructor</span><span class="token fnname" > KeyBinding</span><span class="token punctuation" >(</span><span class="token datatype" >string</span><span class="token punctuation" >/</span><span class="token datatype" >object</span> id<span class="token punctuation" >,</span> <span class="token datatype" >string</span> dks<span class="token punctuation" >,</span> <span class="token datatype" >function</span> exec<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >int</span> ct<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >string</span> pfx<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >object</span> opt<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<ul>
+<li><strong>id</strong>:<br>Eindeutige ID des KeyBindings. Statt einer id kann hier ein Objekt übergeben werden, dass die Werte der o.g. Parameter enthält. Die Benennung der Eigenschaften ist dabei (mit Ausnahme von <code>opt</code>, dessen Eigenschaften einfach direkt mit angegeben werden können) gleich mit den Parametern.</li>
+<li><strong>dks:</strong><br>Standard Tastenkombination des KeyBindings.</li>
+<li><strong>exec:</strong><br>Funktion die ausgeführt werden soll, wenn die Tastenkombination auf dem jeweiligen Objekt gedrückt wird.</li>
+<li><strong>ct:</strong><br>Gibt an, was für ein KeyBoard-Event genutzt werden soll. Angegeben werden können <code>KB_Call_Down</code> (0), <code>KB_Call_Up</code> (1) und <code>KB_Call_Press</code> (2) die für ihre entsprechenden Gegenstücke (<code>keydown</code>, <code>keyup</code> und <code>keypress</code>) stehen. Da das <code>keypress</code>-Event vom Browser anders verabeitet wird als das <code>keydown</code>- und das <code>keyup</code>-Event, ist davon abzuraten <code>KB_Call_Press</code> zu verwenden. Standardwert ist <code>KB_Call_Down</code>.</li>
+<li><strong>pfx:</strong><br>Lokalisierungspräfix des jeweiligen KeyBindings. Ist auch zur Zuweisung der Tastenkombination wichtig, gibt also an welchem Modul das KeyBinding gehört.</li>
+<li><strong>options:</strong><br>Weitere Optionen. (Aktuell gibt es keine weiteren Optionen)</li>
+</ul>
+<pre><code class="lang-fnpreview"><span class="token datatype" >string</span><span class="token fnname" > getIdentifier</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Gibt den Identifier des KeyBindings zurück. Dieser enthält das Format <code>{LPX}_{ID}</code>, wobei {LPX} für den jeweiligen Lokalisierungspräfix steht und {ID} für die jeweilige ID steht.</p>
+<h2 id="attribute">Attribute</h2>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Typ</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>identifier</strong></td>
+<td>string</td>
+<td>Eindeutige ID des KeyBindings.</td>
+</tr>
+<tr>
+<td><strong>prefix</strong></td>
+<td>string</td>
+<td>Lokalisierungspräfix des jeweiligen KeyBindings. Ist auch zur Zuweisung der Tastenkombination wichtig, gibt also an welchem Modul das KeyBinding gehört.</td>
+</tr>
+<tr>
+<td><strong>calltype</strong></td>
+<td>int</td>
+<td>Gibt an, was für ein KeyBoard-Event genutzt werden soll. (sieh Konstruktor für weitere Informationen)</td>
+</tr>
+<tr>
+<td><strong>defaultKeys</strong></td>
+<td>string</td>
+<td>Standard Tastenkombination des KeyBindings.</td>
+</tr>
+<tr>
+<td><strong>exec</strong></td>
+<td>function</td>
+<td>Funktion die ausgeführt werden soll, wenn die Tastenkombination auf dem jeweiligen Objekt gedrückt wird.</td>
+</tr>
+<tr>
+<td><strong>options</strong></td>
+<td>object</td>
+<td>Weitere Optionen. (Aktuell gibt es keine weiteren Optionen)</td>
+</tr>
+</tbody>
+</table>
+
+			</div>
+		</div>
+	</body>
+</html>
