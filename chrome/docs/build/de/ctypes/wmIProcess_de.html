@@ -38,6 +38,17 @@
 				<ul>
 					<li class="navigation-elm"><a href="../_home/__head_de.html">Startseite</a></li><ul class="navigation-sublist">
 </ul>
+<li class="navigation-elm"><a href="../libraries/__head_de.html">Libraries</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../libraries/c4group/__head_de.html">C4Group</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../libraries/c4group/readC4GroupFile_de.html"> readC4GroupFile</a></li>
+<li class="navigation-elm"><a href="../libraries/c4group/readC4GroupBytes_de.html"> readC4GroupBytes</a></li>
+<li class="navigation-elm"><a href="../libraries/c4group/getGroupHeader_de.html"> getGroupHeader</a></li>
+<li class="navigation-elm"><a href="../libraries/c4group/getGroupContent_de.html"> getGroupContent</a></li>
+<li class="navigation-elm"><a href="../libraries/c4group/C4GroupHead_de.html"> C4GroupHead</a></li>
+<li class="navigation-elm"><a href="../libraries/c4group/C4GroupFile_de.html"> C4GroupFile</a></li>
+<li class="navigation-elm"><a href="../libraries/c4group/C4GroupEntryCore_de.html"> C4GroupEntryCore</a></li>
+</ul>
+</ul>
 <li class="navigation-elm"><a href="../functionalities/__head_de.html">Funktionalitäten</a></li><ul class="navigation-sublist">
 <li class="navigation-elm"><a href="../functionalities/workenvironments/__head_de.html">Arbeitsumgebungen</a></li><ul class="navigation-sublist">
 <li class="navigation-elm"><a href="../functionalities/workenvironments/saveWorkEnvironment_de.html">saveWorkEnvironment</a></li>
@@ -181,7 +192,7 @@
 <li><strong>[opt] onProcessClosed:</strong><br>Callback-Funktion die an das <code>closed</code> Event gebindet wird. Weitere Informationen in der Event-Liste.</li>
 <li><strong>[opt] outputListener:</strong><br>Callback-Funktion die an das <code>stdout</code> Event gebindet wird. Weitere Informationen in der Event-Liste.</li>
 </ul>
-<pre><code class="lang-fnpreview"><span class="token datatype" >Promise</span><span class="token fnname" > createPromise</span><span class="token punctuation" >(</span><span class="token datatype" >array</span> args<span class="token punctuation" >,</span> <span class="token datatype" >int</span> flags<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >function</span> onProcessClosed<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >function</span> outputListener<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+<pre><code class="lang-fnpreview"><span class="token datatype" >Promise</span><span class="token fnname" > createPromise</span><span class="token punctuation" >(</span>array args<span class="token punctuation" >,</span> <span class="token datatype" >int</span> flags<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >function</span> onProcessClosed<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >function</span> outputListener<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 </code></pre>
 <p>Erstellt die Prozessinstanz mit den übergebenen Argumenten und Flags und gibt einen Promise zurück, der gelöst wird sobald der Prozess geendet hat. Dabei wird die komplette Ausgabe des Prozesses einschließlich des ExitCodes und der wmIProcess-Instanz übergeben.</p>
 <pre><code class="lang-javascript"><span class="token keyword" >let</span> process <span class="token operator" >=</span> _ws<span class="token punctuation" >.</span><span class="token function" >pr</span><span class="token punctuation" >(</span><span class="token function" >getC4GroupPath</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
