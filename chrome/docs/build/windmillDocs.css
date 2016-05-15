@@ -104,7 +104,7 @@ pre {
 }*/
 code.lang-fnpreview .token.datatype {
   color: #1f77d6;
-  font-weight: bold; }
+  /*font-weight: bold;*/ }
 
 code.lang-fnpreview .token.optional {
   color: #adadad; }
@@ -117,7 +117,7 @@ code.lang-fnpreview .token.eventname {
   color: #a0a300; }
 
 code.lang-fnpreview .token.fnname {
-  font-weight: bold; }
+  /*font-weight: bold;*/ }
 
 code.lang-fnpreview .token.punctuation {
   color: #777; }

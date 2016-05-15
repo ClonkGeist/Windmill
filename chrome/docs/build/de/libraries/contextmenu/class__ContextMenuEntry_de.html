@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Windmill Documentation -  class ColorPicker</title>
+		<title>Windmill Documentation - class _ContextMenuEntry</title>
 		<link href="../../../windmillDocs.css" rel="stylesheet">
 		<link href="../../../prism.css" rel="stylesheet">
 		<meta charset="UTF-8">
@@ -39,13 +39,13 @@
 					<li class="navigation-elm"><a href="../../_home/__head_de.html">Startseite</a></li><ul class="navigation-sublist">
 </ul>
 <li class="navigation-elm"><a href="../__head_de.html">Libraries</a></li><ul class="navigation-sublist">
-<li class="navigation-elm"><a href="../contextmenu/__head_de.html"> Kontextmenüs</a></li><ul class="navigation-sublist">
-<li class="navigation-elm"><a href="../contextmenu/class__ContextMenu_de.html">class _ContextMenu</a></li>
-<li class="navigation-elm"><a href="../contextmenu/class__ContextMenuEntry_de.html">class _ContextMenuEntry</a></li>
+<li class="navigation-elm"><a href="__head_de.html"> Kontextmenüs</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="class__ContextMenu_de.html">class _ContextMenu</a></li>
+<li class="navigation-elm"><a href="class__ContextMenuEntry_de.html">class _ContextMenuEntry</a></li>
 </ul>
-<li class="navigation-elm"><a href="__head_de.html"> Color Picker</a></li><ul class="navigation-sublist">
-<li class="navigation-elm"><a href="createColorPicker_de.html"> createColorPicker</a></li>
-<li class="navigation-elm"><a href="class_ColorPicker_de.html"> class ColorPicker</a></li>
+<li class="navigation-elm"><a href="../colorpicker/__head_de.html"> Color Picker</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../colorpicker/createColorPicker_de.html"> createColorPicker</a></li>
+<li class="navigation-elm"><a href="../colorpicker/class_ColorPicker_de.html"> class ColorPicker</a></li>
 </ul>
 <li class="navigation-elm"><a href="../c4group/__head_de.html">C4Group</a></li><ul class="navigation-sublist">
 <li class="navigation-elm"><a href="../c4group/readC4GroupFile_de.html"> readC4GroupFile</a></li>
@@ -123,78 +123,106 @@
 				</ul>
 			</nav>
 			<div id="content">
-				<h1 id="class-colorpicker">class ColorPicker</h1>
-<pre><code class="lang-fnpreview"><span class="token keyword" >constructor</span><span class="token fnname" > ColorPicker</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+				<h1 id="class-_contextmenuentry">class _ContextMenuEntry</h1>
+<pre><code class="lang-fnpreview"><span class="token keyword" >constructor</span><span class="token fnname" > _ContextMenuEntry</span><span class="token punctuation" >(</span><span class="token datatype" >_ContextMenu</span> topMenu<span class="token punctuation" >,</span> <span class="token datatype" >string</span> label<span class="token punctuation" >,</span> <span class="token datatype" >int</span> id<span class="token punctuation" >,</span> <span class="token datatype" >function</span><span class="token punctuation" >/</span><span class="token datatype" >Generator</span> clickHandler<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >_ContextMenu</span> subMenu<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >string</span><span class="token punctuation" >/</span><span class="token datatype" >int</span> langpre<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >object</span> options<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+<span class="token keyword" >constructor</span><span class="token fnname" > ContextMenuEntry</span><span class="token punctuation" >(</span><span class="token datatype" >_ContextMenu</span> topMenu<span class="token punctuation" >,</span> <span class="token datatype" >string</span> label<span class="token punctuation" >,</span> <span class="token datatype" >int</span> id<span class="token punctuation" >,</span> <span class="token datatype" >function</span><span class="token punctuation" >/</span><span class="token datatype" >Generator</span> clickHandler<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >_ContextMenu</span> subMenu<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >string</span><span class="token punctuation" >/</span><span class="token datatype" >int</span> langpre<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >object</span> options<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 </code></pre>
-<p>Erzeugt eine <code>ColorPicker</code>-Instanz.</p>
-<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > fireOnChange</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
-</code></pre>
-<p>Führt den <code>change</code>-Callback aus.</p>
-<pre><code class="lang-fnpreview"><span class="token datatype" >int</span><span class="token fnname" > clamp</span><span class="token punctuation" >(</span><span class="token datatype" >int</span> v<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
-</code></pre>
-<p>Gibt den angegebenen Wert <code>v</code> zurück, falls dieser sich in dem Bereich 0-255 befindet. Ansonsten die entsprechend naheliegendste Grenze.</p>
-<pre><code class="lang-fnpreview"><span class="token datatype" >Array</span><span class="token punctuation" >&lt;</span><span class="token datatype" >int</span><span class="token punctuation" >></span><span class="token fnname" > getColor</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
-</code></pre>
-<p>Gibt den aktuell ausgewählten Farbwert als RGB-Werte in einem Array <code>[r, g, b]</code> aus.</p>
-<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > setColorRGB</span><span class="token punctuation" >(</span><span class="token datatype" >int</span> r<span class="token punctuation" >,</span> <span class="token datatype" >int</span> g<span class="token punctuation" >,</span> <span class="token datatype" >int</span> b<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
-</code></pre>
-<p>Setzt die aktuelle Auswahl auf den angegebenen RGB-Wert.</p>
-<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > setColorHSL</span><span class="token punctuation" >(</span><span class="token datatype" >int</span> h<span class="token punctuation" >,</span> <span class="token datatype" >int</span> s<span class="token punctuation" >,</span> <span class="token datatype" >int</span> l<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
-</code></pre>
-<p>Setzt die aktuelle Auswahl auf den angegebenen HSL-Wert</p>
-<pre><code class="lang-fnpreview"><span class="token datatype" >ColorPicker</span><span class="token fnname" > build</span><span class="token punctuation" >(</span><span class="token datatype" >HTMLElement</span><span class="token punctuation" >/</span><span class="token datatype" >XULElement</span><span class="token punctuation" >/</span><span class="token datatype" >jQueryObject</span> cont<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >bool</span> fA<span class="token punctuation" >)</span> <span class="token punctuation" >{</span>
-</code></pre>
-<p>Erstellt in dem angegebenen Container einen Color Picker.</p>
+<p>Erzeugt eine <code>_ContextMenuEntry</code>-Instanz mit den angegebenen Werten.</p>
 <ul>
-<li><strong>cont:</strong><br>Container-Element welches den Color Picker enthalten soll.</li>
-<li><strong>fA:</strong><br>Falls <code>true</code>, so lassen sich auch Alphawerte einstellen.</li>
+<li><strong>topMenu</strong>:<br>Eltern-Kontextmenü.</li>
+<li><strong>label:</strong><br>Label des Kontextmenüeintrages.</li>
+<li><strong>id:</strong><br>ID des Kontextmenüs. (Wird jedoch nicht genutzt, stattdessen wird ein globaler Zähler <code>CTX_MENUITEM_ID_COUNTER</code> verwendet.)</li>
+<li><strong>clickHandler:</strong><br>Funktion die ausgeführt wird, wenn der Kontextmenüeintrag geklickt wird.</li>
+<li><strong>subMenu:</strong><br>Eine <code>_ContextMenu</code>-Instanz, die angezeigt wird falls über den Kontextmenüeintrag gehovert wird.</li>
+<li><strong>langpre:</strong><br>Lokalisierungspräfix für das Label des Kontextmenüeintrages. Lokalisierungspräfix des aktuellen Moduls, falls nicht angegeben. Falls ein leerer String angegeben wird (&quot;&quot;) oder <code>-1</code> angegeben wird, werden Übersetzungen des Hauptfensters geladen.</li>
+<li><strong>options:</strong><br>Weitere Optionen:<ul>
+<li><strong>identifier:</strong><br>Ein beliebiger Identifier über den sich der Kontextmenüeintrag identifizieren lässt. Dieser wird zur Bestimmung der Sichtbarkeit des Kontextmenüeintrages verwendet.</li>
+<li><strong>iconsrc:</strong><br>Pfad zu einer Bilddatei die als Icon des Kontextmenüeintrages dient.</li>
 </ul>
-<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > updatePickArea</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</li>
+</ul>
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > addEntryToObject</span><span class="token punctuation" >(</span><span class="token datatype" >HTMLElement</span><span class="token punctuation" >/</span><span class="token datatype" >XULElement</span><span class="token punctuation" >/</span><span class="token datatype" >jQueryObject</span> obj<span class="token punctuation" >,</span> <span class="token datatype" >HTMLElement</span><span class="token punctuation" >/</span><span class="token datatype" >XULElement</span><span class="token punctuation" >/</span><span class="token datatype" >jQueryObject</span> target<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 </code></pre>
-<p>Aktualisiert die Darstellung des Farbauswahlbereiches auf den ausgewählten Farbwert.</p>
+<p>Fügt einen Menüeintrag in das angegebene Kontextmenü hinzu.</p>
+<ul>
+<li><strong>obj:</strong><br>Kontextmenü-Element, em der Menüeintrag hinzugefügt wird.</li>
+<li><strong>target:</strong><br>Ursprüngliches Zielobjekt des Kontextmenüs. (Das Element, auf das das Kontextmenü geöffnet worden ist.)</li>
+</ul>
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > hideMenu</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Versteckt (löscht) alle Untermenüs.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > lock</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Sperrt das gesamte Kontextmenü.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > unlock</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Entsperrt das gesamte Kontextmenü.</p>
 <h2 id="attribute">Attribute</h2>
-<p>Bei den Attributen handelt es sich um die Eigenschaften des Headers der C4Group-Dateien.</p>
 <table>
 <thead>
 <tr>
-<th>Name</th>
+<th>Attribute</th>
 <th>Typ</th>
 <th>Beschreibung</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>onchange</td>
-<td>function</td>
-<td>Callback der bei Veränderung aufgerufen wird. Der aktuell ausgewählte Farbwert wird dabei als ersten Parameter übergeben.</td>
+<td><strong>label</strong></td>
+<td>string</td>
+<td>Im Kontextmenüeintrag angezeigter lokalisierter Text.</td>
 </tr>
 <tr>
-<td>hasAlpha</td>
+<td><strong>id</strong></td>
+<td>int</td>
+<td>Eindeutige Nummer des Kontextmenüeintrages.</td>
+</tr>
+<tr>
+<td><strong>clickHandler</strong></td>
+<td>function/Generator</td>
+<td>Gibt den Click-Handler an, der aufgerufen wird wenn der Kontextmenüeintrag geklickt wird. Siehe Callbacks für weitere Informationen.</td>
+</tr>
+<tr>
+<td><strong>subMenu</strong></td>
+<td>_ContextMenu</td>
+<td>Gibt, falls vorhanden, das darunterliegende Kontextmenü an, das sich öffnet wenn über dem Kontextmenüeintrag gehovert wird.</td>
+</tr>
+<tr>
+<td><strong>topMenu</strong></td>
+<td>_ContextMenu</td>
+<td>Gibt das darüberliegende Kontextmenü (in dem sich der Kontextmenüeintrag befindet) an.</td>
+</tr>
+<tr>
+<td><strong>disabled</strong></td>
 <td>bool</td>
-<td>Gibt an, ob der Color Picker über eine Auswahl für den Alphakanal verfügt.</td>
+<td>Gibt an ob der Kontextmenüeintrag anklickbar ist. (Wird dennoch angezeigt)</td>
 </tr>
 <tr>
-<td>alpha</td>
-<td>int</td>
-<td>Der aktuell eingestellte Alphawert.</td>
+<td><strong>visible</strong></td>
+<td>bool</td>
+<td>Gibt an ob der Kontextmenüeintrag sichtbar ist.</td>
 </tr>
 <tr>
-<td>hue</td>
-<td>int</td>
-<td>Aktuell ausgewählter Farbwert des HSL-Farbraumes.</td>
+<td><strong>element</strong></td>
+<td>HTMLElement/XULElement</td>
+<td>Element des Kontextmenüeintrages.</td>
 </tr>
 <tr>
-<td>white</td>
-<td>int</td>
-<td>Entspricht dem umgekehrten Sättigungswert der aktuellen Farbauswahl. (1 = keine Sättigung, 0 = volle Sättigung) Dieser Wert wird nur zur Positionsbestimmung des Carets auf dem Color Picker verwendet.</td>
-</tr>
-<tr>
-<td>black</td>
-<td>int</td>
-<td>[!INFO]. Dieser Wert wird nur zur Positionsbestimmung des Carets auf dem Color Picker verwendet.</td>
+<td><strong>options</strong></td>
+<td>object</td>
+<td>Weitere Optionen. (Siehe Konstruktor für weitere Informationen)</td>
 </tr>
 </tbody>
 </table>
+<h2 id="callbacks">Callbacks</h2>
+<pre><code>this.clickHandler: function(HTMLElement/XULElement/jQueryObject target, HTMLElement/XULElement event_target, _ContextMenuEntry menuentry);
+this.clickHandler: function*(HTMLElement/XULElement/jQueryObject target, HTMLElement/XULElement event_target, _ContextMenuEntry menuentry);
+</code></pre><p>Wird aufgerufen, wenn der Kontextmenüeintrag geklickt wird. Statt einer normalen Funktion kann auch ein Generator angegeben werden. Ist dies der Fall, so passiert der Aufruf innerhalb eines Tasks, der das Kontextmenü solange sperrt (allerdings weiterhin anzeigt) bis der Task abgeschlossen worden ist.</p>
+<ul>
+<li><strong>target:</strong><br>Ursprüngliches Zielobjekt des Kontextmenüs. (Das Element, auf das das Kontextmenü geöffnet worden ist.)</li>
+<li><strong>event_target:</strong><br>Zielobjekt des Klick-Events.</li>
+<li><strong>menuentry:</strong><br><code>_ContextMenuEntry</code>-Instanz des Kontextmenüeintrages auf das geklickt worden ist.</li>
+</ul>
 
 			</div>
 		</div>

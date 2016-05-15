@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Windmill Documentation - class _ContextMenu</title>
+		<link href="../../../windmillDocs.css" rel="stylesheet">
+		<link href="../../../prism.css" rel="stylesheet">
+		<meta charset="UTF-8">
+		<script>
+			//Windmillinterner Workaround: Da Windmill das Oeffnen externer Links sperrt (sodass diese in einem externen Browser geoffnet werden koennen)
+			//wird hier fuer Windmill das anders geloest.
+			if(navigator.userAgent.search(/\bwindmill\b/) != -1) {
+				document.addEventListener("DOMContentLoaded", function() {
+					let elements = document.getElementsByTagName("a");
+					for(var i = 0; i < elements.length; i++) {
+						elements[i].onclick = function(e) {
+							window.location.href = this.href;
+							e.preventDefault();
+						};
+					}
+				});
+			}
+			document.addEventListener("DOMContentLoaded", function() {
+				let code_elements = document.querySelectorAll("code");
+				for(let i = 0; i < code_elements.length; i++) {
+					let elm = code_elements[i];
+					if(elm.className.search("lang-fnpreview") != -1)
+						elm.parentNode.className += "lang-fnpreview";
+				}
+			});
+		</script>
+	</head>
+	<body>
+		<div id="header">
+			Windmill Documentation
+		</div>
+		<div id="wrapper">
+			<nav id="navigation">
+				<ul>
+					<li class="navigation-elm"><a href="../../_home/__head_de.html">Startseite</a></li><ul class="navigation-sublist">
+</ul>
+<li class="navigation-elm"><a href="../__head_de.html">Libraries</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="__head_de.html"> Kontextmenüs</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="class__ContextMenu_de.html">class _ContextMenu</a></li>
+<li class="navigation-elm"><a href="class__ContextMenuEntry_de.html">class _ContextMenuEntry</a></li>
+</ul>
+<li class="navigation-elm"><a href="../colorpicker/__head_de.html"> Color Picker</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../colorpicker/createColorPicker_de.html"> createColorPicker</a></li>
+<li class="navigation-elm"><a href="../colorpicker/class_ColorPicker_de.html"> class ColorPicker</a></li>
+</ul>
+<li class="navigation-elm"><a href="../c4group/__head_de.html">C4Group</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../c4group/readC4GroupFile_de.html"> readC4GroupFile</a></li>
+<li class="navigation-elm"><a href="../c4group/readC4GroupBytes_de.html"> readC4GroupBytes</a></li>
+<li class="navigation-elm"><a href="../c4group/getGroupHeader_de.html"> getGroupHeader</a></li>
+<li class="navigation-elm"><a href="../c4group/getGroupContent_de.html"> getGroupContent</a></li>
+<li class="navigation-elm"><a href="../c4group/C4GroupHead_de.html"> C4GroupHead</a></li>
+<li class="navigation-elm"><a href="../c4group/C4GroupFile_de.html"> C4GroupFile</a></li>
+<li class="navigation-elm"><a href="../c4group/C4GroupEntryCore_de.html"> C4GroupEntryCore</a></li>
+</ul>
+</ul>
+<li class="navigation-elm"><a href="../../functionalities/__head_de.html">Funktionalitäten</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../functionalities/workenvironments/__head_de.html">Arbeitsumgebungen</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../functionalities/workenvironments/saveWorkEnvironment_de.html">saveWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="../../functionalities/workenvironments/loadWorkEnvironment_de.html">loadWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="../../functionalities/workenvironments/getWorkEnvironments_de.html">getWorkEnvironments</a></li>
+<li class="navigation-elm"><a href="../../functionalities/workenvironments/getWorkEnvironmentByPath_de.html">getWorkEnvironmentByPath</a></li>
+<li class="navigation-elm"><a href="../../functionalities/workenvironments/createWorkEnvironment_de.html">createWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="../../functionalities/workenvironments/createNewWorkEnvironment_de.html">createNewWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="../../functionalities/workenvironments/class_WorkEnvironment_de.html">class WorkEnvironment</a></li>
+</ul>
+<li class="navigation-elm"><a href="../../functionalities/other/__head_de.html">Weitere Funktionen</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../functionalities/other/showNotification_de.html">showNotification</a></li>
+</ul>
+<li class="navigation-elm"><a href="../../functionalities/modules/__head_de.html">Module</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../functionalities/modules/readModuleInfo_de.html">readModuleInfo</a></li>
+<li class="navigation-elm"><a href="../../functionalities/modules/loadModules_de.html">loadModules</a></li>
+<li class="navigation-elm"><a href="../../functionalities/modules/getModule_de.html">getModule</a></li>
+<li class="navigation-elm"><a href="../../functionalities/modules/getModulesIdByName_de.html">getModulesIdByName</a></li>
+<li class="navigation-elm"><a href="../../functionalities/modules/getModulesByName_de.html">getModulesByName</a></li>
+<li class="navigation-elm"><a href="../../functionalities/modules/getModuleDef_de.html">getModuleDef</a></li>
+<li class="navigation-elm"><a href="../../functionalities/modules/getModuleDefByPrefix_de.html">getModuleDefByPrefix</a></li>
+<li class="navigation-elm"><a href="../../functionalities/modules/getModuleByName_de.html">getModuleByName</a></li>
+<li class="navigation-elm"><a href="../../functionalities/modules/createModule_de.html">createModule</a></li>
+<li class="navigation-elm"><a href="../../functionalities/modules/class__module_de.html">class _module</a></li>
+</ul>
+<li class="navigation-elm"><a href="../../functionalities/localization/__head_de.html">Lokalisierung</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../functionalities/localization/readLanguageInfo_de.html">readLanguageInfo</a></li>
+<li class="navigation-elm"><a href="../../functionalities/localization/localizeModule_de.html">localizeModule</a></li>
+<li class="navigation-elm"><a href="../../functionalities/localization/Locale_de.html">Locale</a></li>
+<li class="navigation-elm"><a href="../../functionalities/localization/initializeLanguage_de.html">initializeLanguage</a></li>
+</ul>
+<li class="navigation-elm"><a href="../../functionalities/keybindings/__head_de.html">Key Bindings</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../functionalities/keybindings/_keybinderGetKeysByIdentifier_de.html">_keybinderGetKeysByIdentifier</a></li>
+<li class="navigation-elm"><a href="../../functionalities/keybindings/_keybinderCheckKeyBind_de.html">_keybinderCheckKeyBind</a></li>
+<li class="navigation-elm"><a href="../../functionalities/keybindings/saveKeyBindings_de.html">saveKeyBindings</a></li>
+<li class="navigation-elm"><a href="../../functionalities/keybindings/loadKeyBindings_de.html">loadKeyBindings</a></li>
+<li class="navigation-elm"><a href="../../functionalities/keybindings/getKeyCodeIdentifier_de.html">getKeyCodeIdentifier</a></li>
+<li class="navigation-elm"><a href="../../functionalities/keybindings/getKeyBindingObjById_de.html">getKeyBindingObjById</a></li>
+<li class="navigation-elm"><a href="../../functionalities/keybindings/class__KeyBinding_de.html">class _KeyBinding</a></li>
+<li class="navigation-elm"><a href="../../functionalities/keybindings/bindKeyToObj_de.html">bindKeyToObj</a></li>
+</ul>
+<li class="navigation-elm"><a href="../../functionalities/dialogs/__head_de.html">Dialoge</a></li><ul class="navigation-sublist">
+</ul>
+<li class="navigation-elm"><a href="../../functionalities/config/__head_de.html">config.js</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../functionalities/config/setConfigData_de.html">setConfigData</a></li>
+<li class="navigation-elm"><a href="../../functionalities/config/setClonkPath_de.html">setClonkPath</a></li>
+<li class="navigation-elm"><a href="../../functionalities/config/sc.clonkpath_de.html">_sc.clonkpath</a></li>
+<li class="navigation-elm"><a href="../../functionalities/config/saveConfig_de.html">saveConfig</a></li>
+<li class="navigation-elm"><a href="../../functionalities/config/loadConfig_de.html">loadConfig</a></li>
+<li class="navigation-elm"><a href="../../functionalities/config/getConfig_de.html">getConfig</a></li>
+<li class="navigation-elm"><a href="../../functionalities/config/getConfigData_de.html">getConfigData</a></li>
+<li class="navigation-elm"><a href="../../functionalities/config/class_ConfigEntry_de.html">class ConfigEntry</a></li>
+<li class="navigation-elm"><a href="../../functionalities/config/addConfigString_de.html">addConfigString</a></li>
+</ul>
+</ul>
+<li class="navigation-elm"><a href="../../externalapplications/__head_de.html">Externe Anwendungen</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../externalapplications/class_ExtApplication_de.html">class ExtApplication</a></li>
+</ul>
+<li class="navigation-elm"><a href="../../ctypes/__head_de.html">CTypes / Windmill Interface</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../ctypes/wmIProcess_de.html">wmIProcess</a></li>
+<li class="navigation-elm"><a href="../../ctypes/WindmillInterface_de.html">Windmill Interface</a></li>
+</ul>
+
+				</ul>
+			</nav>
+			<div id="content">
+				<h1 id="class-_contextmenu">class _ContextMenu</h1>
+<pre><code class="lang-fnpreview"><span class="token keyword" >constructor</span><span class="token fnname" > _ContextMenu</span><span class="token punctuation" >(</span><span class="token optional" >[opt]</span> <span class="token datatype" >function</span> onShowing<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >Array</span><span class="token punctuation" >&lt;</span><span class="token datatype" >Array</span><span class="token punctuation" >&lt;</span><span class="token datatype" >any</span><span class="token punctuation" >></span><span class="token punctuation" >/</span><span class="token datatype" >string</span><span class="token punctuation" >></span> entryarray<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> langpre<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >object</span> options<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+<span class="token keyword" >constructor</span><span class="token fnname" > ContextMenu</span><span class="token punctuation" >(</span><span class="token optional" >[opt]</span> <span class="token datatype" >function</span> onShowing<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >Array</span><span class="token punctuation" >&lt;</span><span class="token datatype" >Array</span><span class="token punctuation" >&lt;</span><span class="token datatype" >any</span><span class="token punctuation" >></span><span class="token punctuation" >/</span><span class="token datatype" >string</span><span class="token punctuation" >></span> entryarray<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> langpre<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >object</span> options<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Erzeugt eine <code>_ContextMenu</code>-Instanz mit den angegebenen Werten.</p>
+<ul>
+<li><strong>onShowing:</strong><br>Callback der aufgerufen wird, wenn das Menü geöffnet wird. Siehe <a href="#Callbacks">Callbacks</a> für weitere Informationen.</li>
+<li><strong>entryarray:</strong><br>Shorthand um Kontextmenüeinträge zu hinzuzufügen. Hierbei kann einfach ein Array übergeben werden, welches Arrays mit den Parametern der  <a href="#">addEntry</a>-Funktion enthält, die 1:1 an diese Funktion weitergegeben werden um Kontextmenüeinträge zu erzeugen. Alternativ kann auch der String &quot;seperator&quot; übergeben werden, um eine Trennlinie an der angegebenen Stelle einzufügen. Die Sortierung des Arrays entspricht der Sortierung des Kontextmenüs, d.h. dass der erste Kontextmenüeintrag im Array auch tatsächlich der erste Eintrag des Kontextmenüs ist.<br>Für ein genaues Beispiel, siehe <a href="#">Kontextmenü</a>.</li>
+<li><strong>langpre:</strong><br>Allgemeiner Lokalisierungspräfix für die Kontextmenüeinträge. (Kontextmenüeinträge können jedoch für sich selbst einen eigenen Lokalisierungspräfix einstellen) Falls nichts angegeben wird, gilt der Lokalisierungspräfix des aktuellen Moduls. Falls ein leerer String (&quot;&quot;) oder <code>-1</code> übergeben wird, werden die Übersetzungen vom Hauptfenster geladen.</li>
+<li><strong>options:</strong><br>Weitere Optionen.<ul>
+<li><strong>allowIcons:</strong><br>Falls <code>true</code>, so werden Icons im Kontextmenü angezeigt.</li>
+<li><strong>fnCheckVisibility:</strong><br>Callback zur Sichtbarkeitsbestimmung der Kontextmenüeinträge. Für weitere Informationen, siehe <a href="#Callbacks">Callbacks</a>.</li>
+<li><strong>post_opening_callback:</strong><br>Callback der aufgerufen wird, nachdem das Kontextmenü geöffnet worden ist. Für weitere Informationen, siehe <a href="#Callbacks">Callbacks</a>.</li>
+</ul>
+</li>
+</ul>
+<pre><code class="lang-fnpreview"><span class="token datatype" >any</span><span class="token fnname" > getOption</span><span class="token punctuation" >(</span><span class="token datatype" >string</span> identifier<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Gibt einen Wert der weiteren Optionen zurück.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > addEntry</span><span class="token punctuation" >(</span><span class="token datatype" >string</span> label<span class="token punctuation" >,</span> <span class="token datatype" >int</span> id<span class="token punctuation" >,</span> <span class="token datatype" >function</span><span class="token punctuation" >/</span><span class="token datatype" >Generator</span> clickHandler<span class="token punctuation" >,</span> <span class="token datatype" >_ContextMenu</span> subMenu<span class="token punctuation" >,</span> <span class="token datatype" >object</span> options<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Fügt einen Kontextmenüeintrag mit den angegebenen Werten hinzu.</p>
+<ul>
+<li><strong>label:</strong><br>Anzeigetext des Kontextmenüeintrages.</li>
+<li><strong>id:</strong><br>ID des Kontextmenüeintrages. (Dieser Wert wird aktuell nicht genutzt, stattdessen kommt ein globaler Zähler zum Einsatz.)</li>
+<li><strong>clickHandler:</strong><br>Gibt den Click-Handler an, der aufgerufen wird wenn der Kontextmenüeintrag geklickt wird. Siehe Callbacks im Eintrag <a href="#">class _ContextMenuEntry</a> für weitere Informationen.</li>
+<li><strong>subMenu:</strong><br>Kontextmenü das geöffnet wird, wenn über diesen Kontextmenüeintrag gehovert wird.</li>
+<li><strong>options:</strong><br>Weitere Optionen. Für genauere Angaben, siehe <a href="#">class _ContextMenuEntry</a>.</li>
+</ul>
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > clearEntries</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Entfernt alle Einträge der <code>Kontextmenü</code>-Instanz. (Nicht das angezeigte Kontextmenü)</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >bool</span><span class="token fnname" > addSeperator</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Fügt eine Trennlinie ganz unten in das Kontextmenü ein.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >_ContextMenu</span>Entry<span class="token fnname" > getEntryById</span><span class="token punctuation" >(</span><span class="token datatype" >int</span> id<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Gibt den Kontextmenüeintrag des Kontextmenüs mit der angegebenen ID zurück.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >_ContextMenu</span>Entry<span class="token fnname" > getEntryByIndex</span><span class="token punctuation" >(</span><span class="token datatype" >int</span> index<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Gibt den Kontextmenüeintrag des Kontextmenüs an der angegebenen Position zurück. Es ist dabei darauf aufzupassen, dass auch Trennlinien eine gesamte Position im Kontextmenü ausmachen, diese also miteinberechnet werden müssten.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > bindToObj</span><span class="token punctuation" >(</span><span class="token datatype" >HTMLElement</span><span class="token punctuation" >/</span><span class="token datatype" >XULElement</span><span class="token punctuation" >/</span><span class="token datatype" >jQueryObject</span> obj<span class="token punctuation" >,</span> <span class="token datatype" >bool</span> forced<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Bindet einen Eventhandler an das angegebene Objekt, welches das Kontextmenü bei Rechtsklick öffnet.</p>
+<ul>
+<li><strong>obj:</strong><br>Objekt an das der Eventhandler gebunden werden soll.</li>
+<li><strong>forced:</strong><br>Falls <code>true</code>, so gibt der Eventhandler <code>false</code> zurück was das Standardverhalten für das Eventhandling deaktiviert.</li>
+</ul>
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > showMenu</span><span class="token punctuation" >(</span><span class="token datatype" >int</span> x<span class="token punctuation" >,</span> <span class="token datatype" >int</span> y<span class="token punctuation" >,</span> <span class="token datatype" >HTMLElement</span><span class="token punctuation" >/</span><span class="token datatype" >XULElement</span><span class="token punctuation" >/</span><span class="token datatype" >jQueryObject</span> obj_by<span class="token punctuation" >,</span> <span class="token datatype" >int</span> screenX<span class="token punctuation" >,</span> <span class="token datatype" >int</span> screenY<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >HTMLElement</span><span class="token punctuation" >/</span><span class="token datatype" >XULElement</span><span class="token punctuation" >/</span><span class="token datatype" >jQueryObject</span> menuitem<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >_ContextMenu</span>Entry menuitemobj<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Zeigt das Kontextmenü an.</p>
+<ul>
+<li><strong>x:</strong><br>X-Position relativ zur oberen linken Ecke des Moduls, an der das Kontextmenü angezeigt wird. Dieser Wert wird nur für HTML-Module unterstützt.</li>
+<li><strong>y:</strong><br>Y-Position relativ zur oberen linken Ecke des Moduls, an der das Kontextmenü angezeigt wird. Dieser Wert wird nur für HTML-Module unterstützt.</li>
+<li><strong>obj_by:</strong><br>Ursprüngliches Zielobjekt des Kontextmenüs. (Das Element, auf das das Kontextmenü geöffnet worden ist.)</li>
+<li><strong>screenX:</strong><br>X-Bildschirmkoordinate, an der das Kontextmenü angezeigt wird. Dieser Wert wird nur für XUL-Module unterstützt.</li>
+<li><strong>screenY:</strong><br>Y-Bildschirmkoordinate, an der das Kontextmenü angezeigt wird. Dieser Wert wird nur für XUL-Module unterstützt.</li>
+<li><strong>menuitem:</strong><br>Nur nötig, falls es sich um ein Untermenü handelt. Das Element des Kontextmenüeintrages, dem dieses Untermenü gehört.</li>
+<li><strong>menuitemobj:</strong><br>Nur nötig, falls es sich um ein Untermenü handelt. Die <code>_ContextMenuEntry</code>-Instanz, dem dieses Untermenü gehört.</li>
+</ul>
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > hideMenu</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Schließt das Kontextmenü einschließlich aller untergeordneten Kontextmenüs.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > lock</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Sperrt das gesamte Kontextmenü.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > unlock</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Entsperrt das gesamte Kontextmenü.</p>
+<h2 id="attribute">Attribute</h2>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Typ</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>entries</strong></td>
+<td>Array&lt;_ContextMenuEntry&gt;</td>
+<td>Array, das alle Kontextmenüeinträge in Anzeigereihenfolge enthält.</td>
+</tr>
+<tr>
+<td><strong>showing</strong></td>
+<td>function</td>
+<td>Callback (onShowing) der aufgerufen wird, wenn das Menü geöffnet wird. Siehe <a href="#Callbacks">Callbacks</a> für weitere Informationen.</td>
+</tr>
+<tr>
+<td><strong>langpre</strong></td>
+<td>string/int</td>
+<td>Allgemeiner Lokalisierungspräfix für die Kontextmenüeinträge. (Kontextmenüeinträge können jedoch für sich selbst einen eigenen Lokalisierungspräfix einstellen) Falls nichts angegeben wird, gilt der Lokalisierungspräfix des aktuellen Moduls. Falls ein leerer String (&quot;&quot;) oder <code>-1</code> übergeben wird, werden die Übersetzungen vom Hauptfenster geladen.</td>
+</tr>
+<tr>
+<td><strong>topMenu</strong></td>
+<td>_ContextMenu</td>
+<td>Übergeordnetes Kontextmenü.</td>
+</tr>
+<tr>
+<td><strong>opened_by</strong></td>
+<td>HTMLElement/XULElement/jQueryObject</td>
+<td>Ursprüngliches Zielobjekt des Kontextmenüs. (Das Element, auf das das Kontextmenü geöffnet worden ist.)</td>
+</tr>
+<tr>
+<td><strong>element</strong></td>
+<td>HTMLElement/XULElement</td>
+<td>Hauptelement des Kontextmenüs.</td>
+</tr>
+<tr>
+<td><strong>body</strong></td>
+<td>XULElement</td>
+<td>Wrapperelement des Kontextmenüs. Nur für XUL-Module. (Die <code>element</code>-Eigenschaft entspricht hierbei dem darüberliegenden <code>panel</code>-Element, welches die Kontextmenüeinträge nicht auf erster Ebene darunter enthält.)</td>
+</tr>
+<tr>
+<td><strong>locked</strong></td>
+<td>bool</td>
+<td>Gibt an ob das Menü gesperrt ist.</td>
+</tr>
+<tr>
+<td><strong>direction</strong></td>
+<td>int</td>
+<td>Richtung in die das Kontextmenü geöffnet wurde. Dieser Wert wird zur Berechnung der Positionen neuer Untermenüs verwendet und wird automatisch gesetzt.</td>
+</tr>
+<tr>
+<td><strong>options</strong></td>
+<td>object</td>
+<td>Weitere Optionen. Siehe Konstruktor für weitere Informationen.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="callbacks">Callbacks</h2>
+<pre><code class="lang-fnpreview"><span class="token eventname" >this.options.fnCheckVisibility</span>:<span class="token fnname" > function</span><span class="token punctuation" >(</span><span class="token datatype" >HTMLElement</span><span class="token punctuation" >/</span><span class="token datatype" >XULElement</span><span class="token punctuation" >/</span><span class="token datatype" >jQueryObject</span> target<span class="token punctuation" >,</span> <span class="token datatype" >any</span> identifier<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Wird bei Hinzufügen von Kontextmenüeinträgen aufgerufen und dient zur Steuerung der Sichtbarkeit dieser. Zur Identifizierung wird ein Identifier mitgeliefert, der sich für die Kontextmenüeinträge festlegen lässt. Als Rückgabewert der Funktion wird ein Integer erwartet, der angibt, ob das Element normal angezeigt werden soll (0), deaktiviert/nicht klickbar geschaltet werden soll (1, der Eintrag wird auch ausgegraut angezeigt) oder ob das Element komplett unsichtbar geschalten werden soll. (2)</p>
+<ul>
+<li><strong>target:</strong><br>Ursprüngliches Zielobjekt des Kontextmenüs. (Das Element, auf das das Kontextmenü geöffnet worden ist.)</li>
+<li><strong>identifier:</strong><br>Identifier des Kontextmenüeintrages.</li>
+</ul>
+<pre><code class="lang-fnpreview"><span class="token eventname" >onShowing</span>:<span class="token fnname" > function</span><span class="token punctuation" >(</span><span class="token datatype" >HTMLElement</span><span class="token punctuation" >/</span><span class="token datatype" >XULElement</span><span class="token punctuation" >/</span><span class="token datatype" >jQueryObject</span> obj_by<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Wird kurz vor der Erstellung des Menüs aufgerufen.</p>
+<ul>
+<li><strong>obj_by:</strong><br>Ursprüngliches Zielobjekt des Kontextmenüs. (Das Element, auf das das Kontextmenü geöffnet worden ist.)</li>
+</ul>
+<pre><code class="lang-fnpreview"><span class="token eventname" >this.options.post_opening_callback</span>:<span class="token fnname" > function</span><span class="token punctuation" >(</span><span class="token datatype" >HTMLElement</span><span class="token punctuation" >/</span><span class="token datatype" >XULElement</span><span class="token punctuation" >/</span><span class="token datatype" >jQueryObject</span> obj_by<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Wird kurz nachdem das Menü erstellt worden ist, aufgerufen.</p>
+<ul>
+<li><strong>obj_by:</strong><br>Ursprüngliches Zielobjekt des Kontextmenüs. (Das Element, auf das das Kontextmenü geöffnet worden ist.)</li>
+</ul>
+
+			</div>
+		</div>
+	</body>
+</html>

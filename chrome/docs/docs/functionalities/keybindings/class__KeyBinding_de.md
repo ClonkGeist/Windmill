@@ -30,7 +30,7 @@ Gibt den Identifier des KeyBindings zurück. Dieser enthält das Format ```{LPX}
 |-----------|-----|--------------|
 | **identifier** | string | Eindeutige ID des KeyBindings. |
 | **prefix**	| string | Lokalisierungspräfix des jeweiligen KeyBindings. Ist auch zur Zuweisung der Tastenkombination wichtig, gibt also an welchem Modul das KeyBinding gehört. |
-| **calltype** | int | Gibt an, was für ein KeyBoard-Event genutzt werden soll. (sieh Konstruktor für weitere Informationen) |
+| **calltype** | int | Gibt an, was für ein KeyBoard-Event genutzt werden soll. (Siehe Konstruktor für weitere Informationen) |
 | **defaultKeys** | string | Standard Tastenkombination des KeyBindings. |
 | **exec** | function | Funktion die ausgeführt werden soll, wenn die Tastenkombination auf dem jeweiligen Objekt gedrückt wird. |
 | **options** | object | Weitere Optionen. (Aktuell gibt es keine weiteren Optionen) |
