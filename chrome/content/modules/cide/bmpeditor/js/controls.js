@@ -6,8 +6,7 @@
 */
 
 
-var selectedMode, inMode, a_Mode,
-	uiRectDragged
+var selectedMode, inMode, a_Mode
 
 const
 	MODIFIER_CTRL = 1,
@@ -23,12 +22,10 @@ function initCtrls() {
 			return
 		
 		inMode = true
+		let rect = this.getBoundingClientRect()
 		
-		var x = e.clientX - this.offsetLeft,
-			y = e.clientY - this.offsetTop
-		
-		// convert screen pixels to textures pixels (includes zoom)
-		var pos = a_S.screenToTexture(x, y)
+		var x = e.clientX - rect.left,
+			y = e.clientY - rect.top;
 		
 		var [x, y] = a_S.screenToTexture(x, y)
 		a_Mode = new selectedMode(0, a_S, x, y)
@@ -40,10 +37,10 @@ function initCtrls() {
 		if(!inMode || $(".color-matching-wizard.visible2").get(0))
 			return
 		
-		let cvswrppr = $(".canvas-wrapper").get(0)
+		let rect = $(".canvas-wrapper").get(0).getBoundingClientRect()
 		
-		var x = e.clientX - cvswrppr.offsetLeft,
-			y = e.clientY - cvswrppr.offsetTop
+		var x = e.clientX - rect.left,
+			y = e.clientY - rect.top;
 		
 		var [x, y] = a_S.screenToTexture(x, y)
 		a_Mode.onMousemove(x, y, a_S, getEventModifiers(e))
@@ -53,11 +50,12 @@ function initCtrls() {
 		if(!inMode || e.which !== 1 ||  $(".color-matching-wizard.visible2").get(0))
 			return
 		
-		let cvswrppr = $(".canvas-wrapper").get(0)
+		let rect = $(".canvas-wrapper").get(0).getBoundingClientRect()
 		
-		var x = e.clientX - cvswrppr.offsetLeft,
-			y = e.clientY - cvswrppr.offsetTop
+		var x = e.clientX - rect.left,
+			y = e.clientY - rect.top;
 		
+		var [x, y] = a_S.screenToTexture(x, y)
 		a_Mode.onMouseup(x, y, a_S, getEventModifiers(e))
 		
 		inMode = false
@@ -86,6 +84,10 @@ function initCtrls() {
 	
 	$("#md_circle").click(function() {
 		setSelMode(Mode_Draw_Circle)
+	})
+	
+	$("#md_getclr").click(function() {
+		setSelMode(Mode_Eyedropper)
 	})
 }
 
@@ -154,15 +156,14 @@ class Mode_Draw_Shape extends DefaultMode {
 	
 	constructor(op_id, scene, x, y) {
 		super(op_id, scene)
-		this.diameter = 1
-		this.shape = new scene.selShape(this.diameter)
 		
-		scene.uploadBrush(this.shape)
-		
-		this.shape.setCenterAt()
+		scene.uploadBrush()
+		this.shape = new Shape(sceneMeta[activeId].brushData.size)
 		
 		this.lastX = x
 		this.lastY = y
+		
+		//this.color = scene.getSelRGB()
 		
 		let color = getCurrentRGB(activeId)
 		if(color === null)
@@ -185,6 +186,9 @@ class Mode_Draw_Shape extends DefaultMode {
 	
 	onMousemove(x = 0, y = 0, scene, modifier) {
 		
+		if(modifier & MODIFIER_SHIFT)
+			return
+		
 		let t = this.worker
 				
 		this.scene.shaderType = SHADER_TYPE_BACKBUFFER
@@ -199,6 +203,7 @@ class Mode_Draw_Shape extends DefaultMode {
 	}
 	
 	onMouseup(x = 0, y = 0, scene, modifier) {
+		this.onMousemove(x, y, scene, 0)
 		this.scene.combineIntoSource()
 	}
 }
@@ -347,7 +352,8 @@ class Mode_Draw_Circle extends DefaultMode {
 
 class Shape {
 	
-	constructor() {
+	constructor(size = 1) {
+		this.rect = new Rect(0, 0, size, size)
 	}
 	
 	isShape() {

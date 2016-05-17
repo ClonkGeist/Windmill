@@ -192,18 +192,18 @@ function showMasterServerGames(info) {
 				clone.addClass("league");
 
 			if(clone.hasClass("league"))
-				clone.find(".ref-icons").append('<img src="chrome://windmill/content/img/showgames/showgames-league.png" />');
+				clone.find(".ref-icons").append('<img src="chrome://windmill/content/img/showgames_league.png" />');
 			if(clone.hasClass("password"))
-				clone.find(".ref-icons").append('<img src="chrome://windmill/content/img/showgames/showgames-password.png" />');
+				clone.find(".ref-icons").append('<img src="chrome://windmill/content/img/showgames_password.png" />');
 
 			if(clone.hasClass("running")) {
 				if(clone.hasClass("runtimejoin"))
-					clone.find(".ref-icons").append('<img src="chrome://windmill/content/img/showgames/showgames-runtimejoin.png" />');
+					clone.find(".ref-icons").append('<img src="chrome://windmill/content/img/showgames_runtimejoin.png" />');
 
-				clone.find(".ref-icons").append('<img src="chrome://windmill/content/img/showgames/showgames-running.png" />');
+				clone.find(".ref-icons").append('<img src="chrome://windmill/content/img/showgames_running.png" />');
 			}
 			else
-				clone.find(".ref-icons").append('<img src="chrome://windmill/content/img/showgames/showgames-lobby.png" />');
+				clone.find(".ref-icons").append('<img src="chrome://windmill/content/img/showgames_lobby.png" />');
 
 			clone.find(".ref-titleimage").attr("src", "https://clonkspot.org/images/games/Title.png/"+ref.Scenario[0].Filename.replace(/\\/g, "/")+"?hash="+ref.Scenario[0].FileCRC);
 			clone.find(".ref-title").html(ref.Title);

@@ -34,10 +34,8 @@ function createTreeElement(tree, label, container, open, img, filename, special,
 	else
 		filename = '';
 	
-	let classes = options.classes || "";
-
 	$(tree).append(`<li id="treeelm-${TREE_ELM_ID}" tabindex="0" name="${label.toLowerCase()}" data-index='${options.index}'
-		class="treeobj treeelm${container?' treecontainer':''} ${special} ${classes}" xmlns="http://www.w3.org/1999/xhtml"
+		class="treeobj treeelm${container?' treecontainer':''} ${special}" xmlns="http://www.w3.org/1999/xhtml"
 		${drag}${filename}>${imgTag} <description>${label}</description></li>`);
 	var elm = $("#treeelm-"+TREE_ELM_ID)[0];
 	if(options.additional_data)
@@ -842,9 +840,9 @@ function renameTreeObj(obj) {
 				$(obj).attr("filename", val);
 
 			if(!obj.hasClass("workenvironment")) {
-				let img = "chrome://windmill/content/img/explorer/icon-fileext-other.png";
+				let img = "chrome://windmill/content/img/icon-fileext-other.png";
 				if(info.isDir)
-					img = "chrome://windmill/content/img/explorer/icon-directory.png";
+					img = "chrome://windmill/content/img/icon-directory.png";
 
 				let fext = val.split(".").pop();
 				for(var p in specialData) {
@@ -905,10 +903,7 @@ function handleTreeEntry(obj, open_sidedeck) {
 			break;
 		
 		default:
-			if(parent.openFileInDeck)
-				parent.openFileInDeck(file, open_sidedeck);
-			else
-				return -1;
+			parent.openFileInDeck(file, open_sidedeck);
 			break;
 	}
 	

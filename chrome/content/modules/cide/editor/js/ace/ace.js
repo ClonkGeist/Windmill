@@ -2210,8 +2210,7 @@ var TextInput = function(parentNode, host) {
 
     event.addListener(text, "cut", onCut);
     event.addListener(text, "copy", onCopy);
-	//Wegen Windmilleigenen Keybindings deaktiviert
-    //event.addListener(text, "paste", onPaste);
+    event.addListener(text, "paste", onPaste);
     if (!('oncut' in text) || !('oncopy' in text) || !('onpaste' in text)){
         event.addListener(parentNode, "keydown", function(e) {
             if ((useragent.isMac && !e.metaKey) || !e.ctrlKey)

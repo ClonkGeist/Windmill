@@ -61,7 +61,8 @@ $(window).ready(function() {
 	});
 	
 	$("#finishconfig").click(function() {
-		var clonkdir = getConfigData("Global", "ClonkDirectories");
+		var clonkdir = JSON.parse(getConfigData("Global", "ClonkDirectories"));
+		log(">> " + clonkdir + " ("+(typeof clonkdir)+")");
 		if(!clonkdir || !clonkdir[0]) {
 			alert("Kein Clonkverzeichnis angegeben.");
 			return;
@@ -87,8 +88,6 @@ $(window).ready(function() {
 		_mainwindow.outerHeight = 600;
 		_mainwindow.location.reload();
 	});
-	if(!getConfigData("Global", "DevMode"))
-		$("#resetcfgvar").hide();
 });
 
 function showPage(id) {

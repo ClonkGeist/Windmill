@@ -30,15 +30,6 @@ function addScript(text, highlightMode, id, path, fShow) {
 	
 	if(highlightMode)
 		editors[id].getSession().setMode("ace/mode/" + highlightMode);
-	editors[id].getSession().on("change", function(e) {
-		//setTimeout, da der UndoManager erst nach dem Event geupdatet wird
-		setTimeout(function() {
-			if(editors[id].getSession().getUndoManager().isClean())
-				onFileUnchanged(id);
-			else
-				onFileChanged(id);
-		}, 1);
-	});
 	
 	// remove local completer
 	var langTools = ace.require("ace/ext/language_tools");
@@ -101,8 +92,6 @@ function showDeckItem(id) {
 	
 	// set pointer
 	a_E = editors[CM_ACTIVEID];
-	if(!a_E)
-		return;
 	a_E.focus();
 	
 	hideParamlist();
@@ -235,12 +224,10 @@ function remapKeybindings(editor) {
 }
 
 hook("load", function() {
-	$(window).bind("paste", function(e) {
-		e.preventDefault();
-	});
+	
 	bindKeyToObj(new KeyBinding("Save", "Ctrl-S", function() { saveTab(-1); }));
 	bindKeyToObj(new KeyBinding("DuplicateSel", "Ctrl-Shift-D", function() { a_E.execCommand("duplicateSelection"); }));
-	bindKeyToObj(new KeyBinding("Paste", "Ctrl-V", function() { a_E.execCommand("paste", _sc.clipboard2.get()); }));
+	bindKeyToObj(new KeyBinding("Paste", "Ctrl-V", function() { a_E.execCommand("paste"); }));
 	bindKeyToObj(new KeyBinding("RemoveLine", "Ctrl-D", function() { a_E.execCommand("removeline"); }));
 	bindKeyToObj(new KeyBinding("OpenSnippetDialog", "Ctrl-Alt-S", function() { err("ES"); showSnippetDialog(a_E.__scope); }));
 	bindKeyToObj(new KeyBinding("SelectAll", "Ctrl-A", function() { a_E.selectAll(); }));

@@ -10,12 +10,12 @@ hook("load", function() {
 	var f = _sc.file(_sc.chpath+"/styles/scss/stylesheet_defs.json")
 
 	if(!f.exists())
-		return log("SS Obsever: styleshett deflist not found", false, "sass");
+		return log("SS Obsever: styleshett deflist not found")
 	
 	var str = readFile(f)
 	
 	if(!str || !str.length)
-		return log("SS Obsever: styleshett deflist not viable", false, "sass")
+		return log("SS Obsever: styleshett deflist not viable")
 	
 	ssDefs = JSON.parse(str)
 	
@@ -37,7 +37,7 @@ hook("load", function() {
 			def.fScss = false
 		
 		if(def.observe && def.observe !== "main" && !getModuleDef(def.observe))
-			log("To observe module definition hasn't been found: " + def.observe, false, "sass");
+			log("To observe module definition hasn't been found: " + def.observe);
 		
 		$("#ss-deflist").append("<row id=\"ss-def-"+i+"\" align=\"center\">"+
 				"<label value=\""+def.leafName+"\" flex=\"1\" />"+
@@ -60,7 +60,7 @@ hook("load", function() {
 			if(!f.exists())
 				continue
 			if(f.lastModifiedTime !== ssDefs[i].modified) {
-				log("Sass: Scss-File modification detected: " + (ssDefs[i].name || ssDefs[i].index), false, "sass")
+				log("Sass: Scss-File modification detected: " + (ssDefs[i].name || ssDefs[i].index))
 				reloadStylesheet(f, ssDefs[i])
 				ssDefs[i].modified = f.lastModifiedTime
 			}
@@ -92,7 +92,7 @@ Sass.options({
 })
 
 function reloadStylesheet(fScss, def) {
-	log("Sass: trying to reload definition '" + (def.name || def.index ) + "'", false, "sass")
+	log("Sass: trying to reload definition '" + (def.name || def.index ) + "'")
 	if(def.children && def.children.length)
 		def.children.forEach(child => reloadStylesheet(child.fScss, child))
 	
@@ -117,19 +117,19 @@ function reloadStylesheet(fScss, def) {
 		for(let i = 0; i < imports.length; i++) {
 			let imp = getSSDefByName(imports[i])
 			if(!imp)
-				log("Sass error: Required import def not found ("+imports[i]+")", false, "sass")
+				log("Sass error: Required import def not found ("+imports[i]+")")
 			
 			let f = _sc.file(_sc.chpath+"/styles/scss/" + imp.scss)
 			
 			if(!f.exists())
-				log("Sass error: Required import scss not found ("+imports[i]+")", false, "sass")
+				log("Sass error: Required import scss not found ("+imports[i]+")")
 			else
 				headstring += readFile(f) + "\n"
 		}
 	}
 	Sass.compile(headstring + (readFile(fScss) || ""), function(result) {
 		if(result.message) {
-			log("Sass.compile() error: " + result.message, false, "sass")
+			log("Sass.compile() error: " + result.message)
 			log(result.formatted)
 			log(fScss.path);
 		}
@@ -137,7 +137,7 @@ function reloadStylesheet(fScss, def) {
 			var mdls = getModulesByName(def.observe)
 			if(mdls && mdls.length && false) {
 				var uri = _mainwindow._sc.ioserv().newURI(OS.Path.toFileURI(_sc.chpath + "/" + def.cssTarget), null, null)
-				log("Sass: Write file: " + _sc.chpath + "/" + def.cssTarget, false, "sass")
+				log("Sass: Write file: " + _sc.chpath + "/" + def.cssTarget)
 				
 				var mdls = getModulesByName(def.observe)
 				mdls.forEach(m => {
@@ -151,7 +151,7 @@ function reloadStylesheet(fScss, def) {
 				})
 			}
 			else {
-				log("Sass: Write file: " + _sc.chpath + "/" + def.cssTarget, false, "sass")
+				log("Sass: Write file: " + _sc.chpath + "/" + def.cssTarget)
 				writeFile(_sc.file(_sc.chpath + "/" + def.cssTarget), result.text, true)
 			}
 			

@@ -177,10 +177,12 @@ function ShowReferenceNotification(ref) {
 }
 
 function loadNotification() {
-	ntf_settings = getConfigData("ShowGame", "Notifications");
+	var str = getConfigData("ShowGame", "Notifications");
+	if(str != false)
+		ntf_settings = JSON.parse(str);
 	if(!(ntf_settings instanceof Array))
 		ntf_settings = [];
-
+	
 	return true;
 }
 

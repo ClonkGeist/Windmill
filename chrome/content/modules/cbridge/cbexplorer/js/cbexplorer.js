@@ -28,8 +28,8 @@ function explorerLoadWorkEnvironments() {
 
 $(window).load(function() {	
 	//Password input
-	$("#set-password").click(function() {
-		/*if($(this).hasClass("activated")) {
+	$("#set-pwact").click(function() {
+		if($(this).hasClass("activated")) {
 			$(this).removeClass("activated");
 			$(this).val(Locale("$deactivated$"));
 			$("#set-pw").addClass("deactivated").blur();
@@ -42,67 +42,33 @@ $(window).load(function() {
 			$("#set-pw").removeClass("deactivated");
 			
 			setConfigData("HostGame", "PasswordActivated", true);
-		}*/
-		$(this).toggleClass("active");
-		if($(this).hasClass("active")) {
-			let dlg = new WDialog("$DlgSetPassword$", MODULE_LPRE, { btnright: [{ preset: "accept",
-				onclick: (e, btn, _self) => {
-					let newpassword =  $(_self.element).find("#cex-dlg-password-input").val();
-					if(!newpassword)
-						return $(this).click();
-					setConfigData("HostGame", "Password", newpassword);
-				}
-			}]});
-			dlg.setContent
-			(`<hbox>
-				<label value="$password$" flex="1"/>
-				<textbox id="cex-dlg-password-input" placeholder="$DlgEnterPassword$" value="${getConfigData("HostGame", "Password")}" maxlength="1023" flex="3"></textbox>
-			</hbox>`);
-			dlg.show();
-			dlg = 0;
-			setConfigData("HostGame", "PasswordActivated", true);
 		}
-		else
-			setConfigData("HostGame", "PasswordActivated", false);
 	});
-	$("#set-comment").click(function() {
-		let dlg = new WDialog("$DlgSetComment$", MODULE_LPRE, { btnright: [{ preset: "accept",
-			onclick: function(e, btn, _self) {
-				setConfigData("HostGame", "Comment", $(_self.element).find("#cex-dlg-comment-input").val());
-			}
-		}]});
-		dlg.setContent
-		(`<hbox>
-			<label value="$comment$" flex="1"/>
-			<textbox id="cex-dlg-comment-input" multiline="true" maxlength="255" placeholder="$DlgEnterComment$" value="${getConfigData("HostGame", "Comment")}" flex="3"></textbox>
-		</hbox>`);
-		dlg.show();
-		dlg = 0;
-	});
-	/*$("#set-pw").change(function() {
+	$("#set-pw").change(function() {
 		setConfigData("HostGame", "Password", $(this).val());
 	});
 	$("#set-comment").change(function() {
 		setConfigData("HostGame", "Comment", $(this).val());
-	});*/
+	});
 
-	if(getConfigData("HostGame", "PasswordActivated"))
-		$("#set-password").addClass("active");
+	if(getConfigData("HostGame", "PasswordActivated")) {
+		$("#set-pwact").val(Locale("$activated$"));
+		$("#set-pwact").addClass("activated");
+		$("#set-pw").removeClass("deactivated");
+	}
 
 	$("#set-pw").val(getConfigData("HostGame", "Password"));
 	$("#set-comment").val(getConfigData("HostGame", "Comment"));
 
 	//General Settings
+
 	var fnswitch = function(id, sect, key, reversed = false) { 
 		if(getConfigData(sect, key)^reversed)
-			$(id).addClass("active");
+			$(id).addClass("activated");
 
 		return function(e) { 
-			if($(this).parent().hasClass("inactive"))
-				return;
-
-			$(this)[$(this).hasClass("active")?"removeClass":"addClass"]("active");
-			setConfigData(sect, key, $(this).hasClass("active")==!reversed, true);
+			$(this)[$(this).hasClass("activated")?"removeClass":"addClass"]("activated");
+			setConfigData(sect, key, $(this).hasClass("activated")==!reversed, true);
 		};
 	}
 	$("#set-gleague").click(fnswitch("#set-gleague", "HostGame", "League"));
@@ -113,23 +79,36 @@ $(window).load(function() {
 
 	//Start Game button
 	$("#btn-startgame").click(function() {
-		if(!$(current_selection)[0] || handleTreeEntry($(current_selection)) == -1)
-			EventInfo("No scenario selected");
+		if($(current_selection)[0])
+			handleTreeEntry($(current_selection));
 	});
 
-	//Toggle game mode
-	$("#togglegamemode").mousedown(function() {
-		$(this).toggleClass("singleplayer");
-		setConfigData("HostGame", "Network", !$(this).hasClass("singleplayer"), true);
-		if($(this).hasClass("singleplayer"))
-			$(".hostgame-group.networkgame").addClass("inactive");
-		else
-			$(".hostgame-group.networkgame").removeClass("inactive");
+	//Switch type
+	$("#select-nwgame").click(function() {
+		if($(this).hasClass("selected"))
+			return;
+
+		$(".selectgamemode").removeClass("selected");
+		$(this).addClass("selected");
+
+		$(".networkgame-ctrl").stop(true, false).fadeIn(300);
+
+		setConfigData("HostGame", "Network", true, true);
+	});
+	$("#select-spgame").click(function() {
+		if($(this).hasClass("selected"))
+			return;
+
+		$(".selectgamemode").removeClass("selected");
+		$(this).addClass("selected");
+		
+		$(".networkgame-ctrl").stop(true, false).fadeOut(300);
+		
+		setConfigData("HostGame", "Network", false, true);
 	});
 
 	//Vorauswählen
-	if(!getConfigData("HostGame", "Network"))
-		$("#togglegamemode").mousedown();
+	$(getConfigData("HostGame", "Network")?"#select-nwgame":"#select-spgame").trigger("click");
 });
 
 function initializeContextMenu() {}
@@ -403,6 +382,6 @@ function getOCStartArguments(path) {
 }
 
 var specialData = {
-	0: {ext: "ocf", img: "chrome://windmill/content/img/explorer/icon-fileext-ocf.png"},
-	1: {ext: "ocs", img: "chrome://windmill/content/img/explorer/icon-fileext-ocs.png"},
+	0: {ext: "ocf", img: "chrome://windmill/content/img/icon-fileext-ocf.png"},
+	1: {ext: "ocs", img: "chrome://windmill/content/img/icon-fileext-ocs.png"},
 }

@@ -39,8 +39,7 @@ function loadModules(path) {
 
 function readModuleInfo(path) {
 	var module = new _module();
-	let promise = OS.File.read(path, {encoding: "utf-8"});
-	promise.then(function(text) {
+	return OS.File.read(path, {encoding: "utf-8"}).then(function(text) {
 		let moduleini = parseINI2(text), elm;
 		while(elm = moduleini.next().value) {
 			if(typeof elm != "string") {
@@ -57,12 +56,11 @@ function readModuleInfo(path) {
 
 		MODULE_DEF_LIST[module.name] = module;
 	});
-	return promise;
 }
 
 var MODULE_CNT = 0;
 
-function createModule(name, obj, fClearParent, fHide, options = {}) {
+function createModule(name, obj, fClearParent, fHide, options = {}, wdw) {
 	var mod = getModuleDef(name);
 	
 	if(!mod)
@@ -106,7 +104,7 @@ function getModuleDefByPrefix(prefix) {
 			return obj;
 	}
 	
-	return undefined;
+	return false;
 }
 
 function getModulesByName(name) {
@@ -158,7 +156,7 @@ function getModuleDef(name) {
 
 function getModule(id, fElement) {
 	if(id < 0)
-		return undefined;
+		return false;
 
 	if(fElement)
 		return MODULE_LIST[id];

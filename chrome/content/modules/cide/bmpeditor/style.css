@@ -1,5 +1,8 @@
 @charset "UTF-8";
 /* deprecated */
+/* recommended */
+/* deprecated */
+/* recommended */
 /*-- Sammelstyles fuer Inhalte der default_module.js --*/
 .eventinfo {
   background-color: black;
@@ -386,18 +389,6 @@
 .icon-auto-scan-side:before {
   content: "AutoS"; }
 
-.icon-singleplayer:before {
-  content: "\e62a"; }
-
-.icon-password:before {
-  content: "Pw"; }
-
-.icon-comment:before {
-  content: "C"; }
-
-.icon-startgame:before {
-  content: "St"; }
-
 html, body {
   padding: 0;
   margin: 0;
@@ -417,10 +408,17 @@ canvas {
 
 .canvas-dimension {
   position: relative;
-  flex: 1; }
+  flex: 1;
+  cursor: none; }
 
 .visible {
   display: block !important; }
+
+.brush-indicator {
+  position: fixed;
+  outline: 1px solid white;
+  border: 1px solid black;
+  pointer-events: none; }
 
 /* ruler */
 #ruler-left {
@@ -461,19 +459,28 @@ canvas {
   width: 1px;
   height: 18px; }
 
-/* toolbar */
-#toolbar {
-  position: fixed;
+.page {
+  display: flex;
+  flex-direction: column;
+  top: 0;
+  left: 0;
+  right: 0;
   bottom: 0;
-  width: 100%;
-  cursor: default;
-  z-index: 5;
-  padding-left: 19px;
-  /* 18px from ruler plus 1 because of its border*/
+  position: absolute; }
+
+.page-content {
+  flex: 1;
+  position: relative;
+  overflow: scroll; }
+
+#toolbar {
+  min-height: 16px;
   padding-right: 4px;
   background-color: gainsboro;
   color: #282828;
-  box-sizing: border-box; }
+  box-sizing: border-box;
+  cursor: default;
+  z-index: 5; }
 
 #toolbar > * {
   display: inline-block;
@@ -512,6 +519,31 @@ canvas {
   display: inline-block;
   font-size: 12px;
   margin-left: 4px; }
+
+/* brush panel */
+#brush-panel {
+  position: fixed;
+  top: 360px;
+  right: 0px;
+  width: 170px;
+  background-color: #ebebeb;
+  z-index: 8;
+  outline: 1px solid #c8c8c8; }
+
+#bp-b > * {
+  display: flex;
+  flex-direction: row; }
+
+#bp-preview-gen {
+  display: none; }
+
+#bp-preview-main {
+  outline: 1px solid #d7d7d7;
+  background-color: #fafafa;
+  height: 32px;
+  width: 32px;
+  background-repeat: no-repeat;
+  background-position: center; }
 
 /*
 	having both enabled fails due to https://css-tricks.com/almanac/selectors/s/selection/
@@ -610,8 +642,11 @@ input[type=range]::-moz-range-track {
   float: right;
   padding-right: 5px;
   box-sizing: border-box; }
+  .toolbar-collapse:hover {
+    color: green; }
 
-#material-b {
+#material-b,
+#bp-b {
   padding: 5px; }
 
 #current-material {

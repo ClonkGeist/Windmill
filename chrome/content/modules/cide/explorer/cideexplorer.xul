@@ -32,7 +32,7 @@
 				<label value="$DlgWETypeClonkDir$:" style="font-weight: bold"/>
 			</hbox>
 			<hbox class="dlg-infobox">
-				<description flex="1">$DlgWETypeClonkDirDesc$</description>
+				<description flex="!">$DlgWETypeClonkDirDesc$</description>
 			</hbox>
 			<hbox>
 				<description flex="1" id="dex-dlg-workenv-ocpath" class="view-directory-path">$DlgWEPathEmpty$</description>
@@ -47,7 +47,7 @@
 				<label value="$DlgWETypeWorkspace$:" style="font-weight: bold"/>
 			</hbox>
 			<hbox class="dlg-infobox">
-				<description flex="1">$DlgWETypeWorkspaceDesc$</description>
+				<description flex="!">$DlgWETypeWorkspaceDesc$</description>
 			</hbox>
 			<hbox>
 				<label value="$DlgLblName$:" control="dex-dlg-workenv-name" flex="1" />
@@ -77,7 +77,7 @@
 				<label value="$DlgWETypeRepository$:" style="font-weight: bold"/>
 			</hbox>
 			<hbox class="dlg-infobox">
-				<description flex="1">$DlgWETypeRepositoryDesc$</description>
+				<description>$DlgWETypeRepositoryDesc$</description>
 			</hbox>
 			<hbox>
 				<label value="$DlgWERepositoryCloneURL$:" flex="1" />

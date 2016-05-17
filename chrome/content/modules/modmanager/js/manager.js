@@ -40,14 +40,11 @@ function onConfigChange(sect, key, val) {
 	if(val.constructor.name == "ConfigEntry")
 		val = val.tempvalue;
 	if(!$("#config-"+sect+"-"+key)[0]) {
-		let display_val = val;
-		if(typeof val == "object")
-			display_val = JSON.stringify(val);
 		$("#config-overview").append(`<row id="config-${sect}-${key}" align="center">
 				<label class="cfg-sect" value="${sect}" />
 				<label class="cfg-key" value="${key}" />
 				<hbox>
-					<label class="cfg-val" value='${display_val}' />
+					<label class="cfg-val" value='${val}' />
 				</hbox>
 			</row>`);
 
@@ -64,11 +61,7 @@ function onConfigChange(sect, key, val) {
 			$(obj).find(".cfg-val").click(function() {
 				$(this).after('<textbox class="cfg-val-textbox"/>');
 				$(this).css("display", "none");
-				let cfgval = getConfigData(sect, key);
-				if(typeof cfgval == "object")
-					cfgval = JSON.stringify(cfgval);
-
-				$(this).parent().find(".cfg-val-textbox").val(cfgval).focus();
+				$(this).parent().find(".cfg-val-textbox").val(getConfigData(sect, key)).focus();
 				$(".cfg-val-textbox").blur(function() {
 					setConfigData(sect, key, $(this).val());
 					$(this).parent().find(".cfg-val").css("display", "block");

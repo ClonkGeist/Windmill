@@ -1,4 +1,7 @@
 /* deprecated */
+/* recommended */
+/* deprecated */
+/* recommended */
 /*-- Sammelstyles fuer Inhalte der default_module.js --*/
 .eventinfo {
   background-color: black;
@@ -384,18 +387,6 @@
 
 .icon-auto-scan-side:before {
   content: "AutoS"; }
-
-.icon-singleplayer:before {
-  content: "\e62a"; }
-
-.icon-password:before {
-  content: "Pw"; }
-
-.icon-comment:before {
-  content: "C"; }
-
-.icon-startgame:before {
-  content: "St"; }
 
 body {
   background-color: #fafafa;

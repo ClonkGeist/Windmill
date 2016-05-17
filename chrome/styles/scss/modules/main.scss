@@ -38,7 +38,7 @@ window.maximized .restore-window {
 }
 
 .window-button:hover {  
-	background-color: $interact_red;
+	background-color: $interact-red;
 }
 
 #modules-wrapper {
@@ -134,11 +134,11 @@ toolbox, toolbarbutton, toolbar, button, #header {
 }
 
 #inner-navigation button:hover {
-	background: $interact_red;
+	background: $interact-red;
 }
 
 #inner-navigation button.active {
-	background: $interact_red;
+	background: $interact-red;
 }
 
 caption {
@@ -160,22 +160,25 @@ caption {
 }
 
 #switchMode:hover,
-#switchmode.selected,
-.nav-image:hover  {
-	background: $interact_red;
+#switchmode.selected {
+	background: $interact-red;
 }
 
 .nav-image {
 	vertical-align:  middle;
 	transition: background-color 0.3s;
-}
-
-.nav-image.deactivated {
-	color: #999;
-}
-
-.nav-image.deactivated:hover {
-	background: rgb(80, 80, 80);
+	
+	&:hover {
+		background: $interact-red;
+	}
+	
+	&.deactivated {
+		color: #999;
+	}
+	
+	&.deactivated:hover {
+		background: rgb(80, 80, 80);
+	}
 }
 
 #cide-toolbar { padding-top: 5px; }
@@ -246,7 +249,7 @@ caption {
 }
 
 .ps-playerlistitem.selected  {
-	border-left-color: $interact_red;
+	border-left-color: $interact-red;
 }
 
 .cds-listitem.selected {
@@ -301,7 +304,7 @@ caption {
 }
 
 .ps-h {
-	background: $interact_red;
+	background: $interact-red;
 	color: white;
 	margin: 0;
 	line-height: 1.6em;
@@ -429,7 +432,7 @@ caption {
 	opacity: 1;
 }
 .togglemode-img.activated {
-	background-color: $interact_red;
+	background-color: $interact-red;
 }
 .togglemode-img.invisible {
 	margin-left: 18px;
@@ -455,42 +458,26 @@ caption {
 #log-entrylist { overflow-y: scroll; }
 #log-entrylist.show-hidden-logs > .log-listitem.hidden { display: -moz-box; }
 
-.log-listitem {
-	max-width: 100%;
+.log-listitem { max-width: 100%; }
+.log-listitem:hover { background-color: #eee; }
 
-	&:hover { background-color: #eee; }
+.log-listitem-type { width: 1em; }
 
-	&.error {
-		.log-listitem-type { background-color: #ff4e4e; }
-		.log-listitem-content { background-color: #ffeded; }
-		&:hover {
-			.log-listitem-type { background-color: #ef3e3e; }
-			.log-listitem-content { background-color: #efdddd; }
-		}
-	}
-	&.sass {
-		.log-listitem-type { background-color: #6ae35f; }
-		.log-listitem-content { background-color: #d3f2d0; }
-		&:hover {
-			.log-listitem-type { background-color: #5ad34f; }
-			.log-listitem-content { background-color: #c3e2c0; }
-		}
-	}
+.log-listitem.error > .log-listitem-type {background-color: #ff4e4e;}
+.log-listitem.error > .log-listitem-content {background-color: #ffeded;}
 
-	&.hidden {
-		text-decoration: italic;
-		color: #777;
-		display: none;
-	}
+.log-listitem.hidden {
+	text-decoration: italic;
+	color: #777;
+	display: none;
+}
 
-	.log-listitem-type { width: 1em; }
-	.log-listitem-content {
-		padding-left: 1em;
-		font-family: monospace;
-		word-wrap: break-word;
-		white-space: pre-wrap;
-		-moz-user-select: text;
-	}
+.log-listitem-content {
+	padding-left: 1em;
+	font-family: monospace;
+	word-wrap: break-word;
+	white-space: pre-wrap;
+	-moz-user-select: text;
 }
 
 #showLog {
@@ -503,7 +490,6 @@ caption {
 }
 
 .flashOnLog.error { color: #ff4e4e !important; }
-.flashOnLog.sass { color: #6ae35f !important; }
 
 /*-- Ladebildschirm --*/
 

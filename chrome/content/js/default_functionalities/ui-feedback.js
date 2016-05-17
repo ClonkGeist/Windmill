@@ -112,7 +112,7 @@ function unlockModule() {
 
 /*-- EventInfos --*/
 
-const EVENTINFO_DISPLAYTIME = 700;
+const EVENTINFO_DISPLAYTIME = 400;
 var eventinfo_timeout;
 
 function EventInfo(message, lpre) {
@@ -138,7 +138,7 @@ function EventInfo(message, lpre) {
 		nEventInfo.appendTo(document.documentElement);
 		nEventInfo.css({ bottom: 0, left: 0});
 	}
-
-	eventinfo_timeout = setTimeout(function() { $(".eventinfo").fadeOut(500, function() {$(this).remove();}); }, EVENTINFO_DISPLAYTIME);
+	
+	eventinfo_timeout = setTimeout(function() { $(".eventinfo").fadeOut(600, function() {$(this).remove();}); }, EVENTINFO_DISPLAYTIME);
 	return nEventInfo;
 }

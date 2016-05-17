@@ -125,19 +125,7 @@ function getC4GroupPath() {
 	else
 		name = "c4group";
 
-	let path = getConfigData("Global", "C4GroupPath"), file;
-	if(!path || (!(file = _sc.file(path)).exists() || !file.isExecutable())) {
-		path = "";
-		for(var i = 0; i < _sc.clonkpathlength(); i++) {
-			let file = _sc.file(_sc.clonkpath(i)+"/"+name);
-			if(file.exists() && file.isExecutable()) {
-				path = _sc.clonkpath(i)+"/"+name;
-				setConfigData("Global", "C4GroupPath", path, true);
-				break;
-			}
-		}
-	}
-	return path;
+	return _sc.clonkpath() + "/" + name;
 }
 
 /*-- nsIFile Funktionen (nicht asynchron) --*/

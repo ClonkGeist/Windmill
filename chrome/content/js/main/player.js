@@ -61,7 +61,7 @@ hook("load", function() {
 			ctx.putImageData(pxdata, 0, 0);
 		};
 	});
-	image.src="chrome://windmill/content/img/playerselection/img-defaultplr.png";
+	image.src="chrome://windmill/content/img/img-defaultplr.png";
 	
 	var canvas = document.getElementById("cnv-apbigicon");
 	var ctx = canvas.getContext("2d");
@@ -71,11 +71,11 @@ hook("load", function() {
 		canvas.height = 64;
 		ctx.drawImage(image, 0, 0, 64, 64);
 	});
-	image.src="chrome://windmill/content/img/playerselection/img-defaultplr.png";
+	image.src="chrome://windmill/content/img/img-defaultplr.png";
 	
 	
 	function* loadPlayerFile(entry, time) {
-		let text, img, imgstr = "chrome://windmill/content/img/playerselection/DefaultPlayer.png";
+		let text, img, imgstr = "chrome://windmill/content/img/DefaultPlayer.png";
 		if(!entry.isDir) {
 			let group = readC4GroupFile(_sc.file(entry.path));
 			text = group.getEntryByName("Player.txt").data.byte2str();
@@ -323,7 +323,7 @@ function addNewPlayer() {
 
 		process.create(args, 0x1, function() {
 			players.push(plr);
-			addPlayerlistItem(players.length-1, plrleafname, "chrome://windmill/content/img/playerselection/DefaultPlayer.png");
+			addPlayerlistItem(players.length-1, plrleafname, "chrome://windmill/content/img/DefaultPlayer.png");
 			switchPlrPage('page-playerselection');
 		});
 	});

@@ -150,19 +150,11 @@ function navigateToPath(path, open_and_select) {
 }
 
 function PrepareDirectory(path, call) {
-	//c4group & openclonk suchen
-	let c4group, openclonk;
+	//c4group suchen
+	let c4group;
 
-	let nodir = false, noc4group = false, noopenclonk = false;
-	if(!_sc.clonkpath()) {
-		noopenclonk = true;
-	}
-	else {
-		openclonk = _sc.file(getClonkExecutablePath());
-		if(!openclonk.exists() || !openclonk.isExecutable())
-			noopenclonk = true;
-	}
-	if(!getConfigData("Global", "C4GroupPath") && !_sc.clonkpath())
+	var nodir = false, noc4group = false;
+	if(!_sc.clonkpath())
 		noc4group = true;
 	else {
 		c4group = _sc.file(getC4GroupPath());
@@ -176,18 +168,16 @@ function PrepareDirectory(path, call) {
 		if(!dir.exists())
 			nodir = true;
 	}
-
-	if(noopenclonk || noc4group || nodir) {
+	
+	if(noc4group || nodir) {
 		if(!getConfigData("CIDE", "DirsNotFoundDlg")) {
 			addConfigString("CIDE", "DirsNotFoundDlg", true, "boolean", { runTimeOnly: true });
 			//Dialog oeffnen
 			var dlg = new WDialog("$DlgErrMissingDirectoryInfo$", "DEX", { modal: true, css: { "width": "450px" }, btnright: ["accept"]});
 
 			var content = "<hbox><description>$DlgErrMissingDirectoryInfoDesc$</description></hbox>";
-			if(noopenclonk)
-				content += "<hbox><description style='margin-top: 1em'>$DlgErrMissingClonkDirDesc$</description></hbox>";
 			if(noc4group)
-				content += "<hbox><description style='margin-top: 1em'>$DlgErrMissingC4GroupFileDesc$</description></hbox>";
+				content += "<hbox><description style='margin-top: 1em'>$DlgErrMissingClonkDirDesc$</description></hbox>";
 			if(nodir)
 				content += "<hbox><description style='margin-top: 1em'>$DlgErrMissingWEDirDesc$</description></hbox>";
 
@@ -430,7 +420,6 @@ function addFileTreeEntry(entry, parentobj, sort_container) {
 
 	let task = Task.spawn(function*() {
 		let {title, icon, special, index, additional_data} = yield getTreeEntryData(entry, fext)||{};
-		let classes = "";
 		if(!title)
 			title = entry.leafName;
 
@@ -451,23 +440,21 @@ function addFileTreeEntry(entry, parentobj, sort_container) {
 			
 			//Standard Ordnericon verwenden
 			if(!fSpecial && !icon)
-				icon = "chrome://windmill/content/img/explorer/icon-directory.png";
+				icon = "chrome://windmill/content/img/icon-directory.png";
 		}
 		else if(getConfigData("CIDE", "HideUnsupportedFiles") && !fSpecial)
 			return false;
-		else if(OCGRP_FILEEXTENSIONS.indexOf(fext) != -1)
-			classes += "tree-groupfile-packed ";
 
 		if(noContainer(fext))
 			container = false;
 
 		if(!icon)
-			icon = "chrome://windmill/content/img/explorer/icon-fileext-other.png";
+			icon = "chrome://windmill/content/img/icon-fileext-other.png";
 
 		if(index === undefined || isNaN(index))
 			index = -1;
 		//Baumelement erzeugen
-		createTreeElement(parentobj, title, container, 0, icon, entry.leafName, special, {noSelection: !!special, index, additional_data, classes});
+		createTreeElement(parentobj, title, container, 0, icon, entry.leafName, special, {noSelection: !!special, index, additional_data});
 		if(sort_container)
 			sortTreeContainerElements(parentobj);
 		return true;

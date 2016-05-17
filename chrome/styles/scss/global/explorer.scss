@@ -72,15 +72,6 @@ li {
 	text-overflow: ellipsis;
 }
 
-li.tree-groupfile-packed {
-	font-style: italic;
-	color: #444;
-
-	description:after {
-		content: ' (packed)';
-	}
-}
-
 li:focus *, li:focus {
 	outline: none;
 }

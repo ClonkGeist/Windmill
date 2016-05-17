@@ -11,7 +11,7 @@ $(window).ready(function() {
 	md_editorframe = getModule(md_editor, true);
 });
 
-let scenario_icons = [], module_loaded, drop_tab_queue = [];
+let scenario_icons = [];
 
 hook("load", function() {
 	setupDeflistKeybindings();
@@ -23,9 +23,6 @@ hook("load", function() {
 		scenario_icons[id] = "chrome://windmill"+formatPath(entry.path).replace(_sc.chpath, "");
 	}).then(function() {
 		iterator.close();
-		module_loaded = true;
-		for(var index in drop_tab_queue)
-			dropTabData(drop_tab_queue[index], parseInt(index));
 	}, function() {
 		iterator.close();
 	});
@@ -182,7 +179,7 @@ function getCurrentWrapperIndex() {
 		return -1;
 }
 
-function addScript(txt, lang, index, path, fShow, skipLoading) {
+function addScript(path, lang, index, path, fShow) {
 	var clone = $(".scenario-settings.draft").clone();
 	clone.removeClass("draft");
 	clone.attr("id", "scensettings-session-"+index);
@@ -193,15 +190,8 @@ function addScript(txt, lang, index, path, fShow, skipLoading) {
 		$("#editorframe").removeClass("visible");
 	}
 
-	path = formatPath(path);
 	setLoadingCaption("$LoadingReadScenarioData$", index);
-
-	if(skipLoading) {
-		initializePage("", index, typeof skipLoading == "object"?skipLoading.current_page:undefined);
-		return;
-	}
-	else
-		sessions[index] = { path, loading: true };
+	sessions[index] = { path };
 
 	//Definitionen laden
 	var loadingdefs = [], scenariodefs = [];
@@ -264,13 +254,8 @@ function addScript(txt, lang, index, path, fShow, skipLoading) {
 		}
 		return text;
 	}).then(function(text) {
-		sessions[index].loading = false;
 		setLoadingCaption("$LoadingDone$");
 		setLoadingSubCaption("");
-		initializePage(text, index);
-	});
-	
-	function initializePage(text, index, current) {
 		getWrapper(".navigation, .settings-page-container", index).addClass("ready");
 		getWrapper(".loadingPage", index).fadeOut(200);
 
@@ -287,7 +272,6 @@ function addScript(txt, lang, index, path, fShow, skipLoading) {
 			getWrapper("."+identifier, index).addClass("active");
 
 			closeAddingOverlay(index);
-			sessions[index].current_page = identifier;
 
 			if(identifier == "page-code") {
 				md_editorframe.contentWindow.setDocumentValue(index, generateScenarioTxt(index), true);
@@ -340,8 +324,6 @@ function addScript(txt, lang, index, path, fShow, skipLoading) {
 		getWrapper(".nav-errorlog", index).mousedown(function() { $("#errorlog").toggleClass("show"); updateErrorLog(); });
 		getWrapper(".nav-reload", index).mousedown(reloadDefinitions);
 		getWrapper(".nav-save", index).mousedown(function() { return saveTab(index); });
-		if(current)
-			getWrapper(".nav-"+current).mousedown();
 
 		tooltip(getWrapper(".nav-reload", index), "$TooltipReloadDefs$", "html", 600);
 
@@ -373,7 +355,7 @@ function addScript(txt, lang, index, path, fShow, skipLoading) {
 				$(this).parents(".deflist-ao-listwrapper").find(".definition-selection-item:not(.definition-selection-item[data-displayname*='"+$(this).val().toUpperCase()+"'])").addClass("deflist-ao-hidesearch");
 		});
 
-		loadScenarioContentToElements(index, !skipLoading);
+		loadScenarioContentToElements(index, true);
 
 		if(!md_editorframe.contentWindow.readyState) {
 			md_editorframe.contentWindow.addEventListener("load", function(){
@@ -383,7 +365,7 @@ function addScript(txt, lang, index, path, fShow, skipLoading) {
 		else
 			md_editorframe.contentWindow.addScript(text, lang, index, path, true);
 		updateErrorLog();
-	}
+	});
 }
 
 function loadScenarioContentToElements(index, skipDefsel) {
@@ -1180,8 +1162,7 @@ function onFileStatusChange(changed, index) {
 function checkIfTabIsUnsaved() { return false; }
 
 function showDeckItem(id) {
-	if(md_editorframe && md_editorframe.contentWindow)
-		md_editorframe.contentWindow.showDeckItem(id);
+	md_editorframe.contentWindow.showDeckItem(id);
 	$(".scenario-settings.visible").removeClass("visible");
 	$("#scensettings-session-"+id).addClass("visible");
 	if(getWrapper(".navigation-option.active", id).hasClass("nav-page-code"))
@@ -1205,51 +1186,34 @@ function removeDeckItem(id) {
 	md_editorframe.contentWindow.removeDeckItem(id);
 	sessions[id] = 0;
 
-	//Unbenutzte Definitionen wieder rausnehmen um Speicher zu leeren (nach ca. 30 Sekunden)
-	if(definitions.timeout)
-		clearTimeout(definitions.timeout);
-	definitions.timeout = setTimeout(function() {
-		//(TODO: Evtl. in Zukunft auch mit einer Art Frequently Used Definitions-List?)
-		for(var def in definitions) {
-			//Um Ladezeiten zu verkuerzen, wird Objects.ocd nicht entfernt.
-			if(def == "Objects.ocd")
-				continue;
+	//Unbenutzte Definitionen wieder rausnehmen um Speicher zu leeren
+	//(TODO: Evtl. in Zukunft auch mit einer Art Frequently Used Definitions-List?)
+	for(var def in definitions) {
+		//Um Ladezeiten zu verkuerzen, wird Objects.ocd nicht entfernt.
+		if(def == "Objects.ocd")
+			continue;
 
-			let def_used = false, modules = getModulesByName("scenario-settings");
-			for(var i = 0; i < modules.length; i++) {
-				if(modules[i].contentWindow.definitionInUse && modules[i].contentWindow.definitionInUse(def)) {
-					def_used = true;
-					break;
-				}
+		let def_used = false, modules = getModulesByName("scenario-settings");
+		for(var i = 0; i < modules.length; i++) {
+			if(modules[i].contentWindow.definitionInUse(def)) {
+				def_used = true;
+				break;
 			}
-
-			if(!def_used)
-				delete definitions[def];
 		}
-		definitions.timeout = undefined;
-	}, 30000);
+
+		if(!def_used)
+			delete definitions[def];
+	}
 	$("#scensettings-session-"+id).remove();
 }
 
 /*-- TabData --*/
 
 function getTabData(tabid) {
-	let data;
-	if(!sessions[tabid].loading)
-		sessions[tabid].scendata = parseINIArray(generateScenarioTxt(tabid));
-	data = sessions[tabid];
-	if(data.path.search(_sc.workpath(data.path)) != -1)
-		data.path.slice(_sc.workpath(data.path).length);
+	var data;
 	return data;
 }
 
 function dropTabData(data, tabid) {
-	if(!module_loaded) {
-		drop_tab_queue[tabid] = data;
-		return;
-	}
-
-	sessions[tabid] = data;
-	addScript(0, 0, tabid, data.path, true, data.loading?false:{current_page: data.current_page});
 	return true;
 }

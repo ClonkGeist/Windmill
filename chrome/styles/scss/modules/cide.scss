@@ -59,10 +59,7 @@ toolbox {
 }
 
 .deck-nav-elm.state-unsaved {
-	color: $interact_red;
-	&:hover {
-		color: $interact-red-darker;
-	}
+	color: $interact-red;
 }
 
 .deck-nav-elm:hover {
@@ -82,12 +79,13 @@ toolbox {
 	
 	-moz-box-align: center;
 	font-size: 10px;
-}
-
-.close-button:hover {
-	color: $clr-paper;
-	background-color: $interact-red;
-	outline: 2px solid $interact-red;
+	
+	&:hover {
+		color: $clr-paper;
+		background-color: $interact-red;
+		outline: 1px solid $interact-red;
+		-moz-outline-radius: 14px;
+	}
 }
 
 .deck-desc {
@@ -202,7 +200,7 @@ toolbarbutton:focus  *{
 .dragover-sidedeck-right {
     box-shadow: inset 5px 0 0 0 $interact-orange;
 }
-
+ 
 .dragover-sidedeck-bottom {
 	box-shadow: inset 0 5px 0 0 $interact-orange;
 }

@@ -1,1 +1,1 @@
-Scenario.txt|Map.bmp|Script.c|DescDE.txt|DescUS.txt|StringTblDE.txt|StringTblUS.txt|Title.png|Title.txt
+Scenario.txt|Map.bmp|Script.c|DescDE.rtf|DescUS.rtf|StringTblDE.txt|StringTblUS.txt|Title.png|Title.txt

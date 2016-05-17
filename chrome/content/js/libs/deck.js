@@ -220,7 +220,7 @@ class Deck extends WindmillObject {
 					}
 
 					var ovdata = workpathov(data);
-					if(ovdata && noWorkspaceName)
+					if(noWorkspaceName)
 						ovdata = ovdata.replace(/\/[^/]+$/g, "");
 
 					return ovdata;
@@ -389,9 +389,6 @@ class Deck extends WindmillObject {
 				log(e, true);
 			}
 		}
-		else if(this.items[itemId].contentWindow && this.items[itemId].contentWindow.showDeckItem)
-			this.items[itemId].contentWindow.showDeckItem(itemId);
-			
 		
 		try {
 			if(this.items[itemId].contentWindow.frameWindowTitle 
