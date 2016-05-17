@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Windmill Documentation -  Color Picker</title>
+		<title>Windmill Documentation - addDeck</title>
 		<link href="../../../windmillDocs.css" rel="stylesheet">
 		<link href="../../../prism.css" rel="stylesheet">
 		<meta charset="UTF-8">
@@ -39,20 +39,20 @@
 					<li class="navigation-elm"><a href="../../_home/__head_de.html">Startseite</a></li><ul class="navigation-sublist">
 </ul>
 <li class="navigation-elm"><a href="../__head_de.html">Libraries</a></li><ul class="navigation-sublist">
-<li class="navigation-elm"><a href="../deck/__head_de.html"> Decks</a></li><ul class="navigation-sublist">
-<li class="navigation-elm"><a href="../deck/togglePage_de.html">togglePage</a></li>
-<li class="navigation-elm"><a href="../deck/getChildPosition_de.html">getChildPosition</a></li>
-<li class="navigation-elm"><a href="../deck/closePage_de.html">closePage</a></li>
-<li class="navigation-elm"><a href="../deck/class_Deck_de.html">class Deck</a></li>
-<li class="navigation-elm"><a href="../deck/addDeck_de.html">addDeck</a></li>
+<li class="navigation-elm"><a href="__head_de.html"> Decks</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="togglePage_de.html">togglePage</a></li>
+<li class="navigation-elm"><a href="getChildPosition_de.html">getChildPosition</a></li>
+<li class="navigation-elm"><a href="closePage_de.html">closePage</a></li>
+<li class="navigation-elm"><a href="class_Deck_de.html">class Deck</a></li>
+<li class="navigation-elm"><a href="addDeck_de.html">addDeck</a></li>
 </ul>
 <li class="navigation-elm"><a href="../contextmenu/__head_de.html"> Kontextmenüs</a></li><ul class="navigation-sublist">
 <li class="navigation-elm"><a href="../contextmenu/class__ContextMenu_de.html">class _ContextMenu</a></li>
 <li class="navigation-elm"><a href="../contextmenu/class__ContextMenuEntry_de.html">class _ContextMenuEntry</a></li>
 </ul>
-<li class="navigation-elm"><a href="__head_de.html"> Color Picker</a></li><ul class="navigation-sublist">
-<li class="navigation-elm"><a href="createColorPicker_de.html"> createColorPicker</a></li>
-<li class="navigation-elm"><a href="class_ColorPicker_de.html"> class ColorPicker</a></li>
+<li class="navigation-elm"><a href="../colorpicker/__head_de.html"> Color Picker</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../colorpicker/createColorPicker_de.html"> createColorPicker</a></li>
+<li class="navigation-elm"><a href="../colorpicker/class_ColorPicker_de.html"> class ColorPicker</a></li>
 </ul>
 <li class="navigation-elm"><a href="../c4group/__head_de.html">C4Group</a></li><ul class="navigation-sublist">
 <li class="navigation-elm"><a href="../c4group/readC4GroupFile_de.html"> readC4GroupFile</a></li>
@@ -130,8 +130,15 @@
 				</ul>
 			</nav>
 			<div id="content">
-				<h1 id="color-picker">Color Picker</h1>
-<p>Funktionen und Klassen zum Erstellen und Arbeiten mit einem Color Picker. <strong>Zur Zeit gibt es nur eine Unterstützung für XUL-Module.</strong></p>
+				<h1 id="adddeck">addDeck</h1>
+<pre><code class="lang-fnpreview"><span class="token datatype" >Deck</span><span class="token fnname" > addDeck</span><span class="token punctuation" >(</span><span class="token datatype" >HTMLElement</span><span class="token punctuation" >/</span><span class="token datatype" >XULElement</span><span class="token punctuation" >/</span><span class="token datatype" >jQueryObject</span> container<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >HTMLElement</span><span class="token punctuation" >/</span><span class="token datatype" >XULElement</span><span class="token punctuation" >/</span><span class="token datatype" >jQueryObject</span> navEl<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >string</span> lang<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Erstellt ein neues Deck indem angegebenen Container und fügt dieses der globalen Deckliste hinzu.</p>
+<ul>
+<li><strong>container:</strong><br>Container-Element welches das Deck enthalten soll.</li>
+<li><strong>navEl:</strong><br>Container-Element welches die Navigation des Decks enthalten soll.</li>
+<li><strong>lang:</strong><br>Sprache in der das Modul geschrieben wurde. <strong>Gültige Werte:</strong> &quot;html&quot; und &quot;xul&quot;. (&quot;xul&quot; ist der Standardwert.) <strong>Hinweis:</strong> Obwohl hier der Wert &quot;html&quot; erlaubt ist, werden die Decks aktuell nur unter XUL unterstützt.</li>
+</ul>
 
 			</div>
 		</div>

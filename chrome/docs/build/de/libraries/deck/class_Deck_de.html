@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Windmill Documentation - class Deck</title>
+		<link href="../../../windmillDocs.css" rel="stylesheet">
+		<link href="../../../prism.css" rel="stylesheet">
+		<meta charset="UTF-8">
+		<script>
+			//Windmillinterner Workaround: Da Windmill das Oeffnen externer Links sperrt (sodass diese in einem externen Browser geoffnet werden koennen)
+			//wird hier fuer Windmill das anders geloest.
+			if(navigator.userAgent.search(/\bwindmill\b/) != -1) {
+				document.addEventListener("DOMContentLoaded", function() {
+					let elements = document.getElementsByTagName("a");
+					for(var i = 0; i < elements.length; i++) {
+						elements[i].onclick = function(e) {
+							window.location.href = this.href;
+							e.preventDefault();
+						};
+					}
+				});
+			}
+			document.addEventListener("DOMContentLoaded", function() {
+				let code_elements = document.querySelectorAll("code");
+				for(let i = 0; i < code_elements.length; i++) {
+					let elm = code_elements[i];
+					if(elm.className.search("lang-fnpreview") != -1)
+						elm.parentNode.className += "lang-fnpreview";
+				}
+			});
+		</script>
+	</head>
+	<body>
+		<div id="header">
+			Windmill Documentation
+		</div>
+		<div id="wrapper">
+			<nav id="navigation">
+				<ul>
+					<li class="navigation-elm"><a href="../../_home/__head_de.html">Startseite</a></li><ul class="navigation-sublist">
+</ul>
+<li class="navigation-elm"><a href="../__head_de.html">Libraries</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="__head_de.html"> Decks</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="togglePage_de.html">togglePage</a></li>
+<li class="navigation-elm"><a href="getChildPosition_de.html">getChildPosition</a></li>
+<li class="navigation-elm"><a href="closePage_de.html">closePage</a></li>
+<li class="navigation-elm"><a href="class_Deck_de.html">class Deck</a></li>
+<li class="navigation-elm"><a href="addDeck_de.html">addDeck</a></li>
+</ul>
+<li class="navigation-elm"><a href="../contextmenu/__head_de.html"> Kontextmenüs</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../contextmenu/class__ContextMenu_de.html">class _ContextMenu</a></li>
+<li class="navigation-elm"><a href="../contextmenu/class__ContextMenuEntry_de.html">class _ContextMenuEntry</a></li>
+</ul>
+<li class="navigation-elm"><a href="../colorpicker/__head_de.html"> Color Picker</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../colorpicker/createColorPicker_de.html"> createColorPicker</a></li>
+<li class="navigation-elm"><a href="../colorpicker/class_ColorPicker_de.html"> class ColorPicker</a></li>
+</ul>
+<li class="navigation-elm"><a href="../c4group/__head_de.html">C4Group</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../c4group/readC4GroupFile_de.html"> readC4GroupFile</a></li>
+<li class="navigation-elm"><a href="../c4group/readC4GroupBytes_de.html"> readC4GroupBytes</a></li>
+<li class="navigation-elm"><a href="../c4group/getGroupHeader_de.html"> getGroupHeader</a></li>
+<li class="navigation-elm"><a href="../c4group/getGroupContent_de.html"> getGroupContent</a></li>
+<li class="navigation-elm"><a href="../c4group/C4GroupHead_de.html"> C4GroupHead</a></li>
+<li class="navigation-elm"><a href="../c4group/C4GroupFile_de.html"> C4GroupFile</a></li>
+<li class="navigation-elm"><a href="../c4group/C4GroupEntryCore_de.html"> C4GroupEntryCore</a></li>
+</ul>
+</ul>
+<li class="navigation-elm"><a href="../../functionalities/__head_de.html">Funktionalitäten</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../functionalities/workenvironments/__head_de.html">Arbeitsumgebungen</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../functionalities/workenvironments/saveWorkEnvironment_de.html">saveWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="../../functionalities/workenvironments/loadWorkEnvironment_de.html">loadWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="../../functionalities/workenvironments/getWorkEnvironments_de.html">getWorkEnvironments</a></li>
+<li class="navigation-elm"><a href="../../functionalities/workenvironments/getWorkEnvironmentByPath_de.html">getWorkEnvironmentByPath</a></li>
+<li class="navigation-elm"><a href="../../functionalities/workenvironments/createWorkEnvironment_de.html">createWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="../../functionalities/workenvironments/createNewWorkEnvironment_de.html">createNewWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="../../functionalities/workenvironments/class_WorkEnvironment_de.html">class WorkEnvironment</a></li>
+</ul>
+<li class="navigation-elm"><a href="../../functionalities/other/__head_de.html">Weitere Funktionen</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../functionalities/other/showNotification_de.html">showNotification</a></li>
+</ul>
+<li class="navigation-elm"><a href="../../functionalities/modules/__head_de.html">Module</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../functionalities/modules/readModuleInfo_de.html">readModuleInfo</a></li>
+<li class="navigation-elm"><a href="../../functionalities/modules/loadModules_de.html">loadModules</a></li>
+<li class="navigation-elm"><a href="../../functionalities/modules/getModule_de.html">getModule</a></li>
+<li class="navigation-elm"><a href="../../functionalities/modules/getModulesIdByName_de.html">getModulesIdByName</a></li>
+<li class="navigation-elm"><a href="../../functionalities/modules/getModulesByName_de.html">getModulesByName</a></li>
+<li class="navigation-elm"><a href="../../functionalities/modules/getModuleDef_de.html">getModuleDef</a></li>
+<li class="navigation-elm"><a href="../../functionalities/modules/getModuleDefByPrefix_de.html">getModuleDefByPrefix</a></li>
+<li class="navigation-elm"><a href="../../functionalities/modules/getModuleByName_de.html">getModuleByName</a></li>
+<li class="navigation-elm"><a href="../../functionalities/modules/createModule_de.html">createModule</a></li>
+<li class="navigation-elm"><a href="../../functionalities/modules/class__module_de.html">class _module</a></li>
+</ul>
+<li class="navigation-elm"><a href="../../functionalities/localization/__head_de.html">Lokalisierung</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../functionalities/localization/readLanguageInfo_de.html">readLanguageInfo</a></li>
+<li class="navigation-elm"><a href="../../functionalities/localization/localizeModule_de.html">localizeModule</a></li>
+<li class="navigation-elm"><a href="../../functionalities/localization/Locale_de.html">Locale</a></li>
+<li class="navigation-elm"><a href="../../functionalities/localization/initializeLanguage_de.html">initializeLanguage</a></li>
+</ul>
+<li class="navigation-elm"><a href="../../functionalities/keybindings/__head_de.html">Key Bindings</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../functionalities/keybindings/_keybinderGetKeysByIdentifier_de.html">_keybinderGetKeysByIdentifier</a></li>
+<li class="navigation-elm"><a href="../../functionalities/keybindings/_keybinderCheckKeyBind_de.html">_keybinderCheckKeyBind</a></li>
+<li class="navigation-elm"><a href="../../functionalities/keybindings/saveKeyBindings_de.html">saveKeyBindings</a></li>
+<li class="navigation-elm"><a href="../../functionalities/keybindings/loadKeyBindings_de.html">loadKeyBindings</a></li>
+<li class="navigation-elm"><a href="../../functionalities/keybindings/getKeyCodeIdentifier_de.html">getKeyCodeIdentifier</a></li>
+<li class="navigation-elm"><a href="../../functionalities/keybindings/getKeyBindingObjById_de.html">getKeyBindingObjById</a></li>
+<li class="navigation-elm"><a href="../../functionalities/keybindings/class__KeyBinding_de.html">class _KeyBinding</a></li>
+<li class="navigation-elm"><a href="../../functionalities/keybindings/bindKeyToObj_de.html">bindKeyToObj</a></li>
+</ul>
+<li class="navigation-elm"><a href="../../functionalities/dialogs/__head_de.html">Dialoge</a></li><ul class="navigation-sublist">
+</ul>
+<li class="navigation-elm"><a href="../../functionalities/config/__head_de.html">config.js</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../functionalities/config/setConfigData_de.html">setConfigData</a></li>
+<li class="navigation-elm"><a href="../../functionalities/config/setClonkPath_de.html">setClonkPath</a></li>
+<li class="navigation-elm"><a href="../../functionalities/config/sc.clonkpath_de.html">_sc.clonkpath</a></li>
+<li class="navigation-elm"><a href="../../functionalities/config/saveConfig_de.html">saveConfig</a></li>
+<li class="navigation-elm"><a href="../../functionalities/config/loadConfig_de.html">loadConfig</a></li>
+<li class="navigation-elm"><a href="../../functionalities/config/getConfig_de.html">getConfig</a></li>
+<li class="navigation-elm"><a href="../../functionalities/config/getConfigData_de.html">getConfigData</a></li>
+<li class="navigation-elm"><a href="../../functionalities/config/class_ConfigEntry_de.html">class ConfigEntry</a></li>
+<li class="navigation-elm"><a href="../../functionalities/config/addConfigString_de.html">addConfigString</a></li>
+</ul>
+</ul>
+<li class="navigation-elm"><a href="../../externalapplications/__head_de.html">Externe Anwendungen</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../externalapplications/class_ExtApplication_de.html">class ExtApplication</a></li>
+</ul>
+<li class="navigation-elm"><a href="../../ctypes/__head_de.html">CTypes / Windmill Interface</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../ctypes/wmIProcess_de.html">wmIProcess</a></li>
+<li class="navigation-elm"><a href="../../ctypes/WindmillInterface_de.html">Windmill Interface</a></li>
+</ul>
+
+				</ul>
+			</nav>
+			<div id="content">
+				<h1 id="class-deck">class Deck</h1>
+<p><strong>extends</strong> WindmillObject</p>
+<pre><code class="lang-fnpreview"><span class="token keyword" >constructor</span><span class="token fnname" > Deck</span><span class="token punctuation" >(</span><span class="token datatype" >HTMLElement</span><span class="token punctuation" >/</span><span class="token datatype" >XULElement</span><span class="token punctuation" >/</span><span class="token datatype" >jQueryObject</span> container<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >HTMLElement</span><span class="token punctuation" >/</span><span class="token datatype" >XULElement</span><span class="token punctuation" >/</span><span class="token datatype" >jQueryObject</span> navEl<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >string</span> lang<span class="token punctuation" >,</span> <span class="token datatype" >int</span> id<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Erzeugt eine <code>Deck</code>-Instanz mit den angegebenen Werten.</p>
+<ul>
+<li><strong>container:</strong><br>Container-Element, dass das Deck enthalten soll.</li>
+<li><strong>navEl:</strong><br>Container-Element, dass die Navigation enthalten soll.</li>
+<li><strong>lang:</strong><br>Sprache in der das Modul geschrieben worden ist. <strong>Gültige Werte:</strong> &quot;html&quot; und &quot;xul&quot;. (&quot;xul&quot; ist der Standardwert.) <strong>Hinweis:</strong> Obwohl hier der Wert &quot;html&quot; erlaubt ist, werden die Decks aktuell nur unter XUL unterstützt.</li>
+<li><strong>id:</strong><br>Eindeutige ID des Decks.</li>
+</ul>
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > updateScroller</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Aktualisert die Scrollbalken-Anzeige der Navigation.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > updateNavigation</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Aktualisiert die Navigation auf die aktuelle Scrollposition.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >bool</span><span class="token fnname" > checkIfLabelIsUsed</span><span class="token punctuation" >(</span><span class="token datatype" >string</span> label<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >int</span> ignoreID<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Schaut, ob das angegebene Label bereits schon von einem Tab verwendet wird. (Bspw. zur Vermeidung doppelter gleicher Labels.)</p>
+<ul>
+<li><strong>label:</strong><br>Label nach dem gesucht werden soll.</li>
+<li><strong>ignoreID:</strong><br>Falls angegeben, ID des Tabs welches von der Suche ignoriert werden soll.</li>
+</ul>
+<pre><code class="lang-fnpreview"><span class="token datatype" >int</span><span class="token fnname" > getModuleId</span><span class="token punctuation" >(</span><span class="token datatype" >string</span> name<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >int</span> index<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Gibt zurück, an welcher Stelle im Deck sich das angegebene Modul befindet. Falls das angegebene Modul im Deck nicht gefunden worden ist, wird stattdessen -1 zurückgegeben.</p>
+<ul>
+<li><strong>name:</strong><br>Name des Moduls nach dem gesucht werden soll.</li>
+<li><strong>index:</strong><br>Index des gesuchten Moduls unter den Treffern. (Falls das gleiche Modul häufiger als einmal im Deck vorkommt)</li>
+</ul>
+<pre><code class="lang-fnpreview"><span class="token datatype" >bool</span><span class="token fnname" > canTogglePage</span><span class="token punctuation" >(</span><span class="token optional" >[opt]</span> <span class="token datatype" >int</span> newPageId<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Prüft, ob das Tab des Decks (auf die neue Seite) gewechselt werden kann. Hierbei wird, falls es sich bei der aktuellen Seite um ein Tab mit einem Iframe handelt, der Callback <code>rejectDeckPageLeave</code> aufgerufen. Für weitere Informationen, siehe <a href="#Callbacks">Callbacks</a>.</p>
+<ul>
+<li><strong>newPageId:</strong><br>ID des Tabs, auf dessen Seite versucht wird zu wechseln.</li>
+</ul>
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > desc</span><span class="token punctuation" >(</span><span class="token datatype" >string</span> text<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >string</span><span class="token punctuation" >/</span><span class="token datatype" >int</span> prefix<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Setzt die Beschreibung des Decks falls kein Tab ausgewählt wurde.</p>
+<ul>
+<li><strong>text:</strong><br>Neuer Inhalt der Beschreibung.</li>
+<li><strong>prefix:</strong><br>Lokalisierungspräfix für die Beschreibung. Lokalisierungspräfix des aktuellen Moduls, falls nicht angegeben. Falls ein leerer String angegeben wird (&quot;&quot;) oder -1 angegeben wird, werden Übersetzungen des Hauptfensters geladen.</li>
+</ul>
+<pre><code class="lang-fnpreview"><span class="token datatype" >int</span><span class="token fnname" > add</span><span class="token punctuation" >(</span><span class="token datatype" >HTMLElement</span><span class="token punctuation" >/</span><span class="token datatype" >XULElement</span> el<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >string</span> label<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >bool</span> fDeligate<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >bool</span> fCloseable<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >bool</span> fPreventShow<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >object</span> options<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Fügt dem Deck ein Element hinzu.</p>
+<ul>
+<li><strong>el:</strong><br>Neues Element dass dem Deck hinzugefügt werden soll.</li>
+<li><strong>label:</strong><br>Schriftzug für den zugehörigen Tab in der Navigation.</li>
+<li><strong>fDeligate:</strong><br>Falls <code>true</code>, so werden Calls bei Anzeigen und bei Entfernen des jeweiligen Tabs an das entsprechende Element weitergeleitet. Dies ist nur gültig, wenn es sich bei dem Element um ein <code>iframe</code>-Element handelt, ansonsten wird ein Fehler geworfen. Siehe <a href="#Callbacks">Callbacks</a> für weitere Informationen.</li>
+<li><strong>fCloseable:</strong><br>Falls <code>true</code>, so wird dem Tab in der Navigation ein Knopf zum Schließen hinzugefügt. </li>
+<li><strong>fPreventShow:</strong><br>Falls <code>true</code>, so wird der Tab nicht sofort angezeigt nachdem dieser dem Deck hinzugefügt worden ist.</li>
+<li><strong>options:</strong><br>Weitere Optionen.<ul>
+<li><strong>icon:</strong><br>Pfad zu einem Icon für den zugehörigen Tab in der Navigation.</li>
+<li><strong>filepath:</strong><br>Pfad zu der Datei das von dem jeweiligen Tab bearbeitet wird. Wird hauptsächlich für den Entwicklermodus gebraucht um korrekte Ergebnisse für den <code>_sc.workpath</code>-Shortcut zu liefern.</li>
+<li><strong>file:</strong><br>Alternativ zu <em>filepath</em>: <code>nsIFile</code>-Instanz der Datei das von dem jeweiligen Tab bearbeitet wird. Wird hauptsächlich für den Entwicklermodus gebraucht um korrekte Ergebnisse für den <code>_sc.workpath</code>-Shortcut zu liefern.</li>
+<li><strong>label:</strong><br>Schriftzug für den zugehörigen Tab in der Navigation. Ist gleichwertig mit dem label-Parameter und sollte nicht gesetzt zu werden.</li>
+</ul>
+</li>
+</ul>
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > addButton</span><span class="token punctuation" >(</span><span class="token datatype" >string</span> label<span class="token punctuation" >,</span> <span class="token datatype" >int</span> id<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >bool</span> fCloseable<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Erstellt einen Tab in der Navigation.</p>
+<ul>
+<li><strong>label:</strong><br>Schriftzug des Tabs.</li>
+<li><strong>id:</strong><br>ID des Tabs welches bei Klick angezeigt werden soll.</li>
+<li><strong>fCloseable:</strong><br>Falls <code>true</code>, so wird dem Tab in der Navigation ein Knopf zum Schließen hinzugefügt. </li>
+</ul>
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > detachItem</span><span class="token punctuation" >(</span><span class="token datatype" >int</span> itemId<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Entkoppelt den angegebenen Tab von dem Deck. Hierbei ist zu beachten, dass das Element <strong>nicht</strong> gelöscht wird, sondern nur nicht mehr vom Deck erfasst wird.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >bool</span><span class="token fnname" > isEmpty</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Gibt an, ob das Deck keine offenen Tabs hat.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > show</span><span class="token punctuation" >(</span><span class="token datatype" >int</span> itemId<span class="token punctuation" >,</span> <span class="token datatype" >bool</span> noFocus<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Zeigt den angegebenen Tab an.</p>
+<ul>
+<li><strong>itemId:</strong><br>ID des Tabs der angezeigt werden soll.</li>
+<li><strong>noFocus:</strong><br>Falls <code>true</code>, so wird der Fokus nicht verändert beim Wechseln der Tabs.</li>
+</ul>
+<pre><code class="lang-fnpreview"><span class="token datatype" >jQueryObject</span><span class="token fnname" > getButton</span><span class="token punctuation" >(</span><span class="token datatype" >int</span> index<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Gibt den Navigations-Tab mit dem angegebenen Index zurück.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > changeTabStatus</span><span class="token punctuation" >(</span><span class="token datatype" >int</span> status<span class="token punctuation" >,</span> <span class="token datatype" >int</span> index<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Ändert den Status des Tabs mit dem angegebenen Index auf den angegebenen Status. Folgende Werte werden für <code>status</code> akzeptiert:</p>
+<ul>
+<li><strong>0:</strong> Normalzustand.</li>
+<li><strong>1:</strong> Der Tab wird so markiert, dass dieser über ungespeicherte Änderungen verfügt.</li>
+</ul>
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > showDesc</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Zeigt die Beschreibung des Decks an.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >void</span><span class="token fnname" > addSpacer</span><span class="token punctuation" >(</span><span class="token datatype" >bool</span> fSpacer<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Fügt einen Spacer in die Navigationsleiste ein. (Nur für XUL-Module.)</p>
+<h2 id="attribute">Attribute</h2>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Typ</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>container</strong></td>
+<td>HTMLElement/XULElement/jQueryObject</td>
+<td>Container-Element, welches das Deck enthält.</td>
+</tr>
+<tr>
+<td><strong>buttonContainer</strong></td>
+<td>HTMLElement/XULElement/jQueryObject</td>
+<td>Container-Element, welches die Navigation enthält.</td>
+</tr>
+<tr>
+<td><strong>buttons</strong></td>
+<td>Array&lt;HTMLElement/XULElement&gt;</td>
+<td>Array, dass die einzelnen Tabs in der Navigationsleiste enthält.</td>
+</tr>
+<tr>
+<td><strong>lang</strong></td>
+<td>string</td>
+<td>Sprache in der das Modul geschrieben ist. <strong>Gültige Werte:</strong> &quot;html&quot; und &quot;xul&quot;. (&quot;xul&quot; ist der Standardwert.) <strong>Hinweis:</strong> Obwohl hier der Wert &quot;html&quot; erlaubt ist, werden die Decks aktuell nur unter XUL unterstützt.</td>
+</tr>
+<tr>
+<td><strong>id</strong></td>
+<td>int</td>
+<td>ID des Decks.</td>
+</tr>
+<tr>
+<td><strong>previd</strong></td>
+<td>int</td>
+<td>ID des letzten Tabs das angezeigt worden ist.</td>
+</tr>
+<tr>
+<td><strong>selectedIndex</strong></td>
+<td>int</td>
+<td>Index des aktuell ausgewählten Elements. (Verschiedene Tabs können auf das gleiche Element verweisen.)</td>
+</tr>
+<tr>
+<td><strong>selectedId</strong></td>
+<td>int</td>
+<td>ID des aktuell ausgewählten Tabs.</td>
+</tr>
+<tr>
+<td><strong>nextId</strong></td>
+<td>int</td>
+<td>ID des nächsten, neu erstellten Tabs.</td>
+</tr>
+<tr>
+<td><strong>items</strong></td>
+<td>Array&lt;HTMLElement/XULElement&gt;</td>
+<td>Array der Elemente, die angezeigt werden sollen. Index im Array entspricht der zugehörigen Tab-ID.</td>
+</tr>
+<tr>
+<td><strong>deligated</strong></td>
+<td>Array&lt;bool&gt;</td>
+<td>Array welches angibt, ob Calls an das jeweilige Iframe weitergeleitet werden sollen (falls vorhanden). Index im Array entspricht der zugehörigen Tab-ID.</td>
+</tr>
+<tr>
+<td><strong>options</strong></td>
+<td>Array&lt;options&gt;</td>
+<td>Array was die zugehörigen Optionen der einzelnen Tabs enthält. Für weitere Informationen, siehe <a href="#">add()</a>. Index im Array entspricht der zugehörigen Tab-ID.</td>
+</tr>
+<tr>
+<td><strong>element</strong></td>
+<td>HTMLElement/XULElement</td>
+<td>Deck-Element.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="callbacks">Callbacks</h2>
+<pre><code class="lang-fnpreview"><span class="token eventname" >showDeckItem</span>:<span class="token fnname" > function</span><span class="token punctuation" >(</span><span class="token datatype" >int</span> itemId<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Wird in einem Iframe aufgerufen, falls ein Tab das dem jeweiligen Iframe zugewiesen wurde angezeigt wird.</p>
+<ul>
+<li><strong>itemId:</strong><br>ID des Tabs das angezeigt wird.</li>
+</ul>
+<pre><code class="lang-fnpreview"><span class="token eventname" >removeDeckItem</span>:<span class="token fnname" > function</span><span class="token punctuation" >(</span><span class="token datatype" >int</span> itemId<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Wird in einem Iframe aufgerufen, falls ein Tab das dem jeweiligen Iframe zugewiesen wurde entfernt wird.</p>
+<ul>
+<li><strong>itemId:</strong><br>ID des Tabs das entfernt wird.</li>
+</ul>
+<pre><code class="lang-fnpreview"><span class="token eventname" >frameWindowTitle</span>:<span class="token fnname" > function</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Wird beim Anzeigen eines Tabs im jeweiligen Iframe aufgerufen. Als Rückgabewert wird ein String erwartet, der in der Titelleiste von Windmill vor &quot; - Windmill&quot; angezeigt wird. Wird nichts oder <code>-1</code> zurückgegeben, so wird nur &quot;Windmill&quot; in der Titelleiste angezeigt.</p>
+<pre><code class="lang-fnpreview"><span class="token eventname" >rejectDeckPageLeave</span>:<span class="token fnname" > function</span><span class="token punctuation" >(</span><span class="token datatype" >Deck</span> deck<span class="token punctuation" >,</span> <span class="token datatype" >int</span> newPageId<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Wird in einem Iframe aufgerufen, bevor ein Wechsel des Tabs stattfindet. Falls der Callback <code>true</code> zurückgibt, so wird ein Wechsel des Tabs verhindert.</p>
+<ul>
+<li><strong>deck:</strong><br>Das Deckobjekt in dem sich die Tabs befinden.</li>
+<li><strong>newPageId:</strong><br>ID des neuen Tabs, auf den versucht wird zu wechseln.</li>
+</ul>
+<h2 id="events">Events</h2>
+<pre><code class="lang-fnpreview"><span class="token eventname" >addItem</span>:<span class="token fnname" > function</span><span class="token punctuation" >(</span><span class="token datatype" >Deck</span> deck<span class="token punctuation" >,</span> <span class="token datatype" >int</span> id<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Wird aufgerufen, falls ein neues Element dem Deck hinzugefügt worden ist.</p>
+<ul>
+<li><strong>deck:</strong><br>Das jeweilige Deckobjekt.</li>
+<li><strong>id:</strong><br>ID des Tabs das neu hinzugefügt worden ist.</li>
+</ul>
+<pre><code class="lang-fnpreview"><span class="token eventname" >btnCreated</span>:<span class="token fnname" > function</span><span class="token punctuation" >(</span><span class="token datatype" >Deck</span> deck<span class="token punctuation" >,</span> <span class="token datatype" >HTMLElement</span><span class="token punctuation" >/</span><span class="token datatype" >XULElement</span> button<span class="token punctuation" >,</span> <span class="token datatype" >int</span> id<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Wird aufgerufen, falls ein neuer Tab in die Navigationsleiste des Decks hinzugefügt wurde.</p>
+<ul>
+<li><strong>deck:</strong><br>Das jeweilige Deckobjekt.</li>
+<li><strong>button:</strong><br>Das HTML/XUL-Element des Navigations-Tab-Elements.</li>
+<li><strong>id:</strong><br>ID des zugehörigen Tabs.</li>
+</ul>
+<pre><code class="lang-fnpreview"><span class="token eventname" >itemDetached</span>:<span class="token fnname" > function</span><span class="token punctuation" >(</span><span class="token datatype" >Deck</span> deck<span class="token punctuation" >,</span> <span class="token datatype" >int</span> id<span class="token punctuation" >,</span> <span class="token datatype" >HTMLElement</span><span class="token punctuation" >/</span><span class="token datatype" >XULElement</span> elm<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Wird aufgerufen, falls ein Element aus dem Deck entfernt wurde.</p>
+<ul>
+<li><strong>deck:</strong><br>Das jeweilige Deckobjekt.</li>
+<li><strong>id:</strong><br>ID des Tabs das entkoppelt worden ist.</li>
+<li><strong>elm:</strong><br>Element das entkoppelt worden ist. (Das Element ist zum Zeitpunkt des Calls nicht mehr im Deckobjekt hinterlegt)</li>
+</ul>
+<pre><code class="lang-fnpreview"><span class="token eventname" >preShowItem</span>:<span class="token fnname" > function</span><span class="token punctuation" >(</span><span class="token datatype" >Deck</span> deck<span class="token punctuation" >,</span> <span class="token datatype" >int</span> id<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Wird kurz bevor das jeweilige Tab angezeigt wird aufgerufen.</p>
+<ul>
+<li><strong>deck:</strong><br>Das jeweilige Deckobjekt.</li>
+<li><strong>id:</strong><br>ID des Tabs das angezeigt werden soll.</li>
+</ul>
+<pre><code class="lang-fnpreview"><span class="token eventname" >showItem</span>:<span class="token fnname" > function</span><span class="token punctuation" >(</span><span class="token datatype" >Deck</span> deck<span class="token punctuation" >,</span> <span class="token datatype" >int</span> id<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Wird aufgerufen wenn das jeweilige Tab angezeigt wird.</p>
+<ul>
+<li><strong>deck:</strong><br>Das jeweilige Deckobjekt.</li>
+<li><strong>id:</strong><br>ID des Tabs das angezeigt wird.</li>
+</ul>
+
+			</div>
+		</div>
+	</body>
+</html>

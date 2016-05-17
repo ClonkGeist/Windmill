@@ -2,6 +2,8 @@
 
 # class WorkEnvironment
 
+**extends** WindmillObject
+
 ```fnpreview
 constructor WorkEnvironment(string path, int Type, id, [opt] object options);
 ```
