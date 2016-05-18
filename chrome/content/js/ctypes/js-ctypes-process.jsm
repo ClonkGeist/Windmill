@@ -100,7 +100,7 @@ class wmProcess extends WindmillInterface {
 			if(blocking)
 				flags ^= wmP_BLOCKING
 
-			dump("Create Process with command line " + cmdLine + "\r\n");
+			dump("Create Process with command line " + cmdLine + " (Flags: " + sfl(flags, this) + ")\r\n");
 			if(!CreateProcess(this.path, this.name+cmdLine, null, null, true, sfl(flags, this), null, null, this.si.address(), this.pi.address())) {
 				throw "Process could not be created. Error code: " + GetLastError();
 				return;

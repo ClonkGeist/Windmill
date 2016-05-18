@@ -39,7 +39,7 @@ function localizeModule() {
 
 	function fnLocale(i, obj) {
 		//Keine Lokalisierung
-		if($(obj).attr("no_localization"))
+		if($(obj).attr("data-no-localization"))
 			return;
 
 		//Attribute durchgehen

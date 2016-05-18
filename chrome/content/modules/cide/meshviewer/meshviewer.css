@@ -1,7 +1,4 @@
 /* deprecated */
-/* recommended */
-/* deprecated */
-/* recommended */
 /*-- Sammelstyles fuer Inhalte der default_module.js --*/
 .eventinfo {
   background-color: black;
@@ -388,6 +385,18 @@
 .icon-auto-scan-side:before {
   content: "AutoS"; }
 
+.icon-singleplayer:before {
+  content: "\e62a"; }
+
+.icon-password:before {
+  content: "Pw"; }
+
+.icon-comment:before {
+  content: "C"; }
+
+.icon-startgame:before {
+  content: "St"; }
+
 .clrpckr-wrapper {
   flex-direction: column; }
 
@@ -432,31 +441,28 @@
 window {
   font-family: "Segoe UI", "Trebuchet MS", sans-serif; }
 
-.settings-page-nav > * {
-  text-align: center;
-  color: grey;
-  padding: 2px;
-  margin-right: 2px;
-  margin-left: 2px;
-  border-radius: 2px;
-  -moz-outline-radius: 2px; }
-  .settings-page-nav > *:hover {
-    background-color: gainsboro; }
-  .settings-page-nav > *.enabled:hover, .settings-page-nav > *.enabled {
-    background-color: gainsboro;
-    outline: 1px solid #b4b4b4; }
-
-.settings-page {
-  display: none; }
-  .settings-page.visible {
-    display: -moz-box; }
-
 #settings {
   background-color: whitesmoke;
   padding: 7px;
   padding-top: 2px;
-  cursor: default;
-  transition: width 0.2s; }
+  cursor: default; }
+
+#open-settings {
+  display: none;
+  cursor: default; }
+
+#close-settings {
+  font-size: 12px;
+  color: #b4b4b4; }
+
+#close-settings:hover {
+  color: grey; }
+
+#settings-wrapper.hidden #open-settings {
+  display: initial; }
+
+#settings-wrapper.hidden #settings {
+  display: none; }
 
 #background-selection > *:hover {
   background-color: gainsboro; }
@@ -493,10 +499,43 @@ canvas {
   margin: 0;
   padding: 0; }
 
+@font-face {
+  font-family: 'icomoon';
+  src: url("chrome://windmill/skin/icomoon.ttf?-icmbrc") format("truetype");
+  font-weight: normal;
+  font-style: normal; }
+
+@-moz-keyframes windmill {
+  0% {
+    -moz-transform: rotate3d(0, 0, 1, 0deg); }
+  100% {
+    -moz-transform: rotate3d(0, 0, 1, 360deg); } }
+
+@keyframes windmill {
+  0% {
+    transform: rotate(0deg); }
+  100% {
+    transform: rotate(360deg); } }
+
+.loading:before {
+  content: "\e629";
+  color: gainsboro;
+  font-family: "icomoon";
+  font-size: 64px; }
+
+.loading {
+  -moz-osx-font-smoothing: grayscale;
+  animation: 2s linear 0s normal none infinite running windmill; }
+
+#loading-screen {
+  display: none;
+  pointer-events: none; }
+
 /*
 	background
 */
 .canvas-wrapper.appearance-light {
+  background-color: #fafafa;
   background-color: transparent; }
 
 .canvas-wrapper.appearance-dark {
@@ -574,41 +613,14 @@ canvas {
   padding: 2px;
   margin-right: 2px;
   margin-left: 2px;
-  border-radius: 2px;
-  -moz-outline-radius: 2px; }
+  border-radius: 2px; }
   .vo-button:hover {
     background-color: gainsboro; }
   .vo-button.enabled:hover, .vo-button.enabled {
     background-color: gainsboro;
     outline: 1px solid #b4b4b4; }
 
-/* resource manager */
-.texture-unit-entry,
-.mat-file {
-  transition: opacity .2s;
-  opacity: 1;
-  background-color: inherit; }
-
-.fade-in {
-  background-color: #00a5d2;
-  transition: background-color .3s, opacity .2s;
-  opacity: 0; }
-
-.highlighted {
-  /*
-	background-color: $interact-blue;
-	transition: background-color .3s;
-	outline: 2px solid $interact-orange;*/
-  background-color: rgba(0, 165, 207, 0.15);
-  outline: 1px solid rgba(0, 165, 207, 0.3);
-  outline-offset: -1px; }
-
 .draft {
   display: none; }
-
-.resource-list {
-  display: none; }
-  .resource-list.visible2 {
-    display: -moz-box; }
 
 /*			Fin 		*/

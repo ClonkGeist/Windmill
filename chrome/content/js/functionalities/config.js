@@ -22,33 +22,41 @@ class ConfigEntry extends WindmillObject {
 	get type() { return this._type; }
 	set type(type) { this._type = type.toLowerCase(); }
 
+	get stringvalue() {
+		switch(this.type) {
+			case "array":
+			case "object":
+				return JSON.stringify(this.value);
+		}
+
+		return this.value;
+	}
 	get value() {
 		execHook("onReadingAccess");
 
-		/*var valup = this._value.toUpperCase();
 		switch(this.type) {
 			case "boolean":
 			case "bool":
+				let valup;
+				if(typeof this.tempvalue == "string")
+					valup = this.tempvalue.toUpperCase();
+				else 
+					return this.tempvalue;
 				if(valup != "FALSE" && valup != "UNDEFINED" && valup != "NULL" && valup != "0" && valup.length)
 					return true;
 				return false;
 
 			case "path":
-				return formatPath(this._value);
-
-			case "array":
-			case "object":
-				return JSON.parse(this._value);
+				return formatPath(this.tempvalue);
 
 			case "int":
 			case "integer":
 			case "number":
-				return parseInt(this._value);
+				return parseInt(this.tempvalue);
 
 			default:
-				return this._value;
-		}*/
-		return this.tempvalue;
+				return this.tempvalue;
+		}
 	}
 	set value(val) {
 		if(this.readOnly) {
@@ -75,16 +83,15 @@ class ConfigEntry extends WindmillObject {
 				case "array":
 				case "object":
 					val = JSON.parse(val);
+					break;
 
 				case "int":
 				case "integer":
 				case "number":
 					val = parseInt(val);
+					break;
 			}
 		}
-		//Nur Temporaer, soll wieder raus wenn alles umgestellt ist
-		if(typeof val == "object")
-			val = JSON.stringify(val);
 
 		this.tempvalue = val;
 		if(this.alwaysSave)
@@ -96,7 +103,7 @@ var CONFIG = [], CONFIG_BACKUP = [], CONFIG_FIRSTSTART = false;
 let clonkpath_id;
 
 function setClonkPath(val = 0) {
-	let paths = JSON.parse(getConfigData("Global", "ClonkDirectories"));
+	let paths = getConfigData("Global", "ClonkDirectories");
 	if(typeof val == "string") {
 		for(var i = 0; i < paths.length; i++) {
 			if(paths[i].active)
@@ -122,7 +129,7 @@ function setClonkPath(val = 0) {
 
 //Shortcut hinzufügen
 _sc.clonkpath = function(index = 0, findnext = true) {
-	let clonkdirs = JSON.parse(getConfigData("Global", "ClonkDirectories"));
+	let clonkdirs = getConfigData("Global", "ClonkDirectories");
 	if(clonkpath_id === undefined) {
 		for(var i = 0; i < clonkdirs.length; i++)
 			if(clonkdirs[i].active) {
@@ -143,6 +150,7 @@ _sc.clonkpath = function(index = 0, findnext = true) {
 	if(clonkdirs[index])
 		return formatPath(clonkdirs[index].path);
 };
+_sc.clonkpathlength = function() { return getConfigData("Global", "ClonkDirectories").length; }
 
 function addConfigString(section, key, defaultval, ...pars) {
 	if(!CONFIG[section])
@@ -159,8 +167,8 @@ function getConfig() { return CONFIG; }
 
 function initializeConfig() {
 	addConfigString("Global", "DevMode", false);
-	addConfigString("Global", "ClonkDirectories", "[]").hook("onWritingAccess", function(val) {
-		if(this.value == "[]" && val instanceof Array) {
+	addConfigString("Global", "ClonkDirectories", "[]", "array").hook("onWritingAccess", function(val) {
+		if(!this.value.length && val instanceof Array) {
 			for(var i = 0; i < val.length; i++)
 				if(val[i].active)
 					setClonkPath(i);
@@ -174,7 +182,7 @@ function initializeConfig() {
 	//CBridge
 	
 	//ShowGame
-	addConfigString("ShowGame", "Notifications", "");
+	addConfigString("ShowGame", "Notifications", "[]", "array");
 	addConfigString("ShowGame", "PortScan", true);
 	addConfigString("ShowGame", "NotificationsShowEmpty", false);
 	addConfigString("ShowGame", "MasterserverURL", "http://league.clonkspot.org/");
@@ -295,7 +303,7 @@ function saveConfig(special) {
 					CONFIG[sect][key].apply();
 
 				if(!CONFIG[sect][key].runTimeOnly)
-					text += key+"="+CONFIG[sect][key].value+"\r\n";
+					text += key+"="+CONFIG[sect][key].stringvalue+"\r\n";
 			}
 		}
 	}
@@ -364,7 +372,7 @@ function configVersionUpdate(version) {
 			removedEntries.push(["CIDE", "AU_RTF"], ["CIDE", "ExtProg_RTF"]);
 		case "0.15":
 			if(getConfigData("Global", "ClonkDirectories")) {
-				let clonkdirs = JSON.parse(getConfigData("Global", "ClonkDirectories"));
+				let clonkdirs = getConfigData("Global", "ClonkDirectories");
 				for(var i = 0; i < clonkdirs.length; i++)
 					if(clonkdirs[i])
 						clonkdirs[i] = { path: clonkdirs[i], active: !i};

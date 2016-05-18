@@ -1,7 +1,4 @@
 /* deprecated */
-/* recommended */
-/* deprecated */
-/* recommended */
 /*-- Sammelstyles fuer Inhalte der default_module.js --*/
 .eventinfo {
   background-color: black;
@@ -96,6 +93,12 @@ li {
   padding-left: 0.5em;
   padding-right: 0.5em;
   text-overflow: ellipsis; }
+
+li.tree-groupfile-packed {
+  font-style: italic;
+  color: #444; }
+  li.tree-groupfile-packed description:after {
+    content: ' (packed)'; }
 
 li:focus *, li:focus {
   outline: none; }
@@ -497,6 +500,18 @@ li:focus *, li:focus {
 
 .icon-auto-scan-side:before {
   content: "AutoS"; }
+
+.icon-singleplayer:before {
+  content: "\e62a"; }
+
+.icon-password:before {
+  content: "Pw"; }
+
+.icon-comment:before {
+  content: "C"; }
+
+.icon-startgame:before {
+  content: "St"; }
 
 .toolbar {
   height: 24px;

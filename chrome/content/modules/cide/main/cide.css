@@ -1,7 +1,4 @@
 /* deprecated */
-/* recommended */
-/* deprecated */
-/* recommended */
 /*-- Sammelstyles fuer Inhalte der default_module.js --*/
 .eventinfo {
   background-color: black;
@@ -388,6 +385,18 @@
 .icon-auto-scan-side:before {
   content: "AutoS"; }
 
+.icon-singleplayer:before {
+  content: "\e62a"; }
+
+.icon-password:before {
+  content: "Pw"; }
+
+.icon-comment:before {
+  content: "C"; }
+
+.icon-startgame:before {
+  content: "St"; }
+
 window {
   font-family: "Segoe UI", "Trebuchet MS", sans-serif;
   background-color: #ebebeb; }
@@ -438,6 +447,8 @@ toolbox {
 
 .deck-nav-elm.state-unsaved {
   color: #dc4632; }
+  .deck-nav-elm.state-unsaved:hover {
+    color: #8c140a; }
 
 .deck-nav-elm:hover {
   background-color: #fafafa; }
@@ -449,13 +460,14 @@ toolbox {
   color: grey;
   padding: 0 0 0 2px;
   margin: 0 0 0 .3em;
+  border-radius: 14px;
   -moz-box-align: center;
   font-size: 10px; }
-  .close-button:hover {
-    color: #fafafa;
-    background-color: #dc4632;
-    outline: 3px solid #dc4632;
-    -moz-outline-radius: 14px; }
+
+.close-button:hover {
+  color: #fafafa;
+  background-color: #dc4632;
+  outline: 2px solid #dc4632; }
 
 .deck-desc {
   color: #b4b4b4;

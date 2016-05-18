@@ -1,4 +1,6 @@
-$(window).ready(function() {
+let keybinding_changes = false;
+
+hook("load", function() {
 	setTimeout(function() {
 		$(".view-directory-path").each(function() {
 			var options = filePickerOptions($(this).attr("id"));
@@ -44,7 +46,8 @@ $(window).ready(function() {
 		//KeyBindings auflisten
 		var keybindings = _mainwindow.customKeyBindings, current_prefix;
 
-		for(let key in keybindings) {
+		for(var key2 in keybindings) {
+			let key = key2;
 			var t = key.split("_");
 			var prefix = t[0], val = keybindings[key];
 
@@ -88,11 +91,11 @@ $(window).ready(function() {
 				//Dialog öffnen
 				var dlg = new WDialog("$DlgApplyNewKey$", MODULE_LPRE, { modal: true, cancelOnModal: true, simple: true, css: { "width": "450px" }});
 				dlg.show();
-				
+
 				$(dlg.element).keydown((e) => {
 					if(["Shift", "Control", "Alt"].indexOf(e.key) != -1)
 						return;
-				
+
 					var keystr = "";
 					if(e.ctrlKey)
 						keystr += "Ctrl-";
@@ -103,11 +106,17 @@ $(window).ready(function() {
 
 					var lkeystr = keystr + getKeyCodeIdentifier(e.keyCode, true);
 					keystr += getKeyCodeIdentifier(e.keyCode);
-					
+
+					let applyKeyBinding = (key, val) => {
+						$(this).find(".pkb-list-entry-keys").text(val);
+						_mainwindow.customKeyBindings[key] = val;
+						keybinding_changes = true;
+					}
+
 					var ckey, prefix = $(this).attr("lprefix");
 					if(ckey = isShortcutAlreadyInUse(keystr, prefix)) {
 						dlg.hide();
-						
+
 						var ckeydata = ckey.match(/(.*?)_(.+)/i);
 						if(ckeydata[0] == $(this).attr("keyname"))
 							return;
@@ -116,8 +125,7 @@ $(window).ready(function() {
 							btnright: [{preset: "accept", onclick: function(e, btn, _self) {
 								$(".pkb-list-entry[keyname="+ckey+"]").find(".pkb-list-entry-keys").text("");
 								_mainwindow.customKeyBindings[ckey] = "";
-								$(this).find(".pkb-list-entry-keys").text(lkeystr);
-								_mainwindow.customKeyBindings[key] = keystr;
+								applyKeyBinding(key, keystr);
 							}}, "cancel"]});
 
 						dlg.setContent(`<description style="width: 450px;">$DlgConflictedKeyDesc$</description>
@@ -128,15 +136,14 @@ $(window).ready(function() {
 						dlg.show();
 					}
 					else {
-						$(this).find(".pkb-list-entry-keys").text(lkeystr);
-						_mainwindow.customKeyBindings[key] = keystr;
+						applyKeyBinding(key, keystr);
 
 						dlg.hide();
 					}
 				});
 			});
 		}
-	
+
 		$("#restartBarButton").click(function() {
 			var files = [];
 			if(getModuleByName("cide"))
@@ -195,25 +202,31 @@ $(window).ready(function() {
 			});
 		}
 
+		//Simplere Einstellungselemente automatisch initialisieren
 		$(".autoinit").each(function() {
-			var sect = $(this).attr("default-cfgsect");
-			var key = $(this).attr("default-cfgkey");
+			let sect = $(this).attr("default-cfgsect");
+			let key = $(this).attr("default-cfgkey");
 			if(!sect || !key)
 				throw "No section or key for auto initialized settings element defined.";
-			var val = getConfigData(sect, key);
+			let val = getConfigData(sect, key), event = "command";
 
+			//Wert und Event je nach Elementart setzen
 			switch($(this).prop("tagName").toLowerCase()) {
 				case "checkbox":
 					$(this).attr("checked", val);
+					break;
+
+				case "textbox":
+					event = "input";
+					$(this).val(val);
 					break;
 
 				default:
 					$(this).val(val);
 					break;
 			}
-			$(this).on("command", function() {
-				var sect = $(this).attr("default-cfgsect"), key = $(this).attr("default-cfgkey"), val;
-
+			//Bei Veraenderung diese in der Config temporaer speichern
+			$(this).on(event, function() {
 				switch($(this).prop("tagName").toLowerCase()) {
 					case "checkbox":
 						val = $(this).attr("checked");
@@ -240,15 +253,96 @@ $(window).ready(function() {
 	}, 1);
 });
 
-function rejectDeckPageLeave(deck, newPageId) {
-	let changed = false, cfg = getConfig();
-	for(var sect in cfg)
-		for(var key in cfg[sect])
-			if(cfg[sect][key].value != cfg[sect][key]._value) {
-				changed = true;
-				break;
+const TEMPORARY_DATA_PATH = _sc.profd+"/tmp";
+let clearTempDataTask;
+
+function showDeckItem() {
+	if(clearTempDataTask)
+		return;
+
+	clearTempDataTask = Task.spawn(function*() {
+		$("#clear-temp-data").attr("data-additional", Locale("$Calculating$"));
+		function* calcDirSize(fpath) {
+			if(clearTempDataTask == -2)
+				return -1;
+			let size = 0;
+			let iterator = new OS.File.DirectoryIterator(fpath);
+			entries = yield iterator.nextBatch();
+			iterator.close();
+			for(var i = 0; i < entries.length; i++) {
+				if(entries[i].isDir)
+					size += yield* calcDirSize(entries[i].path);
+				else {
+					let info = yield OS.File.stat(entries[i].path);
+					size += info.size;
+				}
+				if(clearTempDataTask == 2)
+					return -1;
 			}
-	//Falls Aenderungen die ungespeichert sind, zum Speichern auffordern
+
+			return size;
+		}
+		let totalsize = yield* calcDirSize(TEMPORARY_DATA_PATH);
+		if(totalsize == -1)
+			return -1;
+
+		if(!totalsize)
+			$("#clear-temp-data").attr("data-additional", Locale("$Empty$"));
+		else {
+			totalsize /= 1024;
+			let unit = "KB";
+			if(totalsize > 1024) {
+				totalsize /= 1024;
+				unit = "MB";
+				if(totalsize > 1024) {
+					totalsize /= 1024;
+					unit = "GB";
+				}
+			}
+			$("#clear-temp-data").attr("data-additional", Math.floor(totalsize)+" "+unit);
+		}
+	});
+	clearTempDataTask.then(function(val) {
+		if(val != -1)
+			clearTempDataTask = false;
+	}, function(reason) {
+		log("Temp Data calculation failed: " + reason);
+		clearTempDataTask = false;
+		$("#clear-temp-data").attr("data-additional", Locale("$Failed$"));
+	});
+}
+
+function clearTemporaryData() {
+	clearTempDataTask = 2;
+	Task.spawn(function*() {
+		let iterator = new OS.File.DirectoryIterator(TEMPORARY_DATA_PATH);
+		entries = yield iterator.nextBatch();
+		iterator.close();
+		for(var i = 0; i < entries.length; i++) {
+			if(entries[i].isDir)
+				yield OS.File.removeDir(entries[i].path, {ignoreAbsent: true});
+			else
+				yield OS.File.remove(entries[i].path, {ignoreAbsent: true});
+		}
+		$("#clear-temp-data").attr("data-additional", Locale("$Empty$"));
+		EventInfo("$EI_TempCleared$");
+		clearTempDataTask = false;
+	}).then(null, function(reason) {
+		log("Clearing temporary data failed: " + reason);
+		EventInfo("An error occured while trying to clear temporary data.");
+	});
+}
+
+function rejectDeckPageLeave(deck, newPageId) {
+	let changed = keybinding_changes, cfg = getConfig();
+	if(!changed)
+		for(var sect in cfg)
+			for(var key in cfg[sect])
+				if(cfg[sect][key].value != cfg[sect][key]._value) {
+					changed = true;
+					break;
+				}
+	//Falls ungespeicherte Aenderungen vorhanden sind, zum Speichern auffordern
 	if(changed) {
 		dlg = new WDialog("$DlgUnsavedChanges$", MODULE_LPRE, { modal: true, css: { "width": "450px" },
 			btnright: [{onclick: function(e, btn, _self) {
@@ -340,6 +434,7 @@ function saveSettings() {
 	Task.spawn(function*() {
 		yield saveConfig();
 		yield _mainwindow.saveKeyBindings();
+		keybinding_changes = false;
 	}).then(function() {
 		EventInfo("$EI_Saved$", -1);		
 		if(changeNeedsRestart)
@@ -350,23 +445,20 @@ function saveSettings() {
 function filePickerOptions(id) {
 	var r = {};
 	switch(id) {
-		case 'oc-path':
+		case 'c4group-path':
 			r = { 
 				cfgsect: "Global",
-				cfgkey: "ClonkPath",
-				title: "$choose_ocdir$",
-				callback: function(fpfile) {
-					//Überprüfen ob openclonk.exe vorhanden ist
-					var filename = "openclonk";
+				cfgkey: "C4GroupPath",
+				title: "$ChooseC4GroupFile$",
+				callback: function(file) {
+					let expected_filename = "c4group";
 					if(OS_TARGET == "WINNT")
-						filename = "openclonk.exe";
-
-					if(!(_sc.file(fpfile.path+"/"+filename).exists())) {
-						warn("$err_ocexecutable_not_found$");
-
+						expected_filename = "c4group.exe";
+					if(file.leafName != expected_filename || !file.isExecutable())
 						return -1;
-					}
-				}
+				},
+				mode: Ci.nsIFilePicker.modeOpen,
+				filters: Ci.nsIFilePicker.filterApps
 			};
 			break;
 
@@ -382,8 +474,10 @@ function openPathDialog(id) {
 	var options = filePickerOptions(id);
 
 	//Filepicker öffnen
-	var fp = _sc.filepicker();
-	fp.init(window, Locale(options.title), Ci.nsIFilePicker.modeGetFolder);
+	let fp = _sc.filepicker(), mode = options.mode;
+	if(mode == undefined)
+		mode = Ci.nsIFilePicker.modeGetFolder;
+	fp.init(window, Locale(options.title), mode);
 
 	var current_path = getConfigData(options.cfgsect, options.cfgkey);
 	if(current_path) {
@@ -391,6 +485,8 @@ function openPathDialog(id) {
 		if(dir.exists())
 			fp.displayDirectory = dir;
 	}
+	if(options.filters)
+		fp.appendFilters(options.filters);
 
 	var rv = fp.show();
 

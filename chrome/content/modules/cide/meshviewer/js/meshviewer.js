@@ -13,11 +13,7 @@ function initModelviewer(file, idMdl) {
 	if(!session) {
 		session = _mv.init(document.getElementById("renderer"));
 		session.enableViewControls();
-		session.ontextureload = initTextureResource;
-		session.ontextureloaderror = loadTextureResourceErr;
-		session.ontextureloadsucces = loadTextureResourceSucc;
-		
-		session.onmatload = insertMaterial;
+		session.ontextureload = insertTextureUnit;
 	}
 	
 	if(!clrpckr) {
@@ -27,52 +23,29 @@ function initModelviewer(file, idMdl) {
 		};
 	}
 	
-	var scene = scenes[idMdl] = session.addScene();
-	scene.addMesh(file);
-	scene.onskeletonset = function(skeleton, fReplacesOldSkeleton) {
+	scenes[idMdl] = session.addScene();
+	scenes[idMdl].addMesh(file);
+	scenes[idMdl].onskeletonload = function(skeleton, fReplacesOldSkeleton) {
 		
 		var l = skeleton.animations.length;
-		scene.animList = new Array(l);
+		scenes[idMdl].animList = new Array(l);
 		
 		for(var i = 0; i < l; i++)
-			scene.animList[i] = skeleton.animations[i].name;
+			scenes[idMdl].animList[i] = skeleton.animations[i].name;
 		
-		scene.currentAnimIndex = -1;
-		updateAnimationUI(scene);
+		scenes[idMdl].currentAnimIndex = -1;
+		updateAnimationUI(scenes[idMdl]);
 		
 		// reveal animation-ui section
 		document.getElementById("anim-section").className = "";
 	};
 	
-	session.onskeletonasked = function(name, sceneId) {
-		var $el = $(".skeleton-entry.draft").clone();
-		
-		$el.removeClass("draft").find(".se-name").attr("value", name);
-		
-		sceneMeta[sceneId].$resUiEl.find(".skeleton-resources").append($el);
-		
-		var e = $el.get(0);
-		
-		e.addEventListener("dragenter", function(e) {
-			let list = e.dataTransfer.files;
-			showObj2(list, 1);
-			$el.addClass("highlighted");
-		});
-		
-		e.addEventListener("dragleave", function() {
-			$el.removeClass("highlighted");
-		});
-	};
-	
 	sceneMeta[idMdl] = {
 		moduleId: idMdl,
-		$resUiEl: $(".resource-list.draft").clone(),
+		$resUiEl: $(".ressources-list.draft").clone().removeClass("draft"),
 		texture_units: [],
-		skeletons: [],
-		$matEls: {},
+		skeletons: []
 	};
-	
-	$("#resource-page").append(sceneMeta[idMdl].$resUiEl.removeClass("draft").get(0));
 	
 	resize();
 	
@@ -82,6 +55,9 @@ function initModelviewer(file, idMdl) {
 function createCideToolbar() {}
 
 function showDeckItem(idMdl) {
+	if(!scenes[idMdl])
+		return;
+
 	scenes[idMdl].show();
 	
 	var path = scenes[idMdl].fpath.substr(_sc.workpath(idMdl).length+1);
@@ -99,19 +75,14 @@ function showDeckItem(idMdl) {
 	// update UI of animation panel
 	if(scenes[idMdl].hasSkeletonRequirements()) {
 		updateAnimationUI(scenes[idMdl]);
-		if(scenes[idMdl]._anim)
-			document.getElementById("anim-section").className = "";
-		else
-			document.getElementById("anim-section").className = "hidden";
+		document.getElementById("anim-section").className = "";
 	}
-	else
+	else {
 		document.getElementById("anim-section").className = "hidden";
+	}
 	
 	setBackground("light");
 	frameUpdateWindmillTitle();
-	
-	$(".resource-list.visible2").removeClass("visible2");
-	sceneMeta[idMdl].$resUiEl.addClass("visible2");
 }
 
 function getModuleIdBySceneId(sceneId) {
@@ -127,64 +98,46 @@ function removeDeckItem(id) {
 	scenes[id] = null;
 }
 
-function updateAnimationUI(scene) {
-	var l = scene.animList.length,
+function updateAnimationUI(frame) {
+	var l = frame.animList.length,
 		el = document.getElementById("animation-list");
 	
 	el.removeAllItems();
 	for(var i = 0; i < l; i++)
-		el.appendItem(scene.animList[i], i);
+		el.appendItem(frame.animList[i], i);
 	
-	el.selectedIndex = scene.currentAnimIndex || 0;
+	el.selectedIndex = frame.currentAnimIndex || 0;
 }
 
-function initTextureResource(mesh, key, src, img) {
-	var idMdl = mesh.parentMesh._scene.id;
+function insertTextureUnit(w, h, mesh, key, src) {
 	
-	var $el = $(".texture-unit-entry.draft").clone();
+	showObj2(sceneMeta, 1);
+	var meta = sceneMeta[mesh.parentMesh._scene.id];
+	if(!meta)
+		return;
+	var a = src.split("/");
+	tex = (meta.texture_units[mesh.id] = {w, h, key});
 	
-	sceneMeta[idMdl].$resUiEl.find(".s-texture-units").append($el);
+	tex.$el = $(".texture_unit_entry.draft").clone().removeClass("draft");
 	
-	$el.removeClass("draft").addClass("fade-in").delay(3000).removeClass("fade-in");
+	tex.$el.find(".tue_file_name").text(a[a.length - 1]);
 	
-	var tu = {
-		src,
-		key,
-		img,
-		mesh,
-		$el
-	};
+	var menu_wrapper = tex.$el.find(".tue_texture_sizes").get(0);
 	
-	sceneMeta[idMdl].texture_units[sceneMeta[idMdl].texture_units.length] = tu;
+	// hardcoded node-creation because xul is weird and doesn't accept menulists that way
+	var menu = document.createElement("menulist"),
+		popup = document.createElement("popup");
+	err(menu.appendItem);
 	
-	return tu;
-}
-
-function loadTextureResourceSucc() {
-	
-}
-
-function loadTextureResourceErr() {
-	
-}
-
-function updateResourceUi(id) {
-	
-}
-
-function insertMaterial(mat, id, referredName) {
-	var $el = $(".mat-file.draft").clone();
-	log(referredName)
-	if(!mat)
-		$el.find(".mf-texture-units").text(Locale("$not_found$"));
-	
-	$el.find(".mf-name").attr("value", Locale("$material$")+ " " + referredName);
-	$el.removeClass("draft");
-	sceneMeta[id].$resUiEl.find(".mf-wrapper").append($el);
-	
-	$el.addClass("fade-in").delay(3000).removeClass("fade-in");
-	
-	
+	if(menu)
+		return;
+	for(let i = 1; i < 5; i++) {
+		let subsize = w/(2*i);
+		menu.appendItem(w/(2*i));
+		
+		if(subsize < 128)
+			break;
+	}
 }
 
 hook("load", function() {
@@ -306,21 +259,6 @@ hook("load", function() {
 	$("#reset-view-button").click(function() {
 		scenes[CM_ACTIVEID].resetView();
 	});
-	
-	$(".settings-page-nav").children().click(function() {
-		
-		let child = this;
-			
-		let index = 0;
-		while((child = child.previousSibling) != null ) 
-			index++;
-		
-		$(".settings-page-nav").children().removeClass("enabled");
-		$(this).addClass("enabled");
-		
-		$(".settings-page.visible").removeClass("visible");
-		$(".settings-page").eq(index).addClass("visible");
-	});
 });
 
 function pasteTxtIntoClipboard(txt) {
@@ -387,6 +325,7 @@ function resize() {
 	session.setViewportCorrection(w, h);
 }
 
+var fResize = false;
 window.onresize = function(e) {
 	resize();
 };

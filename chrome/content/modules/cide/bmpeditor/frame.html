@@ -5,6 +5,35 @@
 <link rel="stylesheet" type="text/css" href="chrome://windmill/content/modules/cide/bmpeditor/style.css"></link>
 </head>
 <body onload="window.readyState = true">
+	<!-- toolbar -->
+	<div id="toolbar">
+		<div id="md_default" class="toolbarbutton group1 icon-cursor"></div>
+		<div id="md_point" class="toolbarbutton group1 icon-pencil active"></div>
+		<div id="md_line" class="toolbarbutton group1 icon-draw-line"></div>
+		<div id="md_rect" class="toolbarbutton group1 icon-fill-rect"></div>
+		<div id="md_circle" class="toolbarbutton group1 icon-fill-circle"></div>
+		<div id="md_fill" class="toolbarbutton group1 icon-paint-bucket"></div>
+		<div id="md_selrect" class="toolbarbutton group1 icon-select-rect"></div>
+		<div id="md_selcircle" class="toolbarbutton group1 icon-select-circle"></div>
+		<div id="md_selpoly" class="toolbarbutton group1 icon-select-poly"></div>
+		<div id="md_getclr" class="toolbarbutton group1 icon-eyedropper"></div>
+		<div class="toolbarsplitter"></div>
+		<div id="mds_filled" class="toolbarbutton toolsettings active">$fill$</div>
+		<div id="mds_thickness" class="toolbarbutton toolsettings">
+			<input type="text" id="mds_thickness_nr" value="3" maxlength="3"/>px
+			<input type="range" id="mds_thickness_range" min="1" max="100" value="3"/>
+		</div>
+		<div id="mds_linethickness" class="toolbarbutton toolsettings">
+			<input type="text" id="mds_linethickness_nr" value="3" maxlength="3"/>px
+			<input type="range" id="mds_linethickness_range" min="1" max="100" value="3"/>
+		</div>
+		<div class="toolbarsplitter"></div>
+		<div id="infotoolbar">
+			<div id="info-coordinates"></div>
+			<div id="info-size"></div>
+			<div id="info-zoom"></div>
+		</div>
+	</div>
 	
 	<!-- color/material matching wizard -->
 	<div class="color-matching-wizard draft">
@@ -74,25 +103,6 @@
 		</div>
 	</div>
 	
-	<div id="brush-panel">
-		<div id="bp-h" class="toolbar-header">$BrushPanel$ <div id="bp-collapse" class="toolbar-collapse">▼</div></div>
-		<div id="bp-b" class="toolbar-body">
-			<div style="align: space-around">
-				<canvas id="bp-preview-gen" height="32" width="32"></canvas>
-				<div id="bp-preview-main"></div>
-				<input id="rounded-brush" type="checkbox" checked="true"></input>
-			</div>
-			<div>
-				<input type="text" id="bp-gen-seed" value="3" maxlength="3"/>
-				<input type="range" id="fg" min="1" max="100" value="3"/>
-			</div>
-			<div>
-				<input type="text" id="bp-gen-dist" value="3" maxlength="3"/>
-				<input type="range" id="fgh" min="1" max="100" value="3"/>
-			</div>
-		</div>
-	</div>
-	
 	<!-- Suggestionbox -->
 	<div id="material-suggestion-box" class="suggestion-box">
 		<div class="suggestion-box-entry draft">
@@ -101,78 +111,40 @@
 		</div>
 	</div>
 
-	<!-- page -->
-	<div class="page">
-		
-		<div class="page-content">
-			<!-- ruler -->
-			<canvas id="ruler-left" class="ruler"></canvas>
-			<canvas id="ruler-top" class="ruler"></canvas>
-			
-			<div id="ruler-left-display" class="rulerdisplay"></div>
-			<div id="ruler-top-display" class="rulerdisplay"></div>
-			
-			<div id="mirror-left-display" class="rulerdisplay mirror-marker"></div>
-			<div id="mirror-top-display" class="rulerdisplay mirror-marker"></div>
-			
-			<!-- canvas -->
-			<div class="canvas-wrapper">
-				<div class="canvas-dimension">
-					<canvas id="draw-canvas" class="draw-canvas" height="20" width="20" tabindex="0"></canvas>
-					<div class="ui-rect invisible">
-						<div class="ui-rect-container">
-							<div class="ui-thumb top-left"></div>
-							<div class="ui-thumb top"></div>
-							<div class="ui-thumb top-right"></div>
-							
-							<div class="ui-thumb left"></div>
-							
-							<div class="ui-thumb right"></div>
-							
-							<div class="ui-thumb bottom-left"></div>
-							<div class="ui-thumb bottom"></div>
-							<div class="ui-thumb bottom-right"></div>
-						</div>
-					</div>
+	<!-- ruler -->
+	<canvas id="ruler-left" class="ruler"></canvas>
+	<canvas id="ruler-top" class="ruler"></canvas>
+	
+	<div id="ruler-left-display" class="rulerdisplay"></div>
+	<div id="ruler-top-display" class="rulerdisplay"></div>
+	
+	<div id="mirror-left-display" class="rulerdisplay mirror-marker"></div>
+	<div id="mirror-top-display" class="rulerdisplay mirror-marker"></div>
+
+	<div class="canvas-wrapper">
+		<div class="canvas-dimension">
+			<canvas id="draw-canvas" class="draw-canvas" height="20" width="20" tabindex="0"></canvas>
+			<div class="ui-rect invisible">
+				<div class="ui-rect-container">
+					<div class="ui-thumb top-left"></div>
+					<div class="ui-thumb top"></div>
+					<div class="ui-thumb top-right"></div>
+					
+					<div class="ui-thumb left"></div>
+					
+					<div class="ui-thumb right"></div>
+					
+					<div class="ui-thumb bottom-left"></div>
+					<div class="ui-thumb bottom"></div>
+					<div class="ui-thumb bottom-right"></div>
 				</div>
 			</div>
 		</div>
-	
-		<!-- toolbar -->
-		<div id="toolbar">
-			<div id="md_default" class="toolbarbutton group1 icon-cursor"></div>
-			<div id="md_point" class="toolbarbutton group1 icon-pencil active"></div>
-			<!--<div id="md_line" class="toolbarbutton group1 icon-draw-line"></div>-->
-			<div id="md_rect" class="toolbarbutton group1 icon-fill-rect"></div>
-			<div id="md_circle" class="toolbarbutton group1 icon-fill-circle"></div>
-			<div id="md_fill" class="toolbarbutton group1 icon-paint-bucket"></div>
-			<div id="md_selrect" class="toolbarbutton group1 icon-select-rect"></div>
-			<div id="md_selcircle" class="toolbarbutton group1 icon-select-circle"></div>
-			<div id="md_selpoly" class="toolbarbutton group1 icon-select-poly"></div>
-			<div id="md_getclr" class="toolbarbutton group1 icon-eyedropper"></div>
-			<div class="toolbarsplitter"></div>
-			
-			<div id="mds_filled" class="toolbarbutton toolsettings active">$fill$</div>
-
-			<img id="bp-preview" height="16" width="16" />
-			<div id="mds_thickness" class="toolbarbutton toolsettings">
-				<input type="text" id="mds_thickness_nr" value="3" maxlength="3"/>px
-				<input type="range" id="mds_thickness_range" min="1" max="100" value="3"/>
-			</div>
-			
-			<div class="toolbarsplitter"></div>
-			<div id="infotoolbar">
-				<div id="info-coordinates"></div>
-				<div id="info-size"></div>
-				<div id="info-zoom"></div>
-			</div>
-		</div>
 	</div>
-	<div class="brush-indicator"></div>
 	
 <script type="text/javascript" src="chrome://windmill/content/js/default_module.js" charset="utf-8"></script>
-<script type="text/javascript" src="chrome://windmill/content/js/external/webgl-debug.js"></script>
 <script type="text/javascript" src="chrome://windmill/content/modules/cide/bmpeditor/js/bmpeditor.js" charset="utf-8"></script>
+
 <script type="text/javascript" src="chrome://windmill/content/modules/cide/bmpeditor/js/shaders2d.js"></script>
 <script type="text/javascript" src="chrome://windmill/content/modules/cide/bmpeditor/js/controls.js"></script>
 <script type="text/javascript" src="chrome://windmill/content/modules/cide/bmpeditor/js/drawhandler.js"></script>

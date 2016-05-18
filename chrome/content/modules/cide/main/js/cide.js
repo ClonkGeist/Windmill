@@ -82,6 +82,16 @@ window.addEventListener("load", function(){
 
 		//Dragdaten setzen
 		btn.addEventListener("dragstart", function(e) {
+			let other_deck = deck==maindeck?sidedeck:maindeck;
+			if(other_deck.isEmpty()) {
+				let cnt = 0;
+				for(let i = 0; i < deck.items.length; i++)
+					if(deck.items[i])
+						cnt++;
+
+				if(cnt == 1)
+					return;
+			}
 			e.dataTransfer.setData('text/cidecontent', deck.id + "|" + id + "|" + $(btn).text());
 			cide_dragdata = deck.id + "|" + id + "|" + $(btn).text();
 
@@ -298,26 +308,25 @@ window.addEventListener("load", function(){
 				if(e.clientY > 50)
 					$(this).removeClass("dragover-sidedeck-top");
 			}
-			else {
-				var newclass;
-				//Neuen Richtungseffekt anzeigen
-				if(e.clientX > ($(this).width()-50)) //Rechts
-					newclass = "dragover-sidedeck-right";
-				else if(e.clientY > ($(this).height()-50)) //Unten
-					newclass = "dragover-sidedeck-bottom";
-				else if(e.clientX < 50) //Links
-					newclass = "dragover-sidedeck-left";
-				else if(e.clientY < 50) //Oben
-					newclass = "dragover-sidedeck-top";
-				else if(outside)
-					newclass = "dragover-deck";
 
-				if(newclass) {
-					if(newclass != "dragover-deck" && $(this).hasClass("dragover-deck"))
-						$(this).removeClass("dragover-deck");
+			var newclass;
+			//Neuen Richtungseffekt anzeigen
+			if(e.clientX > ($(this).width()-50)) //Rechts
+				newclass = "dragover-sidedeck-right";
+			else if(e.clientY > ($(this).height()-50)) //Unten
+				newclass = "dragover-sidedeck-bottom";
+			else if(e.clientX < 50) //Links
+				newclass = "dragover-sidedeck-left";
+			else if(e.clientY < 50) //Oben
+				newclass = "dragover-sidedeck-top";
+			else if(outside)
+				newclass = "dragover-deck";
 
-					$(this).addClass(newclass);
-				}
+			if(newclass) {
+				if(newclass != "dragover-deck" && $(this).hasClass("dragover-deck"))
+					$(this).removeClass("dragover-deck");
+
+				$(this).addClass(newclass);
 			}
 		}
 		//Effekt für Deck-Hover (falls es schon offen ist)
@@ -671,7 +680,7 @@ function addAudioplayer(path) {
 	}
 
 	var t = path.split("/").pop().split('.'), fext = t[t.length-1];
-	var iconstr = "chrome://windmill/content/img/icon-fileext-"+fext+".png";
+	var iconstr = "chrome://windmill/content/img/explorer/icon-fileext-"+fext+".png";
 
 	if(!module.contentWindow.readyState) {
 		module.contentWindow.addEventListener("load", function() {
@@ -730,7 +739,7 @@ function addTexteditor(file, lang, deck) {
 		return;
 
 	var t = file.leafName.split('.'), fext = t[t.length-1];
-	var icon = "chrome://windmill/content/img/icon-fileext-"+fext+".png";
+	var icon = "chrome://windmill/content/img/explorer/icon-fileext-"+fext+".png";
 
 	// we have to insert the text after the libraries have been read out
 	if(!module.contentWindow.readyState) {
@@ -757,14 +766,14 @@ function addMeshviewer(file, deck) {
 
 	if(!module.contentWindow.readyState) {
 		module.contentWindow.addEventListener("load", function(){
-			var index = deck.add(module, file.leafName, true, true, false, {altLabel: file.parent.leafName, switchLabels: true, icon: "chrome://windmill/content/img/icon-fileext-mesh.png", filepath: file.path });
+			var index = deck.add(module, file.leafName, true, true, false, {altLabel: file.parent.leafName, switchLabels: true, icon: "chrome://windmill/content/img/explorer/icon-fileext-mesh.png", filepath: file.path });
 
 			this.initModelviewer(file, index);
 			updateFrameWindowTitleDeck(deck, index);
 		});
 	}
 	else {
-		var index = deck.add(module, file.leafName, true, true, false, {altLabel: file.parent.leafName, switchLabels: true, icon: "chrome://windmill/content/img/icon-fileext-mesh.png", filepath: file.path });
+		var index = deck.add(module, file.leafName, true, true, false, {altLabel: file.parent.leafName, switchLabels: true, icon: "chrome://windmill/content/img/explorer/icon-fileext-mesh.png", filepath: file.path });
 
 		module.contentWindow.initModelviewer(file, index);
 	}
@@ -788,7 +797,7 @@ function addImgEditor(file, fBMP, deck) {
 		return;
 
 	var t = file.leafName.split('.'), fext = t[t.length-1];
-	var icon = "chrome://windmill/content/img/icon-fileext-"+fext+".png";
+	var icon = "chrome://windmill/content/img/explorer/icon-fileext-"+fext+".png";
 
 	if(!module.contentWindow.readyState) {
 		var index = deck.add(module, file.leafName, true, true, false, {altLabel: file.parent.leafName, switchLabels: true, icon, filepath: file.path });

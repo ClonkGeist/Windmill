@@ -24,15 +24,11 @@
 	"scss": "global/contextMenu.scss"
 },
 {
-	"name": "dialog",
-	"scss": "global/dialog.scss"
-},
-{
 	"name": "mainFrame",
 	"scss": "modules/main.scss",
 	"cssTarget": "styles/main.css",
 	"observe": "main",
-	"require": "global|icons|contextMenu|colorPicker|dialog"
+	"require": "global|icons|contextMenu|colorPicker"
 },
 {
 	"name": "cideExplorer",

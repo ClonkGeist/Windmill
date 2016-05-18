@@ -87,7 +87,7 @@ textbox.deactivated {
 	/*cursor: none;*/
 }
 
-.selectgamemode {
+/*.selectgamemode {
 	border-top: 3px solid rgb(180, 180, 180);
 	background-color: rgb(220, 220, 220);
 	color: rgb(40, 40, 40);
@@ -95,10 +95,96 @@ textbox.deactivated {
 
 .selectgamemode.selected {
 	border-top-color: rgb(219, 70, 49);
+}*/
+
+.hostgame-nav-item {
+	height: 70px;
+	width: 190px;
+	padding: 0 6px;
+	
+	&:hover {
+		background-color: #f4f4f4;
+		.hostgame-nav-label {
+			color: black;
+		}
+	}
+	&.active {
+		color: $interact-red;
+		.hostgame-nav-label {
+			color: $interact-red;
+		}
+		&:hover {
+			.hostgame-nav-label {
+				color: $interact-red-darker;
+			}
+		}
+	}
+	&#btn-startgame {
+		cursor: pointer;
+		color: white;
+		background-color: $interact-red;
+		.hostgame-nav-label {
+			color: white;
+		}
+	}
+}
+
+.hostgame-group {
+	transition: opacity 0.5s;
+	&.networkgame.inactive {
+		opacity: 0;
+	}
+}
+
+#togglegamemode {
+	&.singleplayer {
+		.nwg-item {
+			display: none;
+		}
+	}
+	&:not(.singleplayer) {
+		.sp-item {
+			display: none;
+		}
+	}
+}
+
+.hostgame-nav-icon {
+	width: 60px;
+	@include flexcenter();
+	font-size: 3em;
 }
 
 #hostsettings {
-	padding: 15px 10px;
+	padding: 15px 20px;
+	width: 190px;
+	display: flex;
+	flex-direction: column;
+	flex-wrap: wrap-reverse;
+	justify-content: space-around;
+	background: white;
+	border-left: 2px solid gainsboro;
+	cursor: default;
+	-moz-user-select: none;
+}
+
+.hostgame-nav-content {
+	@include flexcenter();
+	flex-direction: column;
+	
+	.hostgame-nav-label {
+		font-size: 1.4em;
+		color: grey;
+	}
+}
+
+@media screen and (max-width: 900px) {
+	.hostgame-nav-item {
+		width: 60px;
+	}
+	.hostgame-nav-content {
+		display: none;
+	}
 }
 
 #general-container .icon-32{
@@ -125,13 +211,6 @@ textbox.deactivated {
 	text-align: center;
 	cursor: default;
 	padding: 5px;
-}
-
-#btn-startgame {
-	background-color: rgb(219, 70, 49);
-	color: white;
-	padding: 4px 10px;
-	font-size: 16px;
 }
 
 #preview {

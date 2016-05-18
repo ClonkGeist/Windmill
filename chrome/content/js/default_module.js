@@ -8,10 +8,11 @@ Components.utils.import("resource://gre/modules/Task.jsm");
 const OCGRP_FILEEXTENSIONS = ["ocd", "ocs","ocg","ocf","ocs", "oci", "ocp"];
 
 //Hilfsfunktion zum loggen
-function log(str, hidden, type) {	
+function log(str, hidden, type) {
 	var clone = _mainwindow.$("#developerlog .log-listitem.draft").clone();
 	clone.removeClass("draft");
 	clone.appendTo(_mainwindow.$("#log-entrylist"));
+	_mainwindow.$("#startup-errorlog > vbox").append(str+"\n");
 
 	//Ggf. nur loggen wenn mans wirklich will.
 	if(type == -1 && !getConfigData("Global", "ShowHiddenLogs"))
@@ -22,13 +23,16 @@ function log(str, hidden, type) {
 	if(hidden)
 		clone.addClass("hidden");
 	if(typeof str == "object") {
+		let str2 = str;
 		clone.click(function() {
 			var dlg = new WDialog("Object Information", "DEX", { modal: true, css: { "width": "450px" }, btnright: ["accept"]});
-			dlg.setContent('<box style="word-wrap: break-word; white-space: pre-wrap; overflow-y: scroll; height: 360px" flex="1">'+showObj3(str)+"</box>");
+			dlg.setContent('<box style="word-wrap: break-word; white-space: pre-wrap; overflow-y: scroll; height: 360px" flex="1">'+showObj3(str2)+"</box>");
 			dlg.show();
 			dlg = 0;
 		});
 		clone.addClass("object");
+		if(!str.toString || str.toString().length == 0)
+			str = "[object " + str.constructor.name + "]";
 	}
 
 	clone.find(".log-listitem-content").text(str+"\n");

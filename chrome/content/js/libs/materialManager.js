@@ -37,13 +37,18 @@ var Materials = new (function() {
 	
 	this.get = function(name, dir, fnCallback) {
 		
+		// if already found
+		if(this._MATERIALS[name])
+			return this._MATERIALS[name];
+		
 		if(!dir.isDirectory)
-			return fnCallback(false);
+			return;
 		
+		// pass into another code block (javascripts pseudo-async)
 		this.explodeDir(dir);
-		log(this._MATERIALS[name]);
 		
-		fnCallback(this._MATERIALS[name]);
+		if(this._MATERIALS[name])
+			fnCallback(this._MATERIALS[name]);
 	}
 	
 	this.explodeDir = function(dir) {

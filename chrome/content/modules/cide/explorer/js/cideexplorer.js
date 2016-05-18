@@ -48,7 +48,7 @@ function explorerLoadWorkEnvironments(parentWorkEnv, container) {
 		return;
 
 	let we_namelist = [];
-	for(var i = 0, first = !parentWorkEnv; i < workenvs.length; i++) {
+	for(var i = 0; i < workenvs.length; i++) {
 		if(!parentWorkEnv && workenvs[i].isChildWorkEnv)
 			continue;
 		if(parentWorkEnv && workenvs[i].type != _mainwindow.WORKENV_TYPE_Workspace)
@@ -58,10 +58,9 @@ function explorerLoadWorkEnvironments(parentWorkEnv, container) {
 		let id;
 		if(workenvs[i].options.identifier == "UserData")
 			id = createWorkEnvironmentEntry(workenvs[i]);
-		else {
-			id = createWorkEnvironmentEntry(workenvs[i], first, container);
-			first = false;
-		}
+		else
+			id = createWorkEnvironmentEntry(workenvs[i], (workenvs[i].path == _sc.clonkpath()), container);
+
 		let blacklist = explorerLoadWorkEnvironments(workenvs[i], getTreeCntById(id));
 
 		let c = i;
@@ -223,24 +222,24 @@ function createNewWorkEnvironmentDlg(parentWorkEnv, parentContainer) {
 				catch(err) {
 					if(err.becauseNoSuchFile) {
 						error("$DlgErrWEPathDoesNotExist$");
-						return e.stopImmediatePropagation();
+						return -1;
 					}
 					else {
 						error("<hbox>The following error occured while trying to create the work environment:</hbox><hbox>"+err+"</hbox>");
-						return e.stopImmediatePropagation();
+						return -1;
 					}
 				}
 				if(!info.isDir) {						
 					error("$DlgErrWEPathDoesNotExist$");
-					return e.stopImmediatePropagation();
+					return -1;
 				}
 
-				let cdirs = JSON.parse(getConfigData("Global", "ClonkDirectories")) || [];
+				let cdirs = getConfigData("Global", "ClonkDirectories") || [];
 
 				//Ueberpruefen ob Pfad bereits vorhanden ist
 				if(cdirs.indexOf(path) != -1) {
 					error("$DlgErrWEAlreadyLoaded$");
-					return e.stopImmediatePropagation();
+					return -1;
 				}
 
 				//Ansonsten der Liste hinzufuegen und speichern
@@ -271,7 +270,7 @@ function createNewWorkEnvironmentDlg(parentWorkEnv, parentContainer) {
 				path = parentWorkEnv.path;
 			if(!path) {
 				error("$DlgErrWENoWorkspaceDir$");
-				return e.stopImmediatePropagation();
+				return -1;
 			}
 
 			//Workspaceverzeichnis erstellen und ggf. Error zurueckwerfen
@@ -279,11 +278,11 @@ function createNewWorkEnvironmentDlg(parentWorkEnv, parentContainer) {
 			catch(err) {
 				if(err.becauseNoSuchFile) {
 					error("$DlgErrWEInvalidPath$");
-					return e.stopImmediatePropagation();
+					return -1;
 				}
 				else {
 					error("<hbox>The following error occured while trying to create the work environment:</hbox><hbox>"+err+"</hbox>");
-					return e.stopImmediatePropagation();
+					return -1;
 				}
 			}
 
@@ -293,7 +292,7 @@ function createNewWorkEnvironmentDlg(parentWorkEnv, parentContainer) {
 				name = $(_self.element).find("#dex-dlg-workenv-destname").val();
 			if(!name) {
 				error("$DlgErrWENoName$");
-				return e.stopImmediatePropagation();
+				return -1;
 			}
 
 			//Ggf. Dateiliste generieren (Checklistbox)
@@ -326,15 +325,15 @@ function createNewWorkEnvironmentDlg(parentWorkEnv, parentContainer) {
 				//TODO: Auf Validitaet ueberpruefen
 				if(!options.cloneurl) {
 					error("$DlgErrWENoCloneURL$");
-					return e.stopImmediatePropagation();
+					return -1;
 				}
 				if(!$(_self.element).find("#dex-dlg-workenv-cfgusername").val()) {
 					error("$DlgErrWERepositoryNoUserName$");
-					return e.stopImmediatePropagation();
+					return -1;
 				}
 				if(!$(_self.element).find("#dex-dlg-workenv-cfgemail").val()) {
 					error("$DlgErrWERepositoryNoEmail$");
-					return e.stopImmediatePropagation();
+					return -1;
 				}
 				
 				options.userconfig = { username: $(_self.element).find("#dex-dlg-workenv-cfgusername").val(), 
@@ -441,7 +440,7 @@ function createNewWorkEnvironmentDlg(parentWorkEnv, parentContainer) {
 		var fp = _sc.filepicker();
 		fp.init(window, Locale("$DlgWEChooseOCDir$"), Ci.nsIFilePicker.modeGetFolder);
 
-		var current_path = JSON.parse(getConfigData("Global", "ClonkDirectories"));
+		var current_path = getConfigData("Global", "ClonkDirectories");
 		if(current_path && current_path[0]) {
 			var dir = new _sc.file(current_path[0].path);
 			if(dir.exists())
@@ -459,7 +458,7 @@ function createNewWorkEnvironmentDlg(parentWorkEnv, parentContainer) {
 			$(dlg.element).find("#dex-dlg-workenv-ocpath").text(fp.file.path);
 		}
 	});
-	var clonkdirs = JSON.parse(getConfigData("Global", "ClonkDirectories"));
+	var clonkdirs = getConfigData("Global", "ClonkDirectories");
 	if(clonkdirs.length < 1)
 		$(dlg.element).find("#dex-dlg-workenv-clonkdirset").css("display", "none");
 	else {
@@ -548,44 +547,44 @@ function initializeContextMenu() {
 
 		["$ctxObject$", 0, function*() {
 			yield CreateNewGamefile("ocd", $(getCurrentTreeSelection()));
-		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png" }],
+		}, 0, { iconsrc: "chrome://windmill/content/img/explorer/icon-fileext-ocd.png" }],
 		["$ctxScenario$", 0, function*() {
 			yield CreateNewGamefile("ocs", $(getCurrentTreeSelection()));
-		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocs.png" }],
+		}, 0, { iconsrc: "chrome://windmill/content/img/explorer/icon-fileext-ocs.png" }],
 
 		"seperator",
 
 		//Ordner
 
 		["$ctxfolder$", 0, function*() { // Ordner erstellen
-			yield createNewFile(true, "$create_newfolder$", true, "chrome://windmill/content/img/icon-directory.png");
-		}, 0, { iconsrc: "chrome://windmill/content/img/icon-directory.png" }],
+			yield createNewFile(true, "$create_newfolder$", true, "chrome://windmill/content/img/explorer/icon-directory.png");
+		}, 0, { iconsrc: "chrome://windmill/content/img/explorer/icon-directory.png" }],
 		["$ctxobjfolder$", 0, function*() { // Objektordner erstellen
 			yield createNewFile(true, "$create_newobjfolder$.ocd", true);
-		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocd.png" }],
+		}, 0, { iconsrc: "chrome://windmill/content/img/explorer/icon-fileext-ocd.png" }],
 		["$ctxscenfolder$", 0, function*() { // Rundenordner erstellen
 			yield createNewFile(true, "$create_newscenfolder$.ocf", true);
-		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-ocf.png" }],
+		}, 0, { iconsrc: "chrome://windmill/content/img/explorer/icon-fileext-ocf.png" }],
 
 		//Textdateien
 		"seperator",
 
 		["$ctxtext$", 0, function*() { // Textdatei erstellen
 			yield createNewFile(false, "$create_newtxt$.txt");
-		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-txt.png" }],
+		}, 0, { iconsrc: "chrome://windmill/content/img/explorer/icon-fileext-txt.png" }],
 
 		//Bilddateien
 		"seperator",
 
 		["$ctxgbmp$", 0, function*() { //BMPDatei erstellen
 			yield createNewFile(false, "$create_newimg$.bmp", false);
-		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-bmp.png" }],
+		}, 0, { iconsrc: "chrome://windmill/content/img/explorer/icon-fileext-bmp.png" }],
 		["$ctxgpng$", 0, function*() { //PNGDatei erstellen
 			yield createNewFile(false, "$create_newimg$.png", false);
-		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-png.png" }],
+		}, 0, { iconsrc: "chrome://windmill/content/img/explorer/icon-fileext-png.png" }],
 		["$ctxgjpg$", 0, function*() { //JPGDatei erstellen
 			yield createNewFile(false, "$create_newimg$.jpg", false);
-		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-jpg.png" }],
+		}, 0, { iconsrc: "chrome://windmill/content/img/explorer/icon-fileext-jpg.png" }],
 
 		//Scriptdateien
 		"seperator",
@@ -593,7 +592,7 @@ function initializeContextMenu() {
 		["$ctxscript$", 0, function*() { //Scriptdatei erstellen
 			yield createNewFile(false, "$create_newscript$.c", false, null, 
 					"/*-- New Scriptfile --*/\r\n\r\nfunc Initialize() {\r\n  return true;\r\n}\r\n");
-		}, 0, { iconsrc: "chrome://windmill/content/img/icon-fileext-c.png" }]
+		}, 0, { iconsrc: "chrome://windmill/content/img/explorer/icon-fileext-c.png" }]
 	], MODULE_LPRE, { allowIcons: true });
 
 	treeContextMenu.addEntry("$ctxnew$", 0, 0, submenu_new, {identifier: "ctxNew"});
@@ -664,7 +663,7 @@ function initializeContextMenu() {
 			$(cnt).removeClass("tree-collapsed").removeClass("tree-expanded");
 
 			//Gepackt
-			$(sel).addClass("tree-packed");
+			$(sel).addClass("tree-groupfile-packed");
 			EventInfo("$EI_Packed$");
 		}, function(data) {
 			log(data);
@@ -700,6 +699,7 @@ function initializeContextMenu() {
 			}
 
 			$(cnt).empty();
+			$(sel).removeClass("tree-groupfile-packed");
 			loadDirectory(dir.path, cnt);
 			EventInfo("$EI_Exploded$");
 		});
@@ -878,9 +878,10 @@ function CreateNewGamefile(type, treeobj) {
 					let error = (str) => { return $(_self.element).find("#dex-dlg-gamefile-errorbox").text(Locale(str)); }
 
 					let name = _mainwindow.$("#dex-dlg-gffilename").val();
+					//Gueltigkeit des Namens ueberpruefen
 					if(!name || (OS_TARGET == "WINNT" && name.search(/[\\/:*?"<>|]/) != -1) || name.length < 1) {
-						error('$DlgInvalidFilename$');
-						return e.stopImmediatePropagation();
+						error('$DlgErrInvalidFilename$');
+						return -1;
 					}
 
 					name += '.'+type;
@@ -891,11 +892,11 @@ function CreateNewGamefile(type, treeobj) {
 					}
 					catch(err) {
 						if(err.becauseExists)
-							error('$DlgFilenameExists$');
+							error('$DlgErrFilenameExists$');
 						else
 							error('Error: ' + err);
 
-						return e.stopImmediatePropagation();
+						return -1;
 					}
 
 					//Auswahl in neu erstelltes Verzeichnis kopieren
@@ -925,9 +926,18 @@ function CreateNewGamefile(type, treeobj) {
 			selectedFiles = '';
 
 		//Dateiauswahl erstellen
-		let content = `<vbox><hbox class="dlg-infobox error" id="dex-dlg-gamefile-errorbox"><description></description></hbox>
-					   <vbox><description>$DlgGfFilenameDesc$</description><textbox id="dex-dlg-gffilename"></textbox></vbox><vbox>
-					   <description>$DlgGfPickFiles$</description></vbox><vbox id="dex-dlg-gffiles" class="dlg-checklistbox">`;
+		let content = 	`<vbox>
+							<hbox class="dlg-infobox error" id="dex-dlg-gamefile-errorbox">
+								<description></description>
+							</hbox>
+							<vbox>
+								<description>$DlgGfFilenameDesc$</description>
+								<textbox id="dex-dlg-gffilename"></textbox>
+							</vbox>
+							<vbox>
+								<description>$DlgGfPickFiles$</description>
+							</vbox>
+							<vbox id="dex-dlg-gffiles" class="dlg-checklistbox">`;
 
 		//Auflisten
 		let entries = dir.directoryEntries;
@@ -946,7 +956,8 @@ function CreateNewGamefile(type, treeobj) {
 			else if(selectedFiles.search(RegExp("(^|/|)"+entry.leafName+"($|/|)")) != -1)
 				selstr = ' selected';
 
-			content += `<hbox class="dlg-checklistitem ${selstr}">${entry.leafName}</hbox>`;
+			selstr = "";
+			content += `<hbox class="dlg-checklistitem${selstr}">${entry.leafName}</hbox>`;
 		}
 
 		content += '</vbox></vbox>';
@@ -999,7 +1010,7 @@ function createNewFile(is_dir, name, container, image, content = "") {
 		let filename = formatPath(path).split("/").pop();
 		if(!image) {
 			let t = filename.split("."), fext = t[t.length-1];
-			image = "chrome://windmill/content/img/icon-fileext-other.png";
+			image = "chrome://windmill/content/img/explorer/icon-fileext-other.png";
 
 			for(var p in specialData) {
 				var d = specialData[p];
@@ -1051,7 +1062,7 @@ function onTreeFileDragDrop(cnt, f) {
 		return;
 
     var t = f.leafName.split("."), fext = t[t.length-1], fSpecial = false;
-    var img = "chrome://windmill/content/img/icon-fileext-other.png";
+    var img = "chrome://windmill/content/img/explorer/icon-fileext-other.png";
 
 	for(var p in specialData) {
 		var d = specialData[p];
@@ -1066,7 +1077,7 @@ function onTreeFileDragDrop(cnt, f) {
 	if(f.isDirectory()) {
 		//Standard Ordnericon verwenden
 		if(!fSpecial)
-			img = "chrome://windmill/content/img/icon-directory.png";
+			img = "chrome://windmill/content/img/explorer/icon-directory.png";
 	}
 
 	return createTreeElement(cnt, f.leafName, f.isDirectory(), 0, img, f.leafName);
@@ -1231,28 +1242,28 @@ function treeHideContextItems(by_obj, identifier) {
 function getTreeEntryData(entry, fext) {}
 
 var specialData = {
-	0: {ext: "ocp", img: "chrome://windmill/content/img/icon-fileext-ocp.png"},
-	1: {ext: "ocf", img: "chrome://windmill/content/img/icon-fileext-ocf.png"},
-	2: {ext: "ocs", img: "chrome://windmill/content/img/icon-fileext-ocs.png"},
-	3: {ext: "ocg", img: "chrome://windmill/content/img/icon-fileext-ocg.png"},
-	4: {ext: "ocm", img: "chrome://windmill/content/img/icon-fileext-ocm.png"},
+	0: {ext: "ocp", img: "chrome://windmill/content/img/explorer/icon-fileext-ocp.png"},
+	1: {ext: "ocf", img: "chrome://windmill/content/img/explorer/icon-fileext-ocf.png"},
+	2: {ext: "ocs", img: "chrome://windmill/content/img/explorer/icon-fileext-ocs.png"},
+	3: {ext: "ocg", img: "chrome://windmill/content/img/explorer/icon-fileext-ocg.png"},
+	4: {ext: "ocm", img: "chrome://windmill/content/img/explorer/icon-fileext-ocm.png"},
 
-	10: {ext: "txt", img: "chrome://windmill/content/img/icon-fileext-txt.png"},
+	10: {ext: "txt", img: "chrome://windmill/content/img/explorer/icon-fileext-txt.png"},
 
-	20: {ext: "png", img: "chrome://windmill/content/img/icon-fileext-png.png"},
-	21: {ext: "bmp", img: "chrome://windmill/content/img/icon-fileext-bmp.png"},
-	22: {ext: "jpg", img: "chrome://windmill/content/img/icon-fileext-jpg.png"},
+	20: {ext: "png", img: "chrome://windmill/content/img/explorer/icon-fileext-png.png"},
+	21: {ext: "bmp", img: "chrome://windmill/content/img/explorer/icon-fileext-bmp.png"},
+	22: {ext: "jpg", img: "chrome://windmill/content/img/explorer/icon-fileext-jpg.png"},
 
-	30: {ext: "mesh", img: "chrome://windmill/content/img/icon-fileext-mesh.png"},
-	31: {ext: "skeleton", img: "chrome://windmill/content/img/icon-fileext-skeleton.png"},
-	32: {ext: "material", img: "chrome://windmill/content/img/icon-fileext-material.png"},
+	30: {ext: "mesh", img: "chrome://windmill/content/img/explorer/icon-fileext-mesh.png"},
+	31: {ext: "skeleton", img: "chrome://windmill/content/img/explorer/icon-fileext-skeleton.png"},
+	32: {ext: "material", img: "chrome://windmill/content/img/explorer/icon-fileext-material.png"},
 
-	40: {ext: "c", img: "chrome://windmill/content/img/icon-fileext-c.png"},
-	41: {ext: "ocd", img: "chrome://windmill/content/img/icon-fileext-ocd.png"},
-	42: {ext: "wav", img: "chrome://windmill/content/img/icon-fileext-wav.png"},
-	43: {ext: "ogg", img: "chrome://windmill/content/img/icon-fileext-ogg.png"},
-	44: {ext: "mid", img: "chrome://windmill/content/img/icon-fileext-mid.png"},
+	40: {ext: "c", img: "chrome://windmill/content/img/explorer/icon-fileext-c.png"},
+	41: {ext: "ocd", img: "chrome://windmill/content/img/explorer/icon-fileext-ocd.png"},
+	42: {ext: "wav", img: "chrome://windmill/content/img/explorer/icon-fileext-wav.png"},
+	43: {ext: "ogg", img: "chrome://windmill/content/img/explorer/icon-fileext-ogg.png"},
+	44: {ext: "mid", img: "chrome://windmill/content/img/explorer/icon-fileext-mid.png"},
 
-	50: {ext: "ocu", img: "chrome://windmill/content/img/icon-fileext-ocu.png"},
-	51: {ext: "oci", img: "chrome://windmill/content/img/icon-fileext-oci.png"},
+	50: {ext: "ocu", img: "chrome://windmill/content/img/explorer/icon-fileext-ocu.png"},
+	51: {ext: "oci", img: "chrome://windmill/content/img/explorer/icon-fileext-oci.png"},
 }

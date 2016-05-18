@@ -18,43 +18,10 @@
 				xmlns="http://www.w3.org/1999/xhtml">
 			</canvas>
 		</box>
-		<box id="settings-wrapper" right="20" top="20" width="120">
+		<box id="settings-wrapper" class="shidden" right="20" top="20" width="120">
+			<box id="open-settings" class="icon-bars-ref-1-3"></box>
 			<vbox id="settings" flex="1">
-				<hbox class="settings-page-nav">
-					<box flex="1" class="icon-16 icon-folder"></box>
-					<box flex="1" class="icon-16 icon-bars-ref-1-3"></box>
-				</hbox>
-				<vbox id="resource-page" class="settings-page visible">
-					<label value="Resources" />
-					<vbox class="texture-unit-entry draft">
-						<hbox>
-							<img width="32" height="32" />
-							<menulist></menulist>
-							<box class="icon-16 icon-reload"></box>
-						</hbox>
-						<hbox class="tue-texture_sizes">
-						</hbox>
-					</vbox>
-					<vbox class="mat-file draft">
-						<label class="mf-name" value="$t_units$" />
-						<vbox class="mf-texture-units">
-							<!-- texture units go here -->
-						</vbox>
-					</vbox>
-					<vbox class="skeleton-entry draft">
-						<label class="se-name" value="name" />
-					</vbox>
-					<vbox class="resource-list draft">
-						<vbox class="mf-wrapper">
-						</vbox>
-						<label value="$skeleton$" />
-						<vbox class="skeleton-resources">
-							<!-- skeleton ui goes here -->
-						</vbox>
-					</vbox>
-					<!-- resource-lists go here -->
-				</vbox>
-				<vbox class="settings-page">
+				<vbox class="settings-page visible">
 					<vbox>
 						<hbox align="center">
 							<box id="close-settings icon-arrow-up"></box>
@@ -67,7 +34,8 @@
 						</hbox>
 					</vbox>
 					<label value="$overlay_color$" />
-					<vbox id="clrpick" height="100"></vbox>
+					<vbox id="clrpick" height="100">
+					</vbox>
 					<vbox id="anim-section" class="hidden">
 						<label value="$play_animation$" />
 						<hbox>
@@ -94,6 +62,23 @@
 						<box id="toggle-wireframe-button" class="icon-16 icon-wireframe2 vo-button enabled"></box>
 						<box id="reset-view-button" class="icon-16 icon-wireframe2 vo-button"></box>
 					</hbox>
+				</vbox>
+				<vbox class="settings-page">
+					<vbox class="texture_unit_entry draft">
+						<hbox>
+							<description class="tue_file_name">$file_not_found$</description>
+						</hbox>
+						<hbox class="tue_texture_sizes">
+						</hbox>
+					</vbox>
+					<vbox class="ressources-list draft">
+						<label value="$textures$" />
+						<vbox class="s-texture-units">
+						</vbox>
+						<label value="$skeleton$" />
+						<vbox class="s-skeleton-ressources">
+						</vbox>
+					</vbox>
 				</vbox>
 			</vbox>
 		</box>

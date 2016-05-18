@@ -313,17 +313,13 @@ html, body, #wrapper {
 	
 	&.ref-layout-classic .reference:hover {
 		outline: none;
-		box-shadow: 0 1px 0 0 rgb(230, 230, 230), 
-					0 1px 0 0 rgb(230, 230, 230) inset,
-					-5px 0 0 0 $clr-border,
-					5px 0 0 0 $clr-border;
+		box-shadow: -5px 0 0 0 $interact_orange,
+					5px 0 0 0 $interact_orange;
 	}
 	&.ref-layout-classic .reference.ref-selected {
 		outline: none;
-		box-shadow: 0 1px 0 0 rgb(230, 230, 230), 
-					0 1px 0 0 rgb(230, 230, 230) inset,
-					-5px 0 0 0 $interact-orange,
-					5px 0 0 0 $interact-orange;
+		box-shadow: -5px 0 0 0 $clr-border,
+					5px 0 0 0 $clr-border;
 	}
 }
 
@@ -350,6 +346,7 @@ html, body, #wrapper {
 	font-size: 0.7em;
 	color: grey;
 	font-weight: normal;
+/*	letter-spacing: 3px;*/
 	text-transform: uppercase;
 }
 

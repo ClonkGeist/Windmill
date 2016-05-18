@@ -17,6 +17,7 @@
 			<button class="navigation" label="$KeyBindings$" oncommand="togglePage('settings-page-keybindings', 'settings-pages', this);" />
 			<button class="navigation" label="$ExternalApplications$" oncommand="togglePage('settings-page-extapp', 'settings-pages', this);" />
 			<spacer flex="1" />
+			<button class="navigation" label="$ClearTempData$" id="clear-temp-data" oncommand="clearTemporaryData();"  />
 			<button class="navigation" label="$Save$" oncommand="saveSettings();"  />
 		</vbox>
 		
@@ -69,16 +70,16 @@
 				<vbox id="settings-page-oc" class="settings-page" top="0" bottom="0">
 					<caption class="big" label="Open Clonk" />
 					
-					<description flex="1">
-						&lt;Hier kommt spaeter eine Main-Clonkdir-Auswahl hin etc. Bis dahin muss hierfuer allerdings der CIDE-Explorer verwendet werden.&gt;
-					</description>
-					<!--
-					<caption label="$OCDir$" />
+					<caption label="$Masterserver$" />
 					<hbox>
-						<description flex="1" id="oc-path" class="view-directory-path">$pathempty$</description>
-						<button label="$browse$" oncommand="openPathDialog('oc-path')"/>
+						<label flex="1" value="$MasterserverURL$" />
+						<textbox flex="3" class="autoinit" default-cfgsect="ShowGame" default-cfgkey="MasterserverURL"/>
 					</hbox>
-					-->
+					<caption label="$C4GroupPath$" />
+					<hbox>
+						<description flex="1" id="c4group-path" class="view-directory-path">$pathempty$</description>
+						<button label="$browse$" oncommand="openPathDialog('c4group-path')"/>
+					</hbox>
 				</vbox>
 			</stack>
 			

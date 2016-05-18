@@ -67,8 +67,8 @@ class WorkEnvironment {
 								options.success(_this);
 
 							unlockModule();
-							git.create(["config", "-f", _this.path+"/.git/config", "user.name", options.userconfig.username], 0x2);
-							git.create(["config", "-f", _this.path+"/.git/config", "user.email", options.userconfig.email], 0x2);
+							git.create(["config", "-f", _this.path+"/.git/config", "user.name", options.userconfig.username], 0x3);
+							git.create(["config", "-f", _this.path+"/.git/config", "user.email", options.userconfig.email], 0x3);
 
 							_this.saveHeader();
 						}
@@ -151,7 +151,7 @@ class WorkEnvironment {
 
 		if(this.repository) {
 			let git = getAppByID("git");
-			git.create(["config", "-f", this.path+"/.git/config", "--get", "remote.origin.url"], 0x2, null, (data) => {
+			git.create(["config", "-f", this.path+"/.git/config", "--get", "remote.origin.url"], 0x3, null, (data) => {
 				let matches = data.match(/https:\/\/(.+?):(.+?)@/);
 				if(!matches)
 					return;
@@ -187,7 +187,7 @@ class WorkEnvironment {
 
 	unload() {
 		if(this.type == WORKENV_TYPE_ClonkPath) {
-			var clonkdirs = JSON.parse(getConfigData("Global", "ClonkDirectories")), temp = [];
+			let clonkdirs = getConfigData("Global", "ClonkDirectories"), temp = [];
 			for(var i = 0; i < clonkdirs.length; i++) {
 				if(formatPath(clonkdirs[i].path) != this.path)
 					temp.push(clonkdirs[i]);
@@ -221,7 +221,7 @@ class WorkEnvironment {
 
 	set path(path) {
 		if(this.type == WORKENV_TYPE_ClonkPath) { 
-			var dirs = JSON.parse(getConfigData("Global", "ClonkDirectories")) || [];
+			var dirs = getConfigData("Global", "ClonkDirectories") || [];
 			for(var i = 0; i < dirs.length; i++)
 				if(formatPath(dirs[i]) == this._path)
 					dirs[i] = path;
@@ -280,13 +280,13 @@ class WorkEnvironment {
 	set index(index) { this.header.Workspace.Index = index; }
 	
 	get icon() {
-		let img = "chrome://windmill/content/img/icon-workenvironment-ws.png";
+		let img = "chrome://windmill/content/img/explorer/icon-workenvironment-ws.png";
 		if(this.type == WORKENV_TYPE_ClonkPath)
-			img = "chrome://windmill/content/img/icon-workenvironment-clonkdir.png";
+			img = "chrome://windmill/content/img/explorer/icon-workenvironment-clonkdir.png";
 		if(this.repository)
-			img = "chrome://windmill/content/img/icon-workenvironment-git.png";
+			img = "chrome://windmill/content/img/explorer/icon-workenvironment-git.png";
 		if(this.options.identifier == "UserData")
-			img = "chrome://windmill/content/img/icon-workenvironment-user.png";
+			img = "chrome://windmill/content/img/explorer/icon-workenvironment-user.png";
 		return img;
 	}
 }
@@ -299,7 +299,7 @@ function loadWorkEnvironment() {
 		{readOnly: true, unloaded: false, secured: true, alternativeTitle: "$WEUserData$", identifier: "UserData"});
 
 	//Clonkverzeichnisse laden und ggf. leere Eintraege loeschen
-	let clonkdirs = JSON.parse(getConfigData("Global", "ClonkDirectories")), temp = [];
+	let clonkdirs = getConfigData("Global", "ClonkDirectories"), temp = [];
 	if(clonkdirs) {
 		for(var i = 0; i < clonkdirs.length; i++) {
 			if(clonkdirs[i] && clonkdirs[i].path) {
@@ -380,8 +380,6 @@ function createWorkEnvironment(path, type, forceload, options) {
 		return;
 
 	WORKENV_List.push(env);
-	if(!getCurrentWorkEnvironment())
-		setCurrentWorkEnvironment(env);
 
 	execHook("onWorkenvCreated", env);
 	return env;
@@ -405,8 +403,6 @@ function getWorkEnvironmentByPath(path) {
 	return;
 }
 
-function setCurrentWorkEnvironment(work_env) { WORKENV_Current = work_env; }
-function getCurrentWorkEnvironment() { return WORKENV_Current; }
 function getWorkEnvironments() {
 	var result = [];
 	//Garantieren dass keine undefined WorkEnvironments zurueckgegeben werden
@@ -438,11 +434,11 @@ _sc.workpath = function(by) {
 		}
 		return match;
 	}
-	else if(getCurrentWorkEnvironment && getCurrentWorkEnvironment())
-		return getCurrentWorkEnvironment().path;
+	else if(WORKENV_List[0])
+		return WORKENV_List[0].path;
 }
 
-function inheritFuncs() { return ["getWorkEnvironments", "getCurrentWorkEnvironment", "setCurrentWorkEnvironment", "createNewWorkEnvironment", "createWorkEnvironment"]; }
+function inheritFuncs() { return ["getWorkEnvironments", "createNewWorkEnvironment", "createWorkEnvironment"]; }
 
 registerInheritableObject("getWorkEnvironmentByPath");
 

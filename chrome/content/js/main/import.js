@@ -17,7 +17,8 @@ var _inheritableObjects = [];
 function registerInheritableObject(obj) { _inheritableObjects.push(obj); }
 
 let XULRuntime = Cc["@mozilla.org/xre/app-info;1"].getService(Components.interfaces.nsIXULRuntime);
-XULRuntime.logConsoleErrors = true;
+//Da die Inhalte der Logdatei nicht besonders hilfreich sind und es nur eine grosse Logdatei erstellt die nicht automatisch geleert wird, deaktiviert.
+//XULRuntime.logConsoleErrors = true;
 var OS_TARGET = XULRuntime.OS;
 
 function formatPath(path) {
@@ -162,7 +163,10 @@ var _sc = {
 	//Crypto-Hash
 	crptohash : function() { return Cc["@mozilla.org/security/hash;1"].createInstance(Ci.nsICryptoHash); },
 	//SubScript-Loader
-	subscript: function() { return Cc["@mozilla.org/moz/jssubscript-loader;1"].getService(Ci.mozIJSSubScriptLoader); }
+	subscript: function() { return Cc["@mozilla.org/moz/jssubscript-loader;1"].getService(Ci.mozIJSSubScriptLoader); },
+	
+	//clipboard API
+	clipboard2 : require("sdk/clipboard")
 };
 
 //XPCOM-Konstanten

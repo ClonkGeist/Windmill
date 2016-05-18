@@ -4,6 +4,6 @@
 	"cfgidentifier": "Git",
 	"description": "$ExtApp_GitDescription$",
 	"howto_info": "$ExtApp_HowToGetGit$",
-	"icon": "chrome://windmill/content/img/applicationicon-git.png",
+	"icon": "chrome://windmill/content/img/external-applications/applicationicon-git.png",
 	"needed_file_win": "git.exe"
 }
