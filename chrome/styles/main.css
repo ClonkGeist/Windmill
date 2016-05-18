@@ -486,6 +486,146 @@
 .alpha-channel {
   margin-top: 10px; }
 
+/* dialog */
+#wdialogmodal {
+  pointer-events: none;
+  background-color: black;
+  transition: opacity 0.5s;
+  opacity: 0; }
+
+#wdialogmodal.visible {
+  pointer-events: auto;
+  opacity: 0.3; }
+
+#wdialogmodal.visible .main-wdialog-wrapper {
+  box-shadow: none; }
+
+.main-wdialog {
+  -moz-user-focus: normal;
+  pointer-events: none; }
+
+.main-wdialog-wrapper {
+  background-color: #fff;
+  min-height: 60px;
+  min-width: 100px;
+  color: #3c3c3c;
+  box-shadow: 0 0 15px 0 #b4b4b4;
+  pointer-events: initial; }
+
+.main-wdialog-title {
+  padding: 2px 5px; }
+
+.main-wdialog-head {
+  border-bottom: 1px solid gainsboro;
+  background-color: whitesmoke;
+  min-height: 30px;
+  color: #646464;
+  padding: 0.5em 1em;
+  cursor: default; }
+
+.main-wdialog-content {
+  padding: 5px 1em;
+  font-size: 10pt; }
+
+.main-wdialog-footer {
+  padding: 5px 5px; }
+
+.main-wdialog-button {
+  background-color: gainsboro;
+  cursor: pointer;
+  color: grey; }
+
+.main-wdialog-button:hover {
+  background-color: #d7d7d7; }
+
+.main-wdialog-wrapper textbox {
+  margin-left: 0;
+  margin-right: 0;
+  border: 1px solid #c8c8c8; }
+
+/* y no use consistent seperators */
+.dlg-infobox {
+  padding: 5px;
+  border: 1px solid gainsboro;
+  font-size: 9pt;
+  text-align: justify;
+  margin: 5px 0px; }
+
+.dlg-infobox.error {
+  background-color: #FFB2B2;
+  border-color: #CCB1B1;
+  -moz-user-select: text; }
+
+/* Checklist */
+.dlg-checklistbox {
+  min-height: 27px;
+  max-height: 180px;
+  overflow: auto;
+  border: 1px solid #ebebeb;
+  color: #3c3c3c;
+  -moz-box-pack: center;
+  padding: 3px 0px;
+  -moz-user-focus: normal; }
+
+@font-face {
+  font-family: 'icomoon';
+  src: url("chrome://windmill/skin/icomoon.ttf?-icmbrc") format("truetype");
+  font-weight: normal;
+  font-style: normal; }
+
+.dlg-checklistitem {
+  overflow: hidden;
+  cursor: default;
+  padding-left: 5px;
+  background-color: white;
+  color: #787878;
+  padding-left: 14px;
+  -moz-user-focus: normal; }
+
+.dlg-checklistitem:before {
+  outline: 1px solid gainsboro;
+  display: inline-block;
+  overflow: visible;
+  font-family: 'icomoon';
+  font-size: 14px;
+  margin-right: 14px;
+  content: "\00a0 \00a0"; }
+
+.dlg-checklistitem.selected:before {
+  content: "\e608"; }
+
+.dlg-checklistitem:hover, .dlg-checklistitem:focus {
+  background-color: rgba(0, 165, 207, 0.15);
+  outline: 1px solid rgba(0, 165, 207, 0.3);
+  outline-offset: -1px; }
+
+.dlg-checklistitem.selected {
+  color: steelblue; }
+
+.dlg-checklistitem.hidden {
+  display: none; }
+
+/* Listbox */
+.dlg-listbox {
+  -moz-user-focus: normal; }
+
+.dlg-list-head, .dlg-list-item {
+  padding: 4px 6px; }
+
+.dlg-list-item {
+  -moz-user-focus: normal; }
+
+.dlg-list-head {
+  background: #DDD; }
+
+.dlg-list-item.hidden {
+  display: none; }
+
+.dlg-list-item.selected, .dlg-list-item:hover, .dlg-list-item:focus {
+  background-color: rgba(0, 165, 207, 0.15);
+  outline: 1px solid rgba(0, 165, 207, 0.3);
+  outline-offset: -1px; }
+
 window {
   background-color: #2d2d2d;
   font-family: "Segoe UI", "Trebuchet MS", sans-serif;

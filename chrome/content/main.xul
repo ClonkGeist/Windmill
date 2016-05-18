@@ -2,7 +2,6 @@
 
 
 <?xml-stylesheet type="text/css" href="chrome://windmill/skin/main.css"?>
-<?xml-stylesheet type="text/css" href="chrome://windmill/skin/dialog.css"?>
 
 <window 
 	id="main"
