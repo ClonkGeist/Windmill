@@ -447,8 +447,6 @@ toolbox {
 
 .deck-nav-elm.state-unsaved {
   color: #dc4632; }
-  .deck-nav-elm.state-unsaved:hover {
-    color: #8c140a; }
 
 .deck-nav-elm:hover {
   background-color: #fafafa; }
@@ -463,11 +461,11 @@ toolbox {
   border-radius: 14px;
   -moz-box-align: center;
   font-size: 10px; }
-
-.close-button:hover {
-  color: #fafafa;
-  background-color: #dc4632;
-  outline: 2px solid #dc4632; }
+  .close-button:hover {
+    color: #fafafa;
+    background-color: #dc4632;
+    outline: 1px solid #dc4632;
+    -moz-outline-radius: 14px; }
 
 .deck-desc {
   color: #b4b4b4;

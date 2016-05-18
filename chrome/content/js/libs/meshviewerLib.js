@@ -1,7 +1,7 @@
 /**
 	TODO: to use less memory
 	
-	limit matrix skinning palette to 4v3 matrices
+	limit skinning palette matrices to 4v3s
 */
 
 var _mv = new Meshviewer();
@@ -183,9 +183,11 @@ function composeShaderString(flags) {
 		else
 			str += fragInput+";\n";
 		
+		/*
 		if(flags & (SHADER_OPTION_OVERLAY | SHADER_OPTION_TEXTURE))
 			str += "if(gl_FragColor.a < 0.95)\n"+
 					"	discard;\n";
+		*/
 		
 		return str + "}"; // close main()
 	}
@@ -205,6 +207,10 @@ const
 	RENDER_CAUSE_ANIMATION = 	1,
 	RENDER_CAUSE_MOUSE = 		2,
 	RENDER_CAUSE_MOVEMENT = 	2;
+
+const
+	RESOURCE_ERROR_INEXISTENT = 1,
+	RESOURCE_ERROR_FAILED_TO_PARSE = 2;
 
 function getMaxAssignmentsOfFlag(flags) {
 	return (flags >> 8) & 15; // length
@@ -244,7 +250,7 @@ function Meshviewer() {
 			gl = canvas.getContext("experimental-webgl");
 		}
 		catch(e) {
-			err("WebGL doesn't work..., for reasons...");
+			log("WebGL doesn't work..., for reasons...");
 		}
 		
 		if(!gl)
@@ -273,7 +279,7 @@ function Meshviewer() {
 			RenderError(WebGLDebugUtils.glEnumToString(e) + " was caused by calling '" + funcName + "'\n" + showObj2(args, -1, {avoidErr: true}) +
 				"\n" + _session.excertCallStack()
 			);
-			writeFile(
+			log(
 				_sc.chpath + "/content/modules/cide/meshviewer/shader.txt",
 				bumpFlags(_session.currentScene.currentRenderFlags) + "\n----------------\n" +
 				composeShaderString(_session.currentScene.currentRenderFlags | SHADER_OPTION_TYPE) + "----------------\n" +
@@ -398,7 +404,12 @@ function Meshviewer() {
 		this.loadTexture = function(src, mesh, key) {
 			var img = new Image();
 			
-			var fn = this.ontextureload;
+			var tu;
+			if(this.ontextureload)
+				tu = this.ontextureload(mesh, key, src, img);
+			
+			var _session = this;
+			
 			img.onload = function() {
 				var texture = gl.createTexture();
 				
@@ -409,14 +420,15 @@ function Meshviewer() {
 				gl.generateMipmap(gl.TEXTURE_2D);
 				gl.bindTexture(gl.TEXTURE_2D, null);
 				
-				if(fn)
-					fn(img.width, img.height, mesh, key, src);
+				if(_session.ontextureloadsucces)
+					_session.ontextureloadsucces(tu)
 				
 				mesh.setTexture(texture, key);
 			};
 			
 			img.onerror = function(e) {
-				// do something smart...
+				if(_session.ontextureloaderror)
+					_session.ontextureloaderror(tu)
 			};
 			img.src = "file:" + src;
 		}
@@ -424,7 +436,7 @@ function Meshviewer() {
 		this.addShader = function(vs, fs, flags) {
 			
 			if(!vs || !fs)
-				return err("Shader could not be initialized, at least one (vertex- oder fragment-shader)hasn't been identified");
+				return log("Shader could not be initialized, at least one (vertex- oder fragment-shader)hasn't been identified");
 			
 			var id = this._sprograms.length;
 			
@@ -549,7 +561,7 @@ function Meshviewer() {
 
 			// If creating the shader program failed, alert
 			if (!gl.getProgramParameter(prog, gl.LINK_STATUS))
-				err("Unable to initialize the shader program.");
+				log("Unable to initialize the shader program.");
 			
 			return prog;
 		}
@@ -740,8 +752,8 @@ function Meshviewer() {
 			this.setSkeleton = function(skeleton) {
 				this.setSkeletonCondition("skeletonGiven", true);
 				
-				if(typeof this.onskeletonload === "function")
-					this.onskeletonload(skeleton, !!this.skeleton);
+				if(typeof this.onskeletonset === "function")
+					this.onskeletonset(skeleton, !!this.skeleton);
 				
 				this.skeleton = skeleton;
 				
@@ -815,7 +827,6 @@ function Meshviewer() {
 				
 				var ortho = mat4.create();
 				// with y-axis flipped so that 0 is at the top
-				//mat4.ortho(ortho, 1, -1, 1, -1, -5, 5);
 				mat4.ortho(ortho, -1, 1, -1, 1, -5, 5);
 				mat4.multiply(m, ortho, m)
 				
@@ -1337,7 +1348,13 @@ function Meshviewer() {
 			
 			
 			this.queueMaterialFile = function(pathDir, mName, subMesh) {
-				this.material = Materials.get(mName, _sc.file(pathDir), function(mat) {
+				Materials.get(mName, _sc.file(pathDir), function(mat) {
+					
+					if(_mesh._scene._sess.onmatload)
+						_mesh._scene._sess.onmatload(mat, _mesh._scene.id, mName);
+					
+					if(!mat)
+						return;
 					
 					var t_units =  mat.find("texture_unit");
 					
@@ -1689,11 +1706,15 @@ function Meshviewer() {
 			} // end mesh iteration
 			
 			if(skeletonLink) {
-				var file = _sc.file(origDirPath + "/" + skeletonLink.getAttribute("name"));
 				
-				// if file there
+				var name = skeletonLink.getAttribute("name");
+				
+				if(this.onskeletonasked)
+					this.onskeletonasked(name, targetScene.id);
+				
+				var file = _sc.file(origDirPath + "/" + name);
+				
 				if(file.exists()) {
-					
 					var newFilePath = _sc.profd+"/tmp/meshviewer" + tmpFileIndex + ".xml";
 					tmpFileIndex++;
 					runXmlParser(file.path, newFilePath, function() {
@@ -1701,8 +1722,8 @@ function Meshviewer() {
 					});
 				}
 				else {
-					// TODO: Serious error logging for debugging and finding errors more easily
-					err("The given .skeleton-file couldn't be found: " + origDirPath + "/" + skeletonLink.getAttribute("name"));
+					if(this.onskeletonloaderr)
+						this.onskeletonloaderr(RESOURCE_ERROR_INEXISTENT);
 				}
 			}
 			targetScene.initRenderLoop(RENDER_CAUSE_RENDER_ONCE);
@@ -1921,7 +1942,7 @@ function parseSkeletonXml(path) {
 	
 	return sk;
 }
-var sdf = 0;
+
 function MV_Skeleton() {
 	
 	this.bones = [];
@@ -1937,8 +1958,7 @@ function MV_Skeleton() {
 		if(id === -1)
 			this._a = -1;
 		this._a = this.animations[id];
-		err(Object.keys(this._a.getTracks()).length);
-		sdf = 0;
+		
 		return this._a;
 	}
 	
@@ -1973,7 +1993,7 @@ function MV_Skeleton() {
 			
 			// if track for this bone exists
 			// TODO: Make much more progressive (don't iterate through all keyframes each render step, smarten it
-			if(trackData) {sdf++;
+			if(trackData) {
 				var l = trackData.length,
 					last = -1;
 				
@@ -2012,8 +2032,7 @@ function MV_Skeleton() {
 			result[bone.origId] = mTransformation;
 			
 		} // <<end of bone iteration
-		//err(sdf);
-		sdf = 0;
+		
 		return result;
 	}
 	
@@ -2081,10 +2100,10 @@ function RenderError(string) {
 		RENDER_REPORT_PRINTED = true;
 	}
 	if(!Object.keys(o).length)
-		err(string);
+		log(string);
 	else {
 		o.errorMessage = string;
-		showObj2(o);
+		log(o);
 	}
 }
 
