@@ -9,7 +9,7 @@ Prism.languages.javascript=Prism.languages.extend("clike",{keyword:/\b(as|async|
 Prism.languages.fnpreview = {
 	'eventname': /^[a-zA-Z0-9_.]+?(?=:[^:])/,
 	'fnname': /(function(?=\()|[ ].+?(?=\())/,
-	'datatype': /(string|int|void|bool|boolean|any|object|function\*|function|Generator|Array|PRUint8|Event|MouseEvent|KeyboardEvent|Promise|Node|HTMLElement|XULElement|nsIFile|Task|jQueryObject|ColorPicker|WorkEnvironment|ConfigEntry|ExtApplication|wmIProcess|_module|_KeyBinding|C4GroupFile|C4GroupHead|C4GroupEntryCore|_ContextMenu|_ContextMenuEntry|Deck)/,
+	'datatype': /(string|int|void|bool|boolean|any|object|function\*|function|Generator|Array|PRUint8|Event|MouseEvent|KeyboardEvent|Promise|Node|HTMLElement|HTMLULElement|XULElement|nsIFile|nsISimpleEnumerator|Task|jQueryObject|ColorPicker|WorkEnvironment|ConfigEntry|ExtApplication|wmIProcess|_module|_KeyBinding|C4GroupFile|C4GroupHead|C4GroupEntryCore|_ContextMenu|_ContextMenuEntry|Deck)/,
 	'keyword': /(class|constructor|extends)/,
 	'optional': /\[opt\]/,
 	'punctuation': /[{}();,<>/]/
