@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Windmill Documentation - removeTreeEntry</title>
+		<link href="../../../windmillDocs.css" rel="stylesheet">
+		<link href="../../../prism.css" rel="stylesheet">
+		<meta charset="UTF-8">
+		<script>
+			//Windmillinterner Workaround: Da Windmill das Oeffnen externer Links sperrt (sodass diese in einem externen Browser geoffnet werden koennen)
+			//wird hier fuer Windmill das anders geloest.
+			if(navigator.userAgent.search(/\bwindmill\b/) != -1) {
+				document.addEventListener("DOMContentLoaded", function() {
+					let elements = document.getElementsByTagName("a");
+					for(var i = 0; i < elements.length; i++) {
+						elements[i].onclick = function(e) {
+							window.location.href = this.href;
+							e.preventDefault();
+						};
+					}
+				});
+			}
+			document.addEventListener("DOMContentLoaded", function() {
+				let code_elements = document.querySelectorAll("code");
+				for(let i = 0; i < code_elements.length; i++) {
+					let elm = code_elements[i];
+					if(elm.className.search("lang-fnpreview") != -1)
+						elm.parentNode.className += "lang-fnpreview";
+				}
+			});
+		</script>
+	</head>
+	<body>
+		<div id="header">
+			Windmill Documentation
+		</div>
+		<div id="wrapper">
+			<nav id="navigation">
+				<ul>
+					<li class="navigation-elm"><a href="../../_home/__head_de.html">Startseite</a></li><ul class="navigation-sublist">
+</ul>
+<li class="navigation-elm"><a href="../__head_de.html">Libraries</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="__head_de.html"> Tree</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="treeExpand_de.html">treeExpand</a></li>
+<li class="navigation-elm"><a href="treeCollapse_de.html">treeCollapse</a></li>
+<li class="navigation-elm"><a href="toggleOpenState_de.html">toggleOpenState</a></li>
+<li class="navigation-elm"><a href="sortTreeContainerElements_de.html">sortTreeContainerElements</a></li>
+<li class="navigation-elm"><a href="setupTreeObj_de.html">setupTreeObj</a></li>
+<li class="navigation-elm"><a href="setupMaintree_de.html">setupMaintree</a></li>
+<li class="navigation-elm"><a href="selectTreeItem_de.html">selectTreeItem</a></li>
+<li class="navigation-elm"><a href="selectTreeEntryCrs_de.html">selectTreeEntryCrs</a></li>
+<li class="navigation-elm"><a href="searchTreeEntry_de.html">searchTreeEntry</a></li>
+<li class="navigation-elm"><a href="renameTreeObj_de.html">renameTreeObj</a></li>
+<li class="navigation-elm"><a href="removeTreeEntry_de.html">removeTreeEntry</a></li>
+<li class="navigation-elm"><a href="pasteFile_de.html">pasteFile</a></li>
+<li class="navigation-elm"><a href="handleTreeEntry_de.html">handleTreeEntry</a></li>
+<li class="navigation-elm"><a href="getTreeObjPath_de.html">getTreeObjPath</a></li>
+<li class="navigation-elm"><a href="getTreeObjId_de.html">getTreeObjId</a></li>
+<li class="navigation-elm"><a href="getTreeObjFullPath_de.html">getTreeObjFullPath</a></li>
+<li class="navigation-elm"><a href="getTreeObjById_de.html">getTreeObjById</a></li>
+<li class="navigation-elm"><a href="getTreeItemFilename_de.html">getTreeItemFilename</a></li>
+<li class="navigation-elm"><a href="getTreeEntryIndex_de.html">getTreeEntryIndex</a></li>
+<li class="navigation-elm"><a href="getTreeEntryByIndex_de.html">getTreeEntryByIndex</a></li>
+<li class="navigation-elm"><a href="getTreeCntById_de.html">getTreeCntById</a></li>
+<li class="navigation-elm"><a href="getLastSelectedTreeItem_de.html">getLastSelectedTreeItem</a></li>
+<li class="navigation-elm"><a href="getCurrentTreeSelection_de.html">getCurrentTreeSelection</a></li>
+<li class="navigation-elm"><a href="createTreeElement_de.html">createTreeElement</a></li>
+<li class="navigation-elm"><a href="copyTreeEntry_de.html">copyTreeEntry</a></li>
+</ul>
+<li class="navigation-elm"><a href="../explorer/__head_de.html"> Explorer</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../explorer/searchFile_de.html">searchFile</a></li>
+<li class="navigation-elm"><a href="../explorer/PrepareDirectory_de.html">PrepareDirectory</a></li>
+<li class="navigation-elm"><a href="../explorer/PrepareDirectory2_de.html">PrepareDirectory2</a></li>
+<li class="navigation-elm"><a href="../explorer/navigateToPath_de.html">navigateToPath</a></li>
+<li class="navigation-elm"><a href="../explorer/loadDirectory_de.html">loadDirectory</a></li>
+<li class="navigation-elm"><a href="../explorer/getFileExtensionPriority_de.html">getFileExtensionPriority</a></li>
+<li class="navigation-elm"><a href="../explorer/fileSorting_de.html">fileSorting</a></li>
+<li class="navigation-elm"><a href="../explorer/FilenameBlacklist_de.html">FilenameBlacklist</a></li>
+<li class="navigation-elm"><a href="../explorer/createEmptyTemplate_de.html">createEmptyTemplate</a></li>
+<li class="navigation-elm"><a href="../explorer/addFileTreeEntry_de.html">addFileTreeEntry</a></li>
+</ul>
+<li class="navigation-elm"><a href="../deck/__head_de.html"> Decks</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../deck/togglePage_de.html">togglePage</a></li>
+<li class="navigation-elm"><a href="../deck/getChildPosition_de.html">getChildPosition</a></li>
+<li class="navigation-elm"><a href="../deck/closePage_de.html">closePage</a></li>
+<li class="navigation-elm"><a href="../deck/class_Deck_de.html">class Deck</a></li>
+<li class="navigation-elm"><a href="../deck/addDeck_de.html">addDeck</a></li>
+</ul>
+<li class="navigation-elm"><a href="../contextmenu/__head_de.html"> Kontextmenüs</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../contextmenu/class__ContextMenu_de.html">class _ContextMenu</a></li>
+<li class="navigation-elm"><a href="../contextmenu/class__ContextMenuEntry_de.html">class _ContextMenuEntry</a></li>
+</ul>
+<li class="navigation-elm"><a href="../colorpicker/__head_de.html"> Color Picker</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../colorpicker/createColorPicker_de.html"> createColorPicker</a></li>
+<li class="navigation-elm"><a href="../colorpicker/class_ColorPicker_de.html"> class ColorPicker</a></li>
+</ul>
+<li class="navigation-elm"><a href="../c4group/__head_de.html">C4Group</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../c4group/readC4GroupFile_de.html"> readC4GroupFile</a></li>
+<li class="navigation-elm"><a href="../c4group/readC4GroupBytes_de.html"> readC4GroupBytes</a></li>
+<li class="navigation-elm"><a href="../c4group/getGroupHeader_de.html"> getGroupHeader</a></li>
+<li class="navigation-elm"><a href="../c4group/getGroupContent_de.html"> getGroupContent</a></li>
+<li class="navigation-elm"><a href="../c4group/C4GroupHead_de.html"> C4GroupHead</a></li>
+<li class="navigation-elm"><a href="../c4group/C4GroupFile_de.html"> C4GroupFile</a></li>
+<li class="navigation-elm"><a href="../c4group/C4GroupEntryCore_de.html"> C4GroupEntryCore</a></li>
+</ul>
+</ul>
+<li class="navigation-elm"><a href="../../functionalities/__head_de.html">Funktionalitäten</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../functionalities/workenvironments/__head_de.html">Arbeitsumgebungen</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../functionalities/workenvironments/saveWorkEnvironment_de.html">saveWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="../../functionalities/workenvironments/loadWorkEnvironment_de.html">loadWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="../../functionalities/workenvironments/getWorkEnvironments_de.html">getWorkEnvironments</a></li>
+<li class="navigation-elm"><a href="../../functionalities/workenvironments/getWorkEnvironmentByPath_de.html">getWorkEnvironmentByPath</a></li>
+<li class="navigation-elm"><a href="../../functionalities/workenvironments/createWorkEnvironment_de.html">createWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="../../functionalities/workenvironments/createNewWorkEnvironment_de.html">createNewWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="../../functionalities/workenvironments/class_WorkEnvironment_de.html">class WorkEnvironment</a></li>
+</ul>
+<li class="navigation-elm"><a href="../../functionalities/other/__head_de.html">Weitere Funktionen</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../functionalities/other/showNotification_de.html">showNotification</a></li>
+</ul>
+<li class="navigation-elm"><a href="../../functionalities/modules/__head_de.html">Module</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../functionalities/modules/readModuleInfo_de.html">readModuleInfo</a></li>
+<li class="navigation-elm"><a href="../../functionalities/modules/loadModules_de.html">loadModules</a></li>
+<li class="navigation-elm"><a href="../../functionalities/modules/getModule_de.html">getModule</a></li>
+<li class="navigation-elm"><a href="../../functionalities/modules/getModulesIdByName_de.html">getModulesIdByName</a></li>
+<li class="navigation-elm"><a href="../../functionalities/modules/getModulesByName_de.html">getModulesByName</a></li>
+<li class="navigation-elm"><a href="../../functionalities/modules/getModuleDef_de.html">getModuleDef</a></li>
+<li class="navigation-elm"><a href="../../functionalities/modules/getModuleDefByPrefix_de.html">getModuleDefByPrefix</a></li>
+<li class="navigation-elm"><a href="../../functionalities/modules/getModuleByName_de.html">getModuleByName</a></li>
+<li class="navigation-elm"><a href="../../functionalities/modules/createModule_de.html">createModule</a></li>
+<li class="navigation-elm"><a href="../../functionalities/modules/class__module_de.html">class _module</a></li>
+</ul>
+<li class="navigation-elm"><a href="../../functionalities/localization/__head_de.html">Lokalisierung</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../functionalities/localization/readLanguageInfo_de.html">readLanguageInfo</a></li>
+<li class="navigation-elm"><a href="../../functionalities/localization/localizeModule_de.html">localizeModule</a></li>
+<li class="navigation-elm"><a href="../../functionalities/localization/Locale_de.html">Locale</a></li>
+<li class="navigation-elm"><a href="../../functionalities/localization/initializeLanguage_de.html">initializeLanguage</a></li>
+</ul>
+<li class="navigation-elm"><a href="../../functionalities/keybindings/__head_de.html">Key Bindings</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../functionalities/keybindings/_keybinderGetKeysByIdentifier_de.html">_keybinderGetKeysByIdentifier</a></li>
+<li class="navigation-elm"><a href="../../functionalities/keybindings/_keybinderCheckKeyBind_de.html">_keybinderCheckKeyBind</a></li>
+<li class="navigation-elm"><a href="../../functionalities/keybindings/saveKeyBindings_de.html">saveKeyBindings</a></li>
+<li class="navigation-elm"><a href="../../functionalities/keybindings/loadKeyBindings_de.html">loadKeyBindings</a></li>
+<li class="navigation-elm"><a href="../../functionalities/keybindings/getKeyCodeIdentifier_de.html">getKeyCodeIdentifier</a></li>
+<li class="navigation-elm"><a href="../../functionalities/keybindings/getKeyBindingObjById_de.html">getKeyBindingObjById</a></li>
+<li class="navigation-elm"><a href="../../functionalities/keybindings/class__KeyBinding_de.html">class _KeyBinding</a></li>
+<li class="navigation-elm"><a href="../../functionalities/keybindings/bindKeyToObj_de.html">bindKeyToObj</a></li>
+</ul>
+<li class="navigation-elm"><a href="../../functionalities/dialogs/__head_de.html">Dialoge</a></li><ul class="navigation-sublist">
+</ul>
+<li class="navigation-elm"><a href="../../functionalities/config/__head_de.html">config.js</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../functionalities/config/setConfigData_de.html">setConfigData</a></li>
+<li class="navigation-elm"><a href="../../functionalities/config/setClonkPath_de.html">setClonkPath</a></li>
+<li class="navigation-elm"><a href="../../functionalities/config/sc.clonkpath_de.html">_sc.clonkpath</a></li>
+<li class="navigation-elm"><a href="../../functionalities/config/saveConfig_de.html">saveConfig</a></li>
+<li class="navigation-elm"><a href="../../functionalities/config/loadConfig_de.html">loadConfig</a></li>
+<li class="navigation-elm"><a href="../../functionalities/config/getConfig_de.html">getConfig</a></li>
+<li class="navigation-elm"><a href="../../functionalities/config/getConfigData_de.html">getConfigData</a></li>
+<li class="navigation-elm"><a href="../../functionalities/config/class_ConfigEntry_de.html">class ConfigEntry</a></li>
+<li class="navigation-elm"><a href="../../functionalities/config/addConfigString_de.html">addConfigString</a></li>
+</ul>
+</ul>
+<li class="navigation-elm"><a href="../../externalapplications/__head_de.html">Externe Anwendungen</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../externalapplications/class_ExtApplication_de.html">class ExtApplication</a></li>
+</ul>
+<li class="navigation-elm"><a href="../../ctypes/__head_de.html">CTypes / Windmill Interface</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../ctypes/wmIProcess_de.html">wmIProcess</a></li>
+<li class="navigation-elm"><a href="../../ctypes/WindmillInterface_de.html">Windmill Interface</a></li>
+</ul>
+
+				</ul>
+			</nav>
+			<div id="content">
+				<h1 id="removetreeentry">removeTreeEntry</h1>
+<pre><code class="lang-fnpreview"><span class="token datatype" >Task</span><span class="token fnname" > removeTreeEntry</span><span class="token punctuation" >(</span><span class="token datatype" >HTMLLIElement</span><span class="token punctuation" >/</span><span class="token datatype" >HTMLULElement</span><span class="token punctuation" >/</span><span class="token datatype" >jQueryObject</span> obj<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >bool</span> forced<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >bool</span> ignoreFile<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Versucht, den angegebenen Eintrag inkl. damit verbundenen Dateien zu löschen. Wird ein Arbeitsverzeichnis angegeben, so wird ein Dialog erstellt über den sich die Löschung bestätigen lässt.</p>
+<ul>
+<li><strong>obj:</strong><br>Eintrag, der inkl. zugehöriger Datei gelöscht werden soll.</li>
+<li><strong>forced:</strong><br>Falls <code>true</code>, so wird beim Löschen der Arbeitsverzeichnisse der Bestätigungsdialog übersprungen.</li>
+<li><strong>ignoreFile:</strong><br>Falls <code>true</code>, so wird nur der Eintrag, nicht aber die damit verbundene Datei gelöscht.</li>
+</ul>
+
+			</div>
+		</div>
+	</body>
+</html>
