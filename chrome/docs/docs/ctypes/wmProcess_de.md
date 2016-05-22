@@ -1,13 +1,13 @@
-<<<wmIProcess
-# wmIProcess - Prozessinterface
+<<<wmProcess
+# wmProcess - Prozessinterface
 
 **Unterstützte Betriebssysteme:** Windows.
 
-wmIProcess ist das auf js-ctypes basierte, Windmilleigene Prozessinterface welches die Funktionen des XPCOM Prozessinterfaces [nsIProcess](https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIProcess) um Funktionen wie die Inter Process Communication erweitert.
+wmProcess ist das auf js-ctypes basierte, Windmilleigene Prozessinterface welches die Funktionen des XPCOM Prozessinterfaces [nsIProcess](https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIProcess) um Funktionen wie die Inter Process Communication erweitert.
 
-## class wmIProcess
+## class wmProcess
 ```fnpreview
-class wmIProcess extends [WindmillInterface](#)
+class wmProcess extends [WindmillInterface](#)
 ```
 
 ### Attribute
@@ -16,15 +16,15 @@ class wmIProcess extends [WindmillInterface](#)
 |----------|-----|--------------|
 | path | string | Gibt den Dateipfad an. |
 | name | string | Gibt den Dateinamen an. **Read-only.** |
-| exitCode | int | Gibt den ExitCode mit der der zuletzt ausgeführte Prozess unter dieser wmIProcess-Instanz geendet hat an. |
-| status | int | Gibt den Status der wmIProcess-Instanz an. 0: Keine offene Prozessinstanz, 1: offene Prozessinstanz, 2: manuell geschlossene Prozessinstanz, bei der noch einmal die Routine durchlaufen wird und die stdout-Pipe eingelesen wird. |
+| exitCode | int | Gibt den ExitCode mit der der zuletzt ausgeführte Prozess unter dieser wmProcess-Instanz geendet hat an. |
+| status | int | Gibt den Status der wmProcess-Instanz an. 0: Keine offene Prozessinstanz, 1: offene Prozessinstanz, 2: manuell geschlossene Prozessinstanz, bei der noch einmal die Routine durchlaufen wird und die stdout-Pipe eingelesen wird. |
 
 ### Methoden
 
 ```fnpreview
-constructor wmIProcess(file);
+constructor wmProcess(file);
 ```
-Erstellt eine wmIProcess Instanz.
+Erstellt eine wmProcess Instanz.
 
 - **file:**
   Kann ein als String übergebener Dateipfad oder eine Instanz von [nsIFile](#) sein, die auf die auszuführende Datei zeigt.
@@ -52,7 +52,7 @@ Erstellt die Prozessinstanz mit den übergebenen Argumenten und Flags.
 ```fnpreview
 Promise createPromise(array args, int flags, [opt] function onProcessClosed, [opt] function outputListener);
 ```
-Erstellt die Prozessinstanz mit den übergebenen Argumenten und Flags und gibt einen Promise zurück, der gelöst wird sobald der Prozess geendet hat. Dabei wird die komplette Ausgabe des Prozesses einschließlich des ExitCodes und der wmIProcess-Instanz übergeben.
+Erstellt die Prozessinstanz mit den übergebenen Argumenten und Flags und gibt einen Promise zurück, der gelöst wird sobald der Prozess geendet hat. Dabei wird die komplette Ausgabe des Prozesses einschließlich des ExitCodes und der wmProcess-Instanz übergeben.
 
 ```javascript
 let process = _ws.pr(getC4GroupPath());
@@ -93,7 +93,7 @@ Wird jedes Mal beim Lesen der stdout-Pipe aufgerufen. (alle 250ms)
 - **data:**
   Gibt den neuen Inhalt der stdout-Pipe an.
 - **status:**
-  Gibt den Status der wmIProcess-Instanz an. Siehe das ```status```-Attribut.
+  Gibt den Status der wmProcess-Instanz an. Siehe das ```status```-Attribut.
 
 ```fnpreview
 closed: function(exitCode);

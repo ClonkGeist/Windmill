@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Windmill Documentation - wmIProcess</title>
+		<title>Windmill Documentation - wmProcess</title>
 		<link href="../../windmillDocs.css" rel="stylesheet">
 		<link href="../../prism.css" rel="stylesheet">
 		<meta charset="UTF-8">
@@ -37,6 +37,8 @@
 			<nav id="navigation">
 				<ul>
 					<li class="navigation-elm"><a href="../_home/__head_de.html">Startseite</a></li><ul class="navigation-sublist">
+</ul>
+<li class="navigation-elm"><a href="../shortcuts/__head_de.html">Shortcuts (_sc)</a></li><ul class="navigation-sublist">
 </ul>
 <li class="navigation-elm"><a href="../libraries/__head_de.html">Libraries</a></li><ul class="navigation-sublist">
 <li class="navigation-elm"><a href="../libraries/tree/__head_de.html"> Tree</a></li><ul class="navigation-sublist">
@@ -162,7 +164,7 @@
 <li class="navigation-elm"><a href="../externalapplications/class_ExtApplication_de.html">class ExtApplication</a></li>
 </ul>
 <li class="navigation-elm"><a href="__head_de.html">CTypes / Windmill Interface</a></li><ul class="navigation-sublist">
-<li class="navigation-elm"><a href="wmIProcess_de.html">wmIProcess</a></li>
+<li class="navigation-elm"><a href="wmProcess_de.html">wmProcess</a></li>
 <li class="navigation-elm"><a href="WindmillInterface_de.html">Windmill Interface</a></li>
 </ul>
 <li class="navigation-elm"><a href="../CIDE/__head_de.html">CIDE</a></li><ul class="navigation-sublist">
@@ -181,11 +183,11 @@
 				</ul>
 			</nav>
 			<div id="content">
-				<h1 id="wmiprocess-prozessinterface">wmIProcess - Prozessinterface</h1>
+				<h1 id="wmprocess-prozessinterface">wmProcess - Prozessinterface</h1>
 <p><strong>Unterstützte Betriebssysteme:</strong> Windows.</p>
-<p>wmIProcess ist das auf js-ctypes basierte, Windmilleigene Prozessinterface welches die Funktionen des XPCOM Prozessinterfaces <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIProcess">nsIProcess</a> um Funktionen wie die Inter Process Communication erweitert.</p>
-<h2 id="class-wmiprocess">class wmIProcess</h2>
-<pre><code class="lang-fnpreview"><span class="token keyword" >class</span><span class="token fnname" > wmIProcess extends [WindmillInterface]</span><span class="token punctuation" >(</span>#<span class="token punctuation" >)</span>
+<p>wmProcess ist das auf js-ctypes basierte, Windmilleigene Prozessinterface welches die Funktionen des XPCOM Prozessinterfaces <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIProcess">nsIProcess</a> um Funktionen wie die Inter Process Communication erweitert.</p>
+<h2 id="class-wmprocess">class wmProcess</h2>
+<pre><code class="lang-fnpreview"><span class="token keyword" >class</span><span class="token fnname" > wmProcess extends [WindmillInterface]</span><span class="token punctuation" >(</span>#<span class="token punctuation" >)</span>
 </code></pre>
 <h3 id="attribute">Attribute</h3>
 <table>
@@ -210,19 +212,19 @@
 <tr>
 <td>exitCode</td>
 <td>int</td>
-<td>Gibt den ExitCode mit der der zuletzt ausgeführte Prozess unter dieser wmIProcess-Instanz geendet hat an.</td>
+<td>Gibt den ExitCode mit der der zuletzt ausgeführte Prozess unter dieser wmProcess-Instanz geendet hat an.</td>
 </tr>
 <tr>
 <td>status</td>
 <td>int</td>
-<td>Gibt den Status der wmIProcess-Instanz an. 0: Keine offene Prozessinstanz, 1: offene Prozessinstanz, 2: manuell geschlossene Prozessinstanz, bei der noch einmal die Routine durchlaufen wird und die stdout-Pipe eingelesen wird.</td>
+<td>Gibt den Status der wmProcess-Instanz an. 0: Keine offene Prozessinstanz, 1: offene Prozessinstanz, 2: manuell geschlossene Prozessinstanz, bei der noch einmal die Routine durchlaufen wird und die stdout-Pipe eingelesen wird.</td>
 </tr>
 </tbody>
 </table>
 <h3 id="methoden">Methoden</h3>
-<pre><code class="lang-fnpreview"><span class="token keyword" >constructor</span><span class="token fnname" > wmIProcess</span><span class="token punctuation" >(</span>file<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+<pre><code class="lang-fnpreview"><span class="token keyword" >constructor</span><span class="token fnname" > wmProcess</span><span class="token punctuation" >(</span>file<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 </code></pre>
-<p>Erstellt eine wmIProcess Instanz.</p>
+<p>Erstellt eine wmProcess Instanz.</p>
 <ul>
 <li><strong>file:</strong><br>Kann ein als String übergebener Dateipfad oder eine Instanz von <a href="#">nsIFile</a> sein, die auf die auszuführende Datei zeigt.</li>
 </ul>
@@ -260,7 +262,7 @@
 </ul>
 <pre><code class="lang-fnpreview"><span class="token datatype" >Promise</span><span class="token fnname" > createPromise</span><span class="token punctuation" >(</span>array args<span class="token punctuation" >,</span> <span class="token datatype" >int</span> flags<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >function</span> onProcessClosed<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >function</span> outputListener<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 </code></pre>
-<p>Erstellt die Prozessinstanz mit den übergebenen Argumenten und Flags und gibt einen Promise zurück, der gelöst wird sobald der Prozess geendet hat. Dabei wird die komplette Ausgabe des Prozesses einschließlich des ExitCodes und der wmIProcess-Instanz übergeben.</p>
+<p>Erstellt die Prozessinstanz mit den übergebenen Argumenten und Flags und gibt einen Promise zurück, der gelöst wird sobald der Prozess geendet hat. Dabei wird die komplette Ausgabe des Prozesses einschließlich des ExitCodes und der wmProcess-Instanz übergeben.</p>
 <pre><code class="lang-javascript"><span class="token keyword" >let</span> process <span class="token operator" >=</span> _ws<span class="token punctuation" >.</span><span class="token function" >pr</span><span class="token punctuation" >(</span><span class="token function" >getC4GroupPath</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 <span class="token keyword" >let</span> promise <span class="token operator" >=</span> process<span class="token punctuation" >.</span><span class="token function" >createPromise</span><span class="token punctuation" >(</span><span class="token punctuation" >[</span><span class="token operator" >-</span>x<span class="token punctuation" >,</span> <span class="token string" >"Objects.ocd"</span><span class="token punctuation" >]</span><span class="token punctuation" >,</span> <span class="token number" >0x1</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 promise<span class="token punctuation" >.</span><span class="token function" >then</span><span class="token punctuation" >(</span><span class="token keyword" >function</span><span class="token punctuation" >(</span>output<span class="token punctuation" >,</span> exitCode<span class="token punctuation" >,</span> process<span class="token punctuation" >)</span> <span class="token punctuation" >{</span>
@@ -287,7 +289,7 @@ promise<span class="token punctuation" >.</span><span class="token function" >th
 <p>Wird jedes Mal beim Lesen der stdout-Pipe aufgerufen. (alle 250ms)</p>
 <ul>
 <li><strong>data:</strong><br>Gibt den neuen Inhalt der stdout-Pipe an.</li>
-<li><strong>status:</strong><br>Gibt den Status der wmIProcess-Instanz an. Siehe das <code>status</code>-Attribut.</li>
+<li><strong>status:</strong><br>Gibt den Status der wmProcess-Instanz an. Siehe das <code>status</code>-Attribut.</li>
 </ul>
 <pre><code class="lang-fnpreview"><span class="token eventname" >closed</span>:<span class="token fnname" > function</span><span class="token punctuation" >(</span>exitCode<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 </code></pre>

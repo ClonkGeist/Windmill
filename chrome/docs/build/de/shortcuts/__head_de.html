@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Windmill Documentation - Shortcuts (_sc)</title>
+		<link href="../../windmillDocs.css" rel="stylesheet">
+		<link href="../../prism.css" rel="stylesheet">
+		<meta charset="UTF-8">
+		<script>
+			//Windmillinterner Workaround: Da Windmill das Oeffnen externer Links sperrt (sodass diese in einem externen Browser geoffnet werden koennen)
+			//wird hier fuer Windmill das anders geloest.
+			if(navigator.userAgent.search(/\bwindmill\b/) != -1) {
+				document.addEventListener("DOMContentLoaded", function() {
+					let elements = document.getElementsByTagName("a");
+					for(var i = 0; i < elements.length; i++) {
+						elements[i].onclick = function(e) {
+							window.location.href = this.href;
+							e.preventDefault();
+						};
+					}
+				});
+			}
+			document.addEventListener("DOMContentLoaded", function() {
+				let code_elements = document.querySelectorAll("code");
+				for(let i = 0; i < code_elements.length; i++) {
+					let elm = code_elements[i];
+					if(elm.className.search("lang-fnpreview") != -1)
+						elm.parentNode.className += "lang-fnpreview";
+				}
+			});
+		</script>
+	</head>
+	<body>
+		<div id="header">
+			Windmill Documentation
+		</div>
+		<div id="wrapper">
+			<nav id="navigation">
+				<ul>
+					<li class="navigation-elm"><a href="../_home/__head_de.html">Startseite</a></li><ul class="navigation-sublist">
+</ul>
+<li class="navigation-elm"><a href="__head_de.html">Shortcuts (_sc)</a></li><ul class="navigation-sublist">
+</ul>
+<li class="navigation-elm"><a href="../libraries/__head_de.html">Libraries</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../libraries/tree/__head_de.html"> Tree</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../libraries/tree/treeExpand_de.html">treeExpand</a></li>
+<li class="navigation-elm"><a href="../libraries/tree/treeCollapse_de.html">treeCollapse</a></li>
+<li class="navigation-elm"><a href="../libraries/tree/toggleOpenState_de.html">toggleOpenState</a></li>
+<li class="navigation-elm"><a href="../libraries/tree/sortTreeContainerElements_de.html">sortTreeContainerElements</a></li>
+<li class="navigation-elm"><a href="../libraries/tree/setupTreeObj_de.html">setupTreeObj</a></li>
+<li class="navigation-elm"><a href="../libraries/tree/setupMaintree_de.html">setupMaintree</a></li>
+<li class="navigation-elm"><a href="../libraries/tree/selectTreeItem_de.html">selectTreeItem</a></li>
+<li class="navigation-elm"><a href="../libraries/tree/selectTreeEntryCrs_de.html">selectTreeEntryCrs</a></li>
+<li class="navigation-elm"><a href="../libraries/tree/searchTreeEntry_de.html">searchTreeEntry</a></li>
+<li class="navigation-elm"><a href="../libraries/tree/renameTreeObj_de.html">renameTreeObj</a></li>
+<li class="navigation-elm"><a href="../libraries/tree/removeTreeEntry_de.html">removeTreeEntry</a></li>
+<li class="navigation-elm"><a href="../libraries/tree/pasteFile_de.html">pasteFile</a></li>
+<li class="navigation-elm"><a href="../libraries/tree/handleTreeEntry_de.html">handleTreeEntry</a></li>
+<li class="navigation-elm"><a href="../libraries/tree/getTreeObjPath_de.html">getTreeObjPath</a></li>
+<li class="navigation-elm"><a href="../libraries/tree/getTreeObjId_de.html">getTreeObjId</a></li>
+<li class="navigation-elm"><a href="../libraries/tree/getTreeObjFullPath_de.html">getTreeObjFullPath</a></li>
+<li class="navigation-elm"><a href="../libraries/tree/getTreeObjById_de.html">getTreeObjById</a></li>
+<li class="navigation-elm"><a href="../libraries/tree/getTreeItemFilename_de.html">getTreeItemFilename</a></li>
+<li class="navigation-elm"><a href="../libraries/tree/getTreeEntryIndex_de.html">getTreeEntryIndex</a></li>
+<li class="navigation-elm"><a href="../libraries/tree/getTreeEntryByIndex_de.html">getTreeEntryByIndex</a></li>
+<li class="navigation-elm"><a href="../libraries/tree/getTreeCntById_de.html">getTreeCntById</a></li>
+<li class="navigation-elm"><a href="../libraries/tree/getLastSelectedTreeItem_de.html">getLastSelectedTreeItem</a></li>
+<li class="navigation-elm"><a href="../libraries/tree/getCurrentTreeSelection_de.html">getCurrentTreeSelection</a></li>
+<li class="navigation-elm"><a href="../libraries/tree/createTreeElement_de.html">createTreeElement</a></li>
+<li class="navigation-elm"><a href="../libraries/tree/copyTreeEntry_de.html">copyTreeEntry</a></li>
+</ul>
+<li class="navigation-elm"><a href="../libraries/explorer/__head_de.html"> Explorer</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../libraries/explorer/searchFile_de.html">searchFile</a></li>
+<li class="navigation-elm"><a href="../libraries/explorer/PrepareDirectory_de.html">PrepareDirectory</a></li>
+<li class="navigation-elm"><a href="../libraries/explorer/PrepareDirectory2_de.html">PrepareDirectory2</a></li>
+<li class="navigation-elm"><a href="../libraries/explorer/navigateToPath_de.html">navigateToPath</a></li>
+<li class="navigation-elm"><a href="../libraries/explorer/loadDirectory_de.html">loadDirectory</a></li>
+<li class="navigation-elm"><a href="../libraries/explorer/getFileExtensionPriority_de.html">getFileExtensionPriority</a></li>
+<li class="navigation-elm"><a href="../libraries/explorer/fileSorting_de.html">fileSorting</a></li>
+<li class="navigation-elm"><a href="../libraries/explorer/FilenameBlacklist_de.html">FilenameBlacklist</a></li>
+<li class="navigation-elm"><a href="../libraries/explorer/createEmptyTemplate_de.html">createEmptyTemplate</a></li>
+<li class="navigation-elm"><a href="../libraries/explorer/addFileTreeEntry_de.html">addFileTreeEntry</a></li>
+</ul>
+<li class="navigation-elm"><a href="../libraries/deck/__head_de.html"> Decks</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../libraries/deck/togglePage_de.html">togglePage</a></li>
+<li class="navigation-elm"><a href="../libraries/deck/getChildPosition_de.html">getChildPosition</a></li>
+<li class="navigation-elm"><a href="../libraries/deck/closePage_de.html">closePage</a></li>
+<li class="navigation-elm"><a href="../libraries/deck/class_Deck_de.html">class Deck</a></li>
+<li class="navigation-elm"><a href="../libraries/deck/addDeck_de.html">addDeck</a></li>
+</ul>
+<li class="navigation-elm"><a href="../libraries/contextmenu/__head_de.html"> Kontextmenüs</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../libraries/contextmenu/class__ContextMenu_de.html">class _ContextMenu</a></li>
+<li class="navigation-elm"><a href="../libraries/contextmenu/class__ContextMenuEntry_de.html">class _ContextMenuEntry</a></li>
+</ul>
+<li class="navigation-elm"><a href="../libraries/colorpicker/__head_de.html"> Color Picker</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../libraries/colorpicker/createColorPicker_de.html"> createColorPicker</a></li>
+<li class="navigation-elm"><a href="../libraries/colorpicker/class_ColorPicker_de.html"> class ColorPicker</a></li>
+</ul>
+<li class="navigation-elm"><a href="../libraries/c4group/__head_de.html">C4Group</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../libraries/c4group/readC4GroupFile_de.html"> readC4GroupFile</a></li>
+<li class="navigation-elm"><a href="../libraries/c4group/readC4GroupBytes_de.html"> readC4GroupBytes</a></li>
+<li class="navigation-elm"><a href="../libraries/c4group/getGroupHeader_de.html"> getGroupHeader</a></li>
+<li class="navigation-elm"><a href="../libraries/c4group/getGroupContent_de.html"> getGroupContent</a></li>
+<li class="navigation-elm"><a href="../libraries/c4group/C4GroupHead_de.html"> C4GroupHead</a></li>
+<li class="navigation-elm"><a href="../libraries/c4group/C4GroupFile_de.html"> C4GroupFile</a></li>
+<li class="navigation-elm"><a href="../libraries/c4group/C4GroupEntryCore_de.html"> C4GroupEntryCore</a></li>
+</ul>
+</ul>
+<li class="navigation-elm"><a href="../functionalities/__head_de.html">Funktionalitäten</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../functionalities/workenvironments/__head_de.html">Arbeitsumgebungen</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../functionalities/workenvironments/saveWorkEnvironment_de.html">saveWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="../functionalities/workenvironments/loadWorkEnvironment_de.html">loadWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="../functionalities/workenvironments/getWorkEnvironments_de.html">getWorkEnvironments</a></li>
+<li class="navigation-elm"><a href="../functionalities/workenvironments/getWorkEnvironmentByPath_de.html">getWorkEnvironmentByPath</a></li>
+<li class="navigation-elm"><a href="../functionalities/workenvironments/createWorkEnvironment_de.html">createWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="../functionalities/workenvironments/createNewWorkEnvironment_de.html">createNewWorkEnvironment</a></li>
+<li class="navigation-elm"><a href="../functionalities/workenvironments/class_WorkEnvironment_de.html">class WorkEnvironment</a></li>
+</ul>
+<li class="navigation-elm"><a href="../functionalities/other/__head_de.html">Weitere Funktionen</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../functionalities/other/showNotification_de.html">showNotification</a></li>
+</ul>
+<li class="navigation-elm"><a href="../functionalities/modules/__head_de.html">Module</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../functionalities/modules/readModuleInfo_de.html">readModuleInfo</a></li>
+<li class="navigation-elm"><a href="../functionalities/modules/loadModules_de.html">loadModules</a></li>
+<li class="navigation-elm"><a href="../functionalities/modules/getModule_de.html">getModule</a></li>
+<li class="navigation-elm"><a href="../functionalities/modules/getModulesIdByName_de.html">getModulesIdByName</a></li>
+<li class="navigation-elm"><a href="../functionalities/modules/getModulesByName_de.html">getModulesByName</a></li>
+<li class="navigation-elm"><a href="../functionalities/modules/getModuleDef_de.html">getModuleDef</a></li>
+<li class="navigation-elm"><a href="../functionalities/modules/getModuleDefByPrefix_de.html">getModuleDefByPrefix</a></li>
+<li class="navigation-elm"><a href="../functionalities/modules/getModuleByName_de.html">getModuleByName</a></li>
+<li class="navigation-elm"><a href="../functionalities/modules/createModule_de.html">createModule</a></li>
+<li class="navigation-elm"><a href="../functionalities/modules/class__module_de.html">class _module</a></li>
+</ul>
+<li class="navigation-elm"><a href="../functionalities/localization/__head_de.html">Lokalisierung</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../functionalities/localization/readLanguageInfo_de.html">readLanguageInfo</a></li>
+<li class="navigation-elm"><a href="../functionalities/localization/localizeModule_de.html">localizeModule</a></li>
+<li class="navigation-elm"><a href="../functionalities/localization/Locale_de.html">Locale</a></li>
+<li class="navigation-elm"><a href="../functionalities/localization/initializeLanguage_de.html">initializeLanguage</a></li>
+</ul>
+<li class="navigation-elm"><a href="../functionalities/keybindings/__head_de.html">Key Bindings</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../functionalities/keybindings/_keybinderGetKeysByIdentifier_de.html">_keybinderGetKeysByIdentifier</a></li>
+<li class="navigation-elm"><a href="../functionalities/keybindings/_keybinderCheckKeyBind_de.html">_keybinderCheckKeyBind</a></li>
+<li class="navigation-elm"><a href="../functionalities/keybindings/saveKeyBindings_de.html">saveKeyBindings</a></li>
+<li class="navigation-elm"><a href="../functionalities/keybindings/loadKeyBindings_de.html">loadKeyBindings</a></li>
+<li class="navigation-elm"><a href="../functionalities/keybindings/getKeyCodeIdentifier_de.html">getKeyCodeIdentifier</a></li>
+<li class="navigation-elm"><a href="../functionalities/keybindings/getKeyBindingObjById_de.html">getKeyBindingObjById</a></li>
+<li class="navigation-elm"><a href="../functionalities/keybindings/class__KeyBinding_de.html">class _KeyBinding</a></li>
+<li class="navigation-elm"><a href="../functionalities/keybindings/bindKeyToObj_de.html">bindKeyToObj</a></li>
+</ul>
+<li class="navigation-elm"><a href="../functionalities/dialogs/__head_de.html">Dialoge</a></li><ul class="navigation-sublist">
+</ul>
+<li class="navigation-elm"><a href="../functionalities/config/__head_de.html">config.js</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../functionalities/config/setConfigData_de.html">setConfigData</a></li>
+<li class="navigation-elm"><a href="../functionalities/config/setClonkPath_de.html">setClonkPath</a></li>
+<li class="navigation-elm"><a href="../functionalities/config/sc.clonkpath_de.html">_sc.clonkpath</a></li>
+<li class="navigation-elm"><a href="../functionalities/config/saveConfig_de.html">saveConfig</a></li>
+<li class="navigation-elm"><a href="../functionalities/config/loadConfig_de.html">loadConfig</a></li>
+<li class="navigation-elm"><a href="../functionalities/config/getConfig_de.html">getConfig</a></li>
+<li class="navigation-elm"><a href="../functionalities/config/getConfigData_de.html">getConfigData</a></li>
+<li class="navigation-elm"><a href="../functionalities/config/class_ConfigEntry_de.html">class ConfigEntry</a></li>
+<li class="navigation-elm"><a href="../functionalities/config/addConfigString_de.html">addConfigString</a></li>
+</ul>
+</ul>
+<li class="navigation-elm"><a href="../externalapplications/__head_de.html">Externe Anwendungen</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../externalapplications/class_ExtApplication_de.html">class ExtApplication</a></li>
+</ul>
+<li class="navigation-elm"><a href="../ctypes/__head_de.html">CTypes / Windmill Interface</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../ctypes/wmProcess_de.html">wmProcess</a></li>
+<li class="navigation-elm"><a href="../ctypes/WindmillInterface_de.html">Windmill Interface</a></li>
+</ul>
+<li class="navigation-elm"><a href="../CIDE/__head_de.html">CIDE</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../CIDE/saveTab_de.html">saveTab</a></li>
+<li class="navigation-elm"><a href="../CIDE/saveFileByPath_de.html">saveFileByPath</a></li>
+<li class="navigation-elm"><a href="../CIDE/OpenTabInProgram_de.html">OpenTabInProgram</a></li>
+<li class="navigation-elm"><a href="../CIDE/onFileUnchanged_de.html">onFileUnchanged</a></li>
+<li class="navigation-elm"><a href="../CIDE/onFileChanged_de.html">onFileChanged</a></li>
+<li class="navigation-elm"><a href="../CIDE/hasOpenedSessions_de.html">hasOpenedSessions</a></li>
+<li class="navigation-elm"><a href="../CIDE/getUnsavedFiles_de.html">getUnsavedFiles</a></li>
+<li class="navigation-elm"><a href="../CIDE/getExtProgId_de.html">getExtProgId</a></li>
+<li class="navigation-elm"><a href="../CIDE/fileLoaded_de.html">fileLoaded</a></li>
+<li class="navigation-elm"><a href="../CIDE/checkSavingPermissions_de.html">checkSavingPermissions</a></li>
+</ul>
+
+				</ul>
+			</nav>
+			<div id="content">
+				<h1 id="shortcuts-_sc-">Shortcuts (_sc)</h1>
+<p>Um viel Schreibarbeit zu ersparen, verfügt Windmill über ein Shortcut-Objekt <code>_sc</code> das von allen Modulen aus angesteuert werden kann. Dieses Shortcut-Objekt soll das Arbeiten mit den XPCOM-Interfaces erleichtern, die sonst über eine spezielle ID der <code>Components.classes</code> inkl. <code>createInstance()</code>/<code>getService()</code> erhalten werden können.</p>
+<h2 id="funktionen">Funktionen</h2>
+<pre><code class="lang-fnpreview"><span class="token datatype" >nsIProcess</span><span class="token fnname" > _sc.process</span><span class="token punctuation" >(</span><span class="token datatype" >nsIFile</span> file<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Erzeugt eine <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIProcess">nsIProcess</a>-Instanz der angegebenen Datei.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >nsIFile</span><span class="token fnname" > _sc.file</span><span class="token punctuation" >(</span><span class="token datatype" >string</span> path<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >bool</span> failsafe<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Erzeugt eine <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIFile">nsIFile</a>-Instanz aus dem angegeben Pfad.</p>
+<ul>
+<li><strong>path:</strong><br>Pfad der Datei, zu der eine nsIFile-Instanz erzeugt werden soll.</li>
+<li><strong>failsafe:</strong><br>Falls <code>true</code>, so wird kein Fehler geworfen falls das Erstellen der Datei fehlschlägt. Es wird ein Objekt mit einer Funktion <code>exists()</code> (gleichnamig mit der Funktion <code>exists()</code> aus nsIFile) zurückgegeben, die <code>false</code> zurückgibt.</li>
+</ul>
+<pre><code class="lang-fnpreview"><span class="token datatype" >nsIProperties</span><span class="token fnname" > _sc.dirserv</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Erzeugt eine <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIProperties">nsIProperties</a>-Instanz.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >nsIINIParserFactory</span><span class="token fnname" > _sc.inifact</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Erzeugt eine <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIINIParserFactory">nsIINIParserFactory</a>-Instanz.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >nsIFileOutputStream</span><span class="token fnname" > _sc.ofstream</span><span class="token punctuation" >(</span><span class="token datatype" >nsIFile</span> file<span class="token punctuation" >,</span> <span class="token datatype" >long</span> ioFlags<span class="token punctuation" >,</span> <span class="token datatype" >long</span> perm<span class="token punctuation" >,</span> <span class="token datatype" >long</span> behaviorFlags<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Erzeugt eine <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIFileOutputStream">nsIFileOutputStream</a>-Instanz und initialisiert diese mit den angegebenen Parametern. Für die Parameter, siehe <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIFileOutputStream#init(">https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIFileOutputStream#init(</a>).</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >nsIFileInputStream</span><span class="token fnname" > _sc.ifstream</span><span class="token punctuation" >(</span><span class="token datatype" >nsIFile</span> file<span class="token punctuation" >,</span> <span class="token datatype" >long</span> ioFlags<span class="token punctuation" >,</span> <span class="token datatype" >long</span> perm<span class="token punctuation" >,</span> <span class="token datatype" >long</span> behaviorFlags<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Erzeugt eine <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIFileInputStream">nsIFileInputStream</a>-Instanz und initialisiert diese mit den angegebenen Parametern. Für die Parameter, siehe <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIFileInputStream#init(">https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIFileInputStream#init(</a>).</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >nsIBinaryOutputStream</span><span class="token fnname" > _sc.bostream</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Erzeugt eine <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIBinaryOutputStream">nsIBinaryOutputStream</a>-Instanz.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >nsIBinaryInputStream</span><span class="token fnname" > _sc.binstream</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Erzeugt eine <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIBinaryInputStream">nsIBinaryInputStream</a>-Instanz.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >nsIConverterOutputStream</span><span class="token fnname" > _sc.costream</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Erzeugt eine <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIConverterOutputStream">nsIConverterOutputStream</a>-Instanz.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >nsIConverterInputStream</span><span class="token fnname" > _sc.cistream</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Erzeugt eine <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIConverterInputStream">nsIConverterInputStream</a>-Instanz.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >nsIDragService</span><span class="token fnname" > _sc.dragserv</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Erzeugt eine <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIDragService">nsIDragService</a>-Instanz.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >nsIIOService</span><span class="token fnname" > _sc.ioserv</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Erzeugt eine <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIIOService">nsIIOService</a>-Instanz.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >nsITransferable</span><span class="token fnname" > _sc.transferable</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Erzeugt eine <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsITransferable">nsITransferable</a>-Instanz.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >nsIServerSocket</span><span class="token fnname" > _sc.serversocket</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Erzeugt eine <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIServerSocket">nsIServerSocket</a>-Instanz.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >nsISocketTransportService</span><span class="token fnname" > _sc.socktsvc</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Erzeugt eine <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsISocketTransportService">nsISocketTransportService</a>-Instanz.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >nsIScriptableInputStream</span><span class="token fnname" > _sc.isstream</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Erzeugt eine <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIScriptableInputStream">nsIScriptableInputStream</a>-Instanz.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >nsIInputStreamPump</span><span class="token fnname" > _sc.istreampump</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Erzeugt eine <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIInputStreamPump">nsIInputStreamPump</a>-Instanz.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >nsIErrorService</span><span class="token fnname" > _sc.errsvc</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Erzeugt eine <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIErrorService">nsIErrorService</a>-Instanz.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >nsIFileOutputStream</span><span class="token fnname" > _sc.sfostream</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Erzeugt eine <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIFileOutputStream">nsIFileOutputStream</a>-Instanz.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >nsIScreenManager</span><span class="token fnname" > _sc.screenmgr</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Erzeugt eine <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIScreenManager">nsIScreenManager</a>-Instanz.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >nsiScreen</span><span class="token fnname" > _sc.filepicker</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Erzeugt eine <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsiScreen">nsiScreen</a>-Instanz.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >nsIWindowsRegKey</span><span class="token fnname" > _sc.wregkey</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Erzeugt eine <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIWindowsRegKey">nsIWindowsRegKey</a>-Instanz.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >nsIClipboardHelper</span><span class="token fnname" > _sc.cbHelper</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Erzeugt eine <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIClipboardHelper">nsIClipboardHelper</a>-Instanz.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >nsIClipboard</span><span class="token fnname" > _sc.clipboard</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Erzeugt eine <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIClipboard">nsIClipboard</a>-Instanz.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >nsISupportsString</span><span class="token fnname" > _sc.supportsstr</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Erzeugt eine <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsISupportsString">nsISupportsString</a>-Instanz.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >nsICryptoHash</span><span class="token fnname" > _sc.cryptohash</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Erzeugt eine <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsICryptoHash">nsICryptoHash</a>-Instanz.</p>
+<pre><code class="lang-fnpreview"><span class="token datatype" >mozIJSSubScriptLoader</span><span class="token fnname" > _sc.subscript</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Erzeugt eine <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/mozIJSSubScriptLoader">mozIJSSubScriptLoader</a>-Instanz.</p>
+<h2 id="attribute">Attribute</h2>
+<table>
+<thead>
+<tr>
+<th>Attribut</th>
+<th>Typ</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>env</td>
+<td><a href="https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIEnvironment">nsIEnvironment</a></td>
+<td>nsIEnvironment-Instanz zum Arbeiten mit Umgebungsvariablen.</td>
+</tr>
+<tr>
+<td>runtime</td>
+<td><a href="https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIXULRuntime">nsIXULRuntime</a></td>
+<td>nsIXULRuntime-Instanz.</td>
+</tr>
+<tr>
+<td>chpath</td>
+<td>string</td>
+<td>Gibt den Pfad bis zum chrome-Ordner (<code>./chrome</code>) als absoluten Pfad an.</td>
+</tr>
+<tr>
+<td>profd</td>
+<td>string</td>
+<td>Gibt den Pfad zum aktuell genutzten Profil an. (Unter Windows z.B. unter <code>%APPDATA%\Windmill\windmill\Profiles\[AktuellesProfil]\</code>)</td>
+</tr>
+<tr>
+<td>clipboard2</td>
+<td>object</td>
+<td>High-Level-Clipboard-API. Siehe <a href="https://developer.mozilla.org/en-US/Add-ons/SDK/High-Level_APIs/clipboard">https://developer.mozilla.org/en-US/Add-ons/SDK/High-Level_APIs/clipboard</a> für weitere Informationen</td>
+</tr>
+</tbody>
+</table>
+<h1 id="konstanten-shortcuts">Konstanten Shortcuts</h1>
+<p>Über das Shortcut-Objekt für Konstanten <code>_scc</code> lassen sich auch XPCOM-Konstanten benutzen. Aktuell sind folgende implementiert:</p>
+<table>
+<thead>
+<tr>
+<th>Konstante</th>
+<th>Wert</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PR_RDONLY</td>
+<td>0x01</td>
+</tr>
+<tr>
+<td>PR_WRONLY</td>
+<td>0x02</td>
+</tr>
+<tr>
+<td>PR_RDWR</td>
+<td>0x04</td>
+</tr>
+<tr>
+<td>PR_CREATE_FILE</td>
+<td>0x08</td>
+</tr>
+<tr>
+<td>PR_APPEND</td>
+<td>0x10</td>
+</tr>
+<tr>
+<td>PR_TRUNCATE</td>
+<td>0x20</td>
+</tr>
+<tr>
+<td>PR_SYNC</td>
+<td>0x40</td>
+</tr>
+<tr>
+<td>PR_EXCL</td>
+<td>0x80</td>
+</tr>
+<tr>
+<td>PR_IXOTH</td>
+<td>0x0001</td>
+</tr>
+<tr>
+<td>PR_IWOTH</td>
+<td>0x0002</td>
+</tr>
+<tr>
+<td>PR_IROTH</td>
+<td>0x0004</td>
+</tr>
+<tr>
+<td>PR_IRWXO</td>
+<td>0x0007</td>
+</tr>
+<tr>
+<td>PR_IXGRP</td>
+<td>0x0010</td>
+</tr>
+<tr>
+<td>PR_IWGRP</td>
+<td>0x0020</td>
+</tr>
+<tr>
+<td>PR_IRGRP</td>
+<td>0x0040</td>
+</tr>
+<tr>
+<td>PR_IRWXG</td>
+<td>0x0070</td>
+</tr>
+<tr>
+<td>PR_IXUSR</td>
+<td>0x0100</td>
+</tr>
+<tr>
+<td>PR_IWUSR</td>
+<td>0x0200</td>
+</tr>
+<tr>
+<td>PR_IRUSR</td>
+<td>0x0400</td>
+</tr>
+<tr>
+<td>PR_IRWXU</td>
+<td>0x0700</td>
+</tr>
+</tbody>
+</table>
+<h1 id="windmill-interface-shortcuts">Windmill Interface Shortcuts</h1>
+<p>Für Windmill Interfaces gibt es ein spezielles Shortcut-Objekt <code>_ws</code>.</p>
+<h2 id="funktionen">Funktionen</h2>
+<pre><code class="lang-fnpreview"><span class="token datatype" >wmProcess</span><span class="token fnname" > _sc.pr</span><span class="token punctuation" >(</span>...<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+</code></pre>
+<p>Erzeugt eine <a href="#">wmProcess</a>-Instanz. Die angegebenen Parameter werden dabei direkt an den Konstruktor von wmProcess weitergeleitet. Für weitere Informationen siehe <a href="#">wmProcess</a>.</p>
+
+			</div>
+		</div>
+	</body>
+</html>
