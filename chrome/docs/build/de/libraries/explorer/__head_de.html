@@ -163,6 +163,13 @@
 <li class="navigation-elm"><a href="../../externalapplications/__head_de.html">Externe Anwendungen</a></li><ul class="navigation-sublist">
 <li class="navigation-elm"><a href="../../externalapplications/class_ExtApplication_de.html">class ExtApplication</a></li>
 </ul>
+<li class="navigation-elm"><a href="../../default_module/__head_de.html">Standardfunktionalitäten</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../default_module/debug/__head_de.html">Debug</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../default_module/debug/showObj3_de.html">showObj3</a></li>
+<li class="navigation-elm"><a href="../../default_module/debug/showObj2_de.html">showObj2</a></li>
+<li class="navigation-elm"><a href="../../default_module/debug/displayDOM_de.html">displayDOM</a></li>
+</ul>
+</ul>
 <li class="navigation-elm"><a href="../../ctypes/__head_de.html">CTypes / Windmill Interface</a></li><ul class="navigation-sublist">
 <li class="navigation-elm"><a href="../../ctypes/wmProcess_de.html">wmProcess</a></li>
 <li class="navigation-elm"><a href="../../ctypes/WindmillInterface_de.html">Windmill Interface</a></li>
@@ -199,7 +206,7 @@
 <pre><code class="lang-fnpreview"><span class="token eventname" >onExplorerRefresh</span>:<span class="token fnname" > function</span><span class="token punctuation" >(</span><span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 </code></pre>
 <p>Wird aufgerufen, wenn der Benutzer F5 drückt. (Ohne dabei die Steuerungstaste zu drücken.)</p>
-<pre><code class="lang-fnpreview"><span class="token eventname" >getTreeEntryData</span>:<span class="token fnname" > object function</span><span class="token punctuation" >(</span><span class="token datatype" >nsIFile</span> entry<span class="token punctuation" >,</span> <span class="token datatype" >string</span> fext<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+<pre><code class="lang-fnpreview"><span class="token eventname" >getTreeEntryData</span>: <span class="token datatype" >object</span><span class="token fnname" > function</span><span class="token punctuation" >(</span><span class="token datatype" >nsIFile</span> entry<span class="token punctuation" >,</span> <span class="token datatype" >string</span> fext<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 </code></pre>
 <p><strong>Erwarteter Callback.</strong> Wird beim Hinzufügen eines Eintrags aufgerufen, um zusätzliche Informationen für den Eintrag hinzuzufügen. Als Rückgabewert kann ein Objekt mit folgenden Eigenschaften zurückgegeben werden:</p>
 <ul>
@@ -214,10 +221,10 @@
 <li><strong>entry:</strong><br><code>nsIFile</code>-Instanz der Datei dessen Eintrag erstellt werden soll.</li>
 <li><strong>fext:</strong><br>Dateiendung der Datei dessen Eintrag erstellt werden soll.</li>
 </ul>
-<pre><code class="lang-fnpreview"><span class="token eventname" >noContainer</span>:<span class="token fnname" > bool function</span><span class="token punctuation" >(</span><span class="token datatype" >string</span> fext<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+<pre><code class="lang-fnpreview"><span class="token eventname" >noContainer</span>: <span class="token datatype" >bool</span><span class="token fnname" > function</span><span class="token punctuation" >(</span><span class="token datatype" >string</span> fext<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 </code></pre>
 <p><strong>Erwarteter Callback.</strong> Falls der Callback <code>true</code> zurückgibt, so werden Dateien mit der angegebenen Dateiendung nicht als Container-Elemente angezeigt.</p>
-<pre><code class="lang-fnpreview"><span class="token eventname" >hideFileExtension</span>:<span class="token fnname" > bool function</span><span class="token punctuation" >(</span><span class="token datatype" >string</span> fext<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+<pre><code class="lang-fnpreview"><span class="token eventname" >hideFileExtension</span>: <span class="token datatype" >bool</span><span class="token fnname" > function</span><span class="token punctuation" >(</span><span class="token datatype" >string</span> fext<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 </code></pre>
 <p><strong>Erwarteter Callback.</strong> Falls der Callback <code>true</code> zurückgibt, so werden Dateien mit der angegebenen Dateiendung nicht angezeigt.</p>
 <h2 id="anzeigeinformationen-f-r-dateien">Anzeigeinformationen für Dateien</h2>
