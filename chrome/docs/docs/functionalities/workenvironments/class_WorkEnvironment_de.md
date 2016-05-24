@@ -2,10 +2,8 @@
 
 # class WorkEnvironment
 
-**extends** WindmillObject
-
 ```fnpreview
-constructor WorkEnvironment(string path, int Type, id, [opt] object options);
+constructor WorkEnvironment(string path, int Type, any id, [opt] object options);
 ```
 Erstellt eine ```WorkEnvironment```-Instanz mit den angegebenen Werten.
 
@@ -93,14 +91,14 @@ Gibt einen lückenlosen Array mit allen Kinder-Arbeitsverzeichnissen zurück.
 
 | Attrbute | Typ | Beschreibung |
 |----------|-----|--------------|
-| id | any | ID des Arbeitsverzeichnisses |
-| header | object | Enthält die Inhalte der Headerdatei. |
-| path | string | Pfad zum jeweiligen Arbeitsverzeichnis. Verknüpfte Arbeitsverzeichnisse werden dabei auch berücksichtigt. |
-| truepath | string | Gibt den tatsächlichen Pfad zum Arbeitsverzeichnis zurück. Dies ist nützlich um bspw. auf die Headerdatei bei verknüpften Arbeitsverzeichnissen zuzugreifen, da ```path``` in solchen Fällen den verlinkten Pfad zurückgibt. |
-| type | int | Gibt die Art des Arbeitsverzeichnisses wieder. Gültige Werte: ```WORKENV_TYPE_ClonkPath``` (1) und ```WORKENV_TYPE_Workspace``` (2).
-| alwaysexplode | bool | Gibt an, ob Groupdateien im Arbeitsverzeichnis immer zerlegt werden sollen. Nur gültig falls ```type``` auf ```WORKENV_TYPE_ClonkPath``` gesetzt ist, da es andernfalls Standardverhalten ist. |
-| linkedTo | string | Gibt den Pfad der Verknüpfung zu dem eigentlichen Arbeitsverzeichnis an. 
-| unloaded | bool | Gibt an, ob das geladene Arbeitsverzeichnis ausgeladen worden ist. In dem Falle ist das ```WorkEnvironment```-Objekt weitgehend unbrauchbar. |
+| **id** | any | ID des Arbeitsverzeichnisses |
+| **header** | object | Enthält die Inhalte der Headerdatei. |
+| **path** | string | Pfad zum jeweiligen Arbeitsverzeichnis. Verknüpfte Arbeitsverzeichnisse werden dabei auch berücksichtigt. |
+| **truepath** | string | Gibt den tatsächlichen Pfad zum Arbeitsverzeichnis zurück. Dies ist nützlich um bspw. auf die Headerdatei bei verknüpften Arbeitsverzeichnissen zuzugreifen, da ```path``` in solchen Fällen den verlinkten Pfad zurückgibt. |
+| **type** | int | Gibt die Art des Arbeitsverzeichnisses wieder. Gültige Werte: ```WORKENV_TYPE_ClonkPath``` (1) und ```WORKENV_TYPE_Workspace``` (2).
+| **alwaysexplode** | bool | Gibt an, ob Groupdateien im Arbeitsverzeichnis immer zerlegt werden sollen. Nur gültig falls ```type``` auf ```WORKENV_TYPE_ClonkPath``` gesetzt ist, da es andernfalls Standardverhalten ist. |
+| **linkedTo** | string | Gibt den Pfad der Verknüpfung zu dem eigentlichen Arbeitsverzeichnis an. 
+| **unloaded** | bool | Gibt an, ob das geladene Arbeitsverzeichnis ausgeladen worden ist. In dem Falle ist das ```WorkEnvironment```-Objekt weitgehend unbrauchbar. |
 
 ## Events
 

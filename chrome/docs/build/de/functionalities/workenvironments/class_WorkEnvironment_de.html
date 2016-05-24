@@ -164,6 +164,11 @@
 <li class="navigation-elm"><a href="../../externalapplications/class_ExtApplication_de.html">class ExtApplication</a></li>
 </ul>
 <li class="navigation-elm"><a href="../../default_module/__head_de.html">Standardfunktionalitäten</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../default_module/windmillobject/__head_de.html">Windmill Object</a></li><ul class="navigation-sublist">
+<li class="navigation-elm"><a href="../../default_module/windmillobject/hook_de.html">hook</a></li>
+<li class="navigation-elm"><a href="../../default_module/windmillobject/execHook_de.html">execHook</a></li>
+<li class="navigation-elm"><a href="../../default_module/windmillobject/class_WindmillObject_de.html">class WindmillObject</a></li>
+</ul>
 <li class="navigation-elm"><a href="../../default_module/ui-handling/__head_de.html">UI Feedback</a></li><ul class="navigation-sublist">
 <li class="navigation-elm"><a href="../../default_module/ui-handling/unlockModule_de.html">unlockModule</a></li>
 <li class="navigation-elm"><a href="../../default_module/ui-handling/tooltip_de.html">tooltip</a></li>
@@ -224,8 +229,7 @@
 			</nav>
 			<div id="content">
 				<h1 id="class-workenvironment">class WorkEnvironment</h1>
-<p><strong>extends</strong> WindmillObject</p>
-<pre><code class="lang-fnpreview"><span class="token keyword" >constructor</span><span class="token fnname" > WorkEnvironment</span><span class="token punctuation" >(</span><span class="token datatype" >string</span> path<span class="token punctuation" >,</span> <span class="token datatype" >int</span> Type<span class="token punctuation" >,</span> id<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >object</span> options<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
+<pre><code class="lang-fnpreview"><span class="token keyword" >constructor</span><span class="token fnname" > WorkEnvironment</span><span class="token punctuation" >(</span><span class="token datatype" >string</span> path<span class="token punctuation" >,</span> <span class="token datatype" >int</span> Type<span class="token punctuation" >,</span> <span class="token datatype" >any</span> id<span class="token punctuation" >,</span> <span class="token optional" >[opt]</span> <span class="token datatype" >object</span> options<span class="token punctuation" >)</span><span class="token punctuation" >;</span>
 </code></pre>
 <p>Erstellt eine <code>WorkEnvironment</code>-Instanz mit den angegebenen Werten.</p>
 <ul>
@@ -293,42 +297,42 @@
 </thead>
 <tbody>
 <tr>
-<td>id</td>
+<td><strong>id</strong></td>
 <td>any</td>
 <td>ID des Arbeitsverzeichnisses</td>
 </tr>
 <tr>
-<td>header</td>
+<td><strong>header</strong></td>
 <td>object</td>
 <td>Enthält die Inhalte der Headerdatei.</td>
 </tr>
 <tr>
-<td>path</td>
+<td><strong>path</strong></td>
 <td>string</td>
 <td>Pfad zum jeweiligen Arbeitsverzeichnis. Verknüpfte Arbeitsverzeichnisse werden dabei auch berücksichtigt.</td>
 </tr>
 <tr>
-<td>truepath</td>
+<td><strong>truepath</strong></td>
 <td>string</td>
 <td>Gibt den tatsächlichen Pfad zum Arbeitsverzeichnis zurück. Dies ist nützlich um bspw. auf die Headerdatei bei verknüpften Arbeitsverzeichnissen zuzugreifen, da <code>path</code> in solchen Fällen den verlinkten Pfad zurückgibt.</td>
 </tr>
 <tr>
-<td>type</td>
+<td><strong>type</strong></td>
 <td>int</td>
 <td>Gibt die Art des Arbeitsverzeichnisses wieder. Gültige Werte: <code>WORKENV_TYPE_ClonkPath</code> (1) und <code>WORKENV_TYPE_Workspace</code> (2).</td>
 </tr>
 <tr>
-<td>alwaysexplode</td>
+<td><strong>alwaysexplode</strong></td>
 <td>bool</td>
 <td>Gibt an, ob Groupdateien im Arbeitsverzeichnis immer zerlegt werden sollen. Nur gültig falls <code>type</code> auf <code>WORKENV_TYPE_ClonkPath</code> gesetzt ist, da es andernfalls Standardverhalten ist.</td>
 </tr>
 <tr>
-<td>linkedTo</td>
+<td><strong>linkedTo</strong></td>
 <td>string</td>
 <td>Gibt den Pfad der Verknüpfung zu dem eigentlichen Arbeitsverzeichnis an. </td>
 </tr>
 <tr>
-<td>unloaded</td>
+<td><strong>unloaded</strong></td>
 <td>bool</td>
 <td>Gibt an, ob das geladene Arbeitsverzeichnis ausgeladen worden ist. In dem Falle ist das <code>WorkEnvironment</code>-Objekt weitgehend unbrauchbar.</td>
 </tr>
