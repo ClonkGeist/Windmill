@@ -7,7 +7,7 @@
 ```fnpreview
 constructor WorkEnvironment(string path, int Type, id, [opt] object options);
 ```
-Erstellt eine WorkEnvironment-Instanz mit den angegebenen Werten.
+Erstellt eine ```WorkEnvironment```-Instanz mit den angegebenen Werten.
 
 * **path:**
   Pfad zum Arbeitsverzeichnis.
