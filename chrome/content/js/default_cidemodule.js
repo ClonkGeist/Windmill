@@ -42,7 +42,7 @@ function saveTab(index, ...pars) {
 		index = cda.active_id;
 
 	if(!checkSavingPermissions(index))
-		return warn("Cannot save protected file.");
+		return warn("$FileProtectionError$", "CIDE");
 	onFileUnchanged(index);
 	saveTabContent(index, ...pars);
 }
