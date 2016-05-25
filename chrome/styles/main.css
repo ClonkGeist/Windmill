@@ -397,6 +397,9 @@
 .icon-startgame:before {
   content: "St"; }
 
+.icon-limiter:before {
+  content: "L"; }
+
 /* context menu */
 .contextmenu {
   background-color: transparent;
@@ -899,7 +902,7 @@ caption {
   vertical-align: baseline;
   cursor: pointer; }
 
-.ps-h-icon:hover {
+.ps-h-icon:hover, .ps-h-icon.active {
   background-color: #C13A2B; }
 
 .ps-b {

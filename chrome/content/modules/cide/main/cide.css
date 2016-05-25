@@ -397,6 +397,9 @@
 .icon-startgame:before {
   content: "St"; }
 
+.icon-limiter:before {
+  content: "L"; }
+
 window {
   font-family: "Segoe UI", "Trebuchet MS", sans-serif;
   background-color: #ebebeb; }

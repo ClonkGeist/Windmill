@@ -513,6 +513,9 @@ li:focus *, li:focus {
 .icon-startgame:before {
   content: "St"; }
 
+.icon-limiter:before {
+  content: "L"; }
+
 .toolbar {
   height: 24px;
   background-color: whitesmoke;

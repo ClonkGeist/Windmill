@@ -398,6 +398,9 @@
 .icon-startgame:before {
   content: "St"; }
 
+.icon-limiter:before {
+  content: "L"; }
+
 html, body {
   padding: 0;
   margin: 0;

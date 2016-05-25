@@ -397,6 +397,9 @@
 .icon-startgame:before {
   content: "St"; }
 
+.icon-limiter:before {
+  content: "L"; }
+
 html, body {
   height: 100%;
   width: 100%;

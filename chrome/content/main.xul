@@ -263,7 +263,8 @@
 							<caption>Log</caption>
 							<spacer flex="1" />
 							<box class="icon-32 icon-eye ps-h-icon" onclick="toggleHiddenLogEntries();"></box>
-							<box class="icon-32 icon-clear-log ps-h-icon" onclick="clearLog('log');"></box>
+							<box class="icon-32 icon-limiter ps-h-icon" onclick="toggleLogLimitation(this);"></box>
+							<box class="icon-32 icon-trashbin ps-h-icon" onclick="clearLog('log');"></box>
 						</hbox>
 						<vbox class="ps-b cds-b" flex="1">
 							<vbox id="log-entrylist" flex="1">

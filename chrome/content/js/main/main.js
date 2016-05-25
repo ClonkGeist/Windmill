@@ -310,6 +310,15 @@ ${reason.stack}`).parent().css("display", "");
 	});
 });
 
+function toggleLogLimitation(elm) {
+	setConfigData("Global", "DisableLogLimitation", !getConfigData("Global", "DisableLogLimitation"), false, "bool", { runTimeOnly: true });
+	if(getConfigData("Global", "DisableLogLimitation"))
+		$(elm).addClass("active");
+	else
+		$(elm).removeClass("active");
+	return true;
+}
+
 function toggleHiddenLogEntries() {
 	var showlogs = !getConfigData("Global", "ShowHiddenLogs");
 	setConfigData("Global", "ShowHiddenLogs", showlogs);

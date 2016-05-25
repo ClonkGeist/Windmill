@@ -325,8 +325,10 @@ caption {
 	cursor: pointer;
 }
 
-.ps-h-icon:hover{
-	background-color: #C13A2B;
+.ps-h-icon {
+	&:hover,&.active{
+		background-color: #C13A2B;
+	}
 }
 
 .ps-b {
