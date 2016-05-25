@@ -387,6 +387,7 @@ function addScript(txt, lang, index, path, fShow, skipLoading) {
 }
 
 function loadScenarioContentToElements(index, skipDefsel) {
+	let sdata = sessions[index].scendata;
 	if(!skipDefsel) {
 		getWrapper(".definition-selection-wrapper", index).each(function() {
 			loadDefinitionSelectionData(this, undefined, index);
@@ -400,14 +401,14 @@ function loadScenarioContentToElements(index, skipDefsel) {
 			return;
 
 		var sect = $(this).attr("data-scenario-sect"), key = $(this).attr("data-scenario-key"), val;
-		if(!sessions[index].scendata[sect] || sessions[index].scendata[sect][key] === undefined) {
+		if(!sdata[sect] || sdata[sect][key] === undefined) {
 			if(!$(this).attr("data-defaultvalue"))
 				return;
 
 			val = $(this).attr("data-defaultvalue");
 		}
 		else
-			val = sessions[index].scendata[sect][key];
+			val = sdata[sect][key];
 
 		if($(this).prop("tagName").toLowerCase() == "input") {
 			switch($(this).attr("type").toLowerCase()) {
@@ -422,14 +423,14 @@ function loadScenarioContentToElements(index, skipDefsel) {
 			}
 		}
 		else if($(this).hasClass("iconcb"))
-			if(val)
+			if(val && parseInt(val) && !isNaN(parseInt(val)))
 				$(this).addClass("active");
 
 		$(this).unbind("change").change(function() {
 			onFileChanged(getCurrentWrapperIndex());
 		});
 	});
-	let iconid = sessions[index].scendata.Head.Icon;
+	let iconid = sdata.Head.Icon;
 	if(!iconid)
 		iconid = 0;
 	getWrapper(".sp-g-selecticon .image-selection-item[data-value='"+iconid+"']").addClass("selected");

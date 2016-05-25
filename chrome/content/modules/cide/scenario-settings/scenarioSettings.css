@@ -1016,6 +1016,69 @@ section:last-child {
   border-bottom: 1px solid black;
   background-color: #FFF; }
 
+/*-- Borders --*/
+.sp-l-borders {
+  position: relative;
+  height: 40px; }
+  .sp-l-borders .sp-borders {
+    position: absolute;
+    box-sizing: border-box;
+    width: 20px;
+    height: 20px; }
+    .sp-l-borders .sp-borders.sp-borders-top {
+      border-top: 1px dashed black; }
+    .sp-l-borders .sp-borders.sp-borders-right {
+      border-right: 1px dashed black; }
+    .sp-l-borders .sp-borders.sp-borders-bottom {
+      border-bottom: 1px dashed black; }
+    .sp-l-borders .sp-borders.sp-borders-left {
+      border-left: 1px dashed black; }
+    .sp-l-borders .sp-borders.active.sp-borders-top {
+      border-top: 3px solid black; }
+    .sp-l-borders .sp-borders.active.sp-borders-right {
+      border-right: 3px solid black; }
+    .sp-l-borders .sp-borders.active.sp-borders-bottom {
+      border-bottom: 3px solid black; }
+    .sp-l-borders .sp-borders.active.sp-borders-left {
+      border-left: 3px solid black; }
+  .sp-l-borders:hover {
+    flex: 1;
+    width: 240px; }
+    .sp-l-borders:hover ~ .sp-l-autoscanside {
+      display: none; }
+    .sp-l-borders:hover .sp-borders-top {
+      border: 1px dashed black;
+      border-top: 3px solid black;
+      left: 20px; }
+      .sp-l-borders:hover .sp-borders-top:hover {
+        border-top: 3px solid #8c140a; }
+      .sp-l-borders:hover .sp-borders-top.active {
+        border-top: 3px solid #dc4632; }
+    .sp-l-borders:hover .sp-borders-right {
+      border: 1px dashed black;
+      border-right: 3px solid black;
+      left: 73px; }
+      .sp-l-borders:hover .sp-borders-right:hover {
+        border-right: 3px solid #8c140a; }
+      .sp-l-borders:hover .sp-borders-right.active {
+        border-right: 3px solid #dc4632; }
+    .sp-l-borders:hover .sp-borders-bottom {
+      border: 1px dashed black;
+      border-bottom: 3px solid black;
+      left: 127px; }
+      .sp-l-borders:hover .sp-borders-bottom:hover {
+        border-bottom: 3px solid #8c140a; }
+      .sp-l-borders:hover .sp-borders-bottom.active {
+        border-bottom: 3px solid #dc4632; }
+    .sp-l-borders:hover .sp-borders-left {
+      border: 1px dashed black;
+      border-left: 3px solid black;
+      left: 180px; }
+      .sp-l-borders:hover .sp-borders-left:hover {
+        border-left: 3px solid #8c140a; }
+      .sp-l-borders:hover .sp-borders-left.active {
+        border-left: 3px solid #dc4632; }
+
 /*-- Checkbox-Textinputs --*/
 .sp-checkinput {
   display: inline-flex;
