@@ -21,7 +21,7 @@ $clr-border: rgb(215, 215, 215);
 $clr-border-grey: rgb(180, 180, 180);
 
 $clr-module-bg: rgb(245, 245, 245);
- 
+
 $text-clr: rgb(40, 40, 40);
 $ui-text-clr: rgb(80, 80, 80);
 $ui-light-clr: rgb(180, 180, 180);
@@ -68,11 +68,11 @@ $hover-blue-bg: rgba(0, 165, 207, 0.15);
 	font-size: 9pt;
 	color: white;
 	width: 100px;
-	
+
 	position: fixed;
 	z-index: 100;
 	padding: 2px 7px;
-	
+
 	pointer-events: none;
 }
 

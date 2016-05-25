@@ -143,3 +143,21 @@ function showDOMTree(modframe) {
 }
 
 function frameWindowTitle() {}
+
+/*-- SASS --*/
+
+hook("load", function() {
+	let ssDefs = _mainwindow.getSASSDefList();
+	for(let def of ssDefs) {
+		$("#ss-deflist").append("<row id=\"ss-def-"+def.index+"\" align=\"center\">"+
+			"<label value=\""+def.leafName+"\" flex=\"1\" />"+
+			"<label value=\""+(def.observe || "Global")+"\" flex=\"1\"/>"+
+			"<label class=\"update-date\" value=\"unknown\" flex=\"1\"/>"+
+			"<button label=\"Generate CSS File\" onclick=\"_mainwindow.generateCssFile("+def.index+")\" />"+
+		"</row>")
+	}
+	_mainwindow.hook("sass-target-updated", function(def, d) {
+		$("#ss-def-" + def.index).find(".update-date")
+			.attr("value", d.getHours() + ":" + (d.getMinutes()<10?'0':'') + d.getMinutes())
+	});
+});

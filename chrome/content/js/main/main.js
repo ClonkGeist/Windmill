@@ -37,7 +37,25 @@ var togglemode_timeout_id;
 
 hook("load", function() {
 	Task.spawn(function*() {
-		$("#startup-loading").text("Loading Config");
+		let sass_snapshot = yield OS.File.exists(_sc.profd+"/sass-snapshot.json"), prepended_html = "";
+		//Falls keine generierten CSS-Dateien gefunden wurden: In speziellen Modus uebergehen
+		if(!sass_snapshot) {
+			//Sehr rudimentaeres Design anzeigen. (Alles verstecken, nur Statusinformation anzeigen)
+			$(".startup-nohide").css("background", "rgb(45, 45, 45)");
+			$("window *:not(.startup-nohide)").css("display", "none");
+			$("#startup-loading").css({
+				color: "white",
+				display: "flex",
+				"flex-direction": "column",
+				"font-size": "2em",
+				"justify-content": "center",
+				"align-items": "center",
+				"font-family": '"Segoe UI", "Trebuchet MS", sans-serif'
+			});
+			prepended_html = '<div style="font-size: 4.8em">Windmill</div>';
+		}
+		
+		$("#startup-loading").html(prepended_html+"Loading Config");
 		//Config initialisieren
 		initializeConfig();
 
@@ -45,6 +63,17 @@ hook("load", function() {
 		try { yield loadConfig(); } catch(e) {}
 		//Config speichern
 		yield saveConfig(); //Configdatei speichern (falls noch nicht existiert)
+		//Modulinformationen einlesen
+		$("#startup-loading").html(prepended_html+"Loading Module Information");
+		try { yield loadModules(_sc.chpath + "/content/modules"); } catch(e) {}
+		//SASS Observer (benoetigt die Module vorher)
+		$("#startup-loading").html(prepended_html+"Generating Stylesheets");
+		yield initializeSassObserver();
+		//Falls keine CSS Dateien vorher vorhanden waren, Windmill nochmal neustarten
+		if(!sass_snapshot) {
+			restartWindmill();
+			return -2;
+		}
 		//Sprachpakete einlesen
 		$("#startup-loading").text("Loading Languagefiles");
 		yield initializeLanguage();
@@ -54,9 +83,6 @@ hook("load", function() {
 		//Informationen zu externen Anwendungen einlesen
 		$("#startup-loading").text("Loading External Application Definitions");
 		try { yield loadExternalApplicationDefs(_sc.chpath + "/content"); } catch(e) { }
-		//Modulinformationen einlesen
-		$("#startup-loading").text("Loading Module Information");
-		try { yield loadModules(_sc.chpath + "/content/modules"); } catch(e) {}
 
 		//Bei erstem Start anders verhalten
 		if(CONFIG_FIRSTSTART || getConfigData("Global", "FirstStartDevTest") == true)
@@ -66,6 +92,8 @@ hook("load", function() {
 		$("#startup-loading").text("Loading Work Environments");
 		try { yield loadWorkEnvironment(); } catch(e) {}
 	}).then(function(result) {
+		if(result == -2)
+			return;
 		localizeModule();
 
 		$("#startup-loading").text("Creating and Initializing Modules");
