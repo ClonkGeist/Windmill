@@ -13,7 +13,8 @@
 			<!-- preference sections -->
 			<button class="active navigation" label="$General$" oncommand="togglePage('settings-page-general', 'settings-pages', this)" />
 			<button class="navigation" label="Open Clonk" oncommand="togglePage('settings-page-oc', 'settings-pages', this)" />
-			<button class="navigation" label="$Modules$" oncommand="togglePage('settings-page-modules', 'settings-pages', this)" />
+			<button class="navigation" label="$cide$" oncommand="togglePage('settings-page-cide', 'settings-pages', this)" />
+			<button class="navigation" label="$cBridge$" oncommand="togglePage('settings-page-cbridge', 'settings-pages', this)" />
 			<button class="navigation" label="$KeyBindings$" oncommand="togglePage('settings-page-keybindings', 'settings-pages', this);" />
 			<button class="navigation" label="$ExternalApplications$" oncommand="togglePage('settings-page-extapp', 'settings-pages', this);" />
 			<spacer flex="1" />
@@ -25,7 +26,7 @@
 			<hbox id="restartBar">
 				<hbox id="restartBarDesc">$ChangesNeedRestart$</hbox>
 				<spacer flex="1"/>
-				<hbox id="restartBarButton"></hbox>
+				<hbox id="restartBarButton" class="icon-reload-2 icon-32"></hbox>
 			</hbox>
 			<deck selectedIndex="0" flex="1" id="settings-deck">
 			<!--<stack>
@@ -36,137 +37,157 @@
 			
 			<!-- SUBPAGE: General -->
 			
-			<stack>
-				<vbox id="settings-page-general" class="settings-page" top="0" bottom="0">
-					<caption class="big" label="General" />
-					<grid>
-						<columns>
-							<column flex="1"/>
-							<column flex="1"/>
-						</columns>
-						<rows>
-							<row>
-								<label value="$selectlang$"/>
-								<menulist oncommand="onLanguageSelected(this);">
-									<menupopup id="languageselection">
-										
-									</menupopup>
-								</menulist>
-							</row>
-						</rows>
-					</grid>
-					
-					<caption label="$WorkspaceDirectory$" />
-					<hbox>
-						<description flex="1" id="workspace-dir" class="view-directory-path">$pathempty$</description>
-						<button label="$browse$" oncommand="openPathDialog('workspace-dir')"/>
-					</hbox>
-				</vbox>
-			</stack>
-			
-			<!-- SUBPAGE: Open Clonk -->
-			
-			<stack>
-				<vbox id="settings-page-oc" class="settings-page" top="0" bottom="0">
-					<caption class="big" label="Open Clonk" />
-					
-					<caption label="$Masterserver$" />
-					<hbox>
-						<label flex="1" value="$MasterserverURL$" />
-						<textbox flex="3" class="autoinit" default-cfgsect="ShowGame" default-cfgkey="MasterserverURL"/>
-					</hbox>
-					<caption label="$C4GroupPath$" />
-					<hbox>
-						<description flex="1" id="c4group-path" class="view-directory-path">$pathempty$</description>
-						<button label="$browse$" oncommand="openPathDialog('c4group-path')"/>
-					</hbox>
-				</vbox>
-			</stack>
-			
-			<!-- SUBPAGE: Modules -->
-			
-			<stack>
-				<vbox id="settings-page-modules" class="settings-page" top="0" bottom="0">
-					<caption class="big" label="$modules$" />
-					<vbox>
-						<checkbox label="$ActivateFileProtection$" id="cide-fileprotection" class="autoinit" flex="1" default-cfgsect="CIDE" default-cfgkey="FileProtection"/>
-					</vbox>
-					
-					<caption class="big" label="$cide$" />
-					<caption label="$acetheme$" class="toggle-contents" onclick="toggleContents(this)"/>
-					<vbox>
-						<!-- ace theme selection -->
-						<hbox>
-							<listbox id="editor-theme-list" flex="1">
-							</listbox>
-						</hbox>
-						<hbox>
-							<button label="$applytheme$" oncommand="setAceTheme()" />
-						</hbox>
-						<!-- font size of explorer -->
-						<!--
-						<hbox>
-							<label value="Explorer Font Size" control="explorer-font-size"/>
-							<textbox id="explorer-font-size" type="number" />px
-						</hbox>-->
-					</vbox>
-					<caption label="Programs" class="toggle-contents" onclick="toggleContents(this)"/>
-					<vbox>
+				<stack>
+					<vbox id="settings-page-general" class="settings-page" top="0" bottom="0">
+						<caption class="big" label="General" />
 						<grid>
 							<columns>
-								<column flex="1"/>
-								<column flex="5"/>
 								<column flex="1"/>
 								<column flex="1"/>
 							</columns>
 							<rows>
-								<row id="row-Script" class="extprogram">
-									<label value="$scriptfile$"/>
-									<description class="view-directory-path">$pathempty$</description>
-									<button label="$browse$" oncommand="openProgramDialog(this)"/>
-									<checkbox class="extprogram-always-use"/>
-									<box class="extprogram-clear nav-image icon-trashbin icon-32" height="32" width="32"></box>
-								</row>
-								<row id="row-Text" class="extprogram">
-									<label value="$textfile$"/>
-									<description class="view-directory-path">$pathempty$</description>
-									<button label="$browse$" oncommand="openProgramDialog(this)"/>
-									<checkbox class="extprogram-always-use"/>
-									<box class="extprogram-clear nav-image icon-trashbin icon-32" height="32" width="32"></box>
-								</row>
-								<row id="row-GraphicsPNG" class="extprogram">
-									<label value="$graphicspng$"/>
-									<description class="view-directory-path">$pathempty$</description>
-									<button label="$browse$" oncommand="openProgramDialog(this)"/>
-									<checkbox class="extprogram-always-use"/>
-									<box class="extprogram-clear nav-image icon-trashbin icon-32" height="32" width="32"></box>
-								</row>
-								<row id="row-GraphicsBMP" class="extprogram">
-									<label value="$graphicsbmp$"/>
-									<description class="view-directory-path">$pathempty$</description>
-									<button label="$browse$" oncommand="openProgramDialog(this)"/>
-									<checkbox class="extprogram-always-use"/>
-									<box class="extprogram-clear nav-image icon-trashbin icon-32" height="32" width="32"></box>
-								</row>
-								<row id="row-Audio" class="extprogram">
-									<label value="$audiofile$"/>
-									<description class="view-directory-path">$pathempty$</description>
-									<button label="$browse$" oncommand="openProgramDialog(this)"/>
-									<checkbox class="extprogram-always-use"/>
-									<box class="extprogram-clear nav-image icon-trashbin icon-32" height="32" width="32"></box>
+								<row>
+									<label value="$selectlang$"/>
+									<menulist oncommand="onLanguageSelected(this);">
+										<menupopup id="languageselection">
+											
+										</menupopup>
+									</menulist>
 								</row>
 							</rows>
-						</grid>	
+						</grid>
+						
+						<caption label="$WorkspaceDirectory$" />
+						<hbox>
+							<description flex="1" id="workspace-dir" class="view-directory-path">$pathempty$</description>
+							<button label="$browse$" oncommand="openPathDialog('workspace-dir')"/>
+						</hbox>
 					</vbox>
-					<caption label="Explorer" class="toggle-contents" onclick="toggleContents(this)"/>
-					<vbox>
-						<checkbox label="$CopyOnDragDrop$" id="explorer-copy-on-drag-drop" class="autoinit" flex="1" default-cfgsect="Explorer" default-cfgkey="CopyOnDragDrop"/>
+				</stack>
+				
+				<!-- SUBPAGE: Open Clonk -->
+				
+				<stack>
+					<vbox id="settings-page-oc" class="settings-page" top="0" bottom="0">
+						<caption class="big" label="Open Clonk" />
+						
+						<caption label="$Masterserver$" />
+						<hbox>
+							<label flex="1" value="$MasterserverURL$" />
+							<textbox flex="3" class="autoinit" default-cfgsect="ShowGame" default-cfgkey="MasterserverURL"/>
+						</hbox>
+						<caption label="$C4GroupPath$" />
+						<hbox>
+							<description flex="1" id="c4group-path" class="view-directory-path">$pathempty$</description>
+							<button label="$browse$" oncommand="openPathDialog('c4group-path')"/>
+						</hbox>
 					</vbox>
-					<caption label="Scenario Settings" class="toggle-contents" onclick="toggleContents(this)"/>
-					<vbox>
-						<checkbox label="$AlwaysUseScenarioSettings$" id="scenariosettings-always-use" class="autoinit" flex="1" default-cfgsect="ScenarioSettings" default-cfgkey="AlwaysUseScenarioSettings"/>
+				</stack>
+				
+				<!-- SUBPAGE: CIDE (DevMode) -->
+				
+				<stack>
+					<vbox id="settings-page-cide" class="settings-page" top="0" bottom="0">
+						<caption class="big" label="$cide$" />
+						<vbox>
+							<checkbox label="$ActivateFileProtection$" id="cide-fileprotection" class="autoinit" flex="1" default-cfgsect="CIDE" default-cfgkey="FileProtection"/>
+						</vbox>
+						
+						<caption label="Programs" class="toggle-contents" onclick="toggleContents(this)"/>
+						<vbox>
+							<grid>
+								<columns>
+									<column flex="1"/>
+									<column flex="5"/>
+									<column flex="1"/>
+									<column flex="1"/>
+								</columns>
+								<rows>
+									<row id="row-Script" class="extprogram">
+										<label value="$scriptfile$"/>
+										<description class="view-directory-path">$pathempty$</description>
+										<button label="$browse$" oncommand="openProgramDialog(this)"/>
+										<checkbox class="extprogram-always-use"/>
+										<box class="extprogram-clear nav-image icon-trashbin icon-32" height="32" width="32"></box>
+									</row>
+									<row id="row-Text" class="extprogram">
+										<label value="$textfile$"/>
+										<description class="view-directory-path">$pathempty$</description>
+										<button label="$browse$" oncommand="openProgramDialog(this)"/>
+										<checkbox class="extprogram-always-use"/>
+										<box class="extprogram-clear nav-image icon-trashbin icon-32" height="32" width="32"></box>
+									</row>
+									<row id="row-GraphicsPNG" class="extprogram">
+										<label value="$graphicspng$"/>
+										<description class="view-directory-path">$pathempty$</description>
+										<button label="$browse$" oncommand="openProgramDialog(this)"/>
+										<checkbox class="extprogram-always-use"/>
+										<box class="extprogram-clear nav-image icon-trashbin icon-32" height="32" width="32"></box>
+									</row>
+									<row id="row-GraphicsBMP" class="extprogram">
+										<label value="$graphicsbmp$"/>
+										<description class="view-directory-path">$pathempty$</description>
+										<button label="$browse$" oncommand="openProgramDialog(this)"/>
+										<checkbox class="extprogram-always-use"/>
+										<box class="extprogram-clear nav-image icon-trashbin icon-32" height="32" width="32"></box>
+									</row>
+									<row id="row-Audio" class="extprogram">
+										<label value="$audiofile$"/>
+										<description class="view-directory-path">$pathempty$</description>
+										<button label="$browse$" oncommand="openProgramDialog(this)"/>
+										<checkbox class="extprogram-always-use"/>
+										<box class="extprogram-clear nav-image icon-trashbin icon-32" height="32" width="32"></box>
+									</row>
+								</rows>
+							</grid>	
+						</vbox>
+						<caption label="$acetheme$" class="toggle-contents" onclick="toggleContents(this)"/>
+						<vbox>
+							<!-- ace theme selection -->
+							<hbox>
+								<listbox id="editor-theme-list" flex="1">
+								</listbox>
+							</hbox>
+							<hbox>
+								<button label="$applytheme$" oncommand="setAceTheme()" />
+							</hbox>
+							<!-- font size of explorer -->
+							<!--
+							<hbox>
+								<label value="Explorer Font Size" control="explorer-font-size"/>
+								<textbox id="explorer-font-size" type="number" />px
+							</hbox>-->
+						</vbox>
+						<caption label="Explorer" class="toggle-contents" onclick="toggleContents(this)"/>
+						<vbox>
+							<checkbox label="$CopyOnDragDrop$" id="explorer-copy-on-drag-drop" class="autoinit" flex="1" default-cfgsect="Explorer" default-cfgkey="CopyOnDragDrop"/>
+							<checkbox label="$HideUnsupportedFiles$" id="explorer-hide-unsupported-files" class="autoinit" flex="1" default-cfgsect="CIDE" default-cfgkey="HideUnsupportedFiles"/>
+							<checkbox label="$ScenarioDefinitionPolyfill$" id="explorer-scendef-polyfill" class="autoinit" flex="1" default-cfgsect="CIDE" default-cfgkey="RejectScenarioBackup"/>
+						</vbox>
+						<caption label="Scenario Settings" class="toggle-contents" onclick="toggleContents(this)"/>
+						<vbox>
+							<checkbox label="$AlwaysUseScenarioSettings$" id="scenariosettings-always-use" class="autoinit" flex="1" default-cfgsect="ScenarioSettings" default-cfgkey="AlwaysUseScenarioSettings"/>
+							<checkbox label="$UseModuleCache$" id="scenariosettings-module-cache" class="autoinit" flex="1" default-cfgsect="ScenarioSettings" default-cfgkey="UseModuleCache"/>
+						</vbox>
 					</vbox>
-				</vbox>
+				</stack>
+				
+				<!-- SUBPAGE: cBridge (Gamemode) -->
+				
+				<stack>
+					<vbox id="settings-page-cbridge" class="settings-page" top="0" bottom="0">
+						<caption class="big" label="$cBridge$" />
+
+						<caption label="$MasterserverView$" class="toggle-contents" onclick="toggleContents(this)"/>
+						<vbox>
+							<checkbox label="$ActivatePortScanner$" class="autoinit" flex="1" default-cfgsect="ShowGame" default-cfgkey="PortScan"/>
+							<checkbox label="$ShowNotificationsForEmptyGames$" class="autoinit" flex="1" default-cfgsect="ShowGame" default-cfgkey="NotificationsShowEmpty"/>
+						</vbox>
+						<hbox id="cbridge-gameport" >
+							<label value="$GamePort$" control="cbridge-gameport-textbox" flex="1"/>
+							<textbox class="autoinit" flex="3" default-cfgsect="StartGame" default-cfgkey="GamePort"/>
+						</hbox>
+					</vbox>
 				</stack>
 				
 				<!-- SUBPAGE: Key Bindings -->

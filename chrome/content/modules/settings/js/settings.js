@@ -250,6 +250,9 @@ hook("load", function() {
 			setConfigData("CIDE", "ExtProg_"+id, "");
 			$(this).parent().find(".view-directory-path").text(Locale("$pathempty$"));
 		});
+		tooltip($("#explorer-scendef-polyfill")[0], "$TooltipDEXScendefPolyfill$");
+		tooltip($("#scenariosettings-module-cache")[0], "$TooltipSCEModuleCache$");
+		tooltip($("#cbridge-gameport")[0], "$TooltipSGGamePort$");
 	}, 1);
 });
 

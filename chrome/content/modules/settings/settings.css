@@ -485,11 +485,13 @@ listbox {
   line-height: 40px; }
 
 #restartBarButton {
-  width: 60px;
-  background-color: red; }
+  /*background-color: red;*/
+  color: black;
+  padding: 0 15px; }
 
 #restartBarButton:hover {
-  background-color: gainsboro; }
+  /*background-color: gainsboro;*/
+  color: #dc4632; }
 
 /*-- Listbox --*/
 .draft {
