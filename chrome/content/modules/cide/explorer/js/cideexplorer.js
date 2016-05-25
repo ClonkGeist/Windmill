@@ -666,6 +666,7 @@ function initializeContextMenu() {
 			$(sel).addClass("tree-groupfile-packed");
 			EventInfo("$EI_Packed$");
 		}, function(data) {
+			showC4GroupError(data);
 			log(data);
 		});
 	}, 0, { identifier: 'ctxPack' });
@@ -702,6 +703,9 @@ function initializeContextMenu() {
 			$(sel).removeClass("tree-groupfile-packed");
 			loadDirectory(dir.path, cnt);
 			EventInfo("$EI_Exploded$");
+		}, function(data) {
+			showC4GroupError(data);
+			log(data);
 		});
 	}, 0, { identifier: 'ctxExplode' });
 
@@ -722,7 +726,10 @@ function initializeContextMenu() {
 				if(!workenv.alwaysexplode && filename.split(".").length > 1 && OCGRP_FILEEXTENSIONS.indexOf(fileext) != -1) {
 					let c4group = _sc.file(getC4GroupPath());
 					let process = _ws.pr(c4group);
-					yield process.createPromise([destination, "-p"], 0x1);
+					yield process.createPromise([destination, "-p"], 0x1, undefined, function(data) {
+						showC4GroupError(data);
+						log(data);
+					});
 					fileobj = { 
 						leafName: destination.split("/").pop(), 
 						isDirectory: function() { return false; } 
@@ -856,6 +863,13 @@ function initializeContextMenu() {
 			openInFilemanager(_sc.workpath(getCurrentTreeSelection()));
 		}, 0);
 	}
+}
+
+function showC4GroupError(msg) {
+	let dlg = new WDialog("$DlgC4GroupError$", MODULE_LPRE, { modal: true, css: { "width": "450px" }, btnright: ["accept"]});
+	dlg.setContent('<description>$DlgC4GroupErrorDesc$</description><hbox class="dlg-infobox whitespaces">'+msg+'</hbox>');
+	dlg.show();
+	dlg = 0;
 }
 
 //Neue Spieldatei (Objekt/Szenario) erstellen

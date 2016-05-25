@@ -66,19 +66,21 @@
 }
 
 
-/* y no use consistent seperators */
 .dlg-infobox {
 	padding: 5px;
 	border: 1px solid gainsboro;
 	font-size: 9pt;
 	text-align: justify;
 	margin: 5px 0px;
-}
 
-.dlg-infobox.error {
-	background-color: #FFB2B2;
-	border-color: #CCB1B1;
-	-moz-user-select: text;
+	&.error {
+		background-color: #FFB2B2;
+		border-color: #CCB1B1;
+		-moz-user-select: text;
+	}
+	&.whitespaces {
+		white-space: pre-wrap;
+	}
 }
 
 /* Checklist */

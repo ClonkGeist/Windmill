@@ -233,6 +233,8 @@ function PrepareDirectory2(c4group, path, entries, call) {
 		lockModule("<hbox>$loading$</hbox><hbox>Exploding " + entry.leafName + "</hbox>");
 		process.create(args, 0x1, function() {
 			PrepareDirectory2(c4group, path, entries, call);
+		}, function(data) {
+			log(data);
 		});
 		runp = true;
 		break;
