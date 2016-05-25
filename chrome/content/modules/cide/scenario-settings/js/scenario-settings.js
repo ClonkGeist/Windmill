@@ -285,6 +285,7 @@ function addScript(txt, lang, index, path, fShow, skipLoading) {
 
 			getWrapper(".settings-page.active", index).removeClass("active");
 			getWrapper("."+identifier, index).addClass("active");
+			getWrapper(".sp-range > input", index).trigger("input");
 
 			closeAddingOverlay(index);
 			sessions[index].current_page = identifier;
@@ -465,6 +466,8 @@ function getScenarioValue(obj) {
 	else if($(obj).hasClass("iconcb"))
 		val = $(obj).hasClass("active")?"1":"0";
 
+	if($(obj).attr("data-defaultvalue") && val == $(obj).attr("data-defaultvalue"))
+		return undefined;
 	return val;
 }
 
@@ -800,6 +803,29 @@ function preparePseudoElements(index) {
 		});
 
 		$(this).replaceWith(clone);
+	});
+	
+	getWrapper(".sp-range > input", index).each(function() {
+		let elm = $("<div class='range-tooltip'></div>");
+		$(elm).appendTo($(this).parent());
+		$(this).on("input", function() {
+			let max = parseInt($(this).prop("max")), min = parseInt($(this).prop("min"));
+			max = isNaN(max)?100:max;
+			min = isNaN(min)?0:min;
+			let range = max-min, rangep = ((parseInt($(this).val())-min)*100/range);
+
+			let pos = $(this).position();
+			//10px werden zusaetzlich angerechnet und stellen einen Abstand (links/rechts, jedoch ist nur links relevant) dar, der von position nicht erfasst wird
+			//Zusaetzliche 7px werden fuer den Thumb angerechnet, da dieser sich nicht auf der vollen Breite des Input-Elements bewegt.
+			$(elm).css("left", (rangep*$(this).innerWidth()/100)-$(elm).outerWidth()/2+pos.left+17-(rangep*14/100)+"px");
+			$(elm).text($(this).val());
+			if($(this).attr("data-defaultvalue")) {
+				if($(this).val() == $(this).attr("data-defaultvalue"))
+					$(elm).addClass("defaultval");
+				else
+					$(elm).removeClass("defaultval");
+			}
+		}).trigger("input");
 	});
 
 	setupNumberInputs(index);

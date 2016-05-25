@@ -837,6 +837,7 @@ section:last-child {
 
 /* Range */
 .sp-range {
+  position: relative;
   display: flex; }
   .sp-range:not(.autosize) .sp-rangelabel {
     min-width: 100px; }
@@ -849,7 +850,26 @@ section:last-child {
       background-color: #00a5d2;
       border-radius: 0;
       border: 0;
-      height: 100%; }
+      height: 100%;
+      width: 14px; }
+    .sp-range input[type='range']:active ~ .range-tooltip, .sp-range input[type='range']:hover ~ .range-tooltip {
+      transition-delay: 0s;
+      opacity: 1 !important; }
+  .sp-range .range-tooltip {
+    opacity: 0;
+    position: absolute;
+    top: -25px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 0 2px;
+    pointer-events: none;
+    transition: opacity 0.4s;
+    transition-delay: 0.148s; }
+    .sp-range .range-tooltip.defaultval {
+      background: #dc4632; }
+
+.sp-l-sidebar .range-tooltip {
+  opacity: 1 !important; }
 
 /* Landscape Page */
 .flexwrapper {
