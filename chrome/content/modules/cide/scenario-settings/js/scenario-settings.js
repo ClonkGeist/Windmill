@@ -30,7 +30,7 @@ hook("load", function() {
 		iterator.close();
 	});
 	for(var key in definitions) {
-		if(definitions[key].errors)
+		if(definitions[key] && definitions[key].errors)
 			for(var i = 0; i < definitions[key].errors.length; i++)
 				reportLoadingError(key, definitions[key].errors[i].msg, definitions[key].errors[i].type, true);
 	}
@@ -276,10 +276,10 @@ function addScript(txt, lang, index, path, fShow, skipLoading) {
 
 		let prev_page;
 		var navbtnfn = function(identifier) { return function() {
-			if($(this).hasClass("nav-page-code") && identifier != "page-code") {
+			/*if($(this).hasClass("nav-page-code") && identifier != "page-code") {
 				//TODO: Auf Changes ueberpruefen und an dieser Stelle ueberarbeiten
 				reloadDefinitions();
-			}
+			}*/
 			getWrapper(".navigation-option", index).removeClass("active");
 			$(this).addClass("active");
 
@@ -312,6 +312,8 @@ function addScript(txt, lang, index, path, fShow, skipLoading) {
 				}
 				if(!sessions[index].scendata["Definitions"])
 					scendefs = ["Objects.ocd"];
+				if(!sessions[index].scendata["Definitions"]["Definition1"])
+					scendefs.unshift("Objects.ocd");
 				scendefs.push(sessions[index].relpath);
 				sessions[index].scendata["PlayerX"] = sessions[index].scendata["Player1"];
 				if(scendefs.length != sessions[index].scenariodefs.length)
@@ -329,6 +331,11 @@ function addScript(txt, lang, index, path, fShow, skipLoading) {
 					loadScenarioContentToElements(index);
 
 					$("#editorframe").removeClass("visible");
+				}).then(null, function(reason) {
+					log("****************************************************");
+					log("An error occured while trying to reload definitions:");
+					log(`${reason.message} (${reason.filename}:${reason.lineNumber}:${reason.columnNumber})`);
+					log(reason.stack);
 				});
 			}
 			prev_page = identifier;
@@ -1235,7 +1242,12 @@ function removeDeckItem(id) {
 	//Unbenutzte Definitionen wieder rausnehmen um Speicher zu leeren (nach ca. 30 Sekunden)
 	if(definitions.timeout)
 		clearTimeout(definitions.timeout);
-	definitions.timeout = setTimeout(function() {
+	//Object.defineProperty, um enumerable auf false zu setzen
+	Object.defineProperty(definitions, "timeout", {
+		configurable: true,
+		enumerable: false,
+		writable: true,
+		value: setTimeout(function() {
 		//(TODO: Evtl. in Zukunft auch mit einer Art Frequently Used Definitions-List?)
 		for(var def in definitions) {
 			//Um Ladezeiten zu verkuerzen, wird Objects.ocd nicht entfernt.
@@ -1254,7 +1266,7 @@ function removeDeckItem(id) {
 				delete definitions[def];
 		}
 		definitions.timeout = undefined;
-	}, 30000);
+	}, 30000) });
 	$("#scensettings-session-"+id).remove();
 }
 
