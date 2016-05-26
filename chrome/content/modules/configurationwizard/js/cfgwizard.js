@@ -70,6 +70,15 @@ $(window).ready(function() {
 					}
 					setConfigData("ExtApplication", "ExtApplication_Git", fp.file.path);
 					break;
+
+				case "set-ogrexmlconverter-path":
+					if((OS_TARGET == "WINNT" && fp.file.leafName != "OgreXMLConverter.exe") || (OS_TARGET != "WINNT" && fp.file.leafName != "OgreXMLConverter")) {
+						alert(Locale("$err_ogrexmlcnv_not_found$"));
+						$(this).trigger("click");
+						return;
+					}
+					setConfigData("ExtApplication", "ExtApplication_OgreXMLConverter", fp.file.path);
+					break;
 			}
 
 			$(this).siblings(".filepath-show").text(fp.file.path);

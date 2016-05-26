@@ -1,0 +1,8 @@
+{
+	"name": "OgreXMLConverter",
+	"identifier": "ogrexmlcnv",
+	"cfgidentifier": "OgreXMLConverter",
+	"description": "$ExtApp_OgreXMLConverterDescription$",
+	"icon": "",
+	"needed_file_win": "OgreXMLConverter.exe"
+}

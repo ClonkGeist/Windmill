@@ -2075,7 +2075,7 @@ function MV_Skeleton() {
 var tmpFileIndex = 0;
 
 function runXmlParser(filePath, targetFilePath, fnOnFinish) {
-	var name = "OgreXMLConverter";
+	/*var name = "OgreXMLConverter";
 	if(OS_TARGET == "WINNT")
 		name = "OgreXMLConverter.exe";
 
@@ -2083,9 +2083,8 @@ function runXmlParser(filePath, targetFilePath, fnOnFinish) {
 
 	if(!converter.exists() || !converter.isExecutable())
 		return warn("$err_group_not_found$");
-
-	var process = _ws.pr(converter);
-	process.create([filePath, targetFilePath], 0x00000001, function(data) {
+*/
+	getAppById("ogrexmlcnv").create([filePath, targetFilePath], 0x00000001, function(data) {
 		log(data);
 	}, fnOnFinish);
 }

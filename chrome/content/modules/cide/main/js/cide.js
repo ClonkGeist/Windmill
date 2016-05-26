@@ -760,6 +760,16 @@ function addTexteditor(file, lang, deck) {
 }
 
 function addMeshviewer(file, deck) {
+	//Pruefen, ob OgreXMLConverter verfuegbar ist
+	let ogrexmlconverter = getAppById("ogrexmlcnv");
+	if(!ogrexmlconverter.isAvailable()) {
+		let dlg = new WDialog("$DlgOgreXMLConverterNotAvailable$", MODULE_LPRE, { css: {"width": "600px"}, btnright: ["accept"]});
+		dlg.setContent('<description style="margin-bottom: 1em">$DlgOgreXMLConverterDesc$</description><description>$DlgOgreXMLConverterDesc2$</description>');
+		dlg.show();
+		dlg = 0;
+		return;
+	}
+	//Modul vorbereiten
 	var {deck, module} = prepareDeck(deck, "meshviewer", file);
 	if(!deck)
 		return;
@@ -786,8 +796,7 @@ function addImgEditor(file, fBMP, deck) {
 		return OpenFileWithProgram(file, getConfigData("CIDE", "ExtProg_GraphicsPNG"));
 
 	if(!getConfigData("Global", "DevMode") && fBMP) {
-		warn(`Der BMP-Editor muss noch gereworked werden und steht daher nicht zur Verfuegung. Daher bitte ein externes Programm ueber die Optionen einstellen.
-(Um den BMP-Editor dennoch benutzen zu koennen muss der DevMode aktiviert werden, s. Config)`);
+		warn("$beta_bmpeditor_not_available$");
 		return;
 	}
 	var modulename = fBMP?"bmpeditor":"imagepreview";

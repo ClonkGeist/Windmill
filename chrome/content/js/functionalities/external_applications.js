@@ -38,6 +38,7 @@ function registerNewApplication(application_obj) {
 }
 
 function getAppByID(identifier) { return application_data[identifier]; }
+function getAppById(...pars) { return getAppByID(...pars); } //Eigentlich die bevorzugte Schreibweise...
 
 let external_application_warnings = {};
 
@@ -89,7 +90,7 @@ class ExtApplication {
 	}
 
 	get path() { return getConfigData("ExtApplication", this.cfgidentifier); }
-	set path(npath) { setConfigData("ExtApplication", this.cfgidentifier, npath); log("saved"); }
+	set path(npath) { setConfigData("ExtApplication", this.cfgidentifier, npath); }
 	get needed_file() {
 		if(OS_TARGET == "WINNT")
 			return this.data.needed_file_win;
@@ -99,5 +100,5 @@ class ExtApplication {
 }
 
 registerInheritableObject("getAppByID");
-
+registerInheritableObject("getAppById");
 
