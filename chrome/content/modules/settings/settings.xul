@@ -199,11 +199,11 @@
 						<listbox id="pkb-keybindings-list">
 							<listhead>
 								<listhead label="$pkbListDescription$"/>
-								<listhead label="$pkbListAssignedKey$" width="140px"/>
+								<listhead label="$pkbListAssignedKey$" width="200px"/>
 							</listhead>
 							<listcols>
 								<listcol flex="1"/>
-								<listcol width="140px"/>
+								<listcol width="200px"/>
 							</listcols>
 							
 							<listitem class="pkb-list-subheader draft" disabled="true">
