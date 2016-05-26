@@ -9,7 +9,7 @@
 
 	<div id="wrapper">
 		<!-- Landing Page / Language Selection -->
-		<div class="wizardpage centered active" id="page-langsel">
+		<section class="wizardpage centered active" id="page-langsel">
 			<div class="landingCaption">Windmill</div>
 			<div style="width: 300px; text-align: center; font-size: 12pt; padding-top: 80px;">Select from the following list the language, you want to use Windmill in:
 				
@@ -21,59 +21,182 @@
 				</select>
 			</div>
 			<div style="flex: 1"></div>
-			<div class="button" onclick="showPage('page-alpha')">Next > </div>
+			<div class="button" onclick="showPage('welcomingpage-beta')">Next > </div>
 			<div class="button" id="resetcfgvar">Reset Cfg Var</div>
-		</div>
+		</section>
 		
-		<div class="wizardpage" id="page-alpha">
-			<h3>Vorkonfiguration (Quick and dirty)</h3>
-			<p>Alles wichtige steht irgendwo im Wikibeitrag.</p>
-			<p><strong>Achtung:</strong> Das Clonkverzeichnis wird bei Start von Windmill komplett entpackt um damit arbeiten zu koennen. Das gilt auch fuer alle Clonkverzeichnisse, die nachtraeglich eingefuegt werden <strong>und ueber den OpenClonk Manager</strong> ausgewaehlt werden. (Benoetigt ggf. einen Neustart)</p>
-			<p>Wer sein Clonkverzeichnis nicht entpackt haben moechte, der sollte fuer Windmill ein eigenes Clonkverzeichnis anlegen. Das andere Clonkverzeichnis laesst sich nachtraeglich noch einbinden ohne entpackt zu werden. (Hier muss nur darauf geachtet werden, dass man dieses nicht im OpenClonk Manager auswaehlt und Windmill dann neustart)</p>
-			<p>Hier den Pfad zum OpenClonk-Verzeichnis auswaehlen:</p>
-			<div class="filepath-container" id="OCPath" data-filetype="directory">
+		<section class="wizardpage" id="welcomingpage-beta">
+			<h3>Windmill Beta</h3>
+			<p>
+				Welcome to the Windmill Public Betatest!
+			</p>
+			<p>
+				This public beta version of Windmill gives you full access to the current development status of Windmill. Be aware, that Windmill is still in <em>beta status</em>, so there is a chance that major issues can occur. That being said, it is a good idea to use a seperated working directory for Windmill and to backup important files, though issues of this extend did not occur in the past.
+			</p>
+			<p>
+				We are very thankful for feedback, so feel free to give feedback of any kind (minor things, minor (or major) feature wishes, uncomfortable controls, other suggestions, etc.) inside the <a href="#">Windmill board on Clonkspot</a> (it is okay to post in english, even though this board is mainly in german) or report any kinds of bugs using the <a href="#">Github Issue Tracker</a> of our repository.
+			</p>
+			<p>
+				Besides reporting bugs and giving feedback, you can try to contribute to Windmill aswell. For more information, see <a href="#">this forum post</a>.
+			</p>
+			<p>
+				We are looking forward for your feedback!
+			</p>
+			<div class="spacer"></div>
+			<div class="button" onclick="showPage('page-clonkdirectory')">Next ></div>
+		</section>
+		
+		<section class="wizardpage" id="page-clonkdirectory">
+			<h3>Preconfiguration: Clonk directory</h3>
+			<div class="infobox error"></div>
+			<p>
+				To be able to use essential Features of Windmill, you need to select an OpenClonk directory (containing an <strong>openclonk.exe</strong> file). It will be used to give you an overview of your scenarios and to join and start games.
+			</p>
+			<div class="infobox warning">
+				<p>
+					<strong>Warning:</strong> Each time Windmill starts, your whole clonk directory will be exploded. (all packed files will be unpacked) This is required so Windmill can work with your files. This is also true for every clonk directory which will be added later and <strong>gets selected using the OpenClonk Manager</strong>. (This may require a restart though)
+				</p>
+				<p>
+					An exploded clonk directory will cause longer loading times for network games. If you don't want your main clonk directory exploded, use a seperate clonk directory for Windmill until there is a solution to (at least) read packed group files.
+				</p>
+			</div>
+			<p>
+				Path to OpenClonk directory:
+			</p>
+			<div class="filepath-container" id="set-openclonk-path" data-filetype="directory">
 				<div class="filepath-show"></div>
 				<div class="filepath-button">Browse</div>
 			</div>
-			<p>Hier ein Verzeichnis auswaehlen, welches als Rootverzeichnis fuer Workspaces genutzt wird.</p>
-			<div class="filepath-container" id="WSPath" data-filetype="directory">
-				<div class="filepath-show"></div>
-				<div class="filepath-button">Browse</div>
-			</div>
-			<p>Optional: Hier die git.exe bzw. git auswaehlen. <em>(Experimentell)</em></p>
-			<div class="filepath-container" id="GitPath" data-filetype="executable">
+			<p>
+				Here you can manually select a c4group file. (which is also required) Usually Windmill will detects it automatically for you, but if this is not the case or if you want to use a different c4group file, you can set it here.
+			</p>
+			<p>
+				The c4group file is required to pack/unpack/explode group files so Windmill can work with these.
+			</p>
+			<p>
+				Path to c4group file:
+			</p>
+			<div class="filepath-container" id="set-c4group-path" data-filetype="executable">
 				<div class="filepath-show"></div>
 				<div class="filepath-button">Browse</div>
 			</div>
 			<div class="spacer"></div>
-			<div class="button" id="finishconfig">Fertigstellen</div>
-		</div>
+			<div class="button" onclick="showPage('page-workenvironments')">Next ></div>
+		</section>
 		
-		<!-- Welcoming Page -->
-		<div class="wizardpage" id="page-welcome">
-			<!-- Kurze Erklaerung was Windmill ist (1 oder 2 Saetze, nichts explizites), Wichtig: Erklaerung dass es sich um eine BETA handelt
-				 Feedback und Bugeintraege => Hinweisen -->
-		</div>
-		<!-- Open Clonk Folder & Explorer Settings -->
-		<div class="wizardpage" id="page-explorer">
-			<!-- Hier wird der OpenClonk Ordner ausgewaehlt, der Workpath ausgewaehlt und ggf. ein Workspace erstellt,
-				 und es werden verschiedene Optionen zur Verfuegung gestellt: Workspace immer komplett entpackt, Workspace und
-				 Hauptverzeichnis automatisch synchronisieren etc. -->
-		</div>
-		<!-- Additional Files -->
-		<div class="wizardpage" id="page-additionalfiles">
-			<!-- Hier kommen die zusaetzlichen Dateien hin, die ggf. manuell installiert werden muessen. (Aufgrund von Lizenzproblemen z.B.) 
-				 Dabei werden die noetigen Links gestellt und evtl. auch ein Step-by-step guide mit Tabs am unteren Rand. Es wird auch angezeigt,
-				 welche Module ohne diese Programme nicht oder nur eingeschraenkt funktionieren wuerden. (Bspw fuer OgreXMLConverter: ✖ Meshviewer) -->
-		</div>
-		<!-- Tour? -->
-		<div class="wizardpage" id="page-tour">
-			<!-- Tour durch die einzelnen Windmill-Features hindurch anbieten? -->
-		</div>
-		<!-- Finish -->
-		<div class="wizardpage" id="page-finish">
-			<!-- Konfiguration abschliessen, den Rest in main.js aufrufen, alles Fenstergroesse und so richtig stellen etc. -->
-		</div>
+		<section class="wizardpage" id="page-workenvironments">
+			<h3>Preconfiguration: Work Environments</h3>
+			<p>
+				In Windmill, you can specify isolated work environments for each of your projects. There are mainly three types of work environments: <strong>clonk directories</strong>, <strong>workspaces</strong> and <strong>repositories</strong>.
+			</p>
+			<p>
+				<strong>Clonk directories</strong> are work environments, which represents - as the name suggests - clonk directories. This option is especially helpful, if you have multiple different versions of OpenClonk (stable, newest dev snapshot, super experimental branch X, etc.) and want an easy overview over these. Using the <strong>OpenClonk Manager</strong> in the navigation, you can easily switch between these versions and e.g. test your project under the newest version of OpenClonk to maintain compatibility.
+			</p>
+			<div class="spacer"></div>
+			<div class="button" onclick="showPage('page-workenvironments-workspaces')">Next ></div>
+		</section>
+		
+		<section class="wizardpage" id="page-workenvironments-workspaces">
+			<h3>Preconfiguration: Work Environments - Workspaces</h3>
+			<div class="infobox error"></div>
+			<p>
+				<strong>Workspaces</strong> are work environments, which should be created for seperated projects. It is also possible to nest these work environments, so you can create a sub work environment for a bigger project or if you want to have a group for smaller projects. (e.g. a group of multiple smaller modification of a project)
+			</p>
+			<p>
+				Windmill requires a root directory where all your work environments that are not clonk directories will be saved.
+			</p>
+			<p>
+				Workspace root directory:
+			</p>
+			<div class="filepath-container" id="set-workspace-path" data-filetype="directory">
+				<div class="filepath-show"></div>
+				<div class="filepath-button">Browse</div>
+			</div>
+			<p>
+				You can create new work environments using the "New"-Button inside the explorer navigation. It is also possible to unload work environments (in this case, they will <strong>not</strong> be removed but Windmill will skip loading them) and to import them again. You can also create links to older work environments which may be useful if you change your root directory. (They need to have a valid header file so Windmill can accept them as work environments)
+			</p>
+			<div class="infobox experimental">
+				<p>
+					<strong>Experimental:</strong> By checking this checkbox, you can activate an experimental polyfill (a workaround which emulates a feature that is currently not supported) for definition loading. If it is active, you don't need to import object definitions of your clonk directory into workspaces. When you start a scenario, Windmill searches your clonk directory (and parent workspaces), will detect which definitions are used and links them for a moment using absolute paths. After that, the paths will be resetted.
+				</p>
+				<p>
+					It needs to be mentioned that this feature has some issues: sometimes, the paths will not be resetted or the time frame until windmill resets the paths is too tight so OpenClonk does not load the correct definitions. This will probably be unchanged until there will be native support in OpenClonk.
+				</p>
+				<div style="margin: 12px 24px;">
+					<label>
+						<input type="checkbox" id="scenario-loading-polyfill" style="margin-right: 12px"/>
+						<strong>Activate Scenario Loading Polyfill</strong>
+					</label>
+				</div>
+			</div>
+			<div class="spacer"></div>
+			<div class="button" onclick="showPage('page-workenvironments-repository')">Next ></div>
+		</section>
+
+		<section class="wizardpage" id="page-workenvironments-repository">
+			<h3>Preconfiguration: Work Environments - Repository (optional)</h3>
+			<div class="infobox experimental">
+				<p>
+					<strong>Experimental:</strong> The whole content of this page (the git implementation in Windmill) is experimental! There is only support for some basic functionality which is almost completely untested and serves as a basis for future development of this feature. It should be not expected to work very well.
+				</p>
+			</div>
+			<p>
+				<strong>Repositories</strong> are a special kind of workspaces, which allows to use Git functionality inside your workspace. For this, you first need to clone the repository using Windmill. (already cloned directories cannot be used at the time of this writing) All further git operations can be acessed using the context menu (right click) on the work environment itself and on its contents.
+			</p>
+			<p>
+				To use Git functionality inside of Windmill, you need to download and install Git on your computer and choose the "git.exe" file. (under "installation path\bin\git.exe") You can download the current verson of Git here: https://git-scm.com/downloads
+			<p>
+			<div class="filepath-container" id="set-git-path" data-filetype="executable">
+				<div class="filepath-show"></div>
+				<div class="filepath-button">Browse</div>
+			</div>
+			<div class="spacer"></div>
+			<div class="button" onclick="showPage('page-meshviewer')">Next ></div>
+		</section>
+		
+		<section class="wizardpage" id="page-meshviewer">
+			<h3>Preconfiguration: Meshviewer (optional)</h3>
+			<p>
+				Windmill allows you to generate a live preview of *.mesh files inside of Windmill using the integrated <strong>Meshviewer</strong>. Due to the technology it uses (WebGL), it may not be supported by your graphic card and/or driver. Here is a quick test, which should be able to detect WebGL support:
+			</p>
+			<div class="infobox" id="webgl-test">
+				<div class="message"></div>
+				<div class="spacer"></div>
+				<div class="button">Retry</div>
+			</div>
+			<p>
+				It seems that vendors besides NVIDIA, ATI/AMD and Intel are blocked by default and needs to be whitelisted. For more information concerning graphic card support, <a href="https://wiki.mozilla.org/Blocklisting/Blocked_Graphics_Drivers#On_Windows">see this mozilla wiki article</a>.
+			</p>
+			<p>
+				However, to be able to extract the information of the *.mesh files, Windmill uses the OgreXMLConverter which outputs the mesh information as an XML file. To be able to use the meshviewer, you need to download the OgreXMLConverter and link it to Windmill. You can download it here: http://www.ogre3d.org/tikiwiki/OgreXmlConverter
+			</p>
+			<p>
+				Path to OgreXMLConverter.exe:
+			</p>
+			<div class="filepath-container" id="set-ogrexmlconverter-path" data-filetype="executable">
+				<div class="filepath-show"></div>
+				<div class="filepath-button">Browse</div>
+			</div>
+			<div class="spacer"></div>
+			<div class="button" onclick="showPage('page-finish')">Next ></div>
+		</section>
+
+		<section class="wizardpage" id="page-finish">
+			<h3>Done!</h3>
+			<p>
+				Windmill is now configured and ready to be used.
+			</p>
+			<p>
+				It is possible to set some further, more specific options like the editor theme, external applications for filetypes and key bindings in the settings.
+			</p>
+			<div class="infobox">
+				<p>
+					<strong>Note:</strong> Even though it is listed in the feature list of Windmill's beta version and was already announced during the miniblog, the <strong>BMP Editor</strong> is currently not available due to rework of it's code which should also work with WebGL. (To improve the performance)
+				</p>
+			</div>
+			<div class="spacer"></div>
+			<div class="button" id="finishconfig-beta">Finish</div>
+		</section>
 	</div>
 	
 	<script src="chrome://windmill/content/js/default_module.js" type="text/javascript" charset="utf-8"></script>

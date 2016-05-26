@@ -15,11 +15,12 @@ body
 
 .wizardpage {
 	flex: 1;
-	overflow: hidden;
+	overflow: auto;
 	display: none;
 	flex-direction: column;
 	
 	opacity: 1;
+	font-size: 0.9em;
 }
 
 .wizardpage.active { display: flex; }
@@ -38,11 +39,18 @@ body
 }
 
 .button {
-	background-color: #aaa;
 	width: 180px;
-	height: 26px;
-	text-align: center;
+	height: 1.4em;
+	padding: 4px 0;
+	margin: 4px;
+	background-color: $chrome-clr;
 	cursor: pointer;
+	transition: background-color 0.4s;
+	color: white;
+	&:hover {
+		background-color: $interact-red;
+	}
+	text-align: center;
 }
 
 .filepath-container {
@@ -50,18 +58,33 @@ body
 	flex-direction: row !important;
 	flex-wrap: no-wrap;
 	height: 2em;
+	line-height: 1.8em;
 }
+
 .filepath-show {
-	background-color: #aaa;
-	padding: 2px 5px;
-	text-decoration: italic;
-	flex: 1;
+	background-color: whitesmoke;
+    padding: 2px 5px;
+    font-style: italic;
+    flex: 1;
+    border: 1px solid gainsboro;
+	color: dimgrey;
 }
+
 .filepath-button {
 	padding: 2px 5px;
 	width: 50px;
-	background-color: #999;
+	background-color: $chrome-clr;
 	cursor: pointer;
+	transition: background-color 0.4s;
+	color: white;
+	&:hover {
+		background-color: $interact-red;
+	}
+	text-align: center;
+}
+
+p {
+	margin: 8px 0;
 }
 
 .spacer { flex: 1; }
@@ -71,6 +94,52 @@ body
 	animation-duration: 2s;
 	animation-timing-function: linear;
 	animation-iteration-count: infinite;
+}
+
+.infobox {
+	border: 1px solid gainsboro;
+	font-size: 0.9em;
+	text-align: justify;
+	padding: 0 5px;
+
+	&.error {
+		background-color: #FFB2B2;
+		border-color: #CCB1B1;
+		-moz-user-select: text;
+		display: none;
+		&.visible {
+			display: block;
+		}
+	}
+	&.warning {
+		background-color: #FCF8E3;
+		border-color: #FAEBCC;
+	}
+	&.experimental {
+		background-color: #9CF49C;
+		border-color: #519A51;
+		color: #2C2D30;
+	}
+}
+
+#webgl-test {
+	display: flex;
+	flex-direction: row !important;
+	justify-content: center;
+	align-items: center;
+	&.successful {
+		background-color: #DFF0D8;
+		border-color: #D6E9C6;
+	}
+	&.failed {
+		background-color: #FFB2B2;
+		border-color: #CCB1B1;
+	}
+}
+
+h3 {
+	border-bottom: 1px solid gainsboro;
+	font-size: 1.8em;
 }
 
 @keyframes windmill {

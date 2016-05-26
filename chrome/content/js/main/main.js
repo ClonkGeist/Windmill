@@ -55,14 +55,6 @@ hook("load", function() {
 			prepended_html = '<div style="font-size: 4.8em">Windmill</div>';
 		}
 		
-		$("#startup-loading").html(prepended_html+"Loading Config");
-		//Config initialisieren
-		initializeConfig();
-
-		//Config einlesen
-		try { yield loadConfig(); } catch(e) {}
-		//Config speichern
-		yield saveConfig(); //Configdatei speichern (falls noch nicht existiert)
 		//Modulinformationen einlesen
 		$("#startup-loading").html(prepended_html+"Loading Module Information");
 		try { yield loadModules(_sc.chpath + "/content/modules"); } catch(e) {}
@@ -74,6 +66,15 @@ hook("load", function() {
 			restartWindmill();
 			return -2;
 		}
+		$("#startup-loading").html("Loading Config");
+		//Config initialisieren
+		initializeConfig();
+
+		//Config einlesen
+		try { yield loadConfig(); } catch(e) {}
+		//Config speichern
+		yield saveConfig(); //Configdatei speichern (falls noch nicht existiert)
+
 		//Sprachpakete einlesen
 		$("#startup-loading").text("Loading Languagefiles");
 		yield initializeLanguage();
