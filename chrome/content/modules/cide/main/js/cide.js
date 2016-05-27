@@ -727,8 +727,6 @@ function addTexteditor(file, lang, deck) {
 	if(["text", "ini", "c4landscape"].indexOf(lang) != -1 && getConfigData("CIDE", "AU_Text"))
 		return OpenFileWithProgram(file, getConfigData("CIDE", "ExtProg_Text"));
 
-	// load text
-	var txt = loadFile(file.path);
 	var modulename = "scripteditor";
 	//TODO: In Einstellungen verstellbar
 	if(file.leafName.toUpperCase() == "SCENARIO.TXT" && getConfigData("ScenarioSettings", "AlwaysUseScenarioSettings"))
@@ -747,7 +745,7 @@ function addTexteditor(file, lang, deck) {
 		var index = deck.add(module, file.leafName, true, true, false, {altLabel: file.parent.leafName, switchLabels: true, icon, filepath: file.path });
 
 		module.contentWindow.addEventListener("load", function(){
-			this.addScript(txt, lang, index, file.path, true);
+			this.addScript(lang, index, file.path, true);
 			updateFrameWindowTitleDeck(deck, index);
 		});
 	}
@@ -755,7 +753,7 @@ function addTexteditor(file, lang, deck) {
 		// insert into deck control and safe index
 		var index = deck.add(module, file.leafName, true, true, false, {altLabel: file.parent.leafName, switchLabels: true, icon, filepath: file.path });
 
-		module.contentWindow.addScript(txt, lang, index, file.path, true);
+		module.contentWindow.addScript(lang, index, file.path, true);
 	}	
 }
 

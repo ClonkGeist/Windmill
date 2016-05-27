@@ -9,7 +9,7 @@ var CM_PATHALIAS = "fpath";
 function TabManager() { return scenes; }
 
 function initModelviewer(file, idMdl) {
-	
+	let filepath = file.path;
 	if(!session) {
 		session = _mv.init(document.getElementById("renderer"));
 		session.enableViewControls();
@@ -29,7 +29,12 @@ function initModelviewer(file, idMdl) {
 	
 	scenes[idMdl] = session.addScene();
 	var scene = scenes[idMdl];
-	scene.addMesh(file);
+	scene.addMesh(filepath).then(null, function(reason) {
+		log("An error occured during the loading process.", 0, "error");
+		log("********************************************", 0, "error");
+		log(`${reason.message} (${reason.fileName}:${reason.lineNumber})`, 0, "error");
+		log(reason.stack, 0, "error");
+	});
 	scene.onskeletonset = function(skeleton, fReplacesOldSkeleton) {
 		
 		var l = skeleton.animations.length;

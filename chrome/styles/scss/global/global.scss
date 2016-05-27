@@ -74,8 +74,9 @@ a {
 	width: 100px;
 
 	position: fixed;
-	z-index: 100;
+	z-index: 1000;
 	padding: 2px 7px;
+	font-family: $font-stack;
 
 	pointer-events: none;
 }

@@ -13,80 +13,82 @@ var editors = {},
 
 function TabManager() { return editors; }
 	
-function addScript(text, highlightMode, id, path, fShow) {
-
-	if(!ace)
-		return err("Could not initialize Scripteditor Module because ace is unavailable.");
-	
-	$("#editor-container").append("<div stlye=\"display: none\" id=\"editor-"+id+"\" class=\"main-editor\">"+text+"</div>");
-	
-	editors[id] = ace.edit("editor-"+id);
-	
-	var _e = editors[id];
-	
-	remapKeybindings(_e);
-	
-	_e.setTheme("ace/theme/" + defaultTheme);
-	
-	if(highlightMode)
-		editors[id].getSession().setMode("ace/mode/" + highlightMode);
-	editors[id].getSession().on("change", function(e) {
-		//setTimeout, da der UndoManager erst nach dem Event geupdatet wird
-		setTimeout(function() {
-			if(editors[id].getSession().getUndoManager().isClean())
-				onFileUnchanged(id);
-			else
-				onFileChanged(id);
-		}, 1);
-	});
-	
-	// remove local completer
-	var langTools = ace.require("ace/ext/language_tools");
-	langTools.setCompleters([langTools.keyWordCompleter, langTools.snippetCompleter]);
-	
-	if(highlightMode == "ocscript")
-		initOCEditorBehaviour(id);
-	
-	if(highlightMode == "ocscript" || highlightMode == "c4landscape") {		
-		_e.setOptions({
-			enableBasicAutocompletion: true,
-			enableSnippets: true,
-			enableLiveAutocompletion: true,
+function addScript(highlightMode, id, path, fShow) {
+	return Task.spawn(function*() {
+		let text = yield OS.File.read(path, {encoding: "utf-8"});
+		if(!ace)
+			return err("Could not initialize Scripteditor Module because ace is unavailable.");
+		
+		$("#editor-container").append("<div stlye=\"display: none\" id=\"editor-"+id+"\" class=\"main-editor\">"+text+"</div>");
+		
+		editors[id] = ace.edit("editor-"+id);
+		
+		var _e = editors[id];
+		
+		remapKeybindings(_e);
+		
+		_e.setTheme("ace/theme/" + defaultTheme);
+		
+		if(highlightMode)
+			editors[id].getSession().setMode("ace/mode/" + highlightMode);
+		editors[id].getSession().on("change", function(e) {
+			//setTimeout, da der UndoManager erst nach dem Event geupdatet wird
+			setTimeout(function() {
+				if(editors[id].getSession().getUndoManager().isClean())
+					onFileUnchanged(id);
+				else
+					onFileChanged(id);
+			}, 1);
 		});
-	}
-	
-	// right click handler
-	$("#editor-"+id).on("contextmenu", function(e) {
-		var x = e.clientX,
-			y = e.clientY;
-			
-		var s = $(this).find(".ace_selection");
 		
-		// check wether click is on top of any selection
-		var fClickOntoSelection = false;
+		// remove local completer
+		var langTools = ace.require("ace/ext/language_tools");
+		langTools.setCompleters([langTools.keyWordCompleter, langTools.snippetCompleter]);
 		
-		for(var i = 0; i < s.length; i++) {
-			var p = $(s.get(i)).offset();
-			
-			if(	x > p.left && 
-				y > p.top &&
-				x < $(s.get(i)).width() + p.left &&
-				y < $(s.get(i)).height() + p.top) {
-				
-				fClickOntoSelection = true;
-				break;
-			}	
+		if(highlightMode == "ocscript")
+			initOCEditorBehaviour(id);
+		
+		if(highlightMode == "ocscript" || highlightMode == "c4landscape") {		
+			_e.setOptions({
+				enableBasicAutocompletion: true,
+				enableSnippets: true,
+				enableLiveAutocompletion: true,
+			});
 		}
 		
-		initEditorContextMenu(x, y, id, fClickOntoSelection);
+		// right click handler
+		$("#editor-"+id).on("contextmenu", function(e) {
+			var x = e.clientX,
+				y = e.clientY;
+				
+			var s = $(this).find(".ace_selection");
+			
+			// check wether click is on top of any selection
+			var fClickOntoSelection = false;
+			
+			for(var i = 0; i < s.length; i++) {
+				var p = $(s.get(i)).offset();
+				
+				if(	x > p.left && 
+					y > p.top &&
+					x < $(s.get(i)).width() + p.left &&
+					y < $(s.get(i)).height() + p.top) {
+					
+					fClickOntoSelection = true;
+					break;
+				}	
+			}
+			
+			initEditorContextMenu(x, y, id, fClickOntoSelection);
+		});
+		
+		_e.__id = id;
+		_e.__scope = highlightMode;
+		_e.__filePath = path;
+		
+		if(fShow || !$(".visible").length)
+			showDeckItem(id);
 	});
-	
-	_e.__id = id;
-	_e.__scope = highlightMode;
-	_e.__filePath = path;
-	
-	if(fShow || !$(".visible").length)
-		showDeckItem(id);
 }
 
 
@@ -138,9 +140,13 @@ function saveDocument(id) {
 	if(!editors[id])
 		return false;
 	
-	editors[id].getSession().getUndoManager().markClean();
-	writeFile(getEditorFilePath(id), editors[id].getValue());
-	EventInfo("$EI_Saved$", -1);
+	Task.spawn(function*() {
+		lockModule();
+		yield OS.File.writeAtomic(getEditorFilePath(id), editors[id].getValue(), {encoding: "utf-8"});
+		editors[id].getSession().getUndoManager().markClean();
+		unlockModule();
+		EventInfo("$EI_Saved$", -1, true);
+	});
 }
 
 function getDocumentValue(id) {

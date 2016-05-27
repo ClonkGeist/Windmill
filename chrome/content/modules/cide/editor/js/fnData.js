@@ -12,19 +12,18 @@ function loadFnData() {
 	
 	var jsonFile = _sc.file(PATH_FN_DATA_JSON);
 	
-	if(jsonFile.exists()) {
+	return Task.spawn(function*() {
+		let jsonString;
 		try {
-			var jsonString = readFile(PATH_FN_DATA_JSON);
-			paramData = JSON.parse(jsonString);
+			jsonString = yield OS.File.read(PATH_FN_DATA_JSON, {encoding: "utf-8"});
 		}
-		catch (e) {
+		catch(e) {
 			loadFromXmlOrigin();
 		}
+		paramData = JSON.parse(jsonString);
 		if(!paramData)
 			loadFromXmlOrigin();
-	}
-	else
-		loadFromXmlOrigin();
+	});
 }
 
 function loadFromXmlOrigin() {

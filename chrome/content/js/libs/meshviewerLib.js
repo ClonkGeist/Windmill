@@ -1043,16 +1043,16 @@ function Meshviewer() {
 				this.initRenderLoop(RENDER_CAUSE_RENDER_ONCE);
 			}
 			
-			this.addMesh = function(file) {
-				
-				this.fpath = file.path;
-				var origDirPath = file.path.slice(0, -file.leafName.length - 1);
+			this.addMesh = function(path) {
+				this.fpath = formatPath(path);
+				var origDirPath = path.slice(0, -this.fpath.split("/").pop().length - 1);
 				
 				var targetFilePath = _sc.profd+"/tmp/meshviewer" + tmpFileIndex + ".xml";
 				tmpFileIndex++;
-				
-				runXmlParser(file.path, targetFilePath, function() {
-					_session.createMesh(_scene, targetFilePath, origDirPath);
+				return new Promise(function(resolve, reject) {
+					runXmlParser(path, targetFilePath, function() {
+						_session.createMesh(_scene, targetFilePath, origDirPath).then(resolve, reject);
+					});
 				});
 			}
 			
@@ -1348,7 +1348,7 @@ function Meshviewer() {
 			
 			
 			this.queueMaterialFile = function(pathDir, mName, subMesh) {
-				Materials.get(mName, _sc.file(pathDir), function(mat) {
+				return Materials.get(mName, pathDir).then(function(mat) {
 					
 					if(_mesh._scene._sess.onmatload)
 						_mesh._scene._sess.onmatload(mat, _mesh._scene.id, mName);
@@ -1365,368 +1365,372 @@ function Meshviewer() {
 							else
 								_mesh._scene._sess.loadTexture(pathDir +"/"+ t_units[i].texture[0], subMesh, "texture");
 					}
-				})
+				});
 			}
 			
 		} // end of mesh object-declaration
 		
 		this.createMesh = function(targetScene, path, origDirPath) {
-			var xml = readFile(path);
-			
-			if(!xml) 
-				return false;
-			
-			targetScene.setShader(this.solidShader);
-			
-			var	dom = _ref.DOMParser.parseFromString(xml, "text/xml");
-			
-			var createVDataObject = function() {
-				return vertexData = {
-					uv: [],
-					position: [],
-					boneAssignments: [],
-					color: [],
-					box: {
-						left: 0,
-						right: 0,
-						top: 0,
-						bottom: 0,
-						back: 0,
-						front: 0,
-						medianX: 0,
-						medianY: 0,
-						medianZ: 0
-					},
-					amount: 0,
-					maxAssignments: 0,
-					//normals = [],
-				};
-			}
-			
-			var parseVertices = function(element) {
-				var vertexData = createVDataObject();
+			let _this = this;
+			return Task.spawn(function*() {
+				let xml = yield OS.File.read(path, {encoding: "utf-8"});
 				
-				var _box = vertexData.box;
+				if(!xml) 
+					return false;
 				
-				var elements;
+				targetScene.setShader(_this.solidShader);
 				
-				if(element.nodeName !== "vertexbuffer")
-					elements = element.getElementsByTagName("vertexbuffer");
-				else
-					elements = [element];
+				var	dom = _ref.DOMParser.parseFromString(xml, "text/xml");
 				
-				for(var bufferIndex = 0; bufferIndex < elements.length; bufferIndex++) {
-					var vertexNodes = elements[bufferIndex].children;
+				var createVDataObject = function() {
+					return vertexData = {
+						uv: [],
+						position: [],
+						boneAssignments: [],
+						color: [],
+						box: {
+							left: 0,
+							right: 0,
+							top: 0,
+							bottom: 0,
+							back: 0,
+							front: 0,
+							medianX: 0,
+							medianY: 0,
+							medianZ: 0
+						},
+						amount: 0,
+						maxAssignments: 0,
+						//normals = [],
+					};
+				}
+				
+				var parseVertices = function(element) {
+					var vertexData = createVDataObject();
 					
-					/** xml structure of a vertex node
-					<vertex>
-						<position x="-15.206469" y="-2.933670" z="-58.532657"/>
-						<normal x="0.794744" y="-0.307238" z="0.523438"/>
-						<texcoord u="0.742877" v="0.970355"/>
-					</vertex>
-					*/
+					var _box = vertexData.box;
 					
-					// iterate through each vertex, ...
-					for(var v = 0; v < vertexNodes.length; v++) {
-						// through each vertex property,...
-						var v_attributes = vertexNodes[v].children;
+					var elements;
+					
+					if(element.nodeName !== "vertexbuffer")
+						elements = element.getElementsByTagName("vertexbuffer");
+					else
+						elements = [element];
+					
+					for(var bufferIndex = 0; bufferIndex < elements.length; bufferIndex++) {
+						var vertexNodes = elements[bufferIndex].children;
 						
-						// through properties' attributes
-						for(var s = 0; s < v_attributes.length; s++) {
-							switch(v_attributes[s].nodeName) {
-								case "position":
+						/** xml structure of a vertex node
+						<vertex>
+							<position x="-15.206469" y="-2.933670" z="-58.532657"/>
+							<normal x="0.794744" y="-0.307238" z="0.523438"/>
+							<texcoord u="0.742877" v="0.970355"/>
+						</vertex>
+						*/
+						
+						// iterate through each vertex, ...
+						for(var v = 0; v < vertexNodes.length; v++) {
+							// through each vertex property,...
+							var v_attributes = vertexNodes[v].children;
+							
+							// through properties' attributes
+							for(var s = 0; s < v_attributes.length; s++) {
+								switch(v_attributes[s].nodeName) {
+									case "position":
+										
+										x = parseFloat(v_attributes[s].getAttribute("x"));
+										y = parseFloat(v_attributes[s].getAttribute("y"));
+										z = parseFloat(v_attributes[s].getAttribute("z"));
+										
+										vertexData.position.push(x);
+										vertexData.position.push(y);
+										vertexData.position.push(z);
+										
+										// check for most outer bound to generate bounding box
+										if(x > _box.right)
+											_box.right = x;
+										else if(x < _box.left)
+											_box.left = x;
+										if(y > _box.top)
+											_box.top = y;
+										else if(y < _box.bottom)
+											_box.bottom = y;
+										if(z > _box.front)
+											_box.front = z;
+										else if(z < _box.back)
+											_box.back = z;
+										
+										// check for the median according to the vertexdistribution
+										_box.medianX += x;
+										_box.medianY += y;
+										_box.medianZ += z;									
+									break;
 									
-									x = parseFloat(v_attributes[s].getAttribute("x"));
-									y = parseFloat(v_attributes[s].getAttribute("y"));
-									z = parseFloat(v_attributes[s].getAttribute("z"));
+									case "texcoord":
+										vertexData.uv.push(parseFloat(v_attributes[s].getAttribute("u")));
+										vertexData.uv.push(parseFloat(v_attributes[s].getAttribute("v")));
+										
+										// break loop || TODO: probably make more failsafe 
+										// (compare texcoord index position with given attributes of the vertexbuffer
+										s = v_attributes.length;
+									break;
 									
-									vertexData.position.push(x);
-									vertexData.position.push(y);
-									vertexData.position.push(z);
-									
-									// check for most outer bound to generate bounding box
-									if(x > _box.right)
-										_box.right = x;
-									else if(x < _box.left)
-										_box.left = x;
-									if(y > _box.top)
-										_box.top = y;
-									else if(y < _box.bottom)
-										_box.bottom = y;
-									if(z > _box.front)
-										_box.front = z;
-									else if(z < _box.back)
-										_box.back = z;
-									
-									// check for the median according to the vertexdistribution
-									_box.medianX += x;
-									_box.medianY += y;
-									_box.medianZ += z;									
-								break;
-								
-								case "texcoord":
-									vertexData.uv.push(parseFloat(v_attributes[s].getAttribute("u")));
-									vertexData.uv.push(parseFloat(v_attributes[s].getAttribute("v")));
-									
-									// break loop || TODO: probably make more failsafe 
-									// (compare texcoord index position with given attributes of the vertexbuffer
-									s = v_attributes.length;
-								break;
-								
-								case "colour_diffuse":
-									vertexData.color.push.apply(vertexData.color, v_attributes[s].getAttribute("value").split(" "));
-								break;
+									case "colour_diffuse":
+										vertexData.color.push.apply(vertexData.color, v_attributes[s].getAttribute("value").split(" "));
+									break;
+								}
+							}
+						} // end of vertex iteration
+					}
+					// generate median
+					_box.medianX /= vertexData.position.length;
+					_box.medianY /= vertexData.position.length;
+					_box.medianZ /= vertexData.position.length;
+					
+					return vertexData;
+				}
+				
+				var parseBoneAssignments = function(elAssignments, vDataObject) {
+					var data = new Array(vDataObject.amount);
+					
+					let ass = elAssignments.children,
+						l = ass.length,
+						node,
+						vIndex;
+					
+					var	maximumBonesPerVertex = 2;
+					
+					for(let i = 0; i < l; i++) {
+						node = ass[i],
+						vIndex = node.getAttribute("vertexindex");
+						
+						if(data[vIndex]) {
+							data[vIndex].push(parseFloat(node.getAttribute("boneindex")));
+							data[vIndex].push(parseFloat(node.getAttribute("weight")));
+							
+							if(data[vIndex].length > maximumBonesPerVertex) {
+								maximumBonesPerVertex = data[vIndex].length;
 							}
 						}
-					} // end of vertex iteration
-				}
-				// generate median
-				_box.medianX /= vertexData.position.length;
-				_box.medianY /= vertexData.position.length;
-				_box.medianZ /= vertexData.position.length;
-				
-				return vertexData;
-			}
-			
-			var parseBoneAssignments = function(elAssignments, vDataObject) {
-				var data = new Array(vDataObject.amount);
-				
-				let ass = elAssignments.children,
-					l = ass.length,
-					node,
-					vIndex;
-				
-				var	maximumBonesPerVertex = 2;
-				
-				for(let i = 0; i < l; i++) {
-					node = ass[i],
-					vIndex = node.getAttribute("vertexindex");
+						else
+							data[vIndex] = [
+								parseFloat(node.getAttribute("boneindex")),
+								parseFloat(node.getAttribute("weight"))
+							];
+					}
 					
-					if(data[vIndex]) {
-						data[vIndex].push(parseFloat(node.getAttribute("boneindex")));
-						data[vIndex].push(parseFloat(node.getAttribute("weight")));
+					vDataObject.boneAssignments = data;
+					vDataObject.maxAssignments = maximumBonesPerVertex / 2;
+				}
+							
+				var mergeVertexData = function(data1, data2) {
+					var data = createVDataObject();
+					
+					data.position = data1.position.concat(data2.position);
+					data.uv = data1.uv.concat(data2.uv);
+					data.boneAssignments = data1.boneAssignments.concat(data2.boneAssignments);
+					
+					data.maxAssignments = data1.maxAssignments > data2.maxAssignments?data1.maxAssignments:data2.maxAssignments;
+					data.amount = data1.amount + data2.amount;
+					
+					data.box.left = data1.box.left<data2.box.left?data1.box.left:data2.box.left;
+					data.box.right = data1.box.right>data2.box.right?data1.box.right:data2.box.right;
+					data.box.top = data1.box.top<data2.box.top?data1.box.top:data2.box.top;
+					data.box.bottom = data1.box.bottom>data2.box.bottom?data1.box.bottom:data2.box.bottom;
+					data.box.front = data1.box.front<data2.box.front?data1.box.front:data2.box.front;
+					data.box.back = data1.box.back>data2.box.back?data1.box.back:data2.box.back;
+					
+					if(data1.color.length && data2.color.length)
+						data.color = data1.color.concat(data2.color);
+					else if(data1.color.length)
+						data.color = data1.color.concat(new Array(data2.amount*4));
+					else if(data2.color.length)
+						data.color = (new Array(data1.amount*4)).concat(data2.color);
+					
+					return data;
+				}
+				
+				var node_Sharedgeometry = dom.getElementsByTagName("sharedgeometry")[0],
+					sharedGeometry = false;
+				
+				if(node_Sharedgeometry)
+					sharedGeometry = parseVertices(node_Sharedgeometry);
+				
+				let node_SharedAssignments = (function() {
+					let children = dom.documentElement.children;
+					for(var i = 0; i < children.length; i++)
+						if(children[i].nodeName === "boneassignments")
+							return children[i];
 						
-						if(data[vIndex].length > maximumBonesPerVertex) {
-							maximumBonesPerVertex = data[vIndex].length;
+					return false;
+				})();
+				
+				if(node_SharedAssignments)
+					parseBoneAssignments(node_SharedAssignments, sharedGeometry);
+				
+				var submeshNodes = dom.getElementsByTagName("submeshes")[0].getElementsByTagName("submesh"),
+					submeshIndex = 0;
+				
+				var mesh = new _this.mesh(targetScene);
+				
+				// check for skeleton
+				var skeletonLink = dom.getElementsByTagName("skeletonlink")[0];
+				
+				// iterate each submeshname
+				for(var submeshIndex = 0; submeshIndex < submeshNodes.length; submeshIndex++)
+				{
+					// create new mesh
+					var _sub = mesh.createSubmesh();
+					
+					yield mesh.queueMaterialFile(origDirPath, submeshNodes[submeshIndex].getAttribute("material"), _sub);
+					
+					// parse vertex buffers
+					var vData = parseVertices(submeshNodes[submeshIndex]);
+					var boneAssignments;
+					var useBoneAssignments = false,
+						useDiffuseColor = false;
+					
+					// add bone assignments
+					if(skeletonLink) {
+						let boneAssignmentsNode = submeshNodes[submeshIndex].getElementsByTagName("boneassignments")[0];
+						if(boneAssignmentsNode) {
+							parseBoneAssignments(boneAssignmentsNode, vData);
+							useBoneAssignments = true;
 						}
 					}
-					else
-						data[vIndex] = [
-							parseFloat(node.getAttribute("boneindex")),
-							parseFloat(node.getAttribute("weight"))
-						];
-				}
-				
-				vDataObject.boneAssignments = data;
-				vDataObject.maxAssignments = maximumBonesPerVertex / 2;
-			}
-						
-			var mergeVertexData = function(data1, data2) {
-				var data = createVDataObject();
-				
-				data.position = data1.position.concat(data2.position);
-				data.uv = data1.uv.concat(data2.uv);
-				data.boneAssignments = data1.boneAssignments.concat(data2.boneAssignments);
-				
-				data.maxAssignments = data1.maxAssignments > data2.maxAssignments?data1.maxAssignments:data2.maxAssignments;
-				data.amount = data1.amount + data2.amount;
-				
-				data.box.left = data1.box.left<data2.box.left?data1.box.left:data2.box.left;
-				data.box.right = data1.box.right>data2.box.right?data1.box.right:data2.box.right;
-				data.box.top = data1.box.top<data2.box.top?data1.box.top:data2.box.top;
-				data.box.bottom = data1.box.bottom>data2.box.bottom?data1.box.bottom:data2.box.bottom;
-				data.box.front = data1.box.front<data2.box.front?data1.box.front:data2.box.front;
-				data.box.back = data1.box.back>data2.box.back?data1.box.back:data2.box.back;
-				
-				if(data1.color.length && data2.color.length)
-					data.color = data1.color.concat(data2.color);
-				else if(data1.color.length)
-					data.color = data1.color.concat(new Array(data2.amount*4));
-				else if(data2.color.length)
-					data.color = (new Array(data1.amount*4)).concat(data2.color);
-				
-				return data;
-			}
-			
-			var node_Sharedgeometry = dom.getElementsByTagName("sharedgeometry")[0],
-				sharedGeometry = false;
-			
-			if(node_Sharedgeometry)
-				sharedGeometry = parseVertices(node_Sharedgeometry);
-			
-			let node_SharedAssignments = (function() {
-				let children = dom.documentElement.children;
-				for(var i = 0; i < children.length; i++)
-					if(children[i].nodeName === "boneassignments")
-						return children[i];
 					
-				return false;
-			})();
-			
-			if(node_SharedAssignments)
-				parseBoneAssignments(node_SharedAssignments, sharedGeometry);
-			
-			var submeshNodes = dom.getElementsByTagName("submeshes")[0].getElementsByTagName("submesh"),
-				submeshIndex = 0;
-			
-			var mesh = new this.mesh(targetScene);
-			
-			// check for skeleton
-			var skeletonLink = dom.getElementsByTagName("skeletonlink")[0];
-			
-			// iterate each submeshname
-			for(var submeshIndex = 0; submeshIndex < submeshNodes.length; submeshIndex++)
-			{
-				// create new mesh
-				var _sub = mesh.createSubmesh();
-				
-				mesh.queueMaterialFile(origDirPath, submeshNodes[submeshIndex].getAttribute("material"), _sub);
-				
-				// parse vertex buffers
-				var vData = parseVertices(submeshNodes[submeshIndex]);
-				var boneAssignments;
-				var useBoneAssignments = false,
-					useDiffuseColor = false;
-				
-				// add bone assignments
-				if(skeletonLink) {
-					let boneAssignmentsNode = submeshNodes[submeshIndex].getElementsByTagName("boneassignments")[0];
-					if(boneAssignmentsNode) {
-						parseBoneAssignments(boneAssignmentsNode, vData);
-						useBoneAssignments = true;
-					}
-				}
-				
-				if(submeshNodes[submeshIndex].getAttribute("usesharedvertices") === "true")
-					vData = mergeVertexData(sharedGeometry, vData);
-				
-				if(vData.color.length)
-					useDiffuseColor = true;
-				
-				/** --------------- FACE ITERATION */
-				
-				// ---	store face data	of each triangle	-----
-				var faceNodes = submeshNodes[submeshIndex].getElementsByTagName("face");
-				
-				var buffer_Position = [],
-					buffer_Barycentric = [],
-					buffer_UV = [],
-					buffer_boneWeights = [],
-					buffer_boneIndices = [],
-					buffer_Color = [];
-				
-				var gen = function* (a, max) {
-					let cur = 0;
-					max *= 2;
-					let r = [,];
-					if(a) {
-						let d = 0;
-						for(let i = 0; i < max; i += 2)
-							d += a[1 + i] || 0;
-						
-						d = 1/d;
+					if(submeshNodes[submeshIndex].getAttribute("usesharedvertices") === "true")
+						vData = mergeVertexData(sharedGeometry, vData);
+					
+					if(vData.color.length)
+						useDiffuseColor = true;
+					
+					/** --------------- FACE ITERATION */
+					
+					// ---	store face data	of each triangle	-----
+					var faceNodes = submeshNodes[submeshIndex].getElementsByTagName("face");
+					
+					var buffer_Position = [],
+						buffer_Barycentric = [],
+						buffer_UV = [],
+						buffer_boneWeights = [],
+						buffer_boneIndices = [],
+						buffer_Color = [];
+					
+					var gen = function* (a, max) {
 						let cur = 0;
-						while(cur < max) {
-							r[0] = typeof a[cur] === "undefined"?-1:a[cur];
-							r[1] = a[cur + 1]*d || 0;
-							yield r;
-							cur += 2;
+						max *= 2;
+						let r = [,];
+						if(a) {
+							let d = 0;
+							for(let i = 0; i < max; i += 2)
+								d += a[1 + i] || 0;
+							
+							d = 1/d;
+							let cur = 0;
+							while(cur < max) {
+								r[0] = typeof a[cur] === "undefined"?-1:a[cur];
+								r[1] = a[cur + 1]*d || 0;
+								yield r;
+								cur += 2;
+							}
 						}
+						else {
+							while(cur < max) {
+								r[0] = -1;
+								r[1] = 0;
+								yield r;
+								cur += 2;
+							}
+						}
+					}
+					
+					for(var f = 0; f < faceNodes.length; f++) {
+					
+						/** <face v1="0" v2="1" v3="2" */
+						// use indices and save the triangle data
+						for(var iAtr = 0; iAtr < faceNodes[f].attributes.length; iAtr++) {
+							let vIndex = faceNodes[f].attributes[iAtr].value;
+							let	uvIndex = faceNodes[f].attributes[iAtr].value * 2;
+							
+							buffer_UV[buffer_UV.length] = vData.uv[uvIndex    ] // u
+							buffer_UV[buffer_UV.length] = vData.uv[uvIndex + 1] // v
+							
+							if(useBoneAssignments) {
+								for(let a of gen(vData.boneAssignments[vIndex], vData.maxAssignments)) {
+									let [index, weight] = a;
+									buffer_boneIndices.push(index);
+									buffer_boneWeights.push(weight);
+								}
+							}
+													
+							if(useDiffuseColor) {
+								let colorIndex = vIndex * 4;
+								buffer_Color[buffer_Color.length] = vData.color[colorIndex + 0] // r
+								buffer_Color[buffer_Color.length] = vData.color[colorIndex + 1] // g
+								buffer_Color[buffer_Color.length] = vData.color[colorIndex + 2] // b
+								buffer_Color[buffer_Color.length] = vData.color[colorIndex + 3] // a
+							}
+							
+							vIndex *= 3;
+							// relative to coord listing
+							
+							buffer_Position[buffer_Position.length] = vData.position[vIndex    ] // x
+							buffer_Position[buffer_Position.length] = vData.position[vIndex + 1] // y
+							buffer_Position[buffer_Position.length] = vData.position[vIndex + 2] // z
+						}
+						
+						// barycentric data
+						// these will be used to indicate special vectors based on triangle-listing
+						let bi = f*3;
+						buffer_Barycentric[bi    ] = 0; // vec3(1, 0, 0)
+						buffer_Barycentric[bi + 1] = 1; // vec3(0, 1, 0)
+						buffer_Barycentric[bi + 2] = 2; // vec3(0, 0, 1)
+					}
+									
+					var id = targetScene._meshes.length;
+					targetScene._meshes[id] = mesh;
+					
+					// move data to gl context
+					_sub.setPositionBufferData(buffer_Position, f, vData.box);
+					_sub.setBarycentricBufferData(buffer_Barycentric);
+					
+					if(buffer_UV.length)
+						_sub.setUVBufferData(buffer_UV, f);
+					
+					if(useDiffuseColor)
+						_sub.setDiffuseColorBufferData(buffer_Color);
+					
+					if(useBoneAssignments) {
+						_sub.setVertexAssignments(buffer_boneIndices, buffer_boneWeights, vData.maxAssignments);
+						targetScene.setSkeletonCondition("meshHasVertexAssignments", true);
+					}
+				} // end mesh iteration
+				
+				if(skeletonLink) {
+					
+					var name = skeletonLink.getAttribute("name");
+					
+					if(_this.onskeletonasked)
+						_this.onskeletonasked(name, targetScene.id);
+
+					let skelpath = origDirPath + "/" + name;
+					if(yield OS.File.exists(skelpath)) {
+						var newFilePath = _sc.profd+"/tmp/meshviewer" + tmpFileIndex + ".xml";
+						tmpFileIndex++;
+						runXmlParser(skelpath, newFilePath, function() {
+							parseSkeletonXml(newFilePath).then(function(skeleton) {
+								targetScene.setSkeleton(skeleton);
+							});
+						});
 					}
 					else {
-						while(cur < max) {
-							r[0] = -1;
-							r[1] = 0;
-							yield r;
-							cur += 2;
-						}
+						if(_this.onskeletonloaderr)
+							_this.onskeletonloaderr(RESOURCE_ERROR_INEXISTENT);
 					}
 				}
-				
-				for(var f = 0; f < faceNodes.length; f++) {
-				
-					/** <face v1="0" v2="1" v3="2" */
-					// use indices and save the triangle data
-					for(var iAtr = 0; iAtr < faceNodes[f].attributes.length; iAtr++) {
-						let vIndex = faceNodes[f].attributes[iAtr].value;
-						let	uvIndex = faceNodes[f].attributes[iAtr].value * 2;
-						
-						buffer_UV[buffer_UV.length] = vData.uv[uvIndex    ] // u
-						buffer_UV[buffer_UV.length] = vData.uv[uvIndex + 1] // v
-						
-						if(useBoneAssignments) {
-							for(let a of gen(vData.boneAssignments[vIndex], vData.maxAssignments)) {
-								let [index, weight] = a;
-								buffer_boneIndices.push(index);
-								buffer_boneWeights.push(weight);
-							}
-						}
-												
-						if(useDiffuseColor) {
-							let colorIndex = vIndex * 4;
-							buffer_Color[buffer_Color.length] = vData.color[colorIndex + 0] // r
-							buffer_Color[buffer_Color.length] = vData.color[colorIndex + 1] // g
-							buffer_Color[buffer_Color.length] = vData.color[colorIndex + 2] // b
-							buffer_Color[buffer_Color.length] = vData.color[colorIndex + 3] // a
-						}
-						
-						vIndex *= 3;
-						// relative to coord listing
-						
-						buffer_Position[buffer_Position.length] = vData.position[vIndex    ] // x
-						buffer_Position[buffer_Position.length] = vData.position[vIndex + 1] // y
-						buffer_Position[buffer_Position.length] = vData.position[vIndex + 2] // z
-					}
-					
-					// barycentric data
-					// these will be used to indicate special vectors based on triangle-listing
-					let bi = f*3;
-					buffer_Barycentric[bi    ] = 0; // vec3(1, 0, 0)
-					buffer_Barycentric[bi + 1] = 1; // vec3(0, 1, 0)
-					buffer_Barycentric[bi + 2] = 2; // vec3(0, 0, 1)
-				}
-								
-				var id = targetScene._meshes.length;
-				targetScene._meshes[id] = mesh;
-				
-				// move data to gl context
-				_sub.setPositionBufferData(buffer_Position, f, vData.box);
-				_sub.setBarycentricBufferData(buffer_Barycentric);
-				
-				if(buffer_UV.length)
-					_sub.setUVBufferData(buffer_UV, f);
-				
-				if(useDiffuseColor)
-					_sub.setDiffuseColorBufferData(buffer_Color);
-				
-				if(useBoneAssignments) {
-					_sub.setVertexAssignments(buffer_boneIndices, buffer_boneWeights, vData.maxAssignments);
-					targetScene.setSkeletonCondition("meshHasVertexAssignments", true);
-				}
-			} // end mesh iteration
-			
-			if(skeletonLink) {
-				
-				var name = skeletonLink.getAttribute("name");
-				
-				if(this.onskeletonasked)
-					this.onskeletonasked(name, targetScene.id);
-				
-				var file = _sc.file(origDirPath + "/" + name);
-				
-				if(file.exists()) {
-					var newFilePath = _sc.profd+"/tmp/meshviewer" + tmpFileIndex + ".xml";
-					tmpFileIndex++;
-					runXmlParser(file.path, newFilePath, function() {
-						targetScene.setSkeleton(parseSkeletonXml(newFilePath));
-					});
-				}
-				else {
-					if(this.onskeletonloaderr)
-						this.onskeletonloaderr(RESOURCE_ERROR_INEXISTENT);
-				}
-			}
-			targetScene.initRenderLoop(RENDER_CAUSE_RENDER_ONCE);
+				targetScene.initRenderLoop(RENDER_CAUSE_RENDER_ONCE);
+			});
 		}
 		
 	} // close session
@@ -1735,182 +1739,142 @@ function Meshviewer() {
 }
 
 function parseSkeletonXml(path) {
-	
-	var xml = readFile(path);
-	
-	var sk = new MV_Skeleton();
-	
-	var dom = (new DOMParser()).parseFromString(xml, "text/xml");
-	
-	// parse bone-hierarchy
-	var domBoneParents = dom.getElementsByTagName("bonehierarchy")[0],
-		hierarchyRefs = {};
-	
-	if(domBoneParents) {
-		domBoneParents = domBoneParents.getElementsByTagName("boneparent");
+	return Task.spawn(function*() {
+		let xml = yield OS.File.read(path, {encoding: "utf-8"});
 		
-		for(let i = 0; i < domBoneParents.length; i++)
-			hierarchyRefs[domBoneParents[i].getAttribute("bone")] = domBoneParents[i].getAttribute("parent");
-	}
-	
-	// parse single bones
-	var bones = [],
-		boneCount = 0,
-		boneNameToIdReference = [],
-		aBoneInserted = [],
-		sortedBones = [],
-		sortedBoneCount = 0;
-	
-	var domBones = dom.getElementsByTagName("bone"),
-		l = domBones.length;
-	
-	for(let i = 0; i < l; i++) {
-		var name = domBones[i].getAttribute("name");
-		boneNameToIdReference[name] = domBones[i].getAttribute("id");
-		bones[i] = {
-			"name": name,
-			"origId": i,
-		};
-	}
-	for(var i = 0; i < l; i++) {
+		var sk = new MV_Skeleton();
 		
-		var domRot = domBones[i].getElementsByTagName("rotation")[0],
-			domRotAxis = domRot.getElementsByTagName("axis")[0],
-			domPos = domBones[i].getElementsByTagName("position")[0];
+		var dom = (new DOMParser()).parseFromString(xml, "text/xml");
 		
-		// bone position
-		var pos = vec3.clone([
-			parseFloat(domPos.getAttribute("x")),
-			parseFloat(domPos.getAttribute("y")),
-			parseFloat(domPos.getAttribute("z"))
-		]);
+		// parse bone-hierarchy
+		var domBoneParents = dom.getElementsByTagName("bonehierarchy")[0],
+			hierarchyRefs = {};
 		
-		// bone orientation
-		var q = quat.create();
-		quat.setAxisAngle(q, [
-			rx = parseFloat(domRotAxis.getAttribute("x")),
-			ry = parseFloat(domRotAxis.getAttribute("y")),
-			rz = parseFloat(domRotAxis.getAttribute("z"))
-		], domRot.getAttribute("angle"));
-		
-		var mBone = mat4.create();
-		mat4.fromQuat(mBone, mBone, q);
-		mat4.fromRotationTranslation(mBone, q, pos)
-		
-		var boneName = domBones[i].getAttribute("name");
-		
-		// save bone id by name
-		var id = domBones[i].getAttribute("id");
-		boneNameToIdReference[boneName] = id;
-		
-		var parent = boneNameToIdReference[hierarchyRefs[boneName]];
-		
-		// apply parent bind pose and parent inverse
-		if(parent == undefined) {
-			sortedBones[sortedBones.length] = i;
-			aBoneInserted[id] = true;
-			sortedBoneCount++;
+		if(domBoneParents) {
+			domBoneParents = domBoneParents.getElementsByTagName("boneparent");
+			
+			for(let i = 0; i < domBoneParents.length; i++)
+				hierarchyRefs[domBoneParents[i].getAttribute("bone")] = domBoneParents[i].getAttribute("parent");
 		}
 		
-		// save bone
-		bones[id].bind = mBone;
-		bones[id].local = mat4.clone(mBone);
-		bones[id].inverse = mat4.create();
-		mat4.invert(bones[id].inverse, mBone)
-		bones[id].parent = parent;
-	}
-	
-	// reorganize bone structure // from root to tail
-	while(l > sortedBoneCount)
-		for(let i = 0; i < l; i++)
-			// if parent already in list, insert this bone too
-			if(aBoneInserted[bones[i].parent] && !aBoneInserted[i]) {
+		// parse single bones
+		var bones = [],
+			boneCount = 0,
+			boneNameToIdReference = [],
+			aBoneInserted = [],
+			sortedBones = [],
+			sortedBoneCount = 0;
+		
+		var domBones = dom.getElementsByTagName("bone"),
+			l = domBones.length;
+		
+		for(let i = 0; i < l; i++) {
+			var name = domBones[i].getAttribute("name");
+			boneNameToIdReference[name] = domBones[i].getAttribute("id");
+			bones[i] = {
+				"name": name,
+				"origId": i,
+			};
+		}
+		for(var i = 0; i < l; i++) {
+			
+			var domRot = domBones[i].getElementsByTagName("rotation")[0],
+				domRotAxis = domRot.getElementsByTagName("axis")[0],
+				domPos = domBones[i].getElementsByTagName("position")[0];
+			
+			// bone position
+			var pos = vec3.clone([
+				parseFloat(domPos.getAttribute("x")),
+				parseFloat(domPos.getAttribute("y")),
+				parseFloat(domPos.getAttribute("z"))
+			]);
+			
+			// bone orientation
+			var q = quat.create();
+			quat.setAxisAngle(q, [
+				rx = parseFloat(domRotAxis.getAttribute("x")),
+				ry = parseFloat(domRotAxis.getAttribute("y")),
+				rz = parseFloat(domRotAxis.getAttribute("z"))
+			], domRot.getAttribute("angle"));
+			
+			var mBone = mat4.create();
+			mat4.fromQuat(mBone, mBone, q);
+			mat4.fromRotationTranslation(mBone, q, pos)
+			
+			var boneName = domBones[i].getAttribute("name");
+			
+			// save bone id by name
+			var id = domBones[i].getAttribute("id");
+			boneNameToIdReference[boneName] = id;
+			
+			var parent = boneNameToIdReference[hierarchyRefs[boneName]];
+			
+			// apply parent bind pose and parent inverse
+			if(parent == undefined) {
 				sortedBones[sortedBones.length] = i;
-				aBoneInserted[i] = true;
-				
-				// apply parent inverse
-				mat4.multiply(bones[i].bind, bones[bones[i].parent].bind, bones[i].bind);
-				mat4.invert(bones[i].inverse, bones[i].bind);
-				
-				// loop ctrl
+				aBoneInserted[id] = true;
 				sortedBoneCount++;
 			}
-			// else wait until parent gets listed
-	
-	// apply bone structure
-	sk.setBones(bones, sortedBones);
-	
-	// parse animations
-	var animNodes = dom.getElementsByTagName("animation"),
-		l = animNodes.length,
-		tracks,
-		anim, iTrack, trackNodes, arTrack, 
-		iKeyf, keyfNodes, keyfPos, keyfRot, keyfAxis;
-	
-	for(i = 0; i < l; i++) {
-		anim = sk.addAnimation(
-			animNodes[i].getAttribute("name"),
-			animNodes[i].getAttribute("length")
-		);
+			
+			// save bone
+			bones[id].bind = mBone;
+			bones[id].local = mat4.clone(mBone);
+			bones[id].inverse = mat4.create();
+			mat4.invert(bones[id].inverse, mBone)
+			bones[id].parent = parent;
+		}
 		
-		trackNodes = animNodes[i].getElementsByTagName("track");
-		tracks = {};
+		// reorganize bone structure // from root to tail
+		while(l > sortedBoneCount)
+			for(let i = 0; i < l; i++)
+				// if parent already in list, insert this bone too
+				if(aBoneInserted[bones[i].parent] && !aBoneInserted[i]) {
+					sortedBones[sortedBones.length] = i;
+					aBoneInserted[i] = true;
+					
+					// apply parent inverse
+					mat4.multiply(bones[i].bind, bones[bones[i].parent].bind, bones[i].bind);
+					mat4.invert(bones[i].inverse, bones[i].bind);
+					
+					// loop ctrl
+					sortedBoneCount++;
+				}
+				// else wait until parent gets listed
 		
-		for(iTrack = 0; iTrack < trackNodes.length; iTrack++) {
+		// apply bone structure
+		sk.setBones(bones, sortedBones);
+		
+		// parse animations
+		var animNodes = dom.getElementsByTagName("animation"),
+			l = animNodes.length,
+			tracks,
+			anim, iTrack, trackNodes, arTrack, 
+			iKeyf, keyfNodes, keyfPos, keyfRot, keyfAxis;
+		
+		for(i = 0; i < l; i++) {
+			anim = sk.addAnimation(
+				animNodes[i].getAttribute("name"),
+				animNodes[i].getAttribute("length")
+			);
 			
-			// track data storage
-			// add basic transformation (which is none) for keyframe at 0 time
-			arKeyframes = [-1]; // -1: time of the first, extrapolated transformation
+			trackNodes = animNodes[i].getElementsByTagName("track");
+			tracks = {};
 			
-			// iterate through the keyframes of the track
-			keyfNodes = trackNodes[iTrack].getElementsByTagName("keyframe");
-			
-			// extrapolate to left, to secure animation track for time of 0
-			keyfPos = keyfNodes[0].getElementsByTagName("translate")[0];
-			keyfRot = keyfNodes[0].getElementsByTagName("rotate")[0];
-			keyfAxis = keyfRot.getElementsByTagName("axis")[0];
-			
-			angle = parseFloat(keyfRot.getAttribute("angle"));
-			// translation as vec3
-			arKeyframes.push(vec3.fromValues(
-				keyfPos.getAttribute("x"),
-				keyfPos.getAttribute("y"),
-				keyfPos.getAttribute("z")
-			));
-			/**
-				qx = ax * sin(angle/2)
-				qy = ay * sin(angle/2)
-				qz = az * sin(angle/2)
-				qw = cos(angle/2)
-			*/
-			
-			angle *= 0.5;
-			var sin =  Math.sin(angle);
-			
-			arKeyframes.push(quat.fromValues(
-				parseFloat(keyfAxis.getAttribute("x")) * sin,
-				parseFloat(keyfAxis.getAttribute("y")) * sin,
-				parseFloat(keyfAxis.getAttribute("z")) * sin,
-				Math.cos(angle)
-			));
-			
-			
-			/** keyframe structure within track array:
-			 * [0]: time (keyframe position in the timeline of the animation)
-			 * [1]: vec3 translation
-			 * [2]: quat4 rotation
-			 **/
-			for(iKeyf = 0; iKeyf < keyfNodes.length; iKeyf++) {
+			for(iTrack = 0; iTrack < trackNodes.length; iTrack++) {
 				
-				keyfPos = keyfNodes[iKeyf].getElementsByTagName("translate")[0];
-				keyfRot = keyfNodes[iKeyf].getElementsByTagName("rotate")[0];
+				// track data storage
+				// add basic transformation (which is none) for keyframe at 0 time
+				arKeyframes = [-1]; // -1: time of the first, extrapolated transformation
+				
+				// iterate through the keyframes of the track
+				keyfNodes = trackNodes[iTrack].getElementsByTagName("keyframe");
+				
+				// extrapolate to left, to secure animation track for time of 0
+				keyfPos = keyfNodes[0].getElementsByTagName("translate")[0];
+				keyfRot = keyfNodes[0].getElementsByTagName("rotate")[0];
 				keyfAxis = keyfRot.getElementsByTagName("axis")[0];
 				
 				angle = parseFloat(keyfRot.getAttribute("angle"));
-				
-				// time
-				arKeyframes.push(keyfNodes[iKeyf].getAttribute("time"));
-				
 				// translation as vec3
 				arKeyframes.push(vec3.fromValues(
 					keyfPos.getAttribute("x"),
@@ -1933,14 +1897,55 @@ function parseSkeletonXml(path) {
 					parseFloat(keyfAxis.getAttribute("z")) * sin,
 					Math.cos(angle)
 				));
+				
+				
+				/** keyframe structure within track array:
+				 * [0]: time (keyframe position in the timeline of the animation)
+				 * [1]: vec3 translation
+				 * [2]: quat4 rotation
+				 **/
+				for(iKeyf = 0; iKeyf < keyfNodes.length; iKeyf++) {
+					
+					keyfPos = keyfNodes[iKeyf].getElementsByTagName("translate")[0];
+					keyfRot = keyfNodes[iKeyf].getElementsByTagName("rotate")[0];
+					keyfAxis = keyfRot.getElementsByTagName("axis")[0];
+					
+					angle = parseFloat(keyfRot.getAttribute("angle"));
+					
+					// time
+					arKeyframes.push(keyfNodes[iKeyf].getAttribute("time"));
+					
+					// translation as vec3
+					arKeyframes.push(vec3.fromValues(
+						keyfPos.getAttribute("x"),
+						keyfPos.getAttribute("y"),
+						keyfPos.getAttribute("z")
+					));
+					/**
+						qx = ax * sin(angle/2)
+						qy = ay * sin(angle/2)
+						qz = az * sin(angle/2)
+						qw = cos(angle/2)
+					*/
+					
+					angle *= 0.5;
+					var sin =  Math.sin(angle);
+					
+					arKeyframes.push(quat.fromValues(
+						parseFloat(keyfAxis.getAttribute("x")) * sin,
+						parseFloat(keyfAxis.getAttribute("y")) * sin,
+						parseFloat(keyfAxis.getAttribute("z")) * sin,
+						Math.cos(angle)
+					));
+				}
+				
+				tracks[parseInt(boneNameToIdReference[trackNodes[iTrack].getAttribute("bone")])] = arKeyframes;
 			}
-			
-			tracks[parseInt(boneNameToIdReference[trackNodes[iTrack].getAttribute("bone")])] = arKeyframes;
+			anim.setTracks(tracks);
 		}
-		anim.setTracks(tracks);
-	}
-	
-	return sk;
+		
+		return sk;
+	});
 }
 
 function MV_Skeleton() {
@@ -2084,9 +2089,9 @@ function runXmlParser(filePath, targetFilePath, fnOnFinish) {
 	if(!converter.exists() || !converter.isExecutable())
 		return warn("$err_group_not_found$");
 */
-	getAppById("ogrexmlcnv").create([filePath, targetFilePath], 0x00000001, function(data) {
+	getAppById("ogrexmlcnv").create([filePath, targetFilePath], 0x00000001, fnOnFinish, function(data) {
 		log(data);
-	}, fnOnFinish);
+	});
 }
 
 var RENDER_REPORT_PRINTED = false;

@@ -39,39 +39,59 @@ var Materials = new (function() {
 		
 		// if already found
 		if(this._MATERIALS[name])
-			return this._MATERIALS[name];
-		
-		if(!dir.isDirectory)
-			return;
+			return new Promise(function(resolve) { resolve(this._MATERIALS[name]) });
 		
 		// pass into another code block (javascripts pseudo-async)
-		this.explodeDir(dir);
+		return this.explodeDir(dir).then(() => {
+			return this._MATERIALS[name];
+		});
 		
-		if(this._MATERIALS[name])
-			fnCallback(this._MATERIALS[name]);
+		/*if(this._MATERIALS[name])
+			fnCallback(this._MATERIALS[name]);*/
 	}
 	
 	this.explodeDir = function(dir) {
-		var entries = dir.directoryEntries;
+		return Task.spawn(function*() {
+			/*let entries = dir.directoryEntries;
 	
-		while(entries.hasMoreElements()) {
-			var entry = entries.getNext().QueryInterface(Ci.nsIFile),
-				s = entry.leafName.split(".");
+			while(entries.hasMoreElements()) {
+				var entry = entries.getNext().QueryInterface(Ci.nsIFile),
+					s = entry.leafName.split(".");
+				
+				// only load *.material-files
+				if(s[s.length - 1] != "material")
+					continue;
+				
+				var txt = readFile(entry);
 			
-			// only load *.material-files
-			if(s[s.length - 1] != "material")
-				continue;
-			
-			var txt = readFile(entry);
-		
-			if(!txt)
-				continue;
-			
-			var aResults = this.parse(txt);
-			
-			for(var i in aResults)
-				this._MATERIALS[aResults[i].materialName] = aResults[i];
-		}
+				if(!txt)
+					continue;
+				
+				var aResults = this.parse(txt);
+				
+				for(var i in aResults)
+					this._MATERIALS[aResults[i].materialName] = aResults[i];
+			}*/
+			let iterator = new OS.File.DirectoryIterator(dir);
+			let entries = yield iterator.nextBatch();
+			for(let entry of entries) {
+				let ext = entry.name.split(".").pop();
+				// only load *.material-files
+				if(ext != "material")
+					continue;
+				
+				let txt;
+				try { txt = yield OS.File.read(entries[i].path, {encoding: "utf-8"}); }
+				catch(e) { continue; }
+				if(!txt)
+					continue;
+
+				let aResults = this.parse(txt);
+				for(let result of aResults)
+					this._MATERIALS[result.materialName] = result;
+			}
+			iterator.close();
+		});
 	}
 	
 	/**

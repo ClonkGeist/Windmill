@@ -182,7 +182,7 @@ function getCurrentWrapperIndex() {
 		return -1;
 }
 
-function addScript(txt, lang, index, path, fShow, skipLoading) {
+function addScript(lang, index, path, fShow, skipLoading) {
 	var clone = $(".scenario-settings.draft").clone();
 	clone.removeClass("draft");
 	clone.attr("id", "scensettings-session-"+index);
@@ -385,11 +385,11 @@ function addScript(txt, lang, index, path, fShow, skipLoading) {
 
 		if(!md_editorframe.contentWindow.readyState) {
 			md_editorframe.contentWindow.addEventListener("load", function(){
-				this.addScript(text, lang, index, path, true);
+				this.addScript(lang, index, path, true);
 			});
 		}
 		else
-			md_editorframe.contentWindow.addScript(text, lang, index, path, true);
+			md_editorframe.contentWindow.addScript(lang, index, path, true);
 		updateErrorLog();
 	}
 }
@@ -1289,6 +1289,6 @@ function dropTabData(data, tabid) {
 	}
 
 	sessions[tabid] = data;
-	addScript(0, 0, tabid, data.path, true, data.loading?false:{current_page: data.current_page});
+	addScript(0, tabid, data.path, true, data.loading?false:{current_page: data.current_page});
 	return true;
 }
