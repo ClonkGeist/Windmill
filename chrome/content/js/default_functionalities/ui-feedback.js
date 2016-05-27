@@ -13,33 +13,33 @@ function tooltip(targetEl, desc, lang = MODULE_LANG, duration) {
 		clearTooltip();
 		
 		tooltipTimeout = setTimeout(() => {
-			var el = $('<'+(lang === "html"?'div style="background-color: black"':'panel')+'></'+(lang == "html"?'div':'panel')+'>')[0];
+			var el = $('<'+(lang === "html"?'div':'panel noautofocus="true"')+' class="windmill-tooltip"></'+(lang == "html"?'div':'panel')+'>')[0];
 
-			$(this).append(el);
+			$(lang === "html"?"body":document.documentElement).append(el);
+			$(el).text(desc);
 
-			$(el).css(toolTipStyle).text(desc);
-
-			var [x,y,w,h] = [this.offsetLeft, this.offsetTop, this.offsetWidth, this.offsetHeight];
-			
+			let {width, height, top, left} = this.getBoundingClientRect();
+			// panels need to be opened, so the size values are set
+			if(lang != "html")
+				el.openPopup();
 			// if its too near to the upper border
-			if(y < el.offsetHeight)
-				y += h; // then show it at the bottom
+			if(top-$(el).height() < 0)
+				top += $(this).height();
 			else // otherwise lift it so the original element is still visible
-				y -= el.offsetHeight;
-			
-			// center the x position relative to the original element
-			x += (w/2 - el.offsetWidth/2);
-			
-			let doc = lang=="html"?document:document.documentElement;
-			// if its too close to the left border
-			if(x < 0)
-				x = 0;
-			// same thing with right border
-			else if(x + el.offsetWidth > $(doc).width())
-				x = $(doc).width() - $(el)[0].offsetWidth;
+				top -= $(el).height();
 
-			$(el).css("top", y + "px");
-			$(el).css("left", x + "px");
+			// center the x position relative to the original element and bound it in the window
+			left = Math.min(Math.max(0, left+(width/2 - $(el).width()/2)), $(window).width());
+			top += $(lang === "html"?"body":document.documentElement).scrollTop();
+			if(lang == "html") {
+				$(el).css({
+					top: top + "px",
+					left: left + "px",
+					position: "absolute"
+				});
+			}
+			else
+				el.moveTo(left+document.documentElement.boxObject.screenX, top+document.documentElement.boxObject.screenY);
 
 			// store for remove
 			tooltipEl = el;
@@ -53,21 +53,10 @@ function tooltip(targetEl, desc, lang = MODULE_LANG, duration) {
 
 function clearTooltip() {
 	clearTimeout(tooltipTimeout);
+	if(tooltipEl && tooltipEl.hidePopup)
+		tooltipEl.hidePopup();
 	$(tooltipEl).remove();
 }
-
-var toolTipStyle = {
-	position: "absolute",
-	"background-color": "rgb(80, 80, 80)",
-	color: "whitesmoke",
-	"font-family": '"Segoe UI", Verdana, sans-serif',
-	"font-size": "14px",
-	"line-height": "14px",
-	"z-index": "30",
-	width: "auto",
-	padding: "1px 5px",
-	transition: "opacity 0.3s"
-};
 
 function setWindowTitle(title) {
 	_mainwindow.document.getElementById("window-title").setAttribute("value", title);
