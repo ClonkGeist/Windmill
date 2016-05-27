@@ -1,6 +1,33 @@
 /*-- Configuration Wizard --*/
 
-$(window).ready(function() {
+$(document).ready(function() {
+	let iterator;
+	Task.spawn(function*() {
+		iterator = new OS.File.DirectoryIterator(_sc.chpath+"/content/locale");
+		let i = 0, entry, text;
+		while(true) {
+			entry = yield iterator.next();
+			if(!entry.isDir)
+				continue;
+
+			try { text = yield OS.File.read(entry.path+"/language.ini", {encoding: "utf-8"}); } catch(e) { continue; }
+
+			let parser = parseINIArray(text);
+			$("#languageselection").append('<option value="'+entry.name+'">'+parser["Head"]["Lang"]+' - '+parser["Head"]["Name"]+'</option>');
+			if(entry.name == "en-US")
+				$("#languageselection")[0].selectedIndex = i;
+			++i;
+		}
+	}).then(null, function(reason) {
+		iterator.close();
+		if(reason != StopIteration)
+			throw reason;
+	});
+	$("#languageselection").on("change", function() {
+		setConfigData("Global", "Language", $(this).val());
+		EventInfo("Language set to " + $(this).val());
+	});
+
 	$("#resetcfgvar").click(function() {
 		setConfigData("Global", "FirstStartDevTest", false);
 		saveConfig();
@@ -143,6 +170,14 @@ function showPage(id) {
 			if(!_sc.file(wspath).exists() || !_sc.file(wspath).isDirectory())
 				return err("$err_invalid_root_dir$");
 			break;
+		case "page-langsel":
+			Task.spawn(function*() {
+				$(".wizardpage").removeClass("active");
+				yield initializeLanguage();
+				localizeModule();
+				$(".wizardpage#"+id).addClass("active");
+			});
+			return;
 	}
 	
 	$(".wizardpage").removeClass("active")

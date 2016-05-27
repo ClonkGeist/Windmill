@@ -15,9 +15,7 @@
 				
 			</div>
 			<div style="padding-top: 30px;">
-				<select id="language-selector">
-					<option class="langopt">English - US</option>
-					<option class="langopt">Deutsch - DE</option>
+				<select id="languageselection">
 				</select>
 			</div>
 			<div style="flex: 1"></div>
@@ -26,180 +24,182 @@
 		</section>
 		
 		<section class="wizardpage" id="welcomingpage-beta">
-			<h3>Windmill Beta</h3>
+			<h3>$::PWB_Caption$</h3>
 			<p>
-				Welcome to the Windmill Public Betatest!
+				$::PWB_Desc1$
 			</p>
 			<p>
-				This public beta version of Windmill gives you full access to the current development status of Windmill. Be aware, that Windmill is still in <em>beta status</em>, so there is a chance that major issues can occur. That being said, it is a good idea to use a seperated working directory for Windmill and to backup important files, though issues of this extend did not occur in the past.
+				$::PWB_Desc2$
 			</p>
 			<p>
-				We are very thankful for feedback, so feel free to give feedback of any kind (minor things, minor (or major) feature wishes, uncomfortable controls, other suggestions, etc.) inside the <a href="#">Windmill board on Clonkspot</a> (it is okay to post in english, even though this board is mainly in german) or report any kinds of bugs using the <a href="#">Github Issue Tracker</a> of our repository.
+				$::PWB_Desc3$
 			</p>
 			<p>
-				Besides reporting bugs and giving feedback, you can try to contribute to Windmill aswell. For more information, see <a href="#">this forum post</a>.
+				$::PWB_Desc4$
 			</p>
 			<p>
-				We are looking forward for your feedback!
+				$::PWB_Desc5$
 			</p>
 			<div class="spacer"></div>
-			<div class="button" onclick="showPage('page-clonkdirectory')">Next ></div>
+			<div class="button" onclick="showPage('page-clonkdirectory')">$btncaption_next$</div>
 		</section>
 		
 		<section class="wizardpage" id="page-clonkdirectory">
-			<h3>Preconfiguration: Clonk directory</h3>
+			<h3>$::PC_CD_Caption$</h3>
 			<div class="infobox error"></div>
 			<p>
-				To be able to use essential Features of Windmill, you need to select an OpenClonk directory (containing an <strong>openclonk.exe</strong> file). It will be used to give you an overview of your scenarios and to join and start games.
+				$::PC_CD_Desc1$
 			</p>
 			<div class="infobox warning">
 				<p>
-					<strong>Warning:</strong> Each time Windmill starts, your whole clonk directory will be exploded. (all packed files will be unpacked) This is required so Windmill can work with your files. This is also true for every clonk directory which will be added later and <strong>gets selected using the OpenClonk Manager</strong>. (This may require a restart though)
+					$::PC_CD_Warning1$
 				</p>
 				<p>
-					An exploded clonk directory will cause longer loading times for network games. If you don't want your main clonk directory exploded, use a seperate clonk directory for Windmill until there is a solution to (at least) read packed group files.
+					$::PC_CD_Warning2$
 				</p>
 			</div>
 			<p>
-				Path to OpenClonk directory:
+				$::PC_CD_Desc2$
 			</p>
 			<div class="filepath-container" id="set-openclonk-path" data-filetype="directory">
 				<div class="filepath-show"></div>
-				<div class="filepath-button">Browse</div>
+				<div class="filepath-button">$btncaption_browse$</div>
 			</div>
 			<p>
-				Here you can manually select a c4group file. (which is also required) Usually Windmill will detects it automatically for you, but if this is not the case or if you want to use a different c4group file, you can set it here.
+				$::PC_CD_Desc3$
 			</p>
 			<p>
-				The c4group file is required to pack/unpack/explode group files so Windmill can work with these.
+				$::PC_CD_Desc4$
 			</p>
 			<p>
-				Path to c4group file:
+				$::PC_CD_Desc5$
 			</p>
 			<div class="filepath-container" id="set-c4group-path" data-filetype="executable">
 				<div class="filepath-show"></div>
-				<div class="filepath-button">Browse</div>
+				<div class="filepath-button">$btncaption_browse$</div>
 			</div>
 			<div class="spacer"></div>
-			<div class="button" onclick="showPage('page-workenvironments')">Next ></div>
+			<div class="button" onclick="showPage('page-workenvironments')">$btncaption_next$</div>
 		</section>
 		
 		<section class="wizardpage" id="page-workenvironments">
-			<h3>Preconfiguration: Work Environments</h3>
+			<h3>$::PC_WE_Caption$</h3>
 			<p>
-				In Windmill, you can specify isolated work environments for each of your projects. There are mainly three types of work environments: <strong>clonk directories</strong>, <strong>workspaces</strong> and <strong>repositories</strong>.
+				$::PC_WE_Desc1$
 			</p>
 			<p>
-				<strong>Clonk directories</strong> are work environments, which represents - as the name suggests - clonk directories. This option is especially helpful, if you have multiple different versions of OpenClonk (stable, newest dev snapshot, super experimental branch X, etc.) and want an easy overview over these. Using the <strong>OpenClonk Manager</strong> in the navigation, you can easily switch between these versions and e.g. test your project under the newest version of OpenClonk to maintain compatibility.
+				$::PC_WE_Desc2$
 			</p>
 			<div class="spacer"></div>
-			<div class="button" onclick="showPage('page-workenvironments-workspaces')">Next ></div>
+			<div class="button" onclick="showPage('page-workenvironments-workspaces')">$btncaption_next$</div>
 		</section>
 		
 		<section class="wizardpage" id="page-workenvironments-workspaces">
-			<h3>Preconfiguration: Work Environments - Workspaces</h3>
+			<h3>$::PC_WEWS_Caption$</h3>
 			<div class="infobox error"></div>
 			<p>
-				<strong>Workspaces</strong> are work environments, which should be created for seperated projects. It is also possible to nest these work environments, so you can create a sub work environment for a bigger project or if you want to have a group for smaller projects. (e.g. a group of multiple smaller modification of a project)
+				$::PC_WEWS_Desc1$
 			</p>
 			<p>
-				Windmill requires a root directory where all your work environments that are not clonk directories will be saved.
+				$::PC_WEWS_Desc2$
 			</p>
 			<p>
-				Workspace root directory:
+				$::PC_WEWS_Desc3$
 			</p>
 			<div class="filepath-container" id="set-workspace-path" data-filetype="directory">
 				<div class="filepath-show"></div>
-				<div class="filepath-button">Browse</div>
+				<div class="filepath-button">$btncaption_browse$</div>
 			</div>
 			<p>
-				You can create new work environments using the "New"-Button inside the explorer navigation. It is also possible to unload work environments (in this case, they will <strong>not</strong> be removed but Windmill will skip loading them) and to import them again. You can also create links to older work environments which may be useful if you change your root directory. (They need to have a valid header file so Windmill can accept them as work environments)
+				$::PC_WEWS_Desc4$
 			</p>
 			<div class="infobox experimental">
 				<p>
-					<strong>Experimental:</strong> By checking this checkbox, you can activate an experimental polyfill (a workaround which emulates a feature that is currently not supported) for definition loading. If it is active, you don't need to import object definitions of your clonk directory into workspaces. When you start a scenario, Windmill searches your clonk directory (and parent workspaces), will detect which definitions are used and links them for a moment using absolute paths. After that, the paths will be resetted.
+					$::PC_WEWS_ExperimentalNote1$
 				</p>
 				<p>
-					It needs to be mentioned that this feature has some issues: sometimes, the paths will not be resetted or the time frame until windmill resets the paths is too tight so OpenClonk does not load the correct definitions. This will probably be unchanged until there will be native support in OpenClonk.
+					$::PC_WEWS_ExperimentalNote2$
 				</p>
 				<div style="margin: 12px 24px;">
 					<label>
 						<input type="checkbox" id="scenario-loading-polyfill" style="margin-right: 12px"/>
-						<strong>Activate Scenario Loading Polyfill</strong>
+						$::PC_WEWS_ExperimentalLabel1$
 					</label>
 				</div>
 			</div>
 			<div class="spacer"></div>
-			<div class="button" onclick="showPage('page-workenvironments-repository')">Next ></div>
+			<div class="button" onclick="showPage('page-workenvironments-repository')">$btncaption_next$</div>
 		</section>
 
 		<section class="wizardpage" id="page-workenvironments-repository">
-			<h3>Preconfiguration: Work Environments - Repository (optional)</h3>
+			<h3>$::PC_WERP_Caption$</h3>
 			<div class="infobox experimental">
 				<p>
-					<strong>Experimental:</strong> The whole content of this page (the git implementation in Windmill) is experimental! There is only support for some basic functionality which is almost completely untested and serves as a basis for future development of this feature. It should be not expected to work very well.
+					$::PC_WERP_ExperimentalNote1$
 				</p>
 			</div>
 			<p>
-				<strong>Repositories</strong> are a special kind of workspaces, which allows to use Git functionality inside your workspace. For this, you first need to clone the repository using Windmill. (already cloned directories cannot be used at the time of this writing) All further git operations can be acessed using the context menu (right click) on the work environment itself and on its contents.
+				$::PC_WERP_Desc1$
 			</p>
 			<p>
-				To use Git functionality inside of Windmill, you need to download and install Git on your computer and choose the "git.exe" file. (under "installation path\bin\git.exe") You can download the current verson of Git here: https://git-scm.com/downloads
+				$::PC_WERP_Desc2$
 			<p>
 			<div class="filepath-container" id="set-git-path" data-filetype="executable">
 				<div class="filepath-show"></div>
-				<div class="filepath-button">Browse</div>
+				<div class="filepath-button">$btncaption_browse$</div>
 			</div>
 			<div class="spacer"></div>
-			<div class="button" onclick="showPage('page-meshviewer')">Next ></div>
+			<div class="button" onclick="showPage('page-meshviewer')">$btncaption_next$</div>
 		</section>
 		
 		<section class="wizardpage" id="page-meshviewer">
-			<h3>Preconfiguration: Meshviewer (optional)</h3>
+			<h3>$::PC_MV_Caption$</h3>
 			<p>
-				Windmill allows you to generate a live preview of *.mesh files inside of Windmill using the integrated <strong>Meshviewer</strong>. Due to the technology it uses (WebGL), it may not be supported by your graphic card and/or driver. Here is a quick test, which should be able to detect WebGL support:
+				$::PC_MV_Desc1$
 			</p>
 			<div class="infobox" id="webgl-test">
 				<div class="message"></div>
 				<div class="spacer"></div>
-				<div class="button">Retry</div>
+				<div class="button">$btncaption_retry$</div>
 			</div>
 			<p>
-				It seems that vendors besides NVIDIA, ATI/AMD and Intel are blocked by default and needs to be whitelisted. For more information concerning graphic card support, <a href="https://wiki.mozilla.org/Blocklisting/Blocked_Graphics_Drivers#On_Windows">see this mozilla wiki article</a>.
+				$::PC_MV_Desc2$
 			</p>
 			<p>
-				However, to be able to extract the information of the *.mesh files, Windmill uses the OgreXMLConverter which outputs the mesh information as an XML file. To be able to use the meshviewer, you need to download the OgreXMLConverter and link it to Windmill. You can download it here: http://www.ogre3d.org/tikiwiki/OgreXmlConverter
+				$::PC_MV_Desc3$
 			</p>
 			<p>
-				Path to OgreXMLConverter.exe:
+				$::PC_MV_Desc4$
 			</p>
 			<div class="filepath-container" id="set-ogrexmlconverter-path" data-filetype="executable">
 				<div class="filepath-show"></div>
-				<div class="filepath-button">Browse</div>
+				<div class="filepath-button">$btncaption_browse$</div>
 			</div>
 			<div class="spacer"></div>
-			<div class="button" onclick="showPage('page-finish')">Next ></div>
+			<div class="button" onclick="showPage('page-finish')">$btncaption_next$</div>
 		</section>
 
 		<section class="wizardpage" id="page-finish">
-			<h3>Done!</h3>
+			<h3>$::FH_Caption$</h3>
 			<p>
-				Windmill is now configured and ready to be used.
+				$::FH_Desc1$
 			</p>
 			<p>
-				It is possible to set some further, more specific options like the editor theme, external applications for filetypes and key bindings in the settings.
+				$::FH_Desc2$
 			</p>
 			<div class="infobox">
 				<p>
-					<strong>Note:</strong> Even though it is listed in the feature list of Windmill's beta version and was already announced during the miniblog, the <strong>BMP Editor</strong> is currently not available due to rework of it's code which should also work with WebGL. (To improve the performance)
+					$::FH_Note1$
 				</p>
 			</div>
 			<div class="spacer"></div>
-			<div class="button" id="finishconfig-beta">Finish</div>
+			<div class="button" id="finishconfig-beta">$btncaption_finish$</div>
 		</section>
 	</div>
 	
+	<script src="chrome://windmill/content/js/external/jquery-2.1.1.min.js" type="text/javascript" charset="utf-8"></script>
 	<script src="chrome://windmill/content/js/default_module.js" type="text/javascript" charset="utf-8"></script>
+	<script src="chrome://windmill/content/js/functionalities/language.js" type="text/javascript" charset="utf-8"></script>
 	<script src="chrome://windmill/content/modules/configurationwizard/js/cfgwizard.js" type="text/javascript" charset="utf-8"></script>
 </body>
 </html>
