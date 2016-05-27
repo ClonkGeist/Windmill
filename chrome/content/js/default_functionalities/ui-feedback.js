@@ -127,7 +127,7 @@ function EventInfo(message, lpre) {
 			var nEventInfo = $('<div class="eventinfo">'+message+'</div>');
 		else if(MODULE_LANG == "xul")
 			var nEventInfo = $('<div class="eventinfo" xmlns="http://www.w3.org/1999/xhtml">'+message+'</div>');
-		nEventInfo.appendTo(document.documentElement);
+		nEventInfo.appendTo(MODULE_LANG=="xul"?document.documentElement:"body");
 		nEventInfo.css({ top: off.top-$(nEventInfo).outerHeight(), left: 0});
 	}
 	else {
@@ -135,7 +135,7 @@ function EventInfo(message, lpre) {
 			var nEventInfo = $('<div class="eventinfo">'+message+'</div>');
 		else if(MODULE_LANG == "xul")
 			var nEventInfo = $('<div class="eventinfo" xmlns="http://www.w3.org/1999/xhtml">'+message+'</div>');
-		nEventInfo.appendTo(document.documentElement);
+		nEventInfo.appendTo(MODULE_LANG=="xul"?document.documentElement:"body");
 		nEventInfo.css({ bottom: 0, left: 0});
 	}
 

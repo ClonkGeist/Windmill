@@ -81,6 +81,14 @@ body
 	}
 	text-align: center;
 }
+#languageselection {
+    width: 180px;
+    padding: 0.1em;
+    font-size: 1.2em;
+    border: none;
+    box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.45);
+	-moz-appearance: none;
+}
 
 p {
 	margin: 8px 0;
@@ -99,7 +107,7 @@ p {
 	border: 1px solid gainsboro;
 	font-size: 0.9em;
 	text-align: justify;
-	padding: 0 5px;
+	padding: 0 8px;
 
 	&.error {
 		background-color: #FFB2B2;
