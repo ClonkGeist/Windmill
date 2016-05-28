@@ -15,7 +15,6 @@ function TabManager() { return editors; }
 	
 function addScript(highlightMode, id, path, fShow) {
 	return Task.spawn(function*() {
-		log(">> " + highlightMode);
 		let text = yield OS.File.read(path, {encoding: "utf-8"});
 		if(!ace)
 			return err("Could not initialize Scripteditor Module because ace is unavailable.");
@@ -246,7 +245,7 @@ hook("load", function() {
 		e.preventDefault();
 	});
 	bindKeyToObj(new KeyBinding("Save", "Ctrl-S", function() { saveTab(-1); }));
-	bindKeyToObj(new KeyBinding("DuplicateSel", "Ctrl-Shift-D", function() { a_E.execCommand("duplicateSelection"); }));
+	bindKeyToObj(new KeyBinding("DuplicateSel", "Ctrl-Shift-D", function() { a_E.duplicateSelection(); }));
 	bindKeyToObj(new KeyBinding("Paste", "Ctrl-V", function() { a_E.execCommand("paste", _sc.clipboard2.get()); }));
 	bindKeyToObj(new KeyBinding("RemoveLine", "Ctrl-D", function() { a_E.execCommand("removeline"); }));
 	bindKeyToObj(new KeyBinding("OpenSnippetDialog", "Ctrl-Alt-S", function() { err("ES"); showSnippetDialog(a_E.__scope); }));
