@@ -601,23 +601,22 @@ function getUnsavedFiles(deck) {
 
 /** Einzelne Bearbeitugnsfenster und -module starten/öffnen **/
 
-function openFileInDeck(file, fSideDeck) {
-	var t = file.leafName.split("."), fext = t[t.length-1].toLowerCase(); 
-	var deck = fSideDeck?sidedeck:maindeck;
-	var path = formatPath(file.path);
+function openFileInDeck(path, fSideDeck) {
+	let deck = fSideDeck?sidedeck:maindeck;
+	let splittedpath = path.split("/"),
+		filename = splittedpath.pop(),
+		parentpath = formatPath(splittedpath.join("/")),
+		fext = filename.split(".").pop().toLowerCase();
 
-	if(!file.exists())
-		return;
-
+		log(`${path}, ${filename}, ${fext}`);
 	//Files behandeln je nach Fileextension
 	switch(fext) {
 		case "c":
-			addTexteditor(file, "ocscript", deck);
+			addTexteditor(path, filename, parentpath, "ocscript", deck);
 			break;
 		case "txt":
 		case "material":
-			var filename = file.leafName.toLowerCase();
-			switch(filename) {
+			switch(filename.toLowerCase()) {
 				case "defcore.txt":
 				case "scenario.txt":
 				case "particle.txt":
@@ -627,31 +626,31 @@ function openFileInDeck(file, fSideDeck) {
 				case "player.txt":
 				case "objectinfo.txt":
 				case "objects.txt":
-					addTexteditor(file, "ini", deck);
+					addTexteditor(path, filename, parentpath, "ini", deck);
 					break;
 				case "landscape.txt":
-					addTexteditor(file, "c4landscape", deck);
+					addTexteditor(path, filename, parentpath, "c4landscape", deck);
 					break;
 				default:
 					if(filename.match(/StringTbl..\.txt/i))
-						addTexteditor(file, "ini", deck);
+						addTexteditor(path, filename, parentpath, "ini", deck);
 					else
-						addTexteditor(file, "text", deck);
+						addTexteditor(path, filename, parentpath, "text", deck);
 					break;
 			}
 			break;
 		case "ocm":
-			addTexteditor(file, "ini", deck);
+			addTexteditor(path, filename, parentpath, "ini", deck);
 			break;
 		case "mesh":
-			addMeshviewer(file, deck);
+			addMeshviewer(path, filename, parentpath, deck);
 			break;
 		case "bmp":
-			addImgEditor(file, true, deck);
+			addImgEditor(path, filename, parentpath, true, deck);
 			break;
 		case "png":
 		case "jpg":
-			addImgEditor(file, false, deck);
+			addImgEditor(path, filename, parentpath, false, deck);
 			break;
 		case "ogg":
 		case "wav":
@@ -693,8 +692,8 @@ function addAudioplayer(path) {
 	$("#audioplayer").addClass("active");
 }
 
-function prepareDeck(deck, modulename, file) {
-	if(fileLoadedInModule(modulename, file.path, true))
+function prepareDeck(deck, modulename, path) {
+	if(fileLoadedInModule(modulename, path, true))
 		return {};
 
 	if(!deck)
@@ -721,43 +720,43 @@ function prepareDeck(deck, modulename, file) {
 	return { deck, module };
 }
 
-function addTexteditor(file, lang, deck) {
+function addTexteditor(path, filename, parentpath, lang, deck) {
 	if(getConfigData("CIDE", "AU_Script") && lang == "ocscript")
-		return OpenFileWithProgram(file, getConfigData("CIDE", "ExtProg_Script"));
+		return OpenFileWithProgram(path, getConfigData("CIDE", "ExtProg_Script"));
 	if(["text", "ini", "c4landscape"].indexOf(lang) != -1 && getConfigData("CIDE", "AU_Text"))
-		return OpenFileWithProgram(file, getConfigData("CIDE", "ExtProg_Text"));
+		return OpenFileWithProgram(path, getConfigData("CIDE", "ExtProg_Text"));
 
 	var modulename = "scripteditor";
 	//TODO: In Einstellungen verstellbar
-	if(file.leafName.toUpperCase() == "SCENARIO.TXT" && getConfigData("ScenarioSettings", "AlwaysUseScenarioSettings"))
+	if(filename.toUpperCase() == "SCENARIO.TXT" && getConfigData("ScenarioSettings", "AlwaysUseScenarioSettings"))
 		modulename = "scenario-settings";
 
-	var {deck, module} = prepareDeck(deck, modulename, file);
+	var {deck, module} = prepareDeck(deck, modulename, path);
 	if(!deck)
 		return;
 
-	var t = file.leafName.split('.'), fext = t[t.length-1];
+	let fext = filename.split('.').pop();
 	var icon = "chrome://windmill/content/img/explorer/icon-fileext-"+fext+".png";
 
 	// we have to insert the text after the libraries have been read out
 	if(!module.contentWindow.readyState) {
 		// insert into deck control and safe index
-		var index = deck.add(module, file.leafName, true, true, false, {altLabel: file.parent.leafName, switchLabels: true, icon, filepath: file.path });
+		var index = deck.add(module, filename, true, true, false, {altLabel: parentpath.split("/").pop(), switchLabels: true, icon, filepath: path });
 
 		module.contentWindow.addEventListener("load", function(){
-			this.addScript(lang, index, file.path, true);
+			this.addScript(lang, index, path, true);
 			updateFrameWindowTitleDeck(deck, index);
 		});
 	}
 	else {
 		// insert into deck control and safe index
-		var index = deck.add(module, file.leafName, true, true, false, {altLabel: file.parent.leafName, switchLabels: true, icon, filepath: file.path });
+		var index = deck.add(module, filename, true, true, false, {altLabel: parentpath.split("/").pop(), switchLabels: true, icon, filepath: path });
 
-		module.contentWindow.addScript(lang, index, file.path, true);
+		module.contentWindow.addScript(lang, index, path, true);
 	}	
 }
 
-function addMeshviewer(file, deck) {
+function addMeshviewer(path, filename, parentpath, deck) {
 	//Pruefen, ob OgreXMLConverter verfuegbar ist
 	let ogrexmlconverter = getAppById("ogrexmlcnv");
 	if(!ogrexmlconverter.isAvailable()) {
@@ -768,30 +767,30 @@ function addMeshviewer(file, deck) {
 		return;
 	}
 	//Modul vorbereiten
-	var {deck, module} = prepareDeck(deck, "meshviewer", file);
+	var {deck, module} = prepareDeck(deck, "meshviewer", path);
 	if(!deck)
 		return;
 
 	if(!module.contentWindow.readyState) {
 		module.contentWindow.addEventListener("load", function(){
-			var index = deck.add(module, file.leafName, true, true, false, {altLabel: file.parent.leafName, switchLabels: true, icon: "chrome://windmill/content/img/explorer/icon-fileext-mesh.png", filepath: file.path });
+			var index = deck.add(module, filename, true, true, false, {altLabel: parentpath.split("/").pop(), switchLabels: true, icon: "chrome://windmill/content/img/explorer/icon-fileext-mesh.png", filepath: path });
 
-			this.initModelviewer(file, index);
+			this.initModelviewer(path, index);
 			updateFrameWindowTitleDeck(deck, index);
 		});
 	}
 	else {
-		var index = deck.add(module, file.leafName, true, true, false, {altLabel: file.parent.leafName, switchLabels: true, icon: "chrome://windmill/content/img/explorer/icon-fileext-mesh.png", filepath: file.path });
+		var index = deck.add(module, filename, true, true, false, {altLabel: parentpath.split("/").pop(), switchLabels: true, icon: "chrome://windmill/content/img/explorer/icon-fileext-mesh.png", filepath: path });
 
-		module.contentWindow.initModelviewer(file, index);
+		module.contentWindow.initModelviewer(path, index);
 	}
 }
 
-function addImgEditor(file, fBMP, deck) {
+function addImgEditor(path, filename, parentpath, fBMP, deck) {
 	if(getConfigData("CIDE", "AU_GraphicsBMP") && fBMP)
-		return OpenFileWithProgram(file, getConfigData("CIDE", "ExtProg_GraphicsBMP"));
+		return OpenFileWithProgram(path, getConfigData("CIDE", "ExtProg_GraphicsBMP"));
 	if(getConfigData("CIDE", "AU_GraphicsPNG") && !fBMP)
-		return OpenFileWithProgram(file, getConfigData("CIDE", "ExtProg_GraphicsPNG"));
+		return OpenFileWithProgram(path, getConfigData("CIDE", "ExtProg_GraphicsPNG"));
 
 	if(!getConfigData("Global", "DevMode") && fBMP) {
 		warn("$beta_bmpeditor_not_available$");
@@ -799,63 +798,40 @@ function addImgEditor(file, fBMP, deck) {
 	}
 	var modulename = fBMP?"bmpeditor":"imagepreview";
 
-	var {deck, module} = prepareDeck(deck, modulename, file);
+	var {deck, module} = prepareDeck(deck, modulename, path);
 	if(!deck)
 		return;
 
-	var t = file.leafName.split('.'), fext = t[t.length-1];
+	let fext = filename.split('.').pop();
 	var icon = "chrome://windmill/content/img/explorer/icon-fileext-"+fext+".png";
 
 	if(!module.contentWindow.readyState) {
-		var index = deck.add(module, file.leafName, true, true, false, {altLabel: file.parent.leafName, switchLabels: true, icon, filepath: file.path });
+		var index = deck.add(module, filename, true, true, false, {altLabel: parentpath.split("/").pop(), switchLabels: true, icon, filepath: path });
 
 		module.contentWindow.addEventListener("load", function() {
-			this.loadImage(file, index, true);
+			this.loadImage(path, index, true);
 			updateFrameWindowTitleDeck(deck, index);
 		});
 	}
 	else {
-		var index = deck.add(module, file.leafName, true, true, false, {altLabel: file.parent.leafName, switchLabels: true, icon, filepath: file.path });
+		var index = deck.add(module, filename, true, true, false, {altLabel: parentpath.split("/").pop(), switchLabels: true, icon, filepath: path });
 
-		module.contentWindow.loadImage(file, index, true);
+		module.contentWindow.loadImage(path, index, true);
 	}
 
 	return true;
 }
 
-function OpenFileWithProgram(file, extprogstr) {
+function OpenFileWithProgram(path, extprogstr) {
 	//Es wurde kein Programm angegeben
 	if(!extprogstr)
 		return warn("$err_no_external_program$");
 
-	var args = [(typeof file == "string")?file:file.path];
+	var args = [path];
 
 	var f = new _sc.file(extprogstr);
 	var process = _sc.process(f);
 	process.run(false, args, args.length);
 
 	return true;
-}
-
-function loadFile(path) {
-	if(!path)
-		return false;
-
-	var f = _sc.file(path);
-	if(!f.exists()) {
-		Components.utils.reportError("Load file error. File doesn't exist: " + path);
-		return false;
-	}
-
-	var	charset = "utf-8",
-		fs = _sc.ifstream(f, 1, 0, false),
-		cs = _sc.cistream(),
-		result = {};
-		cs.init(fs, charset, fs.available(), cs.DEFAULT_REPLACEMENT_CHARACTER);
-
-	cs.readString(fs.available(), result);
-	cs.close();
-	fs.close();
-
-	return result.value;
 }

@@ -883,34 +883,36 @@ function renameTreeObj(obj) {
 
 function handleTreeEntry(obj, open_sidedeck) {
 	var t = getTreeItemFilename(obj).split("."), fext = t[t.length-1].toLowerCase(); 
-	var filepath = _sc.workpath(obj) + getTreeObjPath(obj), file = _sc.file(filepath);
-	
-	if(!file.exists())
-		return;
-	
-	//Files behandeln je nach Fileextension
-	switch(fext) {
-		case "ocs": //Szenarien starten
-			let args = getOCStartArguments(formatPath(filepath), true);
-			if(args == -1)
-				return;
+	var filepath = formatPath(_sc.workpath(obj)) + getTreeObjPath(obj);
 
-			var f = _sc.file(getClonkExecutablePath());
-			var process = _ws.pr(f);
-			if(args.stdouthook)
-				process.hook("stdout", args.stdouthook);
-			process.create(args, 0, 0, function(data) {
-				log(data);
-			});
-			break;
-		
-		default:
-			if(parent.openFileInDeck)
-				parent.openFileInDeck(file, open_sidedeck);
-			else
-				return -1;
-			break;
-	}
+	OS.File.exists(filepath).then(function(exists) {
+		if(!exists)
+			return;
+
+		//Files behandeln je nach Fileextension
+		switch(fext) {
+			case "ocs": //Szenarien starten
+				let args = getOCStartArguments(filepath, true);
+				if(args == -1)
+					return;
+
+				var f = _sc.file(getClonkExecutablePath());
+				var process = _ws.pr(f);
+				if(args.stdouthook)
+					process.hook("stdout", args.stdouthook);
+				process.create(args, 0, 0, function(data) {
+					log(data);
+				});
+				break;
+			
+			default:
+				if(parent.openFileInDeck)
+					parent.openFileInDeck(filepath, open_sidedeck);
+				else
+					return -1;
+				break;
+		}
+	});
 	
 	return true;
 }

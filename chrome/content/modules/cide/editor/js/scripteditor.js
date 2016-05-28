@@ -15,6 +15,7 @@ function TabManager() { return editors; }
 	
 function addScript(highlightMode, id, path, fShow) {
 	return Task.spawn(function*() {
+		log(">> " + highlightMode);
 		let text = yield OS.File.read(path, {encoding: "utf-8"});
 		if(!ace)
 			return err("Could not initialize Scripteditor Module because ace is unavailable.");

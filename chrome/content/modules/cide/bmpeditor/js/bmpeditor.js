@@ -1474,7 +1474,11 @@ function loadImageFileData(file, id) {
 	return [infoheader, clr_index, data, bitmap_header];
 }
 
-function loadImage(file, id, fShow) {
+function loadImage(path, id, fShow) {
+	let file = path;
+	//Da am BMPEditor noch gearbeitet wird, fuers erste die nsIFile-Variante verwenden. Spaeter dann auf OS.File umsteigen.
+	if(!(path instanceof nsIFile))
+		file = _sc.file(path);
 	var r = loadImageFileData(file, id);
 	
 	if(r === -1)

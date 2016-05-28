@@ -8,8 +8,7 @@ var CM_PATHALIAS = "fpath";
 
 function TabManager() { return scenes; }
 
-function initModelviewer(file, idMdl) {
-	let filepath = file.path;
+function initModelviewer(filepath, idMdl) {
 	if(!session) {
 		session = _mv.init(document.getElementById("renderer"));
 		session.enableViewControls();

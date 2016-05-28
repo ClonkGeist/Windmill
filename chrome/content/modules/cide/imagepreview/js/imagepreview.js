@@ -249,9 +249,8 @@ class Session {
 		this.snap = false
 	}
 	
-	loadImage(file, imageElement) {
-		this.f = file
-		this.path = file.path
+	loadImage(path, imageElement) {
+		this.path = path
 		
 		if(!imageElement)
 			return
@@ -270,9 +269,9 @@ class Session {
 		})
 		
 		if(OS_TARGET == "WINNT")
-			imageElement.src = "file://"+file.path.replace(/\\/gi, "/")
+			imageElement.src = "file://"+path.replace(/\\/gi, "/")
 		else
-			imageElement.src = "file://"+file.path
+			imageElement.src = "file://"+path
 
 		$(imageElement).mousemove(function(e) {
 			var rect = this.getBoundingClientRect()
@@ -650,7 +649,7 @@ function getReloadPars() {
 	var str = "";
 	for(var id in canvasArray) {
 		if(canvasArray[id])
-			str += id + "=" + encodeURI(canvasArray[id].f.path) + "&";
+			str += id + "=" + encodeURI(canvasArray[id].path) + "&";
 	}
 
 	return str;
@@ -664,7 +663,7 @@ window.addEventListener("load", function(){
 				continue;
 
 			var split = query[i].split("=");
-			loadImage((new _sc.file(decodeURI(split[1]))), parseInt(split[0]), true);
+			loadImage(decodeURI(split[1]), parseInt(split[0]), true);
 		}
 	}
 	
@@ -674,7 +673,7 @@ window.addEventListener("load", function(){
 function getTabData(tabid) {
 	var cnv = canvasArray[tabid];
 	var data = {
-		file: cnv.f,
+		path: cnv.path,
 		zoom: cnv.z,
 		imgdata: cnv.c.getContext('2d').getImageData(0, 0, cnv.wdt, cnv.hgt),
 		wdt: cnv.wdt,
@@ -685,7 +684,7 @@ function getTabData(tabid) {
 }
 
 function dropTabData(data, tabid) {
-	loadImage(data.file, tabid, true);
+	loadImage(data.path, tabid, true);
 	
 	var cnv = canvasArray[tabid];
 	//todo: zoom einfügen
