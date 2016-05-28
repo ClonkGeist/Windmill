@@ -41,13 +41,9 @@ var Materials = new (function() {
 		if(this._MATERIALS[name])
 			return new Promise(function(resolve) { resolve(this._MATERIALS[name]) });
 		
-		// pass into another code block (javascripts pseudo-async)
 		return this.explodeDir(dir).then(() => {
 			return this._MATERIALS[name];
 		});
-		
-		/*if(this._MATERIALS[name])
-			fnCallback(this._MATERIALS[name]);*/
 	}
 	
 	this.explodeDir = function(dir) {

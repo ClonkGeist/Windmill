@@ -401,12 +401,12 @@ function Meshviewer() {
 		
 		this.setSize(this.width, this.height);
 		
-		this.loadTexture = function(src, mesh, key) {
+		this.loadTexture = function(src, mesh, key, matName) {
 			var img = new Image();
 			
 			var tu;
 			if(this.ontextureload)
-				tu = this.ontextureload(mesh, key, src, img);
+				tu = this.ontextureload(mesh, key, src, img, matName);
 			
 			var _session = this;
 			
@@ -811,7 +811,7 @@ function Meshviewer() {
 				quat.rotateY(cRot, cRot, this.yRot);
 				quat.normalize(cRot, cRot);
 				
-				quat.multiply(rot, cRot, rot);
+				quat.multiply(rot, rot, cRot);
 				quat.multiply(rot, rot, this.qAxisSwap);
 				
 				mat4.fromRotationTranslation(t, rot, this.vTrans);
@@ -907,7 +907,7 @@ function Meshviewer() {
 			
 			this.onViewRotation = function(x, y) {
 				this.xRot = y/100;
-				this.yRot = x/100;
+				this.yRot = -x/100;
 			}
 			
 			this.onViewRotationStop = function(x, y) {
@@ -915,9 +915,9 @@ function Meshviewer() {
 				var qNewRot = quat.create();
 				
 				quat.rotateX(qNewRot, qNewRot, y/100);
-				quat.rotateY(qNewRot, qNewRot, x/100);
+				quat.rotateY(qNewRot, qNewRot, -x/100);
 				
-				quat.multiply(this.qRot, qNewRot, this.qRot);
+				quat.multiply(this.qRot, this.qRot, qNewRot);
 				quat.normalize(this.qRot, this.qRot);
 				
 				this.xRot = 0;
@@ -1147,19 +1147,19 @@ function Meshviewer() {
 					return;
 				
 				_session._ctrl.mouseControl = 0;
-				session.getCurrentScene().onViewRotationStop(
+				_session.getCurrentScene().onViewRotationStop(
 					e.clientX - _session._ctrl.mousemoveOriginX, 
 					e.clientY - _session._ctrl.mousemoveOriginY
 				);
 				
 				_session.getCurrentScene().stopRenderLoop(RENDER_CAUSE_MOUSE);
+				_session.getCurrentScene().initRenderLoop(RENDER_CAUSE_RENDER_ONCE);
 			})
 			
 			canvas.addEventListener("DOMMouseScroll", function(event) {
 				var activeScene = _session.getCurrentScene();
 				activeScene.zoom(event.detail > 0? -ZOOM_FACTOR : ZOOM_FACTOR);
 				activeScene.initRenderLoop(RENDER_CAUSE_RENDER_ONCE);
-				
 			}, false);
 		}
 		
@@ -1361,9 +1361,9 @@ function Meshviewer() {
 					for(var i in t_units) {
 						if(t_units[i].texture && t_units[i].texture.length)
 							if(t_units[i].name == "Overlay")
-								_mesh._scene._sess.loadTexture(pathDir + "/" + t_units[i].texture[0], subMesh, "overlay");
+								_mesh._scene._sess.loadTexture(pathDir + "/" + t_units[i].texture[0], subMesh, "overlay", mName);
 							else
-								_mesh._scene._sess.loadTexture(pathDir +"/"+ t_units[i].texture[0], subMesh, "texture");
+								_mesh._scene._sess.loadTexture(pathDir +"/"+ t_units[i].texture[0], subMesh, "texture", mName);
 					}
 				});
 			}

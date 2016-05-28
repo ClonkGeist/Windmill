@@ -18,36 +18,41 @@
 				xmlns="http://www.w3.org/1999/xhtml">
 			</canvas>
 		</box>
-		<box id="settings-wrapper" right="20" top="20" width="120">
+		<box id="settings-wrapper" right="20" top="20" width="160">
 			<vbox id="settings" flex="1">
 				<hbox class="settings-page-nav">
 					<box flex="1" class="icon-16 icon-folder"></box>
 					<box flex="1" class="icon-16 icon-bars-ref-1-3"></box>
 				</hbox>
 				<vbox id="resource-page" class="settings-page visible">
-					<label value="Resources" />
 					<vbox class="texture-unit-entry draft">
-						<hbox>
-							<img width="32" height="32" />
-							<menulist></menulist>
+						<hbox algin="center">
+							<img class="tu-img" width="32" height="32"/>
+							<!--<menulist></menulist>-->
 							<box class="icon-16 icon-reload"></box>
 						</hbox>
 						<hbox class="tue-texture_sizes">
 						</hbox>
 					</vbox>
-					<vbox class="mat-file draft">
+					<vbox class="mat-def draft">
 						<label class="mf-name" value="$t_units$" />
-						<vbox class="mf-texture-units">
-							<!-- texture units go here -->
+						<vbox class="mat-file file-entry">
+							<label class="mf-request" value="$drop_request$" />
+							<!-- submesh properties -->
+							<vbox class="mf-texture-units">
+								<!-- texture units go here -->
+							</vbox>
 						</vbox>
 					</vbox>
 					<vbox class="skeleton-entry draft">
-						<label class="se-name" value="name" />
+						<label class="se-link-name" value="name" />
+						<vbox class="file-entry">
+							<label class="se-name" value="$drop_request$" />
+						</vbox>
 					</vbox>
 					<vbox class="resource-list draft">
 						<vbox class="mf-wrapper">
 						</vbox>
-						<label value="$skeleton$" />
 						<vbox class="skeleton-resources">
 							<!-- skeleton ui goes here -->
 						</vbox>

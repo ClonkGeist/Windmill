@@ -2,6 +2,10 @@ window {
 	font-family: $font-stack;
 }
 
+#settings-wrapper {
+	transition: width .2s;
+}
+
 .settings-page-nav > *{
 	text-align: center;
 	@include small-toggle;
@@ -16,12 +20,11 @@ window {
 }
 
 #settings {
-	background-color: rgb(245, 245, 245);
+	background-color: $clr-base;
 	padding: 7px;
 	padding-top: 2px;
 	cursor: default;
-	
-	transition: width 0.2s;
+	outline: 1px solid $clr-border;
 }
 
 #background-selection > *:hover {
@@ -169,24 +172,10 @@ canvas {
 
 /* resource manager */
 
-.texture-unit-entry,
-.mat-file {
-	transition: opacity .2s;
-	opacity: 1;
-	background-color: inherit;
-}
-
 .fade-in {
 	background-color: $interact-blue;
 	transition: background-color .3s, opacity .2s;
 	opacity: 0;
-}
-
-.highlighted {/*
-	background-color: $interact-blue;
-	transition: background-color .3s;
-	outline: 2px solid $interact-orange;*/
-	@include hover-blue;
 }
 
 .draft {
@@ -201,6 +190,30 @@ canvas {
 	}
 }
 
+.file-entry {
+	border-left: 3px solid $clr-border;
+	padding-left: 5px;
+	background-color: $clr-empty;
+	
+	transition: opacity .2s;
+	opacity: 1;
+	background-color: inherit;
+	pointer-events: auto;
+}
 
+.mat-file.trusted .mf-request {
+	display: none;
+}
 
+.highlighted {
+	@include hover-blue;
+}
+
+.tu-img {
+	background-color: $clr-base;
+	outline: 2px solid $clr-border;
+	outline-offset: -2px
+	margin-left: 3px;
+	margin-right: 3px;
+}
 /*			Fin 		*/

@@ -16,7 +16,7 @@ function initModelviewer(filepath, idMdl) {
 		session.ontextureloaderror = loadTextureResourceErr;
 		session.ontextureloadsucces = loadTextureResourceSucc;
 		
-		session.onmatload = insertMaterial;
+		session.onmatload = insertMaterialEntry;
 	}
 	
 	if(!clrpckr) {
@@ -52,21 +52,29 @@ function initModelviewer(filepath, idMdl) {
 	session.onskeletonasked = function(name, sceneId) {
 		var $el = $(".skeleton-entry.draft").clone();
 		
-		$el.removeClass("draft").find(".se-name").attr("value", name);
+		name = name.replace(/.skeleton/, "");
+		
+		$el.removeClass("draft").find(".se-link-name").attr("value", Locale("$skeleton$") + ": " + name + ".*");
 		
 		sceneMeta[sceneId].$resUiEl.find(".skeleton-resources").append($el);
 		
-		var e = $el.get(0);
+		var e = $el.find(".file-entry").get(0);
 		
-		e.addEventListener("dragenter", function(e) {
+		e.addEventListener("dragover", function(e) {
 			let list = e.dataTransfer.files;
-			showObj2(list, 1);
-			$el.addClass("highlighted");
+			
+			$(this).addClass("highlighted");
 		});
 		
 		e.addEventListener("dragleave", function() {
-			$el.removeClass("highlighted");
+			$(this).removeClass("highlighted");
 		});
+	};
+	
+	session.onskeletonloaderr = function(errorType, output) {
+		sceneMeta[idMdl].$resUiEl.find(".skeleton-resources").find(".se-name").attr("value", 
+			errorType === RESOURCE_ERROR_FAILED_TO_PARSE?Locale("$parsing_error$"):Locale("$not_found_error$")
+		);
 	};
 	
 	sceneMeta[idMdl] = {
@@ -74,7 +82,7 @@ function initModelviewer(filepath, idMdl) {
 		$resUiEl: $(".resource-list.draft").clone(),
 		texture_units: [],
 		skeletons: [],
-		$matEls: {},
+		mats: {},
 	};
 	
 	$("#resource-page").append(sceneMeta[idMdl].$resUiEl.removeClass("draft").get(0));
@@ -146,12 +154,12 @@ function updateAnimationUI(scene) {
 	el.selectedIndex = scene.currentAnimIndex || 0;
 }
 
-function initTextureResource(mesh, key, src, img) {
+function initTextureResource(mesh, key, src, img, matName) {
 	var idMdl = mesh.parentMesh._scene.id;
 	
 	var $el = $(".texture-unit-entry.draft").clone();
-	
-	sceneMeta[idMdl].$resUiEl.find(".s-texture-units").append($el);
+	log("texture mat ref: " + matName)
+	sceneMeta[idMdl].mats[matName].$el.append($el);
 	
 	$el.removeClass("draft").addClass("fade-in").delay(3000).removeClass("fade-in");
 	
@@ -180,11 +188,9 @@ function updateResourceUi(id) {
 	
 }
 
-function insertMaterial(mat, id, referredName) {
-	var $el = $(".mat-file.draft").clone();
-	log(referredName)
-	if(!mat)
-		$el.find(".mf-texture-units").text(Locale("$not_found$"));
+function insertMaterialEntry(mat, id, referredName) {
+	log("material requested: " + referredName)
+	var $el = $(".mat-def.draft").clone();
 	
 	$el.find(".mf-name").attr("value", Locale("$material$")+ " " + referredName);
 	$el.removeClass("draft");
@@ -192,7 +198,19 @@ function insertMaterial(mat, id, referredName) {
 	
 	$el.addClass("fade-in").delay(3000).removeClass("fade-in");
 	
+	sceneMeta[id].mats[referredName] = {$el, mat};
 	
+	var e = $el.find(".file-entry").get(0);
+	
+	e.addEventListener("dragover", function(e) {
+		let list = e.dataTransfer.files;
+		
+		$(this).addClass("highlighted");
+	});
+	
+	e.addEventListener("dragleave", function() {
+		$(this).removeClass("highlighted");
+	});
 }
 
 hook("load", function() {
@@ -328,6 +346,11 @@ hook("load", function() {
 		
 		$(".settings-page.visible").removeClass("visible");
 		$(".settings-page").eq(index).addClass("visible");
+		
+		if(index === 1)
+			$("#settings-wrapper").attr("width", 120);
+		else if(index === 0)
+			$("#settings-wrapper").attr("width", 160);
 	});
 });
 
@@ -353,7 +376,11 @@ function pauseAnimation() {
 
 var dragged = false;
 
+// remove timer on showDeckItem
 function updateAnimationProgressmeter() {
+	if(!scenes[CM_ACTIVEID]._anim)
+		return;
+	
 	var p = scenes[CM_ACTIVEID].getAnimationPosition();
 	$("#ap-progress").width((document.getElementById("ap-wrapper").clientWidth - 1)/100*p + "px");
 	
