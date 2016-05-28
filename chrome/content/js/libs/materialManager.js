@@ -51,27 +51,8 @@ var Materials = new (function() {
 	}
 	
 	this.explodeDir = function(dir) {
+		let _this = this;
 		return Task.spawn(function*() {
-			/*let entries = dir.directoryEntries;
-	
-			while(entries.hasMoreElements()) {
-				var entry = entries.getNext().QueryInterface(Ci.nsIFile),
-					s = entry.leafName.split(".");
-				
-				// only load *.material-files
-				if(s[s.length - 1] != "material")
-					continue;
-				
-				var txt = readFile(entry);
-			
-				if(!txt)
-					continue;
-				
-				var aResults = this.parse(txt);
-				
-				for(var i in aResults)
-					this._MATERIALS[aResults[i].materialName] = aResults[i];
-			}*/
 			let iterator = new OS.File.DirectoryIterator(dir);
 			let entries = yield iterator.nextBatch();
 			for(let entry of entries) {
@@ -81,14 +62,18 @@ var Materials = new (function() {
 					continue;
 				
 				let txt;
-				try { txt = yield OS.File.read(entries[i].path, {encoding: "utf-8"}); }
-				catch(e) { continue; }
+				try { txt = yield OS.File.read(entry.path, {encoding: "utf-8"}); }
+				catch(e) { 
+					log("An error occured while trying to load the material file " + entry.path, 0, "error");
+					log(`${e.message} (${e.fileName}:${e.lineNumber})`, 0, "error");
+					continue;
+				}
 				if(!txt)
 					continue;
 
-				let aResults = this.parse(txt);
+				let aResults = _this.parse(txt);
 				for(let result of aResults)
-					this._MATERIALS[result.materialName] = result;
+					_this._MATERIALS[result.materialName] = result;
 			}
 			iterator.close();
 		});

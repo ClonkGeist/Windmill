@@ -2089,6 +2089,10 @@ function runXmlParser(filePath, targetFilePath, fnOnFinish) {
 	if(!converter.exists() || !converter.isExecutable())
 		return warn("$err_group_not_found$");
 */
+	if(OS_TARGET == "WINNT") {
+		filePath = formatPath(filePath).replace(/\//g, "\\");
+		targetFilePath = formatPath(targetFilePath).replace(/\//g, "\\");
+	}
 	getAppById("ogrexmlcnv").create([filePath, targetFilePath], 0x00000001, fnOnFinish, function(data) {
 		log(data);
 	});
