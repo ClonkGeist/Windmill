@@ -26,9 +26,12 @@
 				</hbox>
 				<vbox id="resource-page" class="settings-page visible">
 					<vbox class="texture-unit-entry draft">
-						<hbox algin="center">
+						<hbox align="center">
 							<img class="tu-img" width="32" height="32"/>
-							<!--<menulist></menulist>-->
+							<menulist class="tu-size" flex="1">
+								<menupopup>
+								</menupopup>
+							</menulist>
 							<box class="icon-16 icon-reload"></box>
 						</hbox>
 						<hbox class="tue-texture_sizes">

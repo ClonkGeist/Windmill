@@ -56,7 +56,7 @@ function composeShaderString(flags) {
 		
 		str += "uniform mat4 mWorld;\n";
 		
-		// <-- MAIN
+		// <MAIN>
 		str += "void main(void) {\n";
 		
 		if(flags & SHADER_OPTION_WIREFRAME) {
@@ -105,7 +105,7 @@ function composeShaderString(flags) {
 		else
 			str += "gl_Position = mWorld* vec4(aVertexPosition, 1.0);\n";
 		
-		str += "}"; // MAIN-->
+		str += "}"; // </MAIN>
 		
 		return str;
 	}
@@ -426,17 +426,18 @@ function Meshviewer() {
 				mesh.setTexture(texture, key);
 			};
 			
-			img.onerror = function(e) {
-				if(_session.ontextureloaderror)
-					_session.ontextureloaderror(tu)
-			};
+			if(_session.ontextureloaderror)
+				img.onerror = function(e) {
+						_session.ontextureloaderror(tu)
+				};
+			
 			img.src = "file:" + src;
 		}
 		
 		this.addShader = function(vs, fs, flags) {
 			
 			if(!vs || !fs)
-				return log("Shader could not be initialized, at least one (vertex- oder fragment-shader)hasn't been identified");
+				return log("Initializing Program failed, at least one (vertex- oder fragment-shader) hasn't been identified", 0, "error");
 			
 			var id = this._sprograms.length;
 			

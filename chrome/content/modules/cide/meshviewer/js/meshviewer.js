@@ -159,6 +159,7 @@ function initTextureResource(mesh, key, src, img, matName) {
 	
 	var $el = $(".texture-unit-entry.draft").clone();
 	log("texture mat ref: " + matName)
+	log(src)
 	sceneMeta[idMdl].mats[matName].$el.append($el);
 	
 	$el.removeClass("draft").addClass("fade-in").delay(3000).removeClass("fade-in");
@@ -176,8 +177,13 @@ function initTextureResource(mesh, key, src, img, matName) {
 	return tu;
 }
 
-function loadTextureResourceSucc() {
+function loadTextureResourceSucc(tu) {
+	tu.$el.find(".tu-img").attr("src", tu.img.src);
 	
+	let list = tu.$el.find(".tu-size").get(0);
+	
+	list.appendItem(tu.img.width, tu.img.width);
+	list.selectedIndex = 0;
 }
 
 function loadTextureResourceErr() {

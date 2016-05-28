@@ -208,11 +208,15 @@ canvas {
 .highlighted {
 	@include hover-blue;
 }
+/*
+.texture-unit-entry {
+	padding-left: 5px;
+}*/
 
 .tu-img {
 	background-color: $clr-base;
 	outline: 2px solid $clr-border;
-	outline-offset: -2px
+	outline-offset: -2px;
 	margin-left: 3px;
 	margin-right: 3px;
 }

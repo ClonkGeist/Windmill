@@ -39,7 +39,7 @@ var Materials = new (function() {
 		
 		// if already found
 		if(this._MATERIALS[name])
-			return new Promise(function(resolve) { resolve(this._MATERIALS[name]) });
+			return new Promise((resolve) => { resolve(this._MATERIALS[name]) });
 		
 		return this.explodeDir(dir).then(() => {
 			return this._MATERIALS[name];
