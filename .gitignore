@@ -1,3 +1,4 @@
 /chrome/logs/*
 *.log
 *.css
+/chrome/content/modules/cide/meshviewer/*.css

@@ -178,16 +178,18 @@ function initTextureResource(mesh, key, src, img, matName) {
 }
 
 function loadTextureResourceSucc(tu) {
+	tu.$el.removeClass("not-found");
+	
 	tu.$el.find(".tu-img").get(0).src = tu.img.src;
 	
 	let list = tu.$el.find(".tu-size").get(0);
 	
-	list.appendItem(tu.img.width, tu.img.width);
+	list.appendItem(tu.img.width + "x" + tu.img.height, tu.img.width + "x" + tu.img.height);
 	list.selectedIndex = 0;
 }
 
-function loadTextureResourceErr() {
-	
+function loadTextureResourceErr(tu) {
+	tu.$el.addClass("not-found");
 }
 
 function updateResourceUi(id) {

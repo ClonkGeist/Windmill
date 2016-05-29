@@ -123,20 +123,16 @@ Sass.options({
 var current_sass_loading_task;
 
 function modSassString(str, mods) {
-	log(mods)
 	// specific icomoon-generated-content modifier
 	if(mods === "iconsToMixins") {
 		var result = ""
-		str.replace(/\.icon-(.){(.)}/gim, (m) => {
-			log(m.replace(/\.icon-/gi, "@mixin -") + "\n");
-			result += m.replace(/\.icon-/gi, "@mixin -") + "\n";
+		str.replace(/\.icon-(?:\s*\S+\s*{[^}]*})+/gim, (m) => {
+			result += m.replace(/\.icon-/gi, "@mixin -").replace(/\:before/gi, "()") + "\n";
 		})
 		
 		str = result
 	}
-	log("2");
-	log(str);
-	log(result)
+	
 	return str
 }
 
@@ -177,29 +173,23 @@ function reloadStylesheet(fScss, def, options = {}, __rec) {
 					log("Sass error: Required import scss-file not found ("+imports[i]+")", false, "sass")
 					continue
 				}
-				/*
-				let hstr = ""
 				
-				if(imp.require) {
-					hstr += yield importDefs(imp.require.split("|"), alreadyImported)
-				}
-				log("1", 0, "sass")
-				log(hstr, 0, "error")*/
 				var headstring = "" 
-				headstring += (yield* importDefs(def.require.split("|"), alreadyImported))
+				
+				if(imp.require)
+					headstring += yield* importDefs(imp.require.split("|"), alreadyImported)
 				let scssString = (yield OS.File.read(f.path, { encoding: "utf-8" }))
 				
 				if(imp.modify)
 					scssString = modSassString(scssString, imp.modify);
 				
-				hstr += scssString + "\n"
+				hstr += headstring + scssString + "\n"
 			}
 			
 			return hstr;
 		}
 		
 		var headstring = "" 
-		//log(yield prom, 0, "error")
 		headstring += yield* importDefs(def.require.split("|"));
 		let content = yield OS.File.read(fScss.path, { encoding: "utf-8" });
 		let promise = new Promise(function(resolve, reject) {

@@ -63,7 +63,7 @@
     @include -wireframe2();
 }
 .icon-canvas-scale:before {
-    @include -canvas();
+    @include -canvas-scale();
 }
 .icon-reflect-h:before {
     @include -reflect-h();
@@ -90,7 +90,7 @@
     @include -transparent();
 }
 .icon-the-mill:before {
-    @include -mill();
+    @include -the-mill();
 }
 .icon-warning:before {
     @include -warning();
@@ -260,7 +260,7 @@
 }
 .icon-resource_saviour:before,
 .icon-resource-saviour:before {
-    @include --resource-saviour();
+    @include -resource-saviour();
 }
 .icon-runtimejoin:before {
     @include -runtimejoin();
