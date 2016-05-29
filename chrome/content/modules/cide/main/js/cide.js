@@ -388,6 +388,7 @@ window.addEventListener("load", function(){
 	/** Tab-Verschiebung starten **/
 
 	var dropfn = function(_tdeck) { return function(e) {
+		log("contains?");
 		if(!e.dataTransfer.types.contains("text/cidecontent")
 		&& !e.dataTransfer.types.contains("text/cideexplorer")
 	    && !e.dataTransfer.types.contains("application/x-moz-file"))
@@ -425,6 +426,14 @@ window.addEventListener("load", function(){
 
 			return deck;
 		}
+		function clearHoverEffects() {
+			//Dragover-Effekte loeschen
+			$(".dragover-sidedeck-bottom").removeClass("dragover-sidedeck-bottom");
+			$(".dragover-sidedeck-right").removeClass("dragover-sidedeck-right");
+			$(".dragover-sidedeck-top").removeClass("dragover-sidedeck-top");
+			$(".dragover-sidedeck-left").removeClass("dragover-sidedeck-left");
+			$(".dragover-deck").removeClass("dragover-deck");
+		}
 		if(!data) {
 			var deck = _tdeck;
 			if(!$(this).hasClass("dragover-deck")) {
@@ -433,6 +442,7 @@ window.addEventListener("load", function(){
 					positionSideDeck($(deck.element).parents(".deckbox"));
 			}
 
+			clearHoverEffects();
 			data = e.dataTransfer.getData("text/cideexplorer");
 
 			if(data) {
@@ -440,11 +450,12 @@ window.addEventListener("load", function(){
 				if(!md_explorer || !md_explorer.contentWindow || isNaN(data))
 					return;
 
-				var file = new _sc.file(_sc.workpath() + md_explorer.contentWindow.getTreeObjPath(md_explorer.contentWindow.getTreeObjById(data)));
+				let obj = md_explorer.contentWindow.getTreeObjById(data);
+				var file = new _sc.file(_sc.workpath(obj) + md_explorer.contentWindow.getTreeObjPath(obj));
 				if(!file || !file.exists())
 					return;
 
-				openFileInDeck(file, deck == sidedeck);
+				openFileInDeck(file.path, deck == sidedeck);
 			}
 			else {
 				var dragService = _sc.dragserv();
@@ -469,19 +480,13 @@ window.addEventListener("load", function(){
 					if(data) {
 						var file = data.value.QueryInterface(Ci.nsIFile);
 						if(file)
-							openFileInDeck(file, deck == sidedeck);
+							openFileInDeck(file.path, deck == sidedeck);
 					}
 				}
 			}
-
-			//Dragover-Effekte loeschen
-			$(".dragover-sidedeck-bottom").removeClass("dragover-sidedeck-bottom");
-			$(".dragover-sidedeck-right").removeClass("dragover-sidedeck-right");
-			$(".dragover-sidedeck-top").removeClass("dragover-sidedeck-top");
-			$(".dragover-sidedeck-left").removeClass("dragover-sidedeck-left");
-			$(".dragover-deck").removeClass("dragover-deck");
 			return;
 		}
+		clearHoverEffects();
 
 		var [deckid, tabid, tabname] = data.split('|');
 		deckid = parseInt(deckid); tabid = parseInt(tabid);
@@ -603,6 +608,7 @@ function getUnsavedFiles(deck) {
 
 function openFileInDeck(path, fSideDeck) {
 	let deck = fSideDeck?sidedeck:maindeck;
+	path = formatPath(path);
 	let splittedpath = path.split("/"),
 		filename = splittedpath.pop(),
 		parentpath = formatPath(splittedpath.join("/")),
