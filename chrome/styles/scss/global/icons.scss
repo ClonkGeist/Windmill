@@ -205,7 +205,7 @@
     @include -ref-3-3();
 }
 .icon-save:before {
-    @include -save();
+    @include -save2();
 }
 .icon-search:before {
     @include -search();
@@ -258,7 +258,6 @@
 .icon-players:before {
     @include -players();
 }
-.icon-resource_saviour:before,
 .icon-resource-saviour:before {
     @include -resource-saviour();
 }
@@ -302,19 +301,19 @@
 	content: "?";
 }
 .icon-screenshots:before {
-    content: "\e904";
+    @include -polaroids();
 }
 .icon-error:before {
     content: "\e90c";
 }
 .icon-mapwidth:before {
-	content: "W";
+	@include -s-width();
 }
 .icon-mapheight:before {
-	content: "H";
+	@include -s-height();
 }
 .icon-mapzoom:before {
-	content: "Z";
+	@include -search();
 }
 .icon-noscan:before {
 	content: "NoSc";
@@ -323,19 +322,19 @@
 	content: "MPE";
 }
 .icon-amplitude:before {
-	content: "A";
+	@include -amplitude();
 }
 .icon-phase:before {
-	content: "Ph";
+	@include -phase();
 }
 .icon-period:before {
-	content: "Pe";
+	@include -period();
 }
 .icon-random:before {
-	content: "Rnd";
+	@include -random();
 }
 .icon-liquidlevel:before {
-	content: "LL";
+	@include -liquidlevel();
 }
 .icon-borders:before {
 	content: "B";
@@ -359,13 +358,13 @@
 	content: "\e62a";
 }
 .icon-password:before { 
-	content: "Pw";
+	@include -lock();
 }
 .icon-comment:before { 
-	content: "C";
+	@include -comment();
 }
 .icon-startgame:before { 
-	content: "St";
+	@include -play();
 }
 .icon-limiter:before { 
 	content: "L";

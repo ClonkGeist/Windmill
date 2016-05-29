@@ -67,7 +67,7 @@
 				<vbox class="hostgame-group">
 					<hbox id="set-password" class="hostgame-nav-item">
 						<vbox class="hostgame-nav-icon">
-							PW
+							<box class="icon-password"></box>
 						</vbox>
 						<vbox class="hostgame-nav-content" flex="1">
 							<hbox class="hostgame-nav-label">$password$</hbox>
@@ -75,7 +75,7 @@
 					</hbox>
 					<hbox id="set-comment" class="hostgame-nav-item">
 						<vbox class="hostgame-nav-icon">
-							C
+							<box class="icon-comment"></box>
 						</vbox>
 						<vbox class="hostgame-nav-content" flex="1">
 							<hbox class="hostgame-nav-label">$comment$</hbox>
@@ -129,7 +129,7 @@
 				<vbox class="hostgame-group">
 					<hbox class="hostgame-nav-item" id="btn-startgame">
 						<vbox class="hostgame-nav-icon">
-							St
+							<box class="icon-startgame"></box>
 						</vbox>
 						<vbox class="hostgame-nav-content" flex="1">
 							<hbox class="hostgame-nav-label">$startgame$</hbox>

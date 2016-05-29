@@ -83,7 +83,8 @@ toolbox {
 	&:hover {
 		color: $clr-paper;
 		background-color: $interact-red;
-		outline: 1px solid $interact-red;
+		outline: 2px solid $interact-red;
+		outline-offset: -1;
 		-moz-outline-radius: 14px;
 	}
 }

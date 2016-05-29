@@ -83,9 +83,9 @@
 										<box class="nav-image icon-players icon-32" height="32" width="32" id="showPlayerSelect"></box>
 										<spacer />
 									</hbox>
-									<box class="nav-image icon-heartbeat icon-32 devmode-elm" height="32" width="32" id="showModManager"></box>
+									<box class="nav-image icon-heartbeat icon-32 devmode-elm" height="32" width="32" id="showModManager"></box> <!-- DEVMODE -->
 									<box class="nav-image icon-update icon-32" height="32" width="32" id="showUpdate"></box>
-									<box class="nav-image icon-resource_saviour icon-32" height="32" width="32" id="showResSaveMode"></box>
+									<box class="nav-image icon-resource-saviour icon-32" height="32" width="32" id="showResSaveMode"></box>
 									<box class="nav-image icon-multisource icon-32" height="32" width="32" id="showClonkDirs"></box>
 									<box class="nav-image icon-git icon-32" height="32" width="32" id="showGitLog"></box>
 									<box class="nav-image icon-console icon-32" height="32" width="32" id="showLog"></box>
