@@ -155,7 +155,7 @@ function reloadStylesheet(fScss, def, options = {}, __rec) {
 		if(!def.cssTarget)
 			return execHook("sass-target-updated", def, new Date());
 		
-		var importDefs = function (imports, alreadyImported = {}) {
+		function* importDefs(imports, alreadyImported = {}) {
 			var hstr = ""
 			
 			for(let i = 0; i < imports.length; i++) {
@@ -185,12 +185,8 @@ function reloadStylesheet(fScss, def, options = {}, __rec) {
 				}
 				log("1", 0, "sass")
 				log(hstr, 0, "error")*/
-				
-				let prom = new Promise(function(resolve, reject) {
-					resolve(importDefs(def.require.split("|")))
-				});
 				var headstring = "" 
-				headstring += (yield prom)
+				headstring += (yield* importDefs(def.require.split("|"), alreadyImported))
 				let scssString = (yield OS.File.read(f.path, { encoding: "utf-8" }))
 				
 				if(imp.modify)
@@ -199,15 +195,12 @@ function reloadStylesheet(fScss, def, options = {}, __rec) {
 				hstr += scssString + "\n"
 			}
 			
-			yield hstr
+			return hstr;
 		}
 		
-		let prom = new Promise(function(resolve, reject) {
-			resolve(importDefs(def.require.split("|")))
-		});
 		var headstring = "" 
-		log(yield prom, 0, "error")
-		headstring += yield prom
+		//log(yield prom, 0, "error")
+		headstring += yield* importDefs(def.require.split("|"));
 		let content = yield OS.File.read(fScss.path, { encoding: "utf-8" });
 		let promise = new Promise(function(resolve, reject) {
 			Sass.compile(headstring + (content || ""), function(result) {
@@ -222,7 +215,7 @@ function reloadStylesheet(fScss, def, options = {}, __rec) {
 		}
 		else {
 			log("Sass: Write file: " + _sc.chpath + "/" + def.cssTarget, false, "sass")
-			OS.File.writeAtomic(_sc.chpath + "/" + def.cssTarget, result.text, { encoding: "utf-8" })
+			yield OS.File.writeAtomic(_sc.chpath + "/" + def.cssTarget, result.text, { encoding: "utf-8" })
 
 			execHook("sass-target-updated", def, new Date());
 		}
