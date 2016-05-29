@@ -1,7 +1,7 @@
 var canvasArray = new Array()
 
 function TabManager() { return __iP._sessions }
-function alternativeActiveId() { return __iP.activeSession.tabId }
+function alternativeActiveId() { return __iP.activeSession?__iP.activeSession.tabId:0; }
 
 class ImagePreview {
 
@@ -204,7 +204,7 @@ class ImagePreview {
 			$(wrapper).removeClass("appearance-"+this.activeSession.background)
 			$("#wrapper-"+this.activeSession.tabId).removeClass("visible")
 		}
-		
+
 		this.activeSession = this._sessions[tabId]
 		
 		$(wrapper).addClass("appearance-"+this.activeSession.background)
@@ -259,13 +259,16 @@ class Session {
 		
 		this.imgEl = imageElement
 		
-		imageElement.addEventListener("load", function() {
-			session.imageWidth = this.naturalWidth
-			session.imageHeight = this.naturalHeight
-			
-			session.zoom(0)
-			
-			session.updatePosition()
+		let promise = new Promise((resolve) => {
+			imageElement.addEventListener("load", function() {
+				session.imageWidth = this.naturalWidth
+				session.imageHeight = this.naturalHeight
+				
+				session.zoom(0)
+				
+				session.updatePosition()
+				resolve(session)
+			})
 		})
 		
 		if(OS_TARGET == "WINNT")
@@ -282,6 +285,7 @@ class Session {
 		
 		this.$p.height(this.imageHeight + "px")
 		this.$p.width(this.imageWidth + "px")
+		return promise;
 	}
 	
 	setBackground(mode) {
@@ -624,13 +628,18 @@ function loadImage(file, tabId, fShow) {
 	
 	var session = __iP.initSession(tabId);
 	
-	session.loadImage(file, document.getElementById("preview-"+tabId));
+	let promise = session.loadImage(file, document.getElementById("preview-"+tabId));
 	
 	if(fShow || !$(".visible")[0])
 			showDeckItem(tabId);
+	
+	return promise;
 }
 
 function showDeckItem(tabId) {
+	if(__iP._sessions && !__iP._sessions[tabId])
+		return;
+
 	$(".visible").removeClass("visible");
 	$("#imgCanvas-"+tabId).addClass("visible");
 	
@@ -671,26 +680,42 @@ window.addEventListener("load", function(){
 });
 
 function getTabData(tabid) {
-	var cnv = canvasArray[tabid];
+	var session = __iP._sessions[tabid];
+	let {rectWidth, rectHeight, rectStartX, rectStartY, _rectX, _rectY, gradSpaceX, gradSpaceY, gridvisible, snap} = session;
 	var data = {
-		path: cnv.path,
-		zoom: cnv.z,
-		imgdata: cnv.c.getContext('2d').getImageData(0, 0, cnv.wdt, cnv.hgt),
-		wdt: cnv.wdt,
-		hgt: cnv.hgt
+		path: session.path,
+		rect: {rectWidth, rectHeight, rectStartX, rectStartY, _rectX, _rectY},
+		grid: {gradSpaceX, gradSpaceY, gridvisible, snap},
+		actualWidth: session.actualWidth,
+		actualHeight: session.actualHeight,
+		zoom: session.zoomLevel
 	};
 	
 	return data;
 }
 
 function dropTabData(data, tabid) {
-	loadImage(data.path, tabid, true);
-	
-	var cnv = canvasArray[tabid];
-	//todo: zoom einfügen
-	cnv.width = data.wdt;
-	cnv.height = data.hgt;
-	cnv.c.getContext('2d').putImageData(data.imgdata, 0, 0);
+	loadImage(data.path, tabid, true).then(function(session) {
+		session.startRectDraw(data.rect.rectStartX, data.rect.rectStartY);
+		session.isDrawing = false;
+		session.rectWidth = data.rect.rectWidth;
+		session.rectHeight = data.rect.rectHeight;
+		session.rectStartX = data.rect.rectStartX;
+		session.rectStartY = data.rect.rectStartY;
+		session._rectX = data.rect._rectX;
+		session._rectY = data.rect._rectY;
+		session.actualWidth = data.actualWidth;
+		session.actualHeight = data.actualHeight;
+		session.gradSpaceX = data.grid.gradSpaceX;
+		session.gradSpaceY = data.grid.gradSpaceY;
+		session.gridvisible = data.grid.gridvisible;
+		session.snap = data.grid.snap;
+		session.zoomLevel = data.zoom;
+
+		session.drawRect();
+		if(session.gridIsShown())
+			session.showGrid();
+	});
 	
 	return true;
 }
