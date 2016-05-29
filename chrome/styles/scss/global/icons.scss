@@ -1,0 +1,372 @@
+@font-face {
+	font-family: 'icomoon';
+	src:url('chrome://windmill/skin/icomoon.ttf?-icmbrc') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+	font-family: 'icomoon';
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+	
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.icon-32,
+.icon-24,
+.icon-16 {
+	cursor: default;
+}
+
+.icon-16 {
+	font-size: 16px;
+}
+
+.icon-24 {
+	font-size: 24px;
+}
+
+.icon-32 {
+	font-size: 32px;
+	color: white;
+}
+
+.icon-clonkpath:before {
+    @include -clonkpath();
+}
+.icon-console:before {
+    @include -console();
+}
+.icon-eye:before {
+    @include -eye();
+}
+.icon-reload:before {
+    @include -reload-2();
+}
+.icon-workspace:before {
+    @include -workspace();
+}
+.icon-environment:before {
+    @include -environment();
+}
+.icon-landscape:before {
+    @include -landscape();
+}
+.icon-objects:before {
+    @include -objects();
+}
+.icon-wireframe2:before {
+    @include -wireframe2();
+}
+.icon-canvas-scale:before {
+    @include -canvas();
+}
+.icon-reflect-h:before {
+    @include -reflect-h();
+}
+.icon-reflect-v:before {
+    @include -reflect-v();
+}
+.icon-undo:before {
+    @include -undo();
+}
+.icon-redo:before {
+    @include -redo();
+}
+.icon-bg-filled:before {
+    @include -bg-filled();
+}
+.icon-grid:before {
+    @include -grid();
+}
+.icon-restore:before {
+    @include -restore();
+}
+.icon-transparent:before {
+    @include -transparent();
+}
+.icon-the-mill:before {
+    @include -mill();
+}
+.icon-warning:before {
+    @include -warning();
+}
+.icon-wireframe:before {
+    @include -wireframe();
+}
+.icon-empty-space:before {
+    @include -empty-space();
+}
+.icon-draw-line:before {
+    @include -draw-line();
+}
+.icon-erase:before {
+    @include -erase();
+}
+.icon-fill-circle:before {
+    @include -fill-circle();
+}
+.icon-fill-rect:before {
+    @include -fill-rect();
+}
+.icon-select-poly:before {
+    @include -select-poly();
+}
+.icon-cursor:before {
+    @include -cursor();
+}
+.icon-doc-backwards:before {
+    @include -doc-backwards();
+}
+.icon-continue-at-start:before {
+    @include -continue-at-start();
+}
+.icon-snippet:before {
+    @include -snippet();
+}
+.icon-whole-word:before {
+    @include -whole-word();
+}
+.icon-csense:before {
+    @include -csense();
+}
+.icon-editor-frame:before {
+    @include -editor-frame();
+}
+.icon-paint-bucket:before {
+    @include -paint-bucket();
+}
+.icon-magic-wand:before {
+    @include -magic-wand();
+}
+.icon-volume-high:before {
+    @include -volume-high();
+}
+.icon-volume-mute2:before {
+    @include -volume-mute2();
+}
+.icon-select-rect:before {
+    @include -select-rect();
+}
+.icon-select-circle:before {
+    @include -select-circle();
+}
+.icon-arrow-down:before {
+    @include -arrow-down();
+}
+.icon-arrow-left:before {
+    @include -arrow-left();
+}
+.icon-arrow-right:before {
+    @include -arrow-right();
+}
+.icon-arrow-up:before {
+    @include -arrow-up();
+}
+.icon-measure:before {
+    @include -measure();
+}
+.icon-backwards:before {
+    @include -backwards();
+}
+.icon-backwards_sharp:before,
+.icon-backwards-sharp:before {
+    @include -backwards-sharp();
+}
+.icon-x:before {
+    @include -x();
+}
+.icon-maximize:before {
+    @include -maximize();
+}
+.icon-minimize:before {
+    @include -minimize();
+}
+.icon-multisource:before {
+    @include -multisource();
+}
+.icon-play:before {
+    @include -play();
+}
+.icon-add-player:before {
+    @include -add-player();
+}
+.icon-bars-ref-1-3:before {
+    @include -bars-ref-1-3();
+}
+.icon-ref-2-3:before {
+    @include -ref-2-3();
+}
+.icon-ref-3-3:before {
+    @include -ref-3-3();
+}
+.icon-save:before {
+    @include -save();
+}
+.icon-search:before {
+    @include -search();
+}
+.icon-stop:before {
+    @include -stop();
+}
+.icon-trashbin:before {
+    @include -trashbin();
+}
+.icon-pencil:before {
+    @include -pencil();
+}
+.icon-quill:before {
+    @include -quill();
+}
+.icon-eyedropper:before {
+    @include -eyedropper();
+}
+.icon-folder:before {
+    @include -folder();
+}
+.icon-spinner11:before {
+    @include -spinner11();
+}
+.icon-git:before {
+    @include -git();
+}
+.icon-brackets:before {
+    @include -brackets();
+}
+.icon-cam:before {
+    @include -cam();
+}
+.icon-checked:before {
+    @include -checked();
+}
+.icon-controller:before {
+    @include -controller();
+}
+.icon-gear:before {
+    @include -gear();
+}
+.icon-heartbeat:before {
+    @include -heartbeat();
+}
+.icon-lock:before {
+    @include -lock();
+}
+.icon-players:before {
+    @include -players();
+}
+.icon-resource_saviour:before,
+.icon-resource-saviour:before {
+    @include --resource-saviour();
+}
+.icon-runtimejoin:before {
+    @include -runtimejoin();
+}
+.icon-trophy:before {
+    @include -trophy();
+}
+.icon-update:before {
+    @include -update();
+}
+.icon-world:before {
+    @include -world();
+}
+.icon-git-modified:before {
+	content: "M";
+}
+.icon-git-added:before {
+	content: "A";
+}
+.icon-git-deleted:before {
+	content: "D";
+}
+.icon-git-renamed:before {
+	content: "R";
+}
+.icon-git-copied:before {
+	content: "C";
+}
+.icon-git-updatedUnmerged:before {
+	content: "U";
+}
+.icon-git-untracked:before {
+	content: "?";
+}
+.icon-open-external:before {
+	content: "E";
+}
+.icon-documentation:before {
+	content: "?";
+}
+.icon-screenshots:before {
+    content: "\e904";
+}
+.icon-error:before {
+    content: "\e90c";
+}
+.icon-mapwidth:before {
+	content: "W";
+}
+.icon-mapheight:before {
+	content: "H";
+}
+.icon-mapzoom:before {
+	content: "Z";
+}
+.icon-noscan:before {
+	content: "NoSc";
+}
+.icon-map-player-extend:before {
+	content: "MPE";
+}
+.icon-amplitude:before {
+	content: "A";
+}
+.icon-phase:before {
+	content: "Ph";
+}
+.icon-period:before {
+	content: "Pe";
+}
+.icon-random:before {
+	content: "Rnd";
+}
+.icon-liquidlevel:before {
+	content: "LL";
+}
+.icon-borders:before {
+	content: "B";
+}
+.icon-border-top:before {
+	content: "BT";
+}
+.icon-border-right:before {
+	content: "BR";
+}
+.icon-border-bottom:before {
+	content: "BB";
+}
+.icon-border-left:before {
+	content: "BL";
+}
+.icon-auto-scan-side:before { 
+	content: "AutoS";
+}
+.icon-singleplayer:before { 
+	content: "\e62a";
+}
+.icon-password:before { 
+	content: "Pw";
+}
+.icon-comment:before { 
+	content: "C";
+}
+.icon-startgame:before { 
+	content: "St";
+}
+.icon-limiter:before { 
+	content: "L";
+}
