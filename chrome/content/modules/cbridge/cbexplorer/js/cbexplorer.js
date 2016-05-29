@@ -130,6 +130,10 @@ $(window).load(function() {
 	//Vorauswählen
 	if(!getConfigData("HostGame", "Network"))
 		$("#togglegamemode").mousedown();
+	
+	_mainwindow.hook("playerselection", function() {
+		refreshAchievements();
+	});
 });
 
 function initializeContextMenu() {}
@@ -218,7 +222,7 @@ function noDragDropItem() {return true;}
 
 function onTreeDeselect(obj) { $("#previewimage").attr("src", ""); }
 
-let filecache = {};
+let filecache = {}, refreshAchievements;
 
 function onTreeSelect(obj) {
 	Task.spawn(function*() {
@@ -228,6 +232,7 @@ function onTreeSelect(obj) {
 		if(!info.isDir)
 			return;
 
+		$("#preview").attr("data-path", path);
 		if(yield OS.File.exists(path+"/Title.png")) {
 			if(OS_TARGET == "WINNT")
 				$("#previewimage").attr("src", "file://"+path.replace(/\\/, "/")+"/Title.png");
@@ -250,36 +255,57 @@ function onTreeSelect(obj) {
 				return;
 			}
 		}
+		function loadFromOrigins(gen, additional, return_gen) {
+			let g = function*() {
+				let origins = [path];
+				let splitted = path.split("/");
+				while(splitted.pop()) {
+					if(/\.oc[sf]$/.test(splitted[splitted.length-1]))
+						origins.push(splitted.join("/"));
+				}
+				origins = origins.concat(additional);
+				for(let loadpath of origins) {
+					if((yield* gen(loadpath)) == -1)
+						break;
+				}
+			};
+			return return_gen?g:g();
+		}
+		
 		let pars = {}, achvm = {}, strings = {};
 		if(!filecache[path]) {
 			//Parameterdefinitionen laden
-			try {
-				let parameters = yield OS.File.read(path+"/ParameterDefs.txt", {encoding: "utf-8"});
-				if(parameters) {
-					let parobj = parseHierarchicalINI(parameters);
-					for(var i = 0; i < parobj["ParameterDef"].length; i++) {
-						let obj = parobj["ParameterDef"][i];
-						if(obj.Achievement)
-							achvm[obj.ID] = obj;
-						else
-							pars[obj.ID] = obj;
+			yield* loadFromOrigins(function*(loadpath) {
+				try {
+					let parameters = yield OS.File.read(loadpath+"/ParameterDefs.txt", {encoding: "utf-8"});
+					if(parameters) {
+						let parobj = parseHierarchicalINI(parameters);
+						for(var i = 0; i < parobj["ParameterDef"].length; i++) {
+							let obj = parobj["ParameterDef"][i];
+							if(obj.Achievement)
+								achvm[obj.ID] = obj;
+							else
+								pars[obj.ID] = obj;
+						}
 					}
-				}
-			} catch(e) { log(e, true, -1); }
+				} catch(e) { log(e, true, -1); }
+			});
 			filecache[path] = { parameters: pars, achievements: achvm };
 
 			//StringTbl laden
-			try {
-				let stringtbls;
+			yield* loadFromOrigins(function*(loadpath) {
 				try {
-					stringtbls = yield OS.File.read(path+"/StringTbl"+prefix+".txt", {encoding: "utf-8"});
-				} catch(e) {
-					stringtbls = yield OS.File.read(path+"/StringTblUS.txt", {encoding: "utf-8"});
-				}
+					let stringtbls;
+					try {
+						stringtbls = yield OS.File.read(loadpath+"/StringTbl"+prefix+".txt", {encoding: "utf-8"});
+					} catch(e) {
+						stringtbls = yield OS.File.read(loadpath+"/StringTblUS.txt", {encoding: "utf-8"});
+					}
 
-				if(stringtbls)
-					strings = parseINIArray(stringtbls);
-			} catch(e) { log(e, true, -1); }
+					if(stringtbls)
+						jQuery.extend(true, strings, parseINIArray(stringtbls));
+				} catch(e) { log(e, true, -1); }
+			});
 			filecache[path].strings = strings;
 		}
 		else {
@@ -287,6 +313,14 @@ function onTreeSelect(obj) {
 			achvm = filecache[path].achievements;
 			strings = filecache[path].strings;
 		}
+
+		//Bei zu langen Ladezeiten (Wenn also schon zu einem anderen Szenario gewechselt wurde) nicht mehr das DOM bearbeiten
+		if($("#preview").attr("data-path") != path)
+			return;
+
+		//Achievementliste ausblenden
+		$("#achievement-list").empty();
+		$("#achievements").addClass("hidden");
 
 		//HTML/XUL in Beschreibungen deaktivieren
 		let splittedtext = text.split("\n");
@@ -320,6 +354,59 @@ function onTreeSelect(obj) {
 			tooltip(clone, stringtbl(pars[key].Description));
 			clone.appendTo($("#parameters"));
 		}
+
+		//Achievements auflisten
+		//Funktion wird in globale Variable gespeichert, erspart das horten der ganzen Inhalte in globalen Objekten
+		refreshAchievements = function() {
+			return Task.spawn(function*() {
+				$("#achievement-list").empty();
+				$("#achievements").addClass("hidden");
+				let player = getCurrentlySelectedPlayer();
+				if(!player.Achievements)
+					return;
+
+				let relpath = path.split("/");
+				for(let i = 0; i < relpath.length; i++) {
+					if(!/\.oc[sf]$/.test(relpath[i])) {
+						i -= relpath.splice(0, i+1).length;
+						continue;
+					}
+					relpath[i] = relpath[i].replace(/\.oc[sf]$/, "");
+				}
+				relpath = relpath.join("_");
+				for(let key in achvm) {
+					let achv = achvm[key];
+					let value = player.Achievements[relpath+"_"+achv.ID];
+					if(!value)
+						continue;
+
+					$("#achievements").removeClass("hidden");
+					let img = $(`<box class="achievement" width="24" height="24" data-achvid="${achv.ID}" data-achvachievement="${achv.Achievement}"></box>`), option = {};
+
+					try {
+						let options = achv.Options[0].Option;
+						option = options[0];
+						for(let i = 0; i < options.length; i++)
+							if(options[i].Value == value)
+								option = { opt: options[i], index: i};
+					}
+					catch(e) {log(e + e.stack)}
+					if(option.opt)
+						tooltip(img, stringtbl(option.opt.Description));
+
+					yield* loadFromOrigins(function*(loadpath) {
+						if(img[0] && (yield OS.File.exists(loadpath+"/Achv"+achv.ID+".png"))) {
+							img.css("background-image", 'url("file://' + loadpath + '/Achv' + achv.ID + '.png")');
+							img.css("background-position", "-"+option.index*24+"px")
+							return -1;
+						}
+					}, [_sc.clonkpath()+"/Graphics.ocg"]);
+					img.appendTo($("#achievement-list"));
+				}
+			});
+		}
+		yield refreshAchievements();
+
 		current_selection = obj;
 	});
 	return true;

@@ -608,7 +608,6 @@ function openFileInDeck(path, fSideDeck) {
 		parentpath = formatPath(splittedpath.join("/")),
 		fext = filename.split(".").pop().toLowerCase();
 
-		log(`${path}, ${filename}, ${fext}`);
 	//Files behandeln je nach Fileextension
 	switch(fext) {
 		case "c":
