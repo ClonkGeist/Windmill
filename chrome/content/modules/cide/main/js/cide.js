@@ -388,7 +388,6 @@ window.addEventListener("load", function(){
 	/** Tab-Verschiebung starten **/
 
 	var dropfn = function(_tdeck) { return function(e) {
-		log("contains?");
 		if(!e.dataTransfer.types.contains("text/cidecontent")
 		&& !e.dataTransfer.types.contains("text/cideexplorer")
 	    && !e.dataTransfer.types.contains("application/x-moz-file"))
@@ -486,22 +485,24 @@ window.addEventListener("load", function(){
 			}
 			return;
 		}
-		clearHoverEffects();
 
 		var [deckid, tabid, tabname] = data.split('|');
 		deckid = parseInt(deckid); tabid = parseInt(tabid);
 
 		//Kein Nebendeck vorhanden
-		var sdeck = $(".deckbox").not($(this).parent().parent());
+		var sdeck = $(".deckbox").not($(this).parent().parent()), deck = undefined;
 		if(!sdeck.hasClass("deck-visible"))
 			var deck = positionSideDeck(sdeck);
 		else if($(this).hasClass("dragover-deck")) {
 			//Auf selbes Deck verschieben
-			if(deckid == _tdeck.id)
+			if(deckid == _tdeck.id) {
+				clearHoverEffects();
 				return true;
+			}
 
 			var deck = _tdeck;
 		}
+		clearHoverEffects();
 
 		//Informationen aus Tab entnehmen und anschließend in anderes Deck einfügen
 		movedatafn(decks[deckid], deck, tabid, tabname);
