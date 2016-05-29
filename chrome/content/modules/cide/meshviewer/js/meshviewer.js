@@ -178,7 +178,7 @@ function initTextureResource(mesh, key, src, img, matName) {
 }
 
 function loadTextureResourceSucc(tu) {
-	tu.$el.find(".tu-img").attr("src", tu.img.src);
+	tu.$el.find(".tu-img").get(0).src = tu.img.src;
 	
 	let list = tu.$el.find(".tu-size").get(0);
 	
