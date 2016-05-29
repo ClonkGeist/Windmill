@@ -351,10 +351,7 @@ class Session {
 	};
 	
 	startRectDraw(x, y) {
-		if(!this.rect) {
-			this.rect = $("<div class=\"drawn-rect\"></div>").get(0)
-			$(this.imgEl.parentNode).append(this.rect)
-		}
+		this.ensureRect()
 		
 		var pOffset = this.$p.offset()
 		
@@ -404,7 +401,7 @@ class Session {
 		var session = this
 		
 		var fn = function() {
-			session.drawRect()
+			session.animateRectDraw()
 			
 			if(session.isDrawing)
 				window.requestAnimationFrame(fn)
@@ -413,23 +410,31 @@ class Session {
 		window.requestAnimationFrame(fn)
 	}
 	
-	drawRect() {
+	ensureRect() {
+		if(this.rect)
+			return true
+		
+		this.rect = $("<div class=\"drawn-rect\"></div>").get(0)
+		$(this.imgEl.parentNode).append(this.rect)
+	}
+	
+	animateRectDraw() {
 		var pOffset = this.$p.offset()
-		log(pOffset)
+		
 		// set relative to image container
 		var x = this._rectX,
 			y = this._rectY
 		
-		x = x - pOffset.left
-		y = y - pOffset.top
+		x -= pOffset.left
+		y -= pOffset.top
 		
 		// cap them to not extend over the image
-		if(x + this.rectStartX > this.actualWidth)
+		if(x > this.actualWidth)
 			x = this.actualWidth
 		else if(x < 0)
 			x = 0
 		
-		if(y + this.rectStartY > this.actualHeight)
+		if(y > this.actualHeight)
 			y = this.actualHeight
 		else if(y < 0)
 			y = 0;
@@ -483,6 +488,14 @@ class Session {
 		
 		this.updateSliceDisplay()
 	};
+	
+	updateVisibleRect() {
+		$(this.rect).css("left", this.rectX/this.imageWidth*100 + "%")
+		$(this.rect).css("top", this.rectY/this.imageHeight*100 + "%")
+		
+		$(this.rect).width(this.rectWidth/this.imageWidth*100 + "%")
+		$(this.rect).height(this.rectHeight/this.imageHeight*100 + "%")
+	}
 	
 	updateSliceDisplay() {
 		$("#slice-display").html(
@@ -680,10 +693,10 @@ window.addEventListener("load", function(){
 
 function getTabData(tabid) {
 	var session = __iP._sessions[tabid];
-	let {rectWidth, rectHeight, rectStartX, rectStartY, _rectX, _rectY, gradSpaceX, gradSpaceY, gridvisible, snap} = session;
+	let {rectWidth, rectHeight, rectStartX, rectStartY, rectX, rectY, gradSpaceX, gradSpaceY, gridvisible, snap} = session;
 	var data = {
 		path: session.path,
-		rect: {rectWidth, rectHeight, rectStartX, rectStartY, _rectX, _rectY},
+		rect: {rectWidth, rectHeight, rectStartX, rectStartY, rectX, rectY},
 		grid: {gradSpaceX, gradSpaceY, gridvisible, snap},
 		actualWidth: session.actualWidth,
 		actualHeight: session.actualHeight,
@@ -695,14 +708,12 @@ function getTabData(tabid) {
 
 function dropTabData(data, tabid) {
 	loadImage(data.path, tabid, true).then(function(session) {
-		session.startRectDraw(data.rect.rectStartX, data.rect.rectStartY);
+		session.ensureRect();
 		session.isDrawing = false;
-		session.rectWidth = data.rect.rectWidth;
-		session.rectHeight = data.rect.rectHeight;
-		session.rectStartX = data.rect.rectStartX;
-		session.rectStartY = data.rect.rectStartY;
-		session._rectX = data.rect._rectX;
-		session._rectY = data.rect._rectY;
+		session.rectWidth = parseFloat(data.rect.rectWidth);
+		session.rectHeight = parseFloat(data.rect.rectHeight);
+		session.rectX = data.rect.rectX;
+		session.rectY = data.rect.rectY;
 		session.actualWidth = data.actualWidth;
 		session.actualHeight = data.actualHeight;
 		session.gradSpaceX = data.grid.gradSpaceX;
@@ -710,8 +721,11 @@ function dropTabData(data, tabid) {
 		session.gridvisible = data.grid.gridvisible;
 		session.snap = data.grid.snap;
 		session.zoomLevel = data.zoom;
-
-		session.drawRect();
+		
+		session.zoom(0)
+		session.updateVisibleRect();
+		session.updateSliceDisplay();
+		
 		if(session.gridIsShown())
 			session.showGrid();
 	});
