@@ -159,7 +159,7 @@ function reloadStylesheet(fScss, def, options = {}, __rec) {
 					continue
 				else
 					alreadyImported[imports[i]] = true
-				log(imports[i]);
+				
 				let imp = getSSDefByName(imports[i])
 				
 				if(!imp) {
