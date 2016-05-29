@@ -243,7 +243,6 @@ class Session {
 		
 		this.gradSpaceX = 16 // clonk dimensions
 		this.gradSpaceY = 20
-		this.snapToGrid = false
 		
 		this.gradientColor = "rgb(45, 45, 45)"
 		this.snap = false
@@ -374,7 +373,7 @@ class Session {
 		
 		// snap coords when
 		// closer than 30% to grid
-		if(this.snapToGrid) {
+		if(this.snap) {
 			var fx = this.rectStartX / this.gradSpaceX, ix = Math.round(fx),
 				fy = this.rectStartY / this.gradSpaceY, iy = Math.round(fy)
 			
@@ -416,7 +415,7 @@ class Session {
 	
 	drawRect() {
 		var pOffset = this.$p.offset()
-		
+		log(pOffset)
 		// set relative to image container
 		var x = this._rectX,
 			y = this._rectY
@@ -441,7 +440,7 @@ class Session {
 		
 		// snap coords when
 		// closer than 30% to grid
-		if(this.snapToGrid) {
+		if(this.snap) {
 			var fx = x / this.gradSpaceX, ix = Math.round(fx),
 				fy = y / this.gradSpaceY, iy = Math.round(fy)
 			
