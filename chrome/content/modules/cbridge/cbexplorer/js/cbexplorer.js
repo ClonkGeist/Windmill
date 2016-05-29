@@ -167,14 +167,15 @@ function getTreeEntryData(entry, fext) {
 		let data = {}, title, entrypath = formatPath(entry.path);
 		try { title = yield OS.File.read(entrypath+"/Title.txt", {encoding: "utf-8"}); }
 		catch(e) { log(e, true); }
+		let prefix = Locale("$ClonkLangPrefix$", -1);
 		if(title) {
 			lines = title.split('\n');
 			let titleUS;
 			for(var i = 0; i < lines.length; i++) {
-				if(__l["ClonkLangPrefix"] != "US" && lines[i].search(/US:/) != -1)
+				if(prefix != "US" && lines[i].search(/US:/) != -1)
 					titleUS = lines[i].match(/:(.+)/)[1];
 
-				if(lines[i].search(RegExp(__l["ClonkLangPrefix"]+":", "i")) != -1) {
+				if(lines[i].search(RegExp(prefix+":", "i")) != -1) {
 					data.title = lines[i].match(/:(.+)/)[1];
 					break;
 				}
