@@ -4,8 +4,14 @@
 	"scss": "global/global.scss"
 },
 {
+	"name": "icomoon",
+	"scss": "global/icomoon.scss",
+	"modify": "iconsToMixins"
+},
+{
 	"name": "icons",
-	"scss": "global/icomoon.scss"
+	"scss": "global/icons.scss",
+	"require": "icomoon"
 },
 {
 	"name": "specialUi",

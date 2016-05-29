@@ -122,6 +122,24 @@ Sass.options({
 
 var current_sass_loading_task;
 
+function modSassString(str, mods) {
+	log(mods)
+	// specific icomoon-generated-content modifier
+	if(mods === "iconsToMixins") {
+		var result = ""
+		str.replace(/\.icon-(.){(.)}/gim, (m) => {
+			log(m.replace(/\.icon-/gi, "@mixin -") + "\n");
+			result += m.replace(/\.icon-/gi, "@mixin -") + "\n";
+		})
+		
+		str = result
+	}
+	log("2");
+	log(str);
+	log(result)
+	return str
+}
+
 function reloadStylesheet(fScss, def, options = {}, __rec) {
 	let task = Task.spawn(function*() {
 		if(current_sass_loading_task && !__rec) {
@@ -133,37 +151,63 @@ function reloadStylesheet(fScss, def, options = {}, __rec) {
 			for(let child of def.children)
 				yield reloadStylesheet(child.fScss, child, options, true);
 		
-		var module = def.observe
 		
-		if(!def.cssTarget) {
-			// update info
-			var d = new Date()
-			execHook("sass-target-updated", def, d);
-			return
-		}
+		if(!def.cssTarget)
+			return execHook("sass-target-updated", def, new Date());
 		
-		if(def.observe === "main")
-			module = _mainwindow
-		else
-			module = module.contentWindow
-		
-		var headstring = ""
-		if(def.require) {
-			var imports = def.require.split("|")
+		var importDefs = function (imports, alreadyImported = {}) {
+			var hstr = ""
+			
 			for(let i = 0; i < imports.length; i++) {
+				if(alreadyImported[imports[i]])
+					continue
+				else
+					alreadyImported[imports[i]] = true
+				log(imports[i]);
 				let imp = getSSDefByName(imports[i])
-				if(!imp)
-					log("Sass error: Required import def not found ("+imports[i]+")", false, "sass")
+				
+				if(!imp) {
+					log("Sass error: Required import definition not found ("+imports[i]+")", false, "sass")
+					continue
+				}
 				
 				let f = _sc.file(_sc.chpath+"/styles/scss/" + imp.scss)
 				
-				if(!f.exists())
-					log("Sass error: Required import scss not found ("+imports[i]+")", false, "sass")
-				else
-					headstring += (yield OS.File.read(f.path, { encoding: "utf-8" })) + "\n"
+				if(!f.exists()) {
+					log("Sass error: Required import scss-file not found ("+imports[i]+")", false, "sass")
+					continue
+				}
+				/*
+				let hstr = ""
+				
+				if(imp.require) {
+					hstr += yield importDefs(imp.require.split("|"), alreadyImported)
+				}
+				log("1", 0, "sass")
+				log(hstr, 0, "error")*/
+				
+				let prom = new Promise(function(resolve, reject) {
+					resolve(importDefs(def.require.split("|")))
+				});
+				var headstring = "" 
+				headstring += (yield prom)
+				let scssString = (yield OS.File.read(f.path, { encoding: "utf-8" }))
+				
+				if(imp.modify)
+					scssString = modSassString(scssString, imp.modify);
+				
+				hstr += scssString + "\n"
 			}
+			
+			yield hstr
 		}
-
+		
+		let prom = new Promise(function(resolve, reject) {
+			resolve(importDefs(def.require.split("|")))
+		});
+		var headstring = "" 
+		log(yield prom, 0, "error")
+		headstring += yield prom
 		let content = yield OS.File.read(fScss.path, { encoding: "utf-8" });
 		let promise = new Promise(function(resolve, reject) {
 			Sass.compile(headstring + (content || ""), function(result) {
@@ -177,30 +221,10 @@ function reloadStylesheet(fScss, def, options = {}, __rec) {
 			log(fScss.path);
 		}
 		else {
-			var mdls = getModulesByName(def.observe)
-			if(mdls && mdls.length && false) {
-				var uri = _mainwindow._sc.ioserv().newURI(OS.Path.toFileURI(_sc.chpath + "/" + def.cssTarget), null, null)
-				log("Sass: Write file: " + _sc.chpath + "/" + def.cssTarget, false, "sass")
-				
-				var mdls = getModulesByName(def.observe)
-				mdls.forEach(m => {
-					let u = m.ownerGlobal.domwu
-					if(!u)
-						return
-					u.removeSheet(uri, u.USER_SHEET)
-					OS.File.writeAtomic(_sc.chpath + "/" + def.cssTarget, result.text, { encoding: "utf-8" });
-					u.loadSheet(uri, u.USER_SHEET)
-					u.redraw();
-				})
-			}
-			else {
-				log("Sass: Write file: " + _sc.chpath + "/" + def.cssTarget, false, "sass")
-				OS.File.writeAtomic(_sc.chpath + "/" + def.cssTarget, result.text, { encoding: "utf-8" })
-			}
+			log("Sass: Write file: " + _sc.chpath + "/" + def.cssTarget, false, "sass")
+			OS.File.writeAtomic(_sc.chpath + "/" + def.cssTarget, result.text, { encoding: "utf-8" })
 
-			// update info
-			var d = new Date()
-			execHook("sass-target-updated", def, d);
+			execHook("sass-target-updated", def, new Date());
 		}
 		if(!__rec)
 			yield createSassSnapshot();
