@@ -246,5 +246,23 @@ textbox.deactivated {
 .draft {
 	display: none;
 }
+#previewimage {
+	max-width: 200px;
+	max-height: 150px;
+}
+#achievements {
+	label {
+		font-weight: bold;
+	}
+	#achievement-list {
+		margin-left: 20px;
+	}
+	&.hidden {
+		display: none;
+	}
+	.achievement {
+		background-image: url('chrome://windmill/content/img/hostgame/icon_not_found.png');
+	}
+}
 
 /*	need some space	*/

@@ -45,8 +45,14 @@ function localizeModule() {
 		//Attribute durchgehen
 		jQuery.each(obj.attributes, function(j, attr) {
 			let match = $(obj).attr(attr.name).match(rgx);
-			if(match)
-				$(obj).attr(attr.name, getReplacement(match[0]));
+			if(match) {
+				$(obj).attr(attr.name, $(obj).attr(attr.name).replace(rgx, (match) => {
+					if(getReplacement(match))
+						return getReplacement(match);
+					else
+						return match;//$(obj).attr(attr.name, getReplacement(match[0]));
+				}));
+			}
 		});
 
 		//Textnodes durchgehen

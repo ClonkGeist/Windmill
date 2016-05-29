@@ -177,11 +177,10 @@ function getTabData(tabid) {
 }
 
 function dropTabData(data, tabid) {
-	addScript(data.text, data.lang, tabid, data.path, true);
-	
-	editors[tabid].getSession().setScrollLeft(data.scrollx);
-	editors[tabid].getSession().setScrollTop(data.scrolly);
-	
+	addScript(data.lang, tabid, data.path, true).then(function() {
+		editors[tabid].getSession().setScrollLeft(data.scrollx);
+		editors[tabid].getSession().setScrollTop(data.scrolly);
+	});
 	return true;
 }
 

@@ -197,78 +197,13 @@ function addScript(lang, index, path, fShow, skipLoading) {
 	setLoadingCaption("$LoadingReadScenarioData$", index);
 
 	if(skipLoading) {
-		initializePage("", index, typeof skipLoading == "object"?skipLoading.current_page:undefined);
-		return;
+		return new Promise(function(resolve) {
+			initializePage("", index, typeof skipLoading == "object"?skipLoading.current_page:undefined);
+			resolve("");
+		});
 	}
 	else
 		sessions[index] = { path, loading: true };
-
-	//Definitionen laden
-	var loadingdefs = [], scenariodefs = [];
-	Task.spawn(function*() {
-		let text = yield OS.File.read(path, {encoding: "utf-8"});
-		let scendata = parseINIArray(text), def, promises = {};
-		sessions[index].scendata = scendata;
-
-		for(var key in scendata["Definitions"]) {
-			def = scendata["Definitions"][key];
-
-			if(def)
-				scenariodefs.push(def);
-
-			//Geladene und gecachete Definitionen nicht nochmal laden
-			if(definitions[def]) {
-				if(definitions[def].loading) {
-					setLoadingCaption("$LoadingDefFrom$: " + def);
-					if(definitions[def].task)
-						yield definitions[def].task;
-					else
-						yield definitions[def].promise;
-				}
-				continue;
-			}
-
-			loadingdefs.push(def);
-			definitions[def] = { loading: true, promise: new Promise(function(success, reject) {
-				promises[def] = success;
-			}) };
-		}
-		if(!scendata["Definitions"] || !scendata["Definitions"]["Definition1"]) {
-			if(!definitions["Objects.ocd"] || definitions["Objects.ocd"].loading)
-				loadingdefs.unshift("Objects.ocd");
-			scenariodefs.unshift("Objects.ocd");
-		}
-
-		let temp = formatPath(sessions[index].path).split("/");
-		temp.pop();
-		let relpath = temp.join("/").replace(_sc.workpath(index)+"/", "");
-		loadingdefs.push(relpath);
-		scenariodefs.push(relpath);
-		sessions[index].relpath = relpath;
-		sessions[index].loadingdefs = loadingdefs;
-		sessions[index].scenariodefs = scenariodefs;
-
-		while(def = sessions[index].loadingdefs.pop()) {
-			setLoadingCaption("$LoadingDefFrom$: " + def);
-			definitions[def] = { ids: [], loading: true };
-			definitions[def].task = Task.spawn(function*() {
-				definitions[def].d = yield loadDefinitionsFrom(def, 0, def);
-				if(!definitions[def].d)
-					definitions[def] = undefined;
-
-				definitions[def].loading = false;
-				if(promises[def])
-					promises[def]();
-			});
-			yield definitions[def].task;
-		}
-		return text;
-	}).then(function(text) {
-		sessions[index].loading = false;
-		setLoadingCaption("$LoadingDone$");
-		setLoadingSubCaption("");
-		initializePage(text, index);
-	});
 	
 	function initializePage(text, index, current) {
 		getWrapper(".navigation, .settings-page-container", index).addClass("ready");
@@ -392,6 +327,74 @@ function addScript(lang, index, path, fShow, skipLoading) {
 			md_editorframe.contentWindow.addScript(lang, index, path, true);
 		updateErrorLog();
 	}
+
+	//Definitionen laden
+	var loadingdefs = [], scenariodefs = [];
+	return Task.spawn(function*() {
+		let text = yield OS.File.read(path, {encoding: "utf-8"});
+		let scendata = parseINIArray(text), def, promises = {};
+		sessions[index].scendata = scendata;
+
+		for(var key in scendata["Definitions"]) {
+			def = scendata["Definitions"][key];
+
+			if(def)
+				scenariodefs.push(def);
+
+			//Geladene und gecachete Definitionen nicht nochmal laden
+			if(definitions[def]) {
+				if(definitions[def].loading) {
+					setLoadingCaption("$LoadingDefFrom$: " + def);
+					if(definitions[def].task)
+						yield definitions[def].task;
+					else
+						yield definitions[def].promise;
+				}
+				continue;
+			}
+
+			loadingdefs.push(def);
+			definitions[def] = { loading: true, promise: new Promise(function(success, reject) {
+				promises[def] = success;
+			}) };
+		}
+		if(!scendata["Definitions"] || !scendata["Definitions"]["Definition1"]) {
+			if(!definitions["Objects.ocd"] || definitions["Objects.ocd"].loading)
+				loadingdefs.unshift("Objects.ocd");
+			scenariodefs.unshift("Objects.ocd");
+		}
+
+		let temp = formatPath(sessions[index].path).split("/");
+		temp.pop();
+		let relpath = temp.join("/").replace(_sc.workpath(index)+"/", "");
+		loadingdefs.push(relpath);
+		scenariodefs.push(relpath);
+		sessions[index].relpath = relpath;
+		sessions[index].loadingdefs = loadingdefs;
+		sessions[index].scenariodefs = scenariodefs;
+
+		while(def = sessions[index].loadingdefs.pop()) {
+			setLoadingCaption("$LoadingDefFrom$: " + def);
+			definitions[def] = { ids: [], loading: true };
+			definitions[def].task = Task.spawn(function*() {
+				definitions[def].d = yield loadDefinitionsFrom(def, 0, def);
+				if(!definitions[def].d)
+					definitions[def] = undefined;
+
+				definitions[def].loading = false;
+				if(promises[def])
+					promises[def]();
+			});
+			yield definitions[def].task;
+		}
+		return text;
+	}).then(function(text) {
+		sessions[index].loading = false;
+		setLoadingCaption("$LoadingDone$");
+		setLoadingSubCaption("");
+		initializePage(text, index);
+		return text;
+	});
 }
 
 function loadScenarioContentToElements(index, skipDefsel) {
@@ -644,12 +647,13 @@ function addDeflistEntry(deflist, def, deflistitem, options = {}) {
 		if(typeof def == "string") { //Definition ueber ID laden
 			def = getDefinitionById(def);
 
-			if(!def || def.invalid) {
+			if(!def)
+				return;
+			if(def.invalid) {
 				classes += " invalid";
 				if(getConfigData("ScenarioSettings", "HideInvalidDefs"))
 					return false;
 			}
-
 			//Eintrag bereits vorhanden?
 			var entry = $(deflist).find('.definition-selection-item[data-defid="'+def.defcore["DefCore"]["id"]+'"]')[0];
 			if(entry) {
@@ -1273,10 +1277,19 @@ function removeDeckItem(id) {
 /*-- TabData --*/
 
 function getTabData(tabid) {
-	let data;
-	if(!sessions[tabid].loading)
+	let data, runtime = {};
+	let defsel = sessions[tabid].ao_currentdeflist;
+	if(defsel) {
+		runtime.adding_overlay = {
+			sect: defsel.attr("data-scenario-sect"),
+			key: defsel.attr("data-scenario-key")
+		}
+	}
+	closeAddingOverlay(tabid);
+ 	if(!sessions[tabid].loading)
 		sessions[tabid].scendata = parseINIArray(generateScenarioTxt(tabid));
 	data = sessions[tabid];
+	data.runtime = runtime;
 	if(data.path.search(_sc.workpath(data.path)) != -1)
 		data.path.slice(_sc.workpath(data.path).length);
 	return data;
@@ -1289,6 +1302,14 @@ function dropTabData(data, tabid) {
 	}
 
 	sessions[tabid] = data;
-	addScript(0, tabid, data.path, true, data.loading?false:{current_page: data.current_page});
+	addScript(0, tabid, data.path, true, data.loading?false:{current_page: data.current_page}).then(function() {
+		if(data.runtime) {
+			let ao = data.runtime.adding_overlay;
+			if(ao) {
+				$(".definition-selection-wrapper[data-scenario-sect='"+ao.sect+"'][data-scenario-key='"+ao.key+"']")
+				.find(".definition-selection-new").click();
+			}
+		}
+	});
 	return true;
 }

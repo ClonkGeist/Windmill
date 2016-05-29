@@ -171,6 +171,12 @@ hook("load", function() {
 	}, 7500);
 });
 
+function getCurrentlySelectedPlayer() {
+	return players[$(".ps-playerlistitem.selected").attr("data-playerid")];
+}
+
+registerInheritableObject("getCurrentlySelectedPlayer");
+
 function addPlayerlistItem(id, filename, imgstr) {	
 	players[id][0] = filename;
 	
@@ -202,20 +208,21 @@ function addPlayerlistItem(id, filename, imgstr) {
 		var secs = player["TotalPlayingTime"]||0;
 		var mins = Math.round(secs/60)%60;
 		$("#ps-pdtime").attr("value", Math.round(secs/3600)+":"+(mins<10?"0":"")+mins+":"+(secs<10?"0":"")+secs%60);
-		
+
 		if(!lastround)
-			return $(".lastround").css("display", "none");
-		else
+			$(".lastround").css("display", "none");
+		else {
 			$(".lastround").css("display", "-moz-box");
 		
-		$("#ps-pdlr-title").attr("value", lastround["Title"]);
-		$("#ps-pdlr-duration").attr("value", Math.round(lastround["Duration"]/3600)+":"+Math.round(lastround["Duration"]/60)%60+":"+lastround["Duration"]%60);
-		$("#ps-pdlr-score").attr("value", lastround["TotalScore"]);
+			$("#ps-pdlr-title").attr("value", lastround["Title"]);
+			$("#ps-pdlr-duration").attr("value", Math.round(lastround["Duration"]/3600)+":"+Math.round(lastround["Duration"]/60)%60+":"+lastround["Duration"]%60);
+			$("#ps-pdlr-score").attr("value", lastround["TotalScore"]);
 
-		var date = new Date();
-		date.setTime(lastround["Date"]*1000)
-		$("#ps-pdlr-date").attr("value", sprintf(Locale("$PD_LRDateLbl$"), date.getDate(), date.getMonth()+1, date.getFullYear(), date.getHours(), date.getMinutes()));
-	
+			var date = new Date();
+			date.setTime(lastround["Date"]*1000)
+			$("#ps-pdlr-date").attr("value", sprintf(Locale("$PD_LRDateLbl$"), date.getDate(), date.getMonth()+1, date.getFullYear(), date.getHours(), date.getMinutes()));
+		}
+		
 		//Speichern
 		if(!wasSelected) {
 			var wrk = _sc.wregkey();
@@ -223,6 +230,7 @@ function addPlayerlistItem(id, filename, imgstr) {
 			wrk.writeStringValue("Participants", filename);
 			wrk.close();
 		}
+		execHook("playerselection", plr);
 	});
 
 	clone.appendTo($("#ps-playerlist"));

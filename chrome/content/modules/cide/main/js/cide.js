@@ -425,6 +425,14 @@ window.addEventListener("load", function(){
 
 			return deck;
 		}
+		function clearHoverEffects() {
+			//Dragover-Effekte loeschen
+			$(".dragover-sidedeck-bottom").removeClass("dragover-sidedeck-bottom");
+			$(".dragover-sidedeck-right").removeClass("dragover-sidedeck-right");
+			$(".dragover-sidedeck-top").removeClass("dragover-sidedeck-top");
+			$(".dragover-sidedeck-left").removeClass("dragover-sidedeck-left");
+			$(".dragover-deck").removeClass("dragover-deck");
+		}
 		if(!data) {
 			var deck = _tdeck;
 			if(!$(this).hasClass("dragover-deck")) {
@@ -433,6 +441,7 @@ window.addEventListener("load", function(){
 					positionSideDeck($(deck.element).parents(".deckbox"));
 			}
 
+			clearHoverEffects();
 			data = e.dataTransfer.getData("text/cideexplorer");
 
 			if(data) {
@@ -440,11 +449,12 @@ window.addEventListener("load", function(){
 				if(!md_explorer || !md_explorer.contentWindow || isNaN(data))
 					return;
 
-				var file = new _sc.file(_sc.workpath() + md_explorer.contentWindow.getTreeObjPath(md_explorer.contentWindow.getTreeObjById(data)));
+				let obj = md_explorer.contentWindow.getTreeObjById(data);
+				var file = new _sc.file(_sc.workpath(obj) + md_explorer.contentWindow.getTreeObjPath(obj));
 				if(!file || !file.exists())
 					return;
 
-				openFileInDeck(file, deck == sidedeck);
+				openFileInDeck(file.path, deck == sidedeck);
 			}
 			else {
 				var dragService = _sc.dragserv();
@@ -469,17 +479,10 @@ window.addEventListener("load", function(){
 					if(data) {
 						var file = data.value.QueryInterface(Ci.nsIFile);
 						if(file)
-							openFileInDeck(file, deck == sidedeck);
+							openFileInDeck(file.path, deck == sidedeck);
 					}
 				}
 			}
-
-			//Dragover-Effekte loeschen
-			$(".dragover-sidedeck-bottom").removeClass("dragover-sidedeck-bottom");
-			$(".dragover-sidedeck-right").removeClass("dragover-sidedeck-right");
-			$(".dragover-sidedeck-top").removeClass("dragover-sidedeck-top");
-			$(".dragover-sidedeck-left").removeClass("dragover-sidedeck-left");
-			$(".dragover-deck").removeClass("dragover-deck");
 			return;
 		}
 
@@ -487,16 +490,19 @@ window.addEventListener("load", function(){
 		deckid = parseInt(deckid); tabid = parseInt(tabid);
 
 		//Kein Nebendeck vorhanden
-		var sdeck = $(".deckbox").not($(this).parent().parent());
+		var sdeck = $(".deckbox").not($(this).parent().parent()), deck = undefined;
 		if(!sdeck.hasClass("deck-visible"))
 			var deck = positionSideDeck(sdeck);
 		else if($(this).hasClass("dragover-deck")) {
 			//Auf selbes Deck verschieben
-			if(deckid == _tdeck.id)
+			if(deckid == _tdeck.id) {
+				clearHoverEffects();
 				return true;
+			}
 
 			var deck = _tdeck;
 		}
+		clearHoverEffects();
 
 		//Informationen aus Tab entnehmen und anschließend in anderes Deck einfügen
 		movedatafn(decks[deckid], deck, tabid, tabname);
@@ -603,12 +609,12 @@ function getUnsavedFiles(deck) {
 
 function openFileInDeck(path, fSideDeck) {
 	let deck = fSideDeck?sidedeck:maindeck;
+	path = formatPath(path);
 	let splittedpath = path.split("/"),
 		filename = splittedpath.pop(),
 		parentpath = formatPath(splittedpath.join("/")),
 		fext = filename.split(".").pop().toLowerCase();
 
-		log(`${path}, ${filename}, ${fext}`);
 	//Files behandeln je nach Fileextension
 	switch(fext) {
 		case "c":
