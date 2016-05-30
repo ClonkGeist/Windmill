@@ -434,6 +434,12 @@ function Meshviewer() {
 			img.src = "file:" + src;
 		}
 		
+		this.reloadTexture = function(mesh, key, img) {
+			gl.bindTexture(gl.TEXTURE_2D, mesh.getTexture(key));
+			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+			gl.bindTexture(gl.TEXTURE_2D, null);
+		}
+		
 		this.addShader = function(vs, fs, flags) {
 			
 			if(!vs || !fs)
@@ -812,7 +818,7 @@ function Meshviewer() {
 				quat.rotateY(cRot, cRot, this.yRot);
 				quat.normalize(cRot, cRot);
 				
-				quat.multiply(rot, rot, cRot);
+				quat.multiply(rot, cRot, rot);
 				quat.multiply(rot, rot, this.qAxisSwap);
 				
 				mat4.fromRotationTranslation(t, rot, this.vTrans);
@@ -918,7 +924,7 @@ function Meshviewer() {
 				quat.rotateX(qNewRot, qNewRot, y/100);
 				quat.rotateY(qNewRot, qNewRot, -x/100);
 				
-				quat.multiply(this.qRot, this.qRot, qNewRot);
+				quat.multiply(this.qRot, qNewRot, this.qRot);
 				quat.normalize(this.qRot, this.qRot);
 				
 				this.xRot = 0;
@@ -1344,6 +1350,13 @@ function Meshviewer() {
 					}
 					
 					_mesh._scene.initRenderLoop(RENDER_CAUSE_RENDER_ONCE);
+				}
+				
+				this.getTexture = function(key) {
+					if(key === "overlay")
+						return this.texOverlay;
+					else
+						return this.texTexture;
 				}
 			}
 			
