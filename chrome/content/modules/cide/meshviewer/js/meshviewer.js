@@ -49,7 +49,7 @@ function initModelviewer(filepath, idMdl) {
 		
 		// reveal animation-ui section
 		document.getElementById("anim-section").className = "";
-	};
+	}
 	
 	session.onskeletonasked = function(name, sceneId) {
 		var $el = $(".skeleton-entry.draft").clone();
@@ -71,13 +71,13 @@ function initModelviewer(filepath, idMdl) {
 		e.addEventListener("dragleave", function() {
 			$(this).removeClass("highlighted");
 		});
-	};
+	}
 	
 	session.onskeletonloaderr = function(errorType, output) {
 		sceneMeta[sceneIndex].$resUiEl.find(".skeleton-resources").find(".se-name").attr("value", 
 			errorType === RESOURCE_ERROR_FAILED_TO_PARSE?Locale("$parsing_error$"):Locale("$not_found_error$")
 		);
-	};
+	}
 	
 	sceneMeta[sceneIndex] = {
 		moduleId: idMdl,
@@ -85,7 +85,7 @@ function initModelviewer(filepath, idMdl) {
 		texture_units: [],
 		skeletons: [],
 		mats: {},
-	};
+	}
 	
 	$("#resource-page").append(sceneMeta[sceneIndex].$resUiEl.removeClass("draft").get(0));
 	
@@ -172,15 +172,13 @@ function initTextureResource(mesh, key, src, img, matName) {
 		$el
 	};
 	
-	sceneMeta[idMdl].texture_units[sceneMeta[idMdl].texture_units.length] = tu;
-	
 	var e = $el.get(0);
-	
+	/*
 	e.addEventListener("dragover", function(e) {
 		if(dragEl)
 			return;
 		
-		var file = checkTransferForValidation(e, "png|jpeg|jpg");
+		var file = checkTransferForValidation(e, "png|jpeg|jpg|jpe");
 		
 		if(!file)
 			return;
@@ -189,7 +187,7 @@ function initTextureResource(mesh, key, src, img, matName) {
 	});
 	
 	e.addEventListener("drop", function(e) {
-		var file = checkTransferForValidation(e, "png|jpeg|jpg");
+		var file = checkTransferForValidation(e, "png|jpeg|jpg|jpe");
 		
 		if(!file)
 			return;
@@ -204,14 +202,14 @@ function initTextureResource(mesh, key, src, img, matName) {
 			loadTextureResourceSucc(tu);
 		};
 		
-		img.src = "file:" + file.path;
+		img.src = "file://" + file.path;
 		
 		e.stopPropagation();
 	});
 	
 	e.addEventListener("dragleave", function() {
 		$(this).removeClass("highlighted");	
-	});
+	});*/
 	
 	return tu;
 }
@@ -235,12 +233,7 @@ function loadTextureResourceErr(tu) {
 	tu.$el.find(".tu-img").addClass("error-icon");
 }
 
-function updateResourceUi(id) {
-	
-}
-
 function insertMaterialEntry(mat, id, referredName) {
-	log("material requested: " + referredName)
 	var $el = $(".mat-def.draft").clone();
 	
 	$el.find(".mf-name").attr("value", Locale("$material$")+ " " + referredName);
@@ -254,13 +247,25 @@ function insertMaterialEntry(mat, id, referredName) {
 	var e = $el.find(".file-entry").get(0);
 	
 	e.addEventListener("dragover", function(e) {
-		let list = e.dataTransfer.files;
+		var file = checkTransferForValidation(e, "material");
+		
+		$(this).addClass("dismiss");
+		
+		if(!file)
+			return;
 		
 		$(this).addClass("highlighted");
 	});
 	
-	e.addEventListener("dragleave", function() {
+	e.addEventListener("drop", function(e) {
+		var file = checkTransferForValidation(e, "material");
+		
 		$(this).removeClass("highlighted");
+		e.stopPropagation();
+	});
+	
+	e.addEventListener("dragleave", function() {
+		$(this).removeClass("highlighted").removeClass("dismiss");
 	});
 }
 

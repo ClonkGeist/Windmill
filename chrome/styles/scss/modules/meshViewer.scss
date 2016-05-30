@@ -209,6 +209,10 @@ canvas {
 	@include hover-blue;
 }
 
+.dismiss {
+	@include hover-red;
+}
+
 .tu-img {
 	background-color: $clr-base;
 	outline: 2px solid $clr-border;

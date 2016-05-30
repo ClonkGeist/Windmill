@@ -818,7 +818,7 @@ function Meshviewer() {
 				quat.rotateY(cRot, cRot, this.yRot);
 				quat.normalize(cRot, cRot);
 				
-				quat.multiply(rot, rot, cRot);
+				quat.multiply(rot, cRot, rot);
 				quat.multiply(rot, rot, this.qAxisSwap);
 				
 				mat4.fromRotationTranslation(t, rot, this.vTrans);
@@ -924,7 +924,7 @@ function Meshviewer() {
 				quat.rotateX(qNewRot, qNewRot, y/100);
 				quat.rotateY(qNewRot, qNewRot, -x/100);
 				
-				quat.multiply(this.qRot, this.qRot, qNewRot);
+				quat.multiply(this.qRot, qNewRot, this.qRot);
 				quat.normalize(this.qRot, this.qRot);
 				
 				this.xRot = 0;
