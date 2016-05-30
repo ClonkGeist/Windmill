@@ -209,19 +209,6 @@ canvas {
 	@include hover-blue;
 }
 
-.texture-unit-entry {
-	&.not-found .tu-img:before {
-		content: "?";
-		margin-right: -16px;
-	}
-	
-	&.not-found .tu-size,
-	&.not-found .icon-reload {
-		opacity: 0.5;
-		pointer-events: none;
-	}
-}
-
 .tu-img {
 	background-color: $clr-base;
 	outline: 2px solid $clr-border;
@@ -230,9 +217,14 @@ canvas {
 	margin-right: 3px;
 }
 
-.tu-img.not-found:before {
-	content: "?";
-	margin-right: -16px;
+.texture-unit-entry {	
+	&.not-found .tu-size,
+	&.not-found .icon-reload {
+		opacity: 0.5;
+		pointer-events: none;
+	}
+	
+	pointer-events: auto;
 }
 
 

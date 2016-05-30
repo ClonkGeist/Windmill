@@ -164,8 +164,6 @@ function initTextureResource(mesh, key, src, img, matName) {
 	log(src)
 	sceneMeta[idMdl].mats[matName].$el.append($el);
 	
-	$el.removeClass("draft").addClass("fade-in").delay(3000).removeClass("fade-in");
-	
 	var tu = {
 		src,
 		key,
@@ -177,19 +175,48 @@ function initTextureResource(mesh, key, src, img, matName) {
 	sceneMeta[idMdl].texture_units[sceneMeta[idMdl].texture_units.length] = tu;
 	
 	var e = $el.get(0);
-		
+	
 	e.addEventListener("dragover", function(e) {
-		let list = e.dataTransfer.files;
+		if(dragEl)
+			return;
+		
+		var file = checkTransferForValidation(e, "png|jpeg|jpg");
+		
+		if(!file)
+			return;
 		
 		$(this).addClass("highlighted");
 	});
 	
-	e.addEventListener("dragleave", function() {
+	e.addEventListener("drop", function(e) {
+		var file = checkTransferForValidation(e, "png|jpeg|jpg");
+		
+		if(!file)
+			return;
+		
 		$(this).removeClass("highlighted");
+		
+		var img = new Image();
+		
+		img.onload = function() {
+			log(tu);
+			tu.mesh.parentMesh._scene.reloadTexture(tu.mesh, tu.key, img);
+			loadTextureResourceSucc(tu);
+		};
+		
+		img.src = "file:" + file.path;
+		
+		e.stopPropagation();
+	});
+	
+	e.addEventListener("dragleave", function() {
+		$(this).removeClass("highlighted");	
 	});
 	
 	return tu;
 }
+
+var dragEl;
 
 function loadTextureResourceSucc(tu) {
 	tu.$el.removeClass("not-found");
@@ -197,7 +224,7 @@ function loadTextureResourceSucc(tu) {
 	tu.$el.find(".tu-img").get(0).src = tu.img.src;
 	
 	let list = tu.$el.find(".tu-size").get(0);
-	
+	list.removeAllItems();
 	list.appendItem(tu.img.width + "x" + tu.img.height, tu.img.width + "x" + tu.img.height);
 	list.selectedIndex = 0;
 }
@@ -449,3 +476,124 @@ function resize() {
 window.onresize = function(e) {
 	resize();
 };
+
+function checkTransferForValidation(e, type) {
+	
+	if(// !e.dataTransfer.types.contains("text/cidecontent") &&
+		!e.dataTransfer.types.contains("text/cideexplorer") &&
+	    !e.dataTransfer.types.contains("application/x-moz-file"))
+			return false;
+	
+	
+	
+	let md_explorer = getModuleByName("cide-explorer");
+	
+	var data = e.dataTransfer.getData("text/cideexplorer");
+	if(data) {
+		data = parseInt(data);
+		if(!md_explorer || !md_explorer.contentWindow || isNaN(data))
+			return false;
+
+		let obj = md_explorer.contentWindow.getTreeObjById(data);
+		var file = new _sc.file(_sc.workpath(obj) + md_explorer.contentWindow.getTreeObjPath(obj));
+		
+		if(!file || !file.exists())
+			return false;
+		
+		let leaf = file.leafName.split(".");
+		
+		if(type && !type.match(new RegExp(leaf[leaf.length -1], "gi")))
+			return false;
+		
+		return file;
+	}
+}
+
+/* taken from cide.js
+var dropfn = function(_tdeck) { return function(e) {
+		if(!e.dataTransfer.types.contains("text/cidecontent")
+		&& !e.dataTransfer.types.contains("text/cideexplorer")
+	    && !e.dataTransfer.types.contains("application/x-moz-file"))
+			return;
+
+		var data = e.dataTransfer.getData("text/cidecontent");
+		}
+		if(!data) {
+			var deck = _tdeck;
+			if(!$(this).hasClass("dragover-deck")) {
+				deck = (_tdeck == maindeck)?sidedeck:maindeck;
+				if(!$(deck.element).parents(".deckbox").hasClass("deck-visible"))
+					positionSideDeck($(deck.element).parents(".deckbox"));
+			}
+
+			clearHoverEffects();
+			data = e.dataTransfer.getData("text/cideexplorer");
+
+			if(data) {
+				data = parseInt(data);
+				if(!md_explorer || !md_explorer.contentWindow || isNaN(data))
+					return;
+
+				let obj = md_explorer.contentWindow.getTreeObjById(data);
+				var file = new _sc.file(_sc.workpath(obj) + md_explorer.contentWindow.getTreeObjPath(obj));
+				if(!file || !file.exists())
+					return;
+
+				openFileInDeck(file.path, deck == sidedeck);
+			}
+			else {
+				var dragService = _sc.dragserv();
+				var dragSession = dragService.getCurrentSession();
+
+				var _ios = _sc.ioserv();
+				var files = [];
+
+				//Überprüfen, ob von außerhalb
+				if(dragSession.sourceNode)
+				  return;
+
+				//Setup a transfer item to retrieve the file data
+				var trans = _sc.transferable();
+				trans.addDataFlavor("application/x-moz-file");
+
+				for(var i = 0; i < dragSession.numDropItems; i++) {
+					dragSession.getData(trans, i);
+					var flavor = {}, data = {}, length = {};
+					trans.getAnyTransferData(flavor, data, length);
+
+					if(data) {
+						var file = data.value.QueryInterface(Ci.nsIFile);
+						if(file)
+							openFileInDeck(file.path, deck == sidedeck);
+					}
+				}
+			}
+			return;
+		}
+
+		var [deckid, tabid, tabname] = data.split('|');
+		deckid = parseInt(deckid); tabid = parseInt(tabid);
+
+		//Kein Nebendeck vorhanden
+		var sdeck = $(".deckbox").not($(this).parent().parent()), deck = undefined;
+		if(!sdeck.hasClass("deck-visible"))
+			var deck = positionSideDeck(sdeck);
+		else if($(this).hasClass("dragover-deck")) {
+			//Auf selbes Deck verschieben
+			if(deckid == _tdeck.id) {
+				clearHoverEffects();
+				return true;
+			}
+
+			var deck = _tdeck;
+		}
+		clearHoverEffects();
+
+		//Informationen aus Tab entnehmen und anschließend in anderes Deck einfügen
+		movedatafn(decks[deckid], deck, tabid, tabname);
+		if(decks[deckid].isEmpty())
+			$(decks[deckid].element).parent().parent().removeClass("deck-visible");
+
+		e.preventDefault();
+	};
+	*/
