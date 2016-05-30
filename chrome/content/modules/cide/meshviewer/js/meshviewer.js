@@ -233,32 +233,42 @@ function loadTextureResourceErr(tu) {
 	tu.$el.find(".tu-img").addClass("error-icon");
 }
 
-function insertMaterialEntry(mat, id, referredName) {
+function insertMaterialEntry(mat, sceneIndex, referredName) {
 	var $el = $(".mat-def.draft").clone();
 	
 	$el.find(".mf-name").attr("value", Locale("$material$")+ " " + referredName);
 	$el.removeClass("draft");
-	sceneMeta[id].$resUiEl.find(".mf-wrapper").append($el);
+	sceneMeta[sceneIndex].$resUiEl.find(".mf-wrapper").append($el);
 	
 	$el.addClass("fade-in").delay(3000).removeClass("fade-in");
 	
-	sceneMeta[id].mats[referredName] = {$el, mat};
+	sceneMeta[sceneIndex].mats[referredName] = {$el, mat};
 	
 	var e = $el.find(".file-entry").get(0);
 	
 	e.addEventListener("dragover", function(e) {
 		var file = checkTransferForValidation(e, "material");
 		
-		$(this).addClass("dismiss");
-		
-		if(!file)
+		if(!file) {
+			$(this).addClass("dismiss");
 			return;
+		}
 		
 		$(this).addClass("highlighted");
 	});
 	
 	e.addEventListener("drop", function(e) {
 		var file = checkTransferForValidation(e, "material");
+		
+		$(this).removeClass("dismiss");
+		if(!file)
+			return;
+		
+		let txt
+		txt = yield OS.File.read(file.path, {encoding: "utf-8"});
+		var mat = Materials.parse(txt);
+		log(mat)
+		scenes[sceneMeta[sceneIndex].id].useAsMatDef(mat, referredName);
 		
 		$(this).removeClass("highlighted");
 		e.stopPropagation();
@@ -505,9 +515,7 @@ function checkTransferForValidation(e, type) {
 		if(!file || !file.exists())
 			return false;
 		
-		let leaf = file.leafName.split(".");
-		
-		if(type && !type.match(new RegExp(leaf[leaf.length -1], "gi")))
+		if(type && !type.match(new RegExp(file.leafName.split(".").pop(), "gi")))
 			return false;
 		
 		return file;
