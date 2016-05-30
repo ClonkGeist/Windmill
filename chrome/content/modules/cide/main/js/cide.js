@@ -204,7 +204,7 @@ window.addEventListener("load", function(){
 	
 	function btncnt_dropfn(deck) { return function(e) {
 		//Pruefen, ob verschoben werden darf
-		if(!tabcheck(e, this))
+		if(!tabcheck(e, this, true))
 			return false;
 
 		var [deckid, tabid, tabname] = cide_dragdata.split('|');
