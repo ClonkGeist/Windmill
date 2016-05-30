@@ -121,18 +121,9 @@ window.addEventListener("load", function(){
 			deckid = parseInt(t[0]); tabid = parseInt(t[1]); tabname = t[2];
 
 			//Nicht aufs eigene Tab reagieren
-			if(deckid == deck.id && tabid == id)
+			if(deckid != deck.id || tabid == id)
 				return false;
 
-			//Daten ggf. ans andere Deck übermitteln
-			if(deckid != deck.id) {
-				var newData = movedatafn(decks[deckid], decks[deck.id], tabid, tabname, this);
-				if(decks[deckid].isEmpty())
-					$(decks[deckid].element).parent().parent().removeClass("deck-visible");
-
-				//Neue Tabdaten global speichern
-				cide_dragdata = newData[0] + "|" + newData[1] + "|" + tabname;
-			}
 			$(".deck-"+deckid+"-button-"+tabid).insertBefore($(this));
 
 			e.preventDefault();
@@ -168,12 +159,12 @@ window.addEventListener("load", function(){
 
 	maindeck.hook("btnCreated", btncreatefn);
 	sidedeck.hook("btnCreated", btncreatefn);
-
-	//Tabs ganz rechts in der Tabnavigation einordnen (Drag and Drop)
-	var btncnt_dragenterfn = function(deck) { return function(e) {
+	
+	function tabcheck(e, target, ignore_bubbling) {
 		//Nur verschieben, wenn die Tabbar auch das Ziel ist
-		if(e.target != this)
-			return false;
+		if(e.target != target)
+			if(!ignore_bubbling || $(e.target).parents().index(target) == -1)
+				return false;
 
 		//Checken ob _Tabs_ verschiebt wurden
 		if(!e.dataTransfer.types.contains("text/cidecontent"))
@@ -182,24 +173,63 @@ window.addEventListener("load", function(){
 		if(!e.dataTransfer.getData("text/cidecontent"))
 			return false;
 
+		return true;
+	}
+
+	//Tabs ganz rechts in der Tabnavigation einordnen (Drag and Drop)
+	var btncnt_dragenterfn = function(deck) { return function(e) {
+		//Pruefen, ob verschoben werden darf
+		if(!tabcheck(e, this))
+			return false;
+
 		var [deckid, tabid, tabname] = cide_dragdata.split('|');
 		deckid = parseInt(deckid); tabid = parseInt(tabid);
 
-		//Daten ans andere Deck übermitteln
-		if(deckid != deck.id) {
-			var newData = movedatafn(decks[deckid], decks[deck.id], tabid, tabname, true);
-			if(decks[deckid].isEmpty())
-				$(decks[deckid].element).parent().parent().removeClass("deck-visible");
+		//Beim Sidedeck nicht direkt in die Navigation einfuegen, allerdings Drop erlauben
+		if(deckid != deck.id)
+			return;
 
-			cide_dragdata = newData[0] + "|" + newData[1] + "|" + tabname;
-		}
 		$(".deck-"+deckid+"-button-"+tabid).appendTo($(this));
 
 		e.preventDefault();
 	}};
+	function btncnt_dragoverfn(deck) { return function(e) {
+		//Pruefen, ob verschoben werden darf
+		if(!tabcheck(e, this, true))
+			return false;
+
+		let dragSession = _sc.dragserv().getCurrentSession();
+		dragSession.canDrop = true;
+	}}
+	
+	function btncnt_dropfn(deck) { return function(e) {
+		//Pruefen, ob verschoben werden darf
+		if(!tabcheck(e, this, true))
+			return false;
+
+		var [deckid, tabid, tabname] = cide_dragdata.split('|');
+		deckid = parseInt(deckid); tabid = parseInt(tabid);
+
+		//Kein Drop in das gleiche Deck
+		if(deckid == deck.id)
+			return;
+
+		var newData = movedatafn(decks[deckid], decks[deck.id], tabid, tabname, true);
+		if(decks[deckid].isEmpty())
+			$(decks[deckid].element).parent().parent().removeClass("deck-visible");
+
+		cide_dragdata = newData[0] + "|" + newData[1] + "|" + tabname;
+		$(".deck-"+deckid+"-button-"+tabid).appendTo($(this));
+
+		e.preventDefault();
+	}}
 
 	maindeck.buttonContainer.addEventListener("dragenter", btncnt_dragenterfn(maindeck));
 	sidedeck.buttonContainer.addEventListener("dragenter", btncnt_dragenterfn(sidedeck));
+	maindeck.buttonContainer.addEventListener("dragover", btncnt_dragoverfn(maindeck));
+	sidedeck.buttonContainer.addEventListener("dragover", btncnt_dragoverfn(sidedeck));
+	maindeck.buttonContainer.addEventListener("dragdrop", btncnt_dropfn(maindeck));
+	sidedeck.buttonContainer.addEventListener("dragdrop", btncnt_dropfn(sidedeck));
 
 	//Decks verschwinden lassen, falls leer
 	var detachedfn = function(deck, id, frame) {

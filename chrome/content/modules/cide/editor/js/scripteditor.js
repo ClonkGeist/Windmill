@@ -202,8 +202,9 @@ function checkIfTabIsUnsaved(id) { return !editors[id].getSession().getUndoManag
 
 function createCideToolbar(startup) {
 	addCideToolbarButton("icon-save", function() { saveTab(-1); });
-	addCideToolbarButton("icon-search", function() {  a_E.execCommand("find"); });
-	addCideToolbarButton("icon-snippet", function() { showSnippetDialog(a_E.__scope); });
+	addCideToolbarButton("icon-search", openSearchbox);
+	if(a_E && snippetsAvailable(a_E.__scope))
+		addCideToolbarButton("icon-snippet", function() { showSnippetDialog(a_E.__scope); });
 	
 	return true;
 }
@@ -239,6 +240,30 @@ function remapKeybindings(editor) {
 	editor.commands.addCommand(newList)
 }
 
+function openSearchbox() {
+	if(a_E.SearchBox && a_E.SearchBox.isFocused)
+		a_E.SearchBox.$searchBarKb.execCommand("Ctrl-f|Command-f");
+	else
+		ace.require("ace/config").loadModule("ace/ext/searchbox", function(e) {
+				e.Search(a_E)
+			
+			var kb = a_E.searchBox.$searchBarKb;
+			var command = kb.commands["Ctrl-f|Command-f"]
+			
+			if(command) {
+				command.bindKey = ""
+				kb.addCommand(command)
+			}
+			
+			command = kb.commands["Ctrl-H|Command-Option-F"]
+			
+			if(command) {
+				command.bindKey = ""
+				kb.addCommand(command)
+			}
+		});
+}
+
 hook("load", function() {
 	$(window).bind("paste", function(e) {
 		e.preventDefault();
@@ -246,43 +271,20 @@ hook("load", function() {
 	bindKeyToObj(new KeyBinding("Save", "Ctrl-S", function() { saveTab(-1); }));
 	bindKeyToObj(new KeyBinding("DuplicateSel", "Ctrl-Shift-D", function() { a_E.duplicateSelection(); }));
 	bindKeyToObj(new KeyBinding("Paste", "Ctrl-V", function() { a_E.execCommand("paste", _sc.clipboard2.get()); }));
-	bindKeyToObj(new KeyBinding("RemoveLine", "Ctrl-D", function() { a_E.execCommand("removeline"); }));
+	bindKeyToObj(new KeyBinding("RemoveLine", "Ctrl-D", function() { a_E.removeLines(); }));
 	bindKeyToObj(new KeyBinding("OpenSnippetDialog", "Ctrl-Alt-S", function() { err("ES"); showSnippetDialog(a_E.__scope); }));
 	bindKeyToObj(new KeyBinding("SelectAll", "Ctrl-A", function() { a_E.selectAll(); }));
 	bindKeyToObj(new KeyBinding("Undo", "Ctrl-Z", function() { a_E.undo(); }));
 	bindKeyToObj(new KeyBinding("Redo", "Ctrl-Y", function() { a_E.redo(); }));
 	bindKeyToObj(new KeyBinding("RemoveRight", "DELETE", function() { a_E.remove(); }));
 	bindKeyToObj(new KeyBinding("RemoveLeft", "BACK_SPACE", function() { a_E.remove("left"); }));
-	bindKeyToObj(new KeyBinding("Find", "Ctrl-F", function() {
-		
-		if(a_E.SearchBox && a_E.SearchBox.isFocused)
-			a_E.SearchBox.$searchBarKb.execCommand("Ctrl-f|Command-f");
-		else
-			ace.require("ace/config").loadModule("ace/ext/searchbox", function(e) {
-					e.Search(a_E)
-				
-				var kb = a_E.searchBox.$searchBarKb;
-				var command = kb.commands["Ctrl-f|Command-f"]
-				
-				if(command) {
-					command.bindKey = ""
-					kb.addCommand(command)
-				}
-				
-				command = kb.commands["Ctrl-H|Command-Option-F"]
-				
-				if(command) {
-					command.bindKey = ""
-					kb.addCommand(command)
-				}
-			});
-	}));
+	bindKeyToObj(new KeyBinding("Find", "Ctrl-F", openSearchbox));
 	bindKeyToObj(new KeyBinding("Replace", "Ctrl-H", function() { 
 		if(a_E.SearchBox && a_E.SearchBox.isFocused)
 			a_E.SearchBox.$searchBarKb.execCommand("Ctrl-H|Command-Option-F");
 		else
 			ace.require("ace/config").loadModule("ace/ext/searchbox", function(e) {
-					e.Search(a_E, true)
+				e.Search(a_E, true)
 				
 				var kb = a_E.searchBox.$searchBarKb;
 				var command = kb.commands["Ctrl-f|Command-f"]
@@ -302,22 +304,20 @@ hook("load", function() {
 	}));
 	
 	bindKeyToObj(new KeyBinding("GoToLine", "Ctrl-L", function() {
-		var dlg = new WDialog("$DlgGoToLine$", MODULE_LPRE, { modal: true, css: { "width": "400px" }, btnright: ["cancel"]});
+		var dlg = new WDialog("$DlgGoToLine$", MODULE_LPRE, { modal: true, css: { "width": "400px" }, btnright: [{ preset: "accept", 
+			onclick: function(e, btn, dialog) {
+				var line = parseInt($(dialog.element).find("#dlg-gotoline-input").val());
+				if(!isNaN(line))
+					a_E.gotoLine(line);
+
+				a_E.focus();
+			}
+		}, "cancel"]});
 		
 		dlg.setContent("<textbox id=\"dlg-gotoline-input\" placeholder=\"$DlgGoToLineDefault$\"/>");
 		dlg.show();
 		
-		$(dlg.element).find("#dlg-gotoline-input").keypress(function(e) {
-			if(e.which == 13) {
-				var line = parseInt($(this).val());
-				if (!isNaN(line)) {
-					a_E.gotoLine(line);
-				}
-				
-				dlg.hide();
-				dlg = null;
-			}
-		}).focus();
+		$(dlg.element).find("#dlg-gotoline-input").focus();
 		
 	}));
 });

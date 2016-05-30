@@ -25,11 +25,12 @@ function _keybinderCheckKeyBind(keybind, event, keys) {
 	}
 
 	//Modifier überprüfen
-	if(keys.search(/(^|-)Ctrl($|-)/) != -1 && !event.ctrlKey)
+	let found;
+	if((found = keys.search(/(^|-)Ctrl($|-)/) != -1) && !event.ctrlKey || !found && event.ctrlKey)
 		return false;
-	if(keys.search(/(^|-)Shift($|-)/) != -1 && !event.shiftKey)
+	if((found = keys.search(/(^|-)Shift($|-)/) != -1) && !event.shiftKey || !found && event.shiftKey)
 		return false;
-	if(keys.search(/(^|-)Alt($|-)/) != -1 && !event.altKey)
+	if((found = keys.search(/(^|-)Alt($|-)/) != -1) && !event.altKey || !found && event.altKey)
 		return false;
 
 	//Letzte Taste Rausfinden und checken
@@ -67,7 +68,7 @@ function bindKeyToObj(kb, obj = $(document)) {
 					return true;
 				}
 			});
-			$(obj).keydown(function(e) {
+			$(obj)[0].addEventListener("keydown", function(e) {
 				if(!$(this).prop("_windmill_keybinding"))
 					return;
 
@@ -85,7 +86,7 @@ function bindKeyToObj(kb, obj = $(document)) {
 					e.stopImmediatePropagation();
 					return true;
 				}
-			});
+			}, !kb.options.no_capture);
 			$(obj).keyup(function(e) {
 				if(!$(this).prop("_windmill_keybinding"))
 					return;

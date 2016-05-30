@@ -60,9 +60,9 @@ hook("load", function() {
 		try { yield loadModules(_sc.chpath + "/content/modules"); } catch(e) {}
 		//SASS Observer (benoetigt die Module vorher)
 		$("#startup-loading").html(prepended_html+"Generating Stylesheets");
-		yield initializeSassObserver();
-		//Falls keine CSS Dateien vorher vorhanden waren, Windmill nochmal neustarten
-		if(!sass_snapshot) {
+		let sass_files_changed = yield initializeSassObserver();
+		//Falls keine CSS Dateien vorher vorhanden waren oder CSS Dateien geandert worden sind, Windmill nochmal neustarten
+		if(!sass_snapshot || sass_files_changed) {
 			restartWindmill();
 			return -2;
 		}
