@@ -42,6 +42,10 @@ hook("load", function() {
 	});
 });
 
+function snippetsAvailable(scope) {
+	return !!snippets[scope];
+}
+
 function showSnippetDialog(scope) {
 	var list = snippets[scope];
 	

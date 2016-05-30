@@ -68,7 +68,7 @@ function bindKeyToObj(kb, obj = $(document)) {
 					return true;
 				}
 			});
-			$(obj).keydown(function(e) {
+			$(obj)[0].addEventListener("keydown", function(e) {
 				if(!$(this).prop("_windmill_keybinding"))
 					return;
 
@@ -86,7 +86,7 @@ function bindKeyToObj(kb, obj = $(document)) {
 					e.stopImmediatePropagation();
 					return true;
 				}
-			});
+			}, !kb.options.no_capture);
 			$(obj).keyup(function(e) {
 				if(!$(this).prop("_windmill_keybinding"))
 					return;
