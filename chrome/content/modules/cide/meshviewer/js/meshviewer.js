@@ -1,8 +1,8 @@
 
 var session;
 
-var scenes = {};
-var sceneMeta = {};
+var scenes = {}; // arranged by deck id
+var sceneMeta = {}; // arranged by scene index
 var clrpckr;
 var CM_PATHALIAS = "fpath";
 
@@ -28,6 +28,8 @@ function initModelviewer(filepath, idMdl) {
 	
 	scenes[idMdl] = session.addScene();
 	var scene = scenes[idMdl];
+	var sceneIndex = scene.id;
+	
 	scene.addMesh(filepath).then(null, function(reason) {
 		log("An error occured during the loading process.", 0, "error");
 		log("********************************************", 0, "error");
@@ -72,12 +74,12 @@ function initModelviewer(filepath, idMdl) {
 	};
 	
 	session.onskeletonloaderr = function(errorType, output) {
-		sceneMeta[idMdl].$resUiEl.find(".skeleton-resources").find(".se-name").attr("value", 
+		sceneMeta[sceneIndex].$resUiEl.find(".skeleton-resources").find(".se-name").attr("value", 
 			errorType === RESOURCE_ERROR_FAILED_TO_PARSE?Locale("$parsing_error$"):Locale("$not_found_error$")
 		);
 	};
 	
-	sceneMeta[idMdl] = {
+	sceneMeta[sceneIndex] = {
 		moduleId: idMdl,
 		$resUiEl: $(".resource-list.draft").clone(),
 		texture_units: [],
@@ -85,7 +87,7 @@ function initModelviewer(filepath, idMdl) {
 		mats: {},
 	};
 	
-	$("#resource-page").append(sceneMeta[idMdl].$resUiEl.removeClass("draft").get(0));
+	$("#resource-page").append(sceneMeta[sceneIndex].$resUiEl.removeClass("draft").get(0));
 	
 	resize();
 	
@@ -127,7 +129,7 @@ function showDeckItem(idMdl) {
 	frameUpdateWindmillTitle();
 	
 	$(".resource-list.visible2").removeClass("visible2");
-	sceneMeta[idMdl].$resUiEl.addClass("visible2");
+	sceneMeta[scenes[idMdl].id].$resUiEl.addClass("visible2");
 }
 
 function getModuleIdBySceneId(sceneId) {
@@ -174,6 +176,18 @@ function initTextureResource(mesh, key, src, img, matName) {
 	
 	sceneMeta[idMdl].texture_units[sceneMeta[idMdl].texture_units.length] = tu;
 	
+	var e = $el.get(0);
+		
+	e.addEventListener("dragover", function(e) {
+		let list = e.dataTransfer.files;
+		
+		$(this).addClass("highlighted");
+	});
+	
+	e.addEventListener("dragleave", function() {
+		$(this).removeClass("highlighted");
+	});
+	
 	return tu;
 }
 
@@ -190,6 +204,8 @@ function loadTextureResourceSucc(tu) {
 
 function loadTextureResourceErr(tu) {
 	tu.$el.addClass("not-found");
+	
+	tu.$el.find(".tu-img").addClass("error-icon");
 }
 
 function updateResourceUi(id) {
