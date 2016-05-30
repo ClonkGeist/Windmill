@@ -178,15 +178,15 @@ function initializeConfig() {
 	addConfigString("Global", "Version", "0.2");
 	addConfigString("Global", "Language", "en-US");
 	addConfigString("Global", "ShowHiddenLogs", false);
-	
+
 	//CBridge
-	
+
 	//ShowGame
 	addConfigString("ShowGame", "Notifications", "[]", "array");
 	addConfigString("ShowGame", "PortScan", true);
 	addConfigString("ShowGame", "NotificationsShowEmpty", false);
 	addConfigString("ShowGame", "MasterserverURL", "http://league.clonkspot.org/");
-	
+
 	//HostGame
 	addConfigString("HostGame", "PasswordActivated", false);
 	addConfigString("HostGame", "Password", "");
@@ -196,11 +196,11 @@ function initializeConfig() {
 	addConfigString("HostGame", "RunTimeJoin", false);
 	addConfigString("HostGame", "SignUp", true);
 	addConfigString("HostGame", "Network", false);
-	
+
 	//StartGame
 	addConfigString("StartGame", "Record", true);
 	addConfigString("StartGame", "GamePort", 11111);
-	
+
 	//CIDE
 	addConfigString("CIDE", "HideUnsupportedFiles", true);
 	addConfigString("CIDE", "AlwaysUseExternalProg", false);
@@ -219,21 +219,24 @@ function initializeConfig() {
 	addConfigString("CIDE", "WorkspaceParentDirectory", "", "path");
 	addConfigString("CIDE", "FileProtection", true);
 	addConfigString("CIDE", "RejectScenarioBackup", true);
-	
+
 	//Audiomodule
 	addConfigString("Audiomodule", "Volume", 100);
 	addConfigString("Audiomodule", "Loop", false);
 	addConfigString("Audiomodule", "Autoplay", false);
 
+	//Scripteditor
+	addConfigString("Scripteditor", "Completers", 2);
+
 	//ScenarioSettings
 	addConfigString("ScenarioSettings", "AlwaysUseScenarioSettings", true);
 	addConfigString("ScenarioSettings", "UseModuleCache", false);
-	
+
 	//BMP-Editor
 	addConfigString("BMPEditor", "HideUnusedMat", true);
 	addConfigString("BMPEditor", "ScaleCanvas", true);
 	addConfigString("BMPEditor", "SaveTexMapBehaviour", 1);
-	
+
 	return true;
 }
 

@@ -158,6 +158,20 @@
 								<textbox id="explorer-font-size" type="number" />px
 							</hbox>-->
 						</vbox>
+						<caption label="Scripteditor" class="toggle-contents" onclick="toggleContents(this)"/>
+						<vbox>
+							<hbox>
+								<label value="$selectcompleter$" flex="1" />
+								<menulist flex="1">
+									<menupopup id="completerSelection">
+										<menuitem label="$AceCmp_NoCompleters$" value="0" />
+										<menuitem label="$AceCmp_KeywordsOnly$" value="1" />
+										<menuitem label="$AceCmp_KeywordsAndFuncs$" value="2" />
+										<menuitem label="$AceCmp_Everything$" value="3" />
+									</menupopup>
+								</menulist>
+							</hbox>
+						</vbox>
 						<caption label="Explorer" class="toggle-contents" onclick="toggleContents(this)"/>
 						<vbox>
 							<checkbox label="$CopyOnDragDrop$" id="explorer-copy-on-drag-drop" class="autoinit" flex="1" default-cfgsect="Explorer" default-cfgkey="CopyOnDragDrop"/>

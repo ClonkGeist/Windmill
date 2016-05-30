@@ -42,6 +42,13 @@ hook("load", function() {
 			if(reason != StopIteration)
 				throw reason;
 		});
+		
+		let completers = getConfigData("Scripteditor", "Completers");
+		$("#completerSelection").parent().on("command", function(e) {
+			setConfigData("Scripteditor", "Completers", $(this)[0].selectedItem.value);
+		});
+		log($("#completerSelection").find('menuitem[value="'+completers+'"]')[0]);
+		$("#completerSelection").parent()[0].selectedItem = $("#completerSelection").find('menuitem[value="'+completers+'"]')[0];
 
 		//KeyBindings auflisten
 		var keybindings = _mainwindow.customKeyBindings, current_prefix;

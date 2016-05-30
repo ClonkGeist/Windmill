@@ -1751,7 +1751,71 @@ ace.define("ace/autocomplete/text_completer",["require","exports","module","ace/
     };
 });
 
-ace.define("ace/ext/language_tools",["require","exports","module","ace/snippets","ace/autocomplete","ace/config","ace/lib/lang","ace/autocomplete/util","ace/autocomplete/text_completer","ace/editor","ace/config"], function(require, exports, module) {
+ace.define("ace/autocomplete/text_completer2",["require","exports","module","ace/range"], function(require, exports, module) {
+    var Range = require("../range").Range;
+    
+    var splitRegex = /[^a-zA-Z_0-9\$\-\u00C0-\u1FFF\u2C00-\uD7FF\w]+/;
+
+    function getWordIndex(doc, pos) {
+        var textBefore = doc.getTextRange(Range.fromPoints({row: 0, column:0}, pos));
+        return textBefore.split(splitRegex).length - 1;
+    }
+    function wordDistance(doc, pos) {
+        var prefixPos = getWordIndex(doc, pos);
+        var words = doc.getValue().split(splitRegex);
+        var wordScores = Object.create(null);
+        
+        var currentWord = words[prefixPos];
+
+        words.forEach(function(word, idx) {
+            if (!word || word === currentWord) return;
+
+            var distance = Math.abs(prefixPos - idx);
+            var score = words.length - distance;
+            if (wordScores[word]) {
+                wordScores[word] = Math.max(score, wordScores[word]);
+            } else {
+                wordScores[word] = score;
+            }
+        });
+        return wordScores;
+    }
+
+    exports.getCompletions = function(editor, session, pos, prefix, callback) {
+        var wordScore = wordDistance(session, pos, prefix);
+        var wordList = Object.keys(wordScore);
+        callback(null, wordList.map(function(word) {
+			if(!/[a-zA-Z_]/.test(word[0]))
+				return {};
+            return {
+                caption: word,
+                value: word,
+                score: wordScore[word],
+                meta: "local"
+            };
+        }));
+    };
+});
+
+ace.define("ace/autocomplete/func_completer",["require","exports","module","ace/range"], function(require, exports, module) {
+    exports.getCompletions = function(editor, session, pos, prefix, callback) {
+		let funcs = session.getValue().match(/func\W+[a-zA-Z_][a-zA-Z0-9_]*\(/g), wordList = [];
+		if(funcs) {
+			funcs.forEach(function(val) {
+				let fnname = val.match(/func\W+([a-zA-Z_][a-zA-Z0-9_]*)/)[1];
+				wordList.push({
+					caption: fnname,
+					value: fnname+"()",
+					meta: "func"
+				})
+			});
+			
+		}
+		callback(null, wordList);
+    };
+});
+
+ace.define("ace/ext/language_tools",["require","exports","module","ace/snippets","ace/autocomplete","ace/config","ace/lib/lang","ace/autocomplete/util","ace/autocomplete/text_completer","ace/autocomplete/text_completer2","ace/autocomplete/func_completer","ace/editor","ace/config"], function(require, exports, module) {
 "use strict";
 
 var snippetManager = require("../snippets").snippetManager;
@@ -1761,6 +1825,9 @@ var lang = require("../lib/lang");
 var util = require("../autocomplete/util");
 
 var textCompleter = require("../autocomplete/text_completer");
+var textCompleter2 = require("../autocomplete/text_completer2");
+var funcCompleter = require("../autocomplete/func_completer");
+
 var keyWordCompleter = {
     getCompletions: function(editor, session, pos, prefix, callback) {
         if (session.$mode.completer) {
@@ -1803,7 +1870,7 @@ var snippetCompleter = {
     }
 };
 
-var completers = [snippetCompleter, textCompleter, keyWordCompleter];
+var completers = [snippetCompleter, textCompleter2, textCompleter, funcCompleter, keyWordCompleter];
 exports.setCompleters = function(val) {
     completers = val || [];
 };
@@ -1811,6 +1878,8 @@ exports.addCompleter = function(completer) {
     completers.push(completer);
 };
 exports.textCompleter = textCompleter;
+exports.textCompleter2 = textCompleter2;
+exports.funcCompleter = funcCompleter;
 exports.keyWordCompleter = keyWordCompleter;
 exports.snippetCompleter = snippetCompleter;
 

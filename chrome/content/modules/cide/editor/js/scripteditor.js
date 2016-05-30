@@ -43,7 +43,16 @@ function addScript(highlightMode, id, path, fShow) {
 		
 		// remove local completer
 		var langTools = ace.require("ace/ext/language_tools");
-		langTools.setCompleters([langTools.keyWordCompleter, langTools.snippetCompleter]);
+		let completer_mode = getConfigData("Scripteditor", "Completers");
+		let completers = [];
+		completers.push(langTools.snippetCompleter);
+		if(completer_mode >= 1)
+			completers.push(langTools.keyWordCompleter);
+		if(completer_mode >= 2)
+			completers.push(langTools.funcCompleter);
+		if(completer_mode >= 3)
+			completers.push(langTools.textCompleter2);
+		langTools.setCompleters(completers);
 		
 		if(highlightMode == "ocscript")
 			initOCEditorBehaviour(id);
