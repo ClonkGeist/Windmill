@@ -188,9 +188,9 @@ function getTreeEntryData(entry, fext) {
 		if(yield OS.File.exists(iconpath)) {
 			iconpath = encodeURI(iconpath).replace(/#/g, "%23");
 			if(OS_TARGET == "WINNT")
-				data.icon = encodeURI("file:///"+iconpath.replace(/^(.):\\\//, "$1:/")).replace(/#/g, "%23");
+				data.icon = "file:///"+iconpath.replace(/^(.):\\\//, "$1:/");
 			else
-				data.icon = encodeURI("file:///"+iconpath).replace(/#/g, "%23");
+				data.icon = "file:///"+iconpath;
 		}
 		let fileext = entry.leafName.split(".").pop();
 		if(fileext == "ocs") {
@@ -234,13 +234,17 @@ function onTreeSelect(obj) {
 			return;
 
 		$("#preview").attr("data-path", path);
-		if(yield OS.File.exists(path+"/Title.png")) {
+		function* loadTitleImage(ext) {
+			if(!(yield OS.File.exists(path+"/Title."+ext)))
+				return false;
+
 			if(OS_TARGET == "WINNT")
-				$("#previewimage").attr("src", encodeURI("file://"+path.replace(/\\/, "/")+"/Title.png").replace(/#/g, "%23"));
+				$("#previewimage").attr("src", encodeURI("file://"+path.replace(/\\/, "/")+"/Title."+ext).replace(/#/g, "%23"));
 			else
-				$("#previewimage").attr("src", encodeURI("file://"+path+"/Title.png").replace(/#/g, "%23"));
+				$("#previewimage").attr("src", encodeURI("file://"+path+"/Title."+ext).replace(/#/g, "%23"));
+			return true;
 		}
-		else
+		if(!(yield* loadTitleImage("jpg")) && !(yield* loadTitleImage("png")))
 			$("#previewimage").attr("src", "");
 
 		let prefix = Locale("$ClonkLangPrefix$", -1), text;
