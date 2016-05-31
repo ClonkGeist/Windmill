@@ -956,7 +956,7 @@ function Meshviewer() {
 					qw = this.qRot[3];
 				// if there is a rotation
 				
-				if(qw !== 0 || qw === 1) {
+				if(qw !== 0 && qw !== 1) {
 					// to axis-angle representation
 					var angle = 2 * Math.acos(qw);
 					qw = Math.sqrt(1-qw*qw);

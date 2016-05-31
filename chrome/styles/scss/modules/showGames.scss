@@ -97,7 +97,6 @@ html, body, #wrapper {
 }
 
 .reference {
-	background-color: white;
 	background-color: rgb(250, 250, 250);
 	width: 33.3%;
 	height: 6em;
@@ -150,6 +149,10 @@ html, body, #wrapper {
 
 	&.running {
 		color: grey;
+	}
+	
+	&.running:not(.runtimejoin) {
+		background-color: $clr-base;
 	}
 
 	&.running .ref-titleimage {
