@@ -636,6 +636,9 @@ function Meshviewer() {
 			this.flags = SHADER_OPTION_WIREFRAME;
 			
 			this.zoomLevel = 1;
+			//this.zoomFactor = 0.01;
+			this.zoomFactor = 1;
+			
 			this.trans_x = 0;
 			this.trans_y = 0;
 			this.id = id;
@@ -781,8 +784,6 @@ function Meshviewer() {
 				
 				return palette;
 			}
-			
-			this._d = 0.01;
 									
 			this.setMatrixUniforms = function() {
 				
@@ -823,19 +824,17 @@ function Meshviewer() {
 				
 				mat4.fromRotationTranslation(t, rot, this.vTrans);
 				
-				var zoom = _scene.zoomLevel*_scene.zoomLevel;
-				zoom *= this._d;
-				
 				mat4.scale(m ,m, [
-					 -zoom * _session.viewportCorrectionX, 
-					 zoom * _session.viewportCorrectionY,
-					-zoom]);
-				mat4.multiply(m, m, t)
+					 -this.zoomFactor * _session.viewportCorrectionX, 
+					 this.zoomFactor * _session.viewportCorrectionY,
+					-this.zoomFactor
+					]);
+				mat4.multiply(m, m, t);
 				
 				var ortho = mat4.create();
 				// with y-axis flipped so that 0 is at the top
 				mat4.ortho(ortho, -1, 1, -1, 1, -5, 5);
-				mat4.multiply(m, ortho, m)
+				mat4.multiply(m, ortho, m);
 				
 				return m;
 			}
@@ -913,16 +912,16 @@ function Meshviewer() {
 			quat.rotateY(this.qAxisSwap, this.qAxisSwap, 90*this.c_DtR);
 			
 			this.onViewRotation = function(x, y) {
-				this.xRot = y/100;
-				this.yRot = -x/100;
+				this.xRot = -y/100;
+				this.yRot = x/100;
 			}
 			
 			this.onViewRotationStop = function(x, y) {
 				
 				var qNewRot = quat.create();
 				
-				quat.rotateX(qNewRot, qNewRot, y/100);
-				quat.rotateY(qNewRot, qNewRot, -x/100);
+				quat.rotateX(qNewRot, qNewRot, -y/100);
+				quat.rotateY(qNewRot, qNewRot, x/100);
 				
 				quat.multiply(this.qRot, qNewRot, this.qRot);
 				quat.normalize(this.qRot, this.qRot);
@@ -932,13 +931,12 @@ function Meshviewer() {
 			}
 			
 			this.onViewTranslation = function(x, y) {
-				var transX = x/canvas.width/this.zoomLevel,
-					transY = -y/canvas.height/this.zoomLevel;
 				
-				var v = vec3.fromValues(transX, transY, 0);
-				vec3.transformQuat(v, v, this.qRot);
+				let m = 2/this.zoomFactor;
+				var transX = -x/canvas.width*m/_session.viewportCorrectionX,
+					transY = -y/canvas.height*m/_session.viewportCorrectionY;
 				
-				vec3.add(this.vTrans, this.vTrans, v);
+				vec3.add(this.vTrans, this.vTrans, vec3.fromValues(transX, transY, 0));
 			}
 			/**
 			 *	function to get current transformation
@@ -1028,11 +1026,12 @@ function Meshviewer() {
 				return false;
 			};
 			
-			this.zoom = function(factor) {
-				if(_scene.zoomLevel + factor < 0)
+			this.zoom = function(addend) {
+				if(_scene.zoomLevel + addend < 0)
 					return;
 				
-				_scene.zoomLevel += factor;
+				_scene.zoomLevel += addend;
+				_scene.zoomFactor = _scene.zoomLevel*_scene.zoomLevel;
 			}
 			
 			this.show = function() {
@@ -1101,6 +1100,10 @@ function Meshviewer() {
 			
 			this.getRenderReport = function() {
 				return new this.RenderReport();
+			}
+			
+			
+			this.useAsMatDef = function(file, materialName) {
 			}
 		} // close scene
 		
@@ -1360,7 +1363,6 @@ function Meshviewer() {
 				}
 			}
 			
-			
 			this.queueMaterialFile = function(pathDir, mName, subMesh) {
 				return Materials.get(mName, pathDir).then(function(mat) {
 					
@@ -1452,9 +1454,10 @@ function Meshviewer() {
 								switch(v_attributes[s].nodeName) {
 									case "position":
 										
-										x = parseFloat(v_attributes[s].getAttribute("x"));
-										y = parseFloat(v_attributes[s].getAttribute("y"));
-										z = parseFloat(v_attributes[s].getAttribute("z"));
+										// multiply with  0.01 to make roughly fitting our clipspace (-1 to 1)
+										x = parseFloat(v_attributes[s].getAttribute("x")) * 0.01;
+										y = parseFloat(v_attributes[s].getAttribute("y")) * 0.01;
+										z = parseFloat(v_attributes[s].getAttribute("z")) * 0.01;
 										
 										vertexData.position.push(x);
 										vertexData.position.push(y);
