@@ -211,6 +211,9 @@ const
 const
 	RESOURCE_ERROR_INEXISTENT = 1,
 	RESOURCE_ERROR_FAILED_TO_PARSE = 2;
+	
+const
+	CLIPSACE_CONVERSION = 0.01;
 
 function getMaxAssignmentsOfFlag(flags) {
 	return (flags >> 8) & 15; // length
@@ -636,7 +639,6 @@ function Meshviewer() {
 			this.flags = SHADER_OPTION_WIREFRAME;
 			
 			this.zoomLevel = 1;
-			//this.zoomFactor = 0.01;
 			this.zoomFactor = 1;
 			
 			this.trans_x = 0;
@@ -1455,9 +1457,9 @@ function Meshviewer() {
 									case "position":
 										
 										// multiply with  0.01 to make roughly fitting our clipspace (-1 to 1)
-										x = parseFloat(v_attributes[s].getAttribute("x")) * 0.01;
-										y = parseFloat(v_attributes[s].getAttribute("y")) * 0.01;
-										z = parseFloat(v_attributes[s].getAttribute("z")) * 0.01;
+										x = parseFloat(v_attributes[s].getAttribute("x")) * CLIPSACE_CONVERSION;
+										y = parseFloat(v_attributes[s].getAttribute("y")) * CLIPSACE_CONVERSION;
+										z = parseFloat(v_attributes[s].getAttribute("z")) * CLIPSACE_CONVERSION;
 										
 										vertexData.position.push(x);
 										vertexData.position.push(y);
@@ -1801,9 +1803,9 @@ function parseSkeletonXml(path) {
 			
 			// bone position
 			var pos = vec3.clone([
-				parseFloat(domPos.getAttribute("x")),
-				parseFloat(domPos.getAttribute("y")),
-				parseFloat(domPos.getAttribute("z"))
+				parseFloat(domPos.getAttribute("x")) * CLIPSACE_CONVERSION,
+				parseFloat(domPos.getAttribute("y")) * CLIPSACE_CONVERSION,
+				parseFloat(domPos.getAttribute("z")) * CLIPSACE_CONVERSION
 			]);
 			
 			// bone orientation
