@@ -223,7 +223,7 @@ function noDragDropItem() {return true;}
 
 function onTreeDeselect(obj) { $("#previewimage").attr("src", ""); }
 
-let filecache = {}, refreshAchievements;
+let filecache = {}, refreshAchievements = function() {};
 
 function onTreeSelect(obj) {
 	Task.spawn(function*() {

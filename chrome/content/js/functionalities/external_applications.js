@@ -89,8 +89,8 @@ class ExtApplication {
 		process.create(...pars);
 	}
 
-	get path() { return getConfigData("ExtApplication", this.cfgidentifier); }
-	set path(npath) { setConfigData("ExtApplication", this.cfgidentifier, npath); }
+	get path() { return formatPath(getConfigData("ExtApplication", this.cfgidentifier)); }
+	set path(npath) { setConfigData("ExtApplication", this.cfgidentifier, formatPath(npath)); }
 	get needed_file() {
 		if(OS_TARGET == "WINNT")
 			return this.data.needed_file_win;

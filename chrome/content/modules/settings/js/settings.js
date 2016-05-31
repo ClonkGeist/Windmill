@@ -569,7 +569,7 @@ function openProgramDialog(obj, extApp) {
 		saveConfig();
 
 		if(extApp)
-			$('[default-appid="'+extApp.identifier+'"]').find(".applist-path").text(path);
+			$('[default-appid="'+extApp.identifier+'"]').find(".applist-path").val(path);
 		else
 			$(obj).parent().find(".view-directory-path").text(path);
 	}
