@@ -100,10 +100,10 @@ function composeShaderString(flags) {
 					"	pos = vec4(aVertexPosition, 1.0);\n"+
 					"}\n";
 			
-			str += "gl_Position = mWorld * pos;\n";
+			str += "gl_Position = mWorld * pos * 0.001;\n";
 		}
 		else
-			str += "gl_Position = mWorld* vec4(aVertexPosition, 1.0);\n";
+			str += "gl_Position = mWorld* vec4(aVertexPosition, 1.0) * 0.001;\n";
 		
 		str += "}"; // </MAIN>
 		
@@ -213,7 +213,7 @@ const
 	RESOURCE_ERROR_FAILED_TO_PARSE = 2;
 	
 const
-	CLIPSACE_CONVERSION = 0.01;
+	CLIPSACE_CONVERSION = 1; // 0.01;
 
 function getMaxAssignmentsOfFlag(flags) {
 	return (flags >> 8) & 15; // length
