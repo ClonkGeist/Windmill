@@ -25,6 +25,20 @@
 	color: rgb(60, 60, 60);
 	box-shadow: 0 0 15px 0 rgb(180, 180, 180);
 	pointer-events: initial;
+	
+	radiogroup {
+		display: flex;
+		flex-direction: row;
+		radio {
+			flex: 1;
+			-moz-appearance: none;
+			&[selected="true"] {
+				background-color: $interact-red;
+				color: white;
+			}
+			transition: background-color 0.1s, color 0.1s;
+		}
+	}
 }
 
 .main-wdialog-title {
