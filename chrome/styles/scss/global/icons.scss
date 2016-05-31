@@ -274,31 +274,32 @@
     @include -world();
 }
 .icon-git-modified:before {
-	content: "M";
+    @include -git-modified();
 }
 .icon-git-added:before {
-	content: "A";
+    @include -git-added();
 }
 .icon-git-deleted:before {
-	content: "D";
+    @include -git-deleted();
 }
 .icon-git-renamed:before {
-	content: "R";
+    @include -git-renamed();
 }
 .icon-git-copied:before {
-	content: "C";
+    @include -git-copied();
 }
 .icon-git-updatedUnmerged:before {
-	content: "U";
+    @include -git-unmerged();
 }
 .icon-git-untracked:before {
-	content: "?";
+    @include -git-untracked();
 }
 .icon-open-external:before {
-	content: "E";
+    @include -undock();
+	content: "asd";
 }
 .icon-documentation:before {
-	content: "?";
+    @include -documentation();
 }
 .icon-screenshots:before {
     @include -polaroids();

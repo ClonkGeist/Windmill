@@ -1,10 +1,10 @@
 @font-face {
     font-family: 'icomoon';
-    src:    url('fonts/icomoon.eot?o3n70o');
-    src:    url('fonts/icomoon.eot?o3n70o#iefix') format('embedded-opentype'),
-        url('fonts/icomoon.ttf?o3n70o') format('truetype'),
-        url('fonts/icomoon.woff?o3n70o') format('woff'),
-        url('fonts/icomoon.svg?o3n70o#icomoon') format('svg');
+    src:    url('fonts/icomoon.eot?epbhi8');
+    src:    url('fonts/icomoon.eot?epbhi8#iefix') format('embedded-opentype'),
+        url('fonts/icomoon.ttf?epbhi8') format('truetype'),
+        url('fonts/icomoon.woff?epbhi8') format('woff'),
+        url('fonts/icomoon.svg?epbhi8#icomoon') format('svg');
     font-weight: normal;
     font-style: normal;
 }
@@ -24,6 +24,39 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-documentation:before {
+    content: "\e91c";
+}
+.icon-git-added:before {
+    content: "\e91d";
+}
+.icon-git-copied:before {
+    content: "\e91e";
+}
+.icon-git-deleted:before {
+    content: "\e91f";
+}
+.icon-git-modified:before {
+    content: "\e920";
+}
+.icon-git-renamed:before {
+    content: "\e921";
+}
+.icon-git-unmerged:before {
+    content: "\e922";
+}
+.icon-git-untracked:before {
+    content: "\e923";
+}
+.icon-packed:before {
+    content: "\e924";
+}
+.icon-singleplayer:before {
+    content: "\e925";
+}
+.icon-undock:before {
+    content: "\e926";
+}
 .icon-amplitude:before {
     content: "\e910";
 }
