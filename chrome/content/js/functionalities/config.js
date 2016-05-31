@@ -214,7 +214,7 @@ function initializeConfig() {
 	addConfigString("CIDE", "AU_GraphicsPNG", false);
 	addConfigString("CIDE", "AU_GraphicsBMP", false);
 	addConfigString("CIDE", "AU_Audio", false);
-	addConfigString("CIDE", "EditorTheme", "chrome");
+	addConfigString("CIDE", "EditorTheme", "rocking-horse");
 	addConfigString("CIDE", "CommandLineParameters", "--editor --nonetwork %SCENARIO%"); 
 	addConfigString("CIDE", "WorkspaceParentDirectory", "", "path");
 	addConfigString("CIDE", "FileProtection", true);

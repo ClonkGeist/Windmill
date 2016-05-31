@@ -27,7 +27,7 @@ var Mode = function() {
 					return {
 						name: word,
 						value: word+"()",
-						score: 0,
+						score: 12039120390123,
 						meta: "func"
 					}
 				}
