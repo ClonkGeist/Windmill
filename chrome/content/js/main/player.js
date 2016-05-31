@@ -86,7 +86,7 @@ hook("load", function() {
 		else {
 			text = yield OS.File.read(entry.path+"/Player.txt", {encoding: "utf-8"});
 			if(yield OS.File.exists(entry.path+"/BigIcon.png"))
-				imgstr = "file://"+formatPath(entry.path)+"/BigIcon.png";
+				imgstr = encodeURI("file://"+formatPath(entry.path)+"/BigIcon.png").replace(/#/g, "%23");
 		}
 		let sects = parseINI(text);
 		if(players[entry.name]) {

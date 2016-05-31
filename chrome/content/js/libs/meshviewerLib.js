@@ -431,7 +431,7 @@ function Meshviewer() {
 						_session.ontextureloaderror(tu)
 				};
 			
-			img.src = "file:" + src;
+			img.src = encodeURI("file:" + src).replace(/#/g, "%23");
 		}
 		
 		this.reloadTexture = function(mesh, key, img) {

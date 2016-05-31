@@ -188,9 +188,9 @@ function getTreeEntryData(entry, fext) {
 		if(yield OS.File.exists(iconpath)) {
 			iconpath = encodeURI(iconpath).replace(/#/g, "%23");
 			if(OS_TARGET == "WINNT")
-				data.icon = "file:///"+iconpath.replace(/^(.):\\\//, "$1:/");
+				data.icon = encodeURI("file:///"+iconpath.replace(/^(.):\\\//, "$1:/")).replace(/#/g, "%23");
 			else
-				data.icon = "file:///"+iconpath;
+				data.icon = encodeURI("file:///"+iconpath).replace(/#/g, "%23");
 		}
 		let fileext = entry.leafName.split(".").pop();
 		if(fileext == "ocs") {
@@ -236,9 +236,9 @@ function onTreeSelect(obj) {
 		$("#preview").attr("data-path", path);
 		if(yield OS.File.exists(path+"/Title.png")) {
 			if(OS_TARGET == "WINNT")
-				$("#previewimage").attr("src", "file://"+path.replace(/\\/, "/")+"/Title.png");
+				$("#previewimage").attr("src", encodeURI("file://"+path.replace(/\\/, "/")+"/Title.png").replace(/#/g, "%23"));
 			else
-				$("#previewimage").attr("src", "file://"+path+"/Title.png");
+				$("#previewimage").attr("src", encodeURI("file://"+path+"/Title.png").replace(/#/g, "%23"));
 		}
 		else
 			$("#previewimage").attr("src", "");
@@ -397,7 +397,7 @@ function onTreeSelect(obj) {
 
 					yield* loadFromOrigins(function*(loadpath) {
 						if(img[0] && (yield OS.File.exists(loadpath+"/Achv"+achv.ID+".png"))) {
-							img.css("background-image", 'url("file://' + loadpath + '/Achv' + achv.ID + '.png")');
+							img.css("background-image", 'url("'+encodeURI('file://' + loadpath + '/Achv' + achv.ID + '.png')+'")');
 							img.css("background-position", "-"+option.index*24+"px")
 							return -1;
 						}
