@@ -92,6 +92,8 @@ hook("load", function() {
 		//Weitere Arbeitsumgebungen laden
 		$("#startup-loading").text("Loading Work Environments");
 		try { yield loadWorkEnvironment(); } catch(e) {}
+		
+		execHook("startLoadingRoutine");
 	}).then(function(result) {
 		if(result == -2)
 			return;

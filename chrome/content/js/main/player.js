@@ -27,7 +27,7 @@
 
 var cPkr,
 	players = [];
-hook("load", function() {
+hook("startLoadingRoutine", function() {
 	cPkr = createColorPicker(document.getElementById("ap-clrpckr"));
 	
 	var image = new Image();
@@ -203,7 +203,7 @@ function addPlayerlistItem(id, filename, imgstr) {
 		$("#nav-playername").attr("value", name);
 		$("#ps-pdscore").attr("value", player["Score"]);
 		$("#ps-pdcomment").attr("value", player["Comment"]);
-		$("#ps-pdrounds").attr("value", sprintf(Locale("$PDRoundsLbl$"), player["Rounds"]||0, player["RoundsWon"]||0, player["RoundsLost"]||0));
+		$("#ps-pdrounds").attr("value", Locale("$PDRoundsLbl$", -1, player["Rounds"]||0, player["RoundsWon"]||0, player["RoundsLost"]||0));
 		
 		var secs = player["TotalPlayingTime"]||0;
 		var mins = Math.round(secs/60)%60;
