@@ -100,10 +100,10 @@ function composeShaderString(flags) {
 					"	pos = vec4(aVertexPosition, 1.0);\n"+
 					"}\n";
 			
-			str += "gl_Position = mWorld * pos * 0.001;\n";
+			str += "gl_Position = mWorld * pos;\n";
 		}
 		else
-			str += "gl_Position = mWorld* vec4(aVertexPosition, 1.0) * 0.001;\n";
+			str += "gl_Position = mWorld* vec4(aVertexPosition, 1.0);\n";
 		
 		str += "}"; // </MAIN>
 		
@@ -638,8 +638,8 @@ function Meshviewer() {
 			
 			this.flags = SHADER_OPTION_WIREFRAME;
 			
-			this.zoomLevel = 1;
-			this.zoomFactor = 1;
+			this.zoomLevel = 0.8;
+			this.zoomFactor = 0.64;
 			
 			this.trans_x = 0;
 			this.trans_y = 0;
