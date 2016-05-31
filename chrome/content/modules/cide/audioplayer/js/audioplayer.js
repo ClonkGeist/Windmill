@@ -90,9 +90,9 @@ function loadFile(path) {
 
 	audiofile = { path };
 	if(OS_TARGET == "WINNT")
-		audioobj = new Audio("file://"+path.replace(/\\/gi, "/"));
+		audioobj = new Audio(encodeURI("file://"+path.replace(/\\/gi, "/")).replace(/#/g, "%23"));
 	else
-		audioobj = new Audio("file://"+path);
+		audioobj = new Audio(encodeURI("file://"+path).replace(/#/g, "%23"));
 
 	initializeAudiofile();
 	return true;

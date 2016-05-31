@@ -332,6 +332,8 @@ function showMasterServerGames(info) {
 				else
 					setPortForwardingInformation(ref);
 			}
+			else
+				clone.addClass("portsopen");
 
 			ctx_references.bindToObj(clone);
 

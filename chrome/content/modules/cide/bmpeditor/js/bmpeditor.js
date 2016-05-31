@@ -2042,9 +2042,9 @@ function loadUnsupportedImage(file, id, fShow, clridxtbl) {
 		showDeckItem(id);
 	});
 	if(OS_TARGET == "WINNT")
-		imageObj.src = "file://"+file.path.replace(/\\/gi, "/");
+		imageObj.src = encodeURI("file://"+file.path.replace(/\\/gi, "/")).replace(/#/g, "%23");
 	else
-		imageObj.src = "file://"+file.path;
+		imageObj.src = encodeURI("file://"+file.path).replace(/#/g, "%23");
 }
 
 /* Farbabfragen */

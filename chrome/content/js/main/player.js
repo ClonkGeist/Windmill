@@ -27,7 +27,7 @@
 
 var cPkr,
 	players = [];
-hook("load", function() {
+hook("startLoadingRoutine", function() {
 	cPkr = createColorPicker(document.getElementById("ap-clrpckr"));
 	
 	var image = new Image();
@@ -86,7 +86,7 @@ hook("load", function() {
 		else {
 			text = yield OS.File.read(entry.path+"/Player.txt", {encoding: "utf-8"});
 			if(yield OS.File.exists(entry.path+"/BigIcon.png"))
-				imgstr = "file://"+formatPath(entry.path)+"/BigIcon.png";
+				imgstr = encodeURI("file://"+formatPath(entry.path)+"/BigIcon.png").replace(/#/g, "%23");
 		}
 		let sects = parseINI(text);
 		if(players[entry.name]) {
@@ -203,7 +203,7 @@ function addPlayerlistItem(id, filename, imgstr) {
 		$("#nav-playername").attr("value", name);
 		$("#ps-pdscore").attr("value", player["Score"]);
 		$("#ps-pdcomment").attr("value", player["Comment"]);
-		$("#ps-pdrounds").attr("value", sprintf(Locale("$PDRoundsLbl$"), player["Rounds"]||0, player["RoundsWon"]||0, player["RoundsLost"]||0));
+		$("#ps-pdrounds").attr("value", Locale("$PDRoundsLbl$", -1, player["Rounds"]||0, player["RoundsWon"]||0, player["RoundsLost"]||0));
 		
 		var secs = player["TotalPlayingTime"]||0;
 		var mins = Math.round(secs/60)%60;

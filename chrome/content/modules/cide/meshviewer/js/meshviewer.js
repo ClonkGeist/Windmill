@@ -203,7 +203,7 @@ function initTextureResource(mesh, key, src, img, matName) {
 			loadTextureResourceSucc(tu);
 		};
 		
-		img.src = "file://" + file.path;
+		img.src = encodeURI("file://" + file.path).replace(/#/g, "%23");
 		
 		e.stopPropagation();
 	});

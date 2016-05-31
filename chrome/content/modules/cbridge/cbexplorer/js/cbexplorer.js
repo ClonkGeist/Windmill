@@ -234,13 +234,17 @@ function onTreeSelect(obj) {
 			return;
 
 		$("#preview").attr("data-path", path);
-		if(yield OS.File.exists(path+"/Title.png")) {
+		function* loadTitleImage(ext) {
+			if(!(yield OS.File.exists(path+"/Title."+ext)))
+				return false;
+
 			if(OS_TARGET == "WINNT")
-				$("#previewimage").attr("src", "file://"+path.replace(/\\/, "/")+"/Title.png");
+				$("#previewimage").attr("src", encodeURI("file://"+path.replace(/\\/, "/")+"/Title."+ext).replace(/#/g, "%23"));
 			else
-				$("#previewimage").attr("src", "file://"+path+"/Title.png");
+				$("#previewimage").attr("src", encodeURI("file://"+path+"/Title."+ext).replace(/#/g, "%23"));
+			return true;
 		}
-		else
+		if(!(yield* loadTitleImage("jpg")) && !(yield* loadTitleImage("png")))
 			$("#previewimage").attr("src", "");
 
 		let prefix = Locale("$ClonkLangPrefix$", -1), text;
@@ -397,7 +401,7 @@ function onTreeSelect(obj) {
 
 					yield* loadFromOrigins(function*(loadpath) {
 						if(img[0] && (yield OS.File.exists(loadpath+"/Achv"+achv.ID+".png"))) {
-							img.css("background-image", 'url("file://' + loadpath + '/Achv' + achv.ID + '.png")');
+							img.css("background-image", 'url("'+encodeURI('file://' + loadpath + '/Achv' + achv.ID + '.png')+'")');
 							img.css("background-position", "-"+option.index*24+"px")
 							return -1;
 						}
