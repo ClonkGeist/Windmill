@@ -296,7 +296,6 @@
 }
 .icon-open-external:before {
     @include -undock();
-	content: "asd";
 }
 .icon-documentation:before {
     @include -documentation();
