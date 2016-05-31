@@ -35,21 +35,24 @@ var Materials = new (function() {
 	
 	this._MATERIALS = [];
 	
-	this.get = function(name, dir, fnCallback) {
+	this.get = function(name, dpath) {
 		
 		// if already found
-		if(this._MATERIALS[name])
-			return new Promise((resolve) => { resolve(this._MATERIALS[name]) });
+		if(this._MATERIALS[dpath] && this._MATERIALS[dpath][name])
+			return new Promise((resolve) => { resolve(this._MATERIALS[dpath][name]) });
 		
-		return this.explodeDir(dir).then(() => {
-			return this._MATERIALS[name];
+		return this.explodeDir(dpath).then(() => {
+			if(this._MATERIALS[dpath])
+				return this._MATERIALS[dpath][name];
+			
+			return false;
 		});
 	}
 	
-	this.explodeDir = function(dir) {
+	this.explodeDir = function(dpath) {
 		let _this = this;
 		return Task.spawn(function*() {
-			let iterator = new OS.File.DirectoryIterator(dir);
+			let iterator = new OS.File.DirectoryIterator(dpath);
 			let entries = yield iterator.nextBatch();
 			for(let entry of entries) {
 				let ext = entry.name.split(".").pop();
@@ -66,10 +69,13 @@ var Materials = new (function() {
 				}
 				if(!txt)
 					continue;
-
+				
+				if(!_this._MATERIALS[dpath])
+					_this._MATERIALS[dpath] = {};
+				
 				let aResults = _this.parse(txt);
 				for(let result of aResults)
-					_this._MATERIALS[result.materialName] = result;
+					_this._MATERIALS[dpath][result.materialName] = result;
 			}
 			iterator.close();
 		});
