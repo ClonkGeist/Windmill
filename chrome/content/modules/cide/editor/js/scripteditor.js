@@ -1,4 +1,4 @@
-var defaultTheme = getConfigData("CIDE", "EditorTheme") || "chrome";
+var defaultTheme = getConfigData("CIDE", "EditorTheme") || "rocking-horse";
 
 /**
 		Editor management
@@ -45,13 +45,13 @@ function addScript(highlightMode, id, path, fShow) {
 		var langTools = ace.require("ace/ext/language_tools");
 		let completer_mode = getConfigData("Scripteditor", "Completers");
 		let completers = [];
-		completers.push(langTools.snippetCompleter);
-		if(completer_mode >= 1)
-			completers.push(langTools.keyWordCompleter);
-		if(completer_mode >= 2)
-			completers.push(langTools.funcCompleter);
 		if(completer_mode >= 3)
 			completers.push(langTools.textCompleter2);
+		if(completer_mode >= 2)
+			completers.push(langTools.funcCompleter);
+		if(completer_mode >= 1)
+			completers.push(langTools.keyWordCompleter);
+		completers.push(langTools.snippetCompleter);
 		langTools.setCompleters(completers);
 		
 		if(highlightMode == "ocscript")

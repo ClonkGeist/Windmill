@@ -1799,13 +1799,14 @@ ace.define("ace/autocomplete/text_completer2",["require","exports","module","ace
 
 ace.define("ace/autocomplete/func_completer",["require","exports","module","ace/range"], function(require, exports, module) {
     exports.getCompletions = function(editor, session, pos, prefix, callback) {
-		let funcs = session.getValue().match(/func\W+[a-zA-Z_][a-zA-Z0-9_]*\(/g), wordList = [];
+		let funcs = session.getValue().match(/func\s+[a-zA-Z_][a-zA-Z0-9_]*\s*\(/g), wordList = [];
 		if(funcs) {
 			funcs.forEach(function(val) {
-				let fnname = val.match(/func\W+([a-zA-Z_][a-zA-Z0-9_]*)/)[1];
+				let fnname = val.match(/func\s+([a-zA-Z_][a-zA-Z0-9_]*)/)[1];
 				wordList.push({
 					caption: fnname,
 					value: fnname+"()",
+					score: 12039120390123,
 					meta: "func"
 				})
 			});

@@ -26,7 +26,7 @@
 			<hbox id="restartBar">
 				<hbox id="restartBarDesc">$ChangesNeedRestart$</hbox>
 				<spacer flex="1"/>
-				<hbox id="restartBarButton" class="icon-reload-2 icon-32"></hbox>
+				<hbox id="restartBarButton" class="icon-reload icon-32"></hbox>
 			</hbox>
 			<deck selectedIndex="0" flex="1" id="settings-deck">
 			<!--<stack>
