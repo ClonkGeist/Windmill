@@ -160,8 +160,9 @@ function initTextureResource(mesh, key, src, img, matName) {
 	var idMdl = mesh.parentMesh._scene.id;
 	
 	var $el = $(".texture-unit-entry.draft").clone();
-	log("texture mat ref: " + matName)
-	log(src)
+	
+	$el.removeClass("draft");
+	
 	sceneMeta[idMdl].mats[matName].$el.append($el);
 	
 	var tu = {
@@ -173,7 +174,7 @@ function initTextureResource(mesh, key, src, img, matName) {
 	};
 	
 	var e = $el.get(0);
-	/*
+	
 	e.addEventListener("dragover", function(e) {
 		if(dragEl)
 			return;
@@ -209,7 +210,7 @@ function initTextureResource(mesh, key, src, img, matName) {
 	
 	e.addEventListener("dragleave", function() {
 		$(this).removeClass("highlighted");	
-	});*/
+	});
 	
 	return tu;
 }
@@ -357,14 +358,22 @@ hook("load", function() {
 	$("#getTrans-button").click(function() {
 		var data = (scenes[CM_ACTIVEID].getIngameTransformationFormat());
 		
-		if(!data)
+		// untransformed
+		if(!data) {
+			var dlg = new WDialog("$getIngameTransformationFormatTitle$", MODULE_LPRE, { modal: false, css: { }, btnright: ["accept"]});
+			
+			dlg.setContent(Locale("$viewTransformationNeeded$"));
+			dlg.show();
 			return;
-		
-		if(typeof data === "string") {
+		}
+		// only translation
+		else if(typeof data === "string") {
 			var dlg = new WDialog("$getIngameTransformationFormatTitle$", MODULE_LPRE, { modal: false, css: { }, btnright: [
-			{ preset: "copy",
+			{
+				label: "$copy$",
 				onclick: function(e, btn, _self) {
 					pasteTxtIntoClipboard(data);
+					dlg.hide();
 					return true;
 				}
 			}, "cancel"]});
@@ -372,27 +381,29 @@ hook("load", function() {
 			dlg.setContent("\""+data+"\"");
 			dlg.show();
 		}
+		// complex transformation setup
+		else {
+			var dlg = new WDialog("$getIngameTransformationFormatTitle$", MODULE_LPRE, { modal: false, css: {  }, btnright: ["cancel"]});
 			
-		var dlg = new WDialog("$getIngameTransformationFormatTitle$", MODULE_LPRE, { modal: false, css: {  }, btnright: ["cancel"]});
-		
-		dlg.setContent(
-			"<vbox><hbox><box data-text=\""+data.rotateAxis+"\" class=\"igf-sel\" flex=\"1\">\""+data.rotateAxis+"\"</box></hbox></vbox>"
-			//+
-			//"<vbox><hbox><box data-text=\""+data.rotateXY+"\" class=\"igf-sel\" flex=\"1\">\""+data.rotateXY+"\"</box></hbox></vbox>"
-		);
-		
-		dlg.show();
-		
-		$(dlg.element).find(".igf-sel").css("pointer-events", "auto").click(function() {
-			pasteTxtIntoClipboard($(this).attr("data-text"));
-			dlg.hide();
-		}).mouseover(function() {
-			this.style.backgroundColor = "rgba(0, 165, 207, 0.15)";
-			this.style.outline = "1px solid rgba(0, 165, 207, 0.3)";
-		}).mouseout(function() {
-			this.style.backgroundColor = "";
-			this.style.outline = "";
-		});
+			dlg.setContent(
+				"<vbox><hbox><box data-text=\""+data.rotateAxis+"\" class=\"igf-sel\" flex=\"1\">\""+data.rotateAxis+"\"</box></hbox></vbox>"
+				//+
+				//"<vbox><hbox><box data-text=\""+data.rotateXY+"\" class=\"igf-sel\" flex=\"1\">\""+data.rotateXY+"\"</box></hbox></vbox>"
+			);
+			
+			dlg.show();
+			
+			$(dlg.element).find(".igf-sel").css("pointer-events", "auto").click(function() {
+				pasteTxtIntoClipboard($(this).attr("data-text"));
+				dlg.hide();
+			}).mouseover(function() {
+				this.style.backgroundColor = "rgba(0, 165, 207, 0.15)";
+				this.style.outline = "1px solid rgba(0, 165, 207, 0.3)";
+			}).mouseout(function() {
+				this.style.backgroundColor = "";
+				this.style.outline = "";
+			});
+		}
 	});
 	
 	$("#reset-view-button").click(function() {
