@@ -24,7 +24,7 @@ $(window).ready(function() {
 				continue;
 
 			var split = query[i].split("=");
-			loadImage((new _sc.file(decodeURI(split[1]))), parseInt(split[0]), true);
+			loadImage(decodeURI(split[1]), parseInt(split[0]), true);
 		}
 	}
 	
@@ -1477,7 +1477,7 @@ function loadImageFileData(file, id) {
 function loadImage(path, id, fShow) {
 	let file = path;
 	//Da am BMPEditor noch gearbeitet wird, fuers erste die nsIFile-Variante verwenden. Spaeter dann auf OS.File umsteigen.
-	if(!(path instanceof nsIFile))
+	if(!(path instanceof Ci.nsIFile))
 		file = _sc.file(path);
 	var r = loadImageFileData(file, id);
 	
@@ -2246,7 +2246,7 @@ function getTabData(tabid) {
 }
 
 function dropTabData(data, tabid) {
-	loadImage(data.file, tabid, true);
+	loadImage(data.file.path, tabid, true);
 	
 	var cnv = canvasArray[tabid];
 	cnv.width = data.wdt;
