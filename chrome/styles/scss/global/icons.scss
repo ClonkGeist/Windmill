@@ -355,7 +355,7 @@
 	content: "AutoS";
 }
 .icon-singleplayer:before { 
-	content: "\e62a";
+	@include -singleplayer();
 }
 .icon-password:before { 
 	@include -lock();
