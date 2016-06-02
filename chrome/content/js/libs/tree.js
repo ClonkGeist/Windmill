@@ -17,6 +17,13 @@ _sc.workpath = function(treeobj) {
 	return workpathov(treeobj);
 }
 
+hook("load", function() {
+	if(OS_TARGET == "WINNT")
+		bindKeyToObj(new KeyBinding("PermanentDelete", "Shift-DELETE", function(e, target) {
+			removeTreeEntry(getCurrentTreeSelection(), false, false, {permanent: true});
+		}, 0, "DEX"), document);
+});
+
 function noDragDropItem() {}
 
 function createTreeElement(tree, label, container, open, img, filename, special, options = { noSelection: !!special, index: -1 }) {
@@ -690,7 +697,7 @@ function getTreeItemFilename(obj) {
 
 /*-- Löschen --*/
 
-function removeTreeEntry(obj, forced, ignoreFile) {
+function removeTreeEntry(obj, forced, ignoreFile, options = {}) {
 	if(!$(obj)[0])
 		return;
 
@@ -716,7 +723,7 @@ function removeTreeEntry(obj, forced, ignoreFile) {
 			//Dialog oeffnen
 			var dlg = new WDialog("$DlgDeleteConfirmation$", "DEX", { modal: true, css: { "width": "450px" }, btnright: [{ label: "$DlgBtnDelete$",
 				onclick: function*(e, btn, dialog) {
-					getWorkEnvironmentByPath(_sc.workpath(obj)).unload();
+					getWorkEnvironmentByPath(_sc.workpath(obj)).unload({ dontSave: true });
 					yield removeTreeEntry(obj, true);
 					dialog.hide();
 				}
@@ -733,10 +740,8 @@ function removeTreeEntry(obj, forced, ignoreFile) {
 			return -1;
 		}
 
-		if(info.isDir) 
-			yield OS.File.removeDir(path);
-		else
-			yield OS.File.remove(path);
+		if(yield removeFileUI(path, {isDir: info.isDir, forced: options.permanent}))
+			return true;//OS.File.remove(path);
 	});
 	task.then(function(ignore) {
 		if(ignore)

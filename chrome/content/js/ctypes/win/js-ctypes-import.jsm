@@ -2,18 +2,22 @@
  * CTYPES Implementation fuer WINAPI
  */
 
-var Cu = Components.utils;
+if(this.isWorker) {
+	importScripts("resource://ctypes/win/js-ctypes-import-datatypes.jsm");
+}
+else {
+	var Cu = Components.utils;
 
-//Erstmal ggf. aus dem Cache ausladen da es sonst das Debuggen unnoetig erschwert
-Cu.unload("resource://gre/modules/js-ctypes-import-datatypes.jsm");
-Cu.unload("resource://gre/modules/js-ctypes-import-structs.jsm");
+	//Erstmal ggf. aus dem Cache ausladen da es sonst das Debuggen unnoetig erschwert
+	Cu.unload("resource://gre/modules/js-ctypes-import-datatypes.jsm");
+	Cu.unload("resource://gre/modules/js-ctypes-import-structs.jsm");
 
-Cu.import("resource://gre/modules/ctypes.jsm");
-Cu.import("resource://ctypes/win/js-ctypes-import-datatypes.jsm");
-Cu.import("resource://ctypes/win/js-ctypes-import-structs.jsm");
+	Cu.import("resource://gre/modules/ctypes.jsm");
+	Cu.import("resource://ctypes/win/js-ctypes-import-datatypes.jsm");
+	Cu.import("resource://ctypes/win/js-ctypes-import-structs.jsm");
+}
 
-var EXPORTED_SYMBOLS = ["_WIN64", "GetLastError", "CreateProcess", "WaitForSingleObject", "CloseHandle", "CreatePipe", "ReadFile", "WriteFile", 
-						"SetHandleInformation", "GetStdHandle", "PeekNamedPipe", "GetExitCodeProcess"];
+var EXPORTED_SYMBOLS = ["_WIN64", "GetLastError", "CreateProcess", "WaitForSingleObject", "CloseHandle", "CreatePipe", "ReadFile", "WriteFile", "SetHandleInformation", "GetStdHandle", "PeekNamedPipe", "GetExitCodeProcess", "SHFileOperation"];
 var WINABI = _WIN64?ctypes.default_abi:ctypes.winapi_abi;
 var GetLastError = function() { return ctypes.winLastError; }
 
@@ -138,4 +142,13 @@ var GetExitCodeProcess = kernel32.declare("GetExitCodeProcess", WINABI,
 	BOOL,		// return value
 	HANDLE,		// _In_		HANDLE	hProcess
 	LPDWORD	// _Out_	LPDWORD	lpExitCode
+);
+
+/*-------------------------------- Shell32.lib --------------------------------*/
+
+var shell32 = ctypes.open("Shell32.dll");
+
+var SHFileOperation = shell32.declare("SHFileOperationW", WINABI,
+	ctypes.int,			// return value
+	LPSHFILEOPSTRUCT	// _Inout_ lpFileOp
 );

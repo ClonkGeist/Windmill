@@ -185,7 +185,7 @@ class WorkEnvironment {
 		writeFile(f, text);
 	}
 
-	unload() {
+	unload(options = {}) {
 		if(this.type == WORKENV_TYPE_ClonkPath) {
 			let clonkdirs = getConfigData("Global", "ClonkDirectories"), temp = [];
 			for(var i = 0; i < clonkdirs.length; i++) {
@@ -199,7 +199,8 @@ class WorkEnvironment {
 		}
 		else {
 			this.unloaded = true;
-			this.saveHeader();
+			if(!options.dontSave)
+				this.saveHeader();
 		}
 
 		delete WORKENV_List[this.id];

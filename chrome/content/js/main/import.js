@@ -10,6 +10,7 @@ Cu.import("resource://gre/modules/Task.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 const { require } = Cu.import("resource://gre/modules/commonjs/toolkit/require.js", {});
+const { BasePromiseWorker } = Cu.import('resource://gre/modules/PromiseWorker.jsm', {});
 
 var _inheritableObjects = [];
 

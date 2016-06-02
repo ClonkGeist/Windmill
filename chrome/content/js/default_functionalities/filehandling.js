@@ -90,6 +90,43 @@ function* UniqueFilename(path, throwError, maxAttempts = 100) {
 	return path+"/"+checkname+"."+fext;
 }
 
+/*-- Loeschen von Dateien (fuer Benutzerinteraktionen) --*/
+
+function removeFileUI(path, options = {}) {
+	return new Promise(function(resolve, reject) { // Use a new wrapping promise to return unified values
+		let osfile_op = "remove";
+		if(options.isDir)
+			osfile_op = "removeDir";
+		if(OS_TARGET == "WINNT" || options.forced) {
+			if(options.forced) {
+				var dlg = new WDialog("$DlgFileDeleteConfirmation$", "DEX", { modal: true, css: { "width": "450px" }, btnright: [{ label: "$DlgBtnDelete$",
+					onclick: function*(e, btn, dialog) {
+						let promise = OS.File[osfile_op](path);
+						promise.then(function() { resolve(); }, reject);
+						yield promise;
+						dialog.hide();
+					}
+				}, { preset: "cancel",
+					onclick: function() {
+						resolve(true);
+					}
+				}]});
+				dlg.setContent(sprintf(Locale('<hbox><description style="width: 450px;">$DlgFileDeleteConfirmationDesc$</description></hbox>'), formatPath(path).split("/").pop()));
+				dlg.show();
+				dlg = 0;
+			}
+			else {
+				ctypesWorker("moveToTrash", path).then(function(aborted) {
+					resolve(aborted);
+				}, reject);
+			}
+		}
+		else {
+			return OS.File[osfile_op](path).then(function() { resolve(); }, reject);
+		}
+	});
+}
+
 /*-- Im Filemanager oeffnen --*/
 
 function openInFilemanager(path) {

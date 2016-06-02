@@ -248,6 +248,27 @@ else {
 	MODULE_LPRE = "";
 	MODULE_LANG = "xul";
 	var _mainwindow = window;
+	
+	//let worker;
+	class OSError {
+		constructor(message, code) {
+			this.message = message;
+			this.code = code;
+		}
+		toString() {
+			return "OSError: " + this.message;
+		}
+	}
+
+	window.ctypesWorker = function(fnname, ...pars) {
+		let worker = new BasePromiseWorker("resource://ctypes/js-ctypes.worker.js");
+		worker.ExceptionHandlers["OSError"] = function(msg) {
+			return new OSError(msg.message, msg.code);
+		};
+
+		return worker.post(fnname, pars);
+	}
+	registerInheritableObject("ctypesWorker");
 }
 
 //Suche nach naechstem Element im DOM (Unter Beruecksichtigung aller Ebenen im angegebenen Container)
