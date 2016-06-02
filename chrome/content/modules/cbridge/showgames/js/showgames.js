@@ -489,7 +489,7 @@ function getChildIndex(e) {
 }
 
 hook("load", function() {
-	$("#ref-toggle-update").click(function() {
+	$("#refresh-toggle").click(function() {
 		if($(this).hasClass("enabled"))
 			pauseMSRefresh();
 		else
