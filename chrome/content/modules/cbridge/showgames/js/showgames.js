@@ -420,20 +420,52 @@ function checkIfPortsForwarded(ref) {
 	for(var i = 0; i < addresses.length; i++) {
 		var addr = addresses[i];
 		var match = addr.match(/(TCP|UDP):(.+?):(.+)/);
-		addr_obj[i] = { type: match[1], ipaddr: match[2], port: parseInt(match[3]) };
+		let obj = { type: match[1], ipaddr: match[2], port: parseInt(match[3]) };
+
+		//Gleiche Adressen/Ports ueberspringen
+		let skip = false;
+		for(let j = 0; j < addr_obj.length; j++) {
+			if(addr_obj[j].ipaddr == obj.ipaddr && addr_obj[j].port == obj.port) {
+				skip = true;
+				break;
+			}
+		}
+		if(skip)
+			continue;
+
+		addr_obj[i] = obj;
 	}
 
 	ports_checked[getRefIdentifier(ref)] = [];
 	ports_checked[getRefIdentifier(ref)]["status"] = SG_PORTS_Closed;
+	setPortForwardingInformation(ref);
 
 	//Einzelne Ports scannen und Status setzen
 	for(var i = 0; i < addr_obj.length; i++) {
-		let {port, ipaddr} = addr_obj[i];
+		let {type, port, ipaddr} = addr_obj[i];
+		if(type != "TCP")
+			continue;
+
 		//Private IP-Adressen überspringen
 		if(ipaddr.search(/^(192\.168|10\.\d+|172\.16)\.\d+\.\d+/) != -1)
 			continue;
+			
+		if(ports_checked[getRefIdentifier(ref)][port])
+			return;
+		if(ports_checked[getRefIdentifier(ref)]["status"] == SG_PORTS_Open)
+			return;
 
-		let last = (i == addr_obj.length-1);
+		createSocketConnection(ipaddr, port).then(function(info) {
+			//log(`Socket connection for: ${info.addr}:${info.port}   status: ${info.status} (Error: ${info.err})`);
+			if(!info.status) {
+				ports_checked[getRefIdentifier(ref)][port] = SG_PORTS_Open;
+				ports_checked[getRefIdentifier(ref)]["status"] = SG_PORTS_Open;
+				setPortForwardingInformation(ref);
+			}
+		}, function(reason) {
+			log("An error occured while trying to scan ports: " + reason);
+		});
+		/*let last = (i == addr_obj.length-1);
 		var img = new Image();
 		var timeoutid = setTimeout(function() {
 			if(ports_checked[getRefIdentifier(ref)][port])
@@ -457,7 +489,7 @@ function checkIfPortsForwarded(ref) {
 		};
 		img.onload = img.onerror;
 		
-		img.src = 'http://'+ipaddr+':'+port;
+		img.src = 'http://'+ipaddr+':'+port;*/
 	}
 }
 
