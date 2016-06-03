@@ -437,12 +437,6 @@ function Meshviewer() {
 			img.src = encodeURI("file:" + src).replace(/#/g, "%23");
 		}
 		
-		this.reloadTexture = function(mesh, key, img) {
-			gl.bindTexture(gl.TEXTURE_2D, mesh.getTexture(key));
-			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
-			gl.bindTexture(gl.TEXTURE_2D, null);
-		}
-		
 		this.addShader = function(vs, fs, flags) {
 			
 			if(!vs || !fs)
@@ -1265,6 +1259,12 @@ function Meshviewer() {
 					this.flags = setMaxAssignmentsOfFlag(this.flags, maxAssignments);
 					
 					this.flags = this.flags | SHADER_OPTION_SKELETON;
+				}
+				
+				this.reloadTexture = function(key, img) {
+					gl.bindTexture(gl.TEXTURE_2D, this.getTexture(key));
+					gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+					gl.bindTexture(gl.TEXTURE_2D, null);
 				}
 				
 				this.setUpForRenderProcess = function(combinedFlags, shader) {

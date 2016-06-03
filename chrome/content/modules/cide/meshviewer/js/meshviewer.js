@@ -65,11 +65,11 @@ function initModelviewer(filepath, idMdl) {
 		e.addEventListener("dragover", function(e) {
 			let list = e.dataTransfer.files;
 			
-			$(this).addClass("highlighted");
+			$(this).addClass("dismiss");
 		});
 		
 		e.addEventListener("dragleave", function() {
-			$(this).removeClass("highlighted");
+			$(this).removeClass("dismiss");
 		});
 	}
 	
@@ -179,18 +179,18 @@ function initTextureResource(mesh, key, src, img, matName) {
 		if(dragEl)
 			return;
 		
-		var file = checkTransferForValidation(e, "png|jpeg|jpg|jpe");
+		var valid = checkTransferForValidation(e, "png|jpeg|jpg|jpe");
 		
-		if(!file)
+		if(!valid)
 			return;
 		
 		$(this).addClass("highlighted");
 	});
 	
 	e.addEventListener("drop", function(e) {
-		var file = checkTransferForValidation(e, "png|jpeg|jpg|jpe");
+		var validFile = checkTransferForValidation(e, "png|jpeg|jpg|jpe", true);
 		
-		if(!file)
+		if(!validFile)
 			return;
 		
 		$(this).removeClass("highlighted");
@@ -198,12 +198,11 @@ function initTextureResource(mesh, key, src, img, matName) {
 		var img = new Image();
 		
 		img.onload = function() {
-			log(tu);
-			tu.mesh.parentMesh._scene.reloadTexture(tu.mesh, tu.key, img);
-			loadTextureResourceSucc(tu);
+			//tu.mesh.reloadTexture(tu.key, img);
+			//loadTextureResourceSucc(tu);
 		};
 		
-		img.src = encodeURI("file://" + file.path).replace(/#/g, "%23");
+		img.src = encodeURI("file:" + validFile.path).replace(/#/g, "%23");
 		
 		e.stopPropagation();
 	});
@@ -220,7 +219,7 @@ var dragEl;
 function loadTextureResourceSucc(tu) {
 	tu.$el.removeClass("not-found");
 	
-	tu.$el.find(".tu-img").get(0).src = tu.img.src;
+	tu.$el.find(".tu-img").attr("src", encodeURI(tu.img.src).replace(/#/g, "%23"));
 	
 	let list = tu.$el.find(".tu-size").get(0);
 	list.removeAllItems();
@@ -248,9 +247,9 @@ function insertMaterialEntry(mat, sceneIndex, referredName) {
 	var e = $el.find(".file-entry").get(0);
 	
 	e.addEventListener("dragover", function(e) {
-		var file = checkTransferForValidation(e, "material");
+		var valid = checkTransferForValidation(e, "material");
 		
-		if(!file) {
+		if(!valid) {
 			$(this).addClass("dismiss");
 			return;
 		}
@@ -259,14 +258,14 @@ function insertMaterialEntry(mat, sceneIndex, referredName) {
 	});
 	
 	e.addEventListener("drop", function(e) {
-		var file = checkTransferForValidation(e, "material");
+		var validFile = checkTransferForValidation(e, "material");
 		
 		$(this).removeClass("dismiss");
-		if(!file)
+		if(!validFile)
 			return;
 		
 		let txt
-		txt = yield OS.File.read(file.path, {encoding: "utf-8"});
+		txt = yield OS.File.read(validFile.path, {encoding: "utf-8"});
 		var mat = Materials.parse(txt);
 		log(mat)
 		scenes[sceneMeta[sceneIndex].id].useAsMatDef(mat, referredName);
@@ -399,6 +398,7 @@ hook("load", function() {
 			}).mouseover(function() {
 				this.style.backgroundColor = "rgba(0, 165, 207, 0.15)";
 				this.style.outline = "1px solid rgba(0, 165, 207, 0.3)";
+				this.style.cursor = "default";
 			}).mouseout(function() {
 				this.style.backgroundColor = "";
 				this.style.outline = "";
@@ -503,7 +503,7 @@ window.onresize = function(e) {
 	resize();
 };
 
-function checkTransferForValidation(e, type) {
+function checkTransferForValidation(e, type, deepValidation) {
 	
 	if(// !e.dataTransfer.types.contains("text/cidecontent") &&
 		!e.dataTransfer.types.contains("text/cideexplorer") &&
@@ -519,17 +519,22 @@ function checkTransferForValidation(e, type) {
 		data = parseInt(data);
 		if(!md_explorer || !md_explorer.contentWindow || isNaN(data))
 			return false;
-
+		
 		let obj = md_explorer.contentWindow.getTreeObjById(data);
-		var file = new _sc.file(_sc.workpath(obj) + md_explorer.contentWindow.getTreeObjPath(obj));
 		
-		if(!file || !file.exists())
+		if(type && !type.match(new RegExp($(obj).attr("filename").split(".").pop(), "gi")))
 			return false;
 		
-		if(type && !type.match(new RegExp(file.leafName.split(".").pop(), "gi")))
-			return false;
+		if(deepValidation) {
+			var file = new _sc.file(_sc.workpath(obj) + md_explorer.contentWindow.getTreeObjPath(obj));
 		
-		return file;
+			if(!file || !file.exists())
+				return false;
+			
+			return file;
+		}
+		
+		return true;
 	}
 }
 
