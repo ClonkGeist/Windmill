@@ -38,11 +38,10 @@ window.maximized .restore-window {
 }
 
 .window-button:hover {  
-	background-color: $interact_red;
+	background-color: $interact-red;
 }
 
 #modules-wrapper {
-	outline: 1px solid rgb(25, 25, 25);
 	filter: blur(0px);
 	transition: filter 0.8s;
 	transition-delay: 0.3s;
@@ -119,14 +118,13 @@ toolbox, toolbarbutton, toolbar, button, #header {
 
 #inner-navigation button {
 	color: whitesmoke;
-	transition: color 0.3s;
 	border: none;
 	margin: 0;
 	height: 32px;
 	line-height: 40px;
 	background-color: inherit;
 	
-	transition: background-color 0.3s;
+	transition: background-color 0.1s;
 	
 	font-weight: bold;
 	padding-left: 1em;
@@ -134,11 +132,11 @@ toolbox, toolbarbutton, toolbar, button, #header {
 }
 
 #inner-navigation button:hover {
-	background: $interact_red;
+	background: $interact-red;
 }
 
 #inner-navigation button.active {
-	background: $interact_red;
+	background: $interact-red;
 }
 
 caption {
@@ -153,7 +151,7 @@ caption {
 	width: 32px;
 	height: 32px;
 	margin-left: 1.5em;
-	transition: background-color 0.3s,
+	transition: background-color 0.1s,
 				opacity 1s;
 	
 	pointer-events: auto;
@@ -162,12 +160,12 @@ caption {
 #switchMode:hover,
 #switchmode.selected,
 .nav-image:hover  {
-	background: $interact_red;
+	background: $interact-red;
 }
 
 .nav-image {
 	vertical-align:  middle;
-	transition: background-color 0.3s;
+	transition: background-color 0.1s;
 }
 
 .nav-image.deactivated {
@@ -183,7 +181,7 @@ caption {
 .cide-tb-seperator  { width: 10px; }
 
 .icon-brackets.cBridge:before {
-	content: "\e609";
+	@include -controller();
 }
 
 
@@ -246,7 +244,7 @@ caption {
 }
 
 .ps-playerlistitem.selected  {
-	border-left-color: $interact_red;
+	border-left-color: $interact-red;
 }
 
 .cds-listitem.selected {
@@ -301,7 +299,7 @@ caption {
 }
 
 .ps-h {
-	background: $interact_red;
+	background: $interact-red;
 	color: white;
 	margin: 0;
 	line-height: 1.6em;
@@ -431,7 +429,7 @@ caption {
 	opacity: 1;
 }
 .togglemode-img.activated {
-	background-color: $interact_red;
+	background-color: $interact-red;
 }
 .togglemode-img.invisible {
 	margin-left: 18px;
