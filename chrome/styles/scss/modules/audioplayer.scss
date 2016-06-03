@@ -2,6 +2,7 @@ html, body {
 	height: 100%;
 	width: 100%;
 	margin: 0;
+	padding: 0;
 	color: $ui-text-clr;
 }
 
@@ -29,7 +30,7 @@ body {
 }
 
 #progressneedle {
-	background-color: $interact_red;
+	background-color: $interact-red;
 	height: 100%;
 	width: 0%;
 	transition: width 1s;
@@ -80,15 +81,15 @@ body {
 }
 
 .button.active {
-	color: $interact_red;
+	color: $interact-red;
 	
 	&:hover {
-		color: $interact_red;
+		color: $interact-red;
 	}
 }
 
 #button-play.pause:before {
-	content: "\e619";
+	@include -stop();
 }
 
 #volume-overlay {
@@ -124,7 +125,7 @@ body {
 
 #currentvolume {
 	height: 5px;
-	background-color: $interact_red;
+	background-color: $interact-red;
 }
 
 #currentvolume-filler {
@@ -135,5 +136,5 @@ body {
 
 #button-volume.muted:before,
 #toggle-volume.muted:before {
-	content: "\ea2a";
+	@include -volume-mute2();
 }

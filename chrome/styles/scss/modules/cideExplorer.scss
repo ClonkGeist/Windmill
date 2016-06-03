@@ -4,7 +4,6 @@
 	border-bottom: 1px solid $clr-empty;
 	color: $ui-text-clr;
 	padding-left: 10px;
-	box-shadow: 0 3px 3px -2px gainsboro;
 } 
 
 .toolbar-option {
@@ -26,7 +25,7 @@
 }
 
 .nav-image.deselected {
-	color: #777;
+	color: grey;
 }
 
 #searchinput {
