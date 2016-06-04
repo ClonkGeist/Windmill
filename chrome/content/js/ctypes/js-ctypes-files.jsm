@@ -3,14 +3,7 @@
  */
 
 if(this.isWorker) {
-	if(OS_TARGET == "WINNT") { 
-		 importScripts("resource://ctypes/win/js-ctypes-import-datatypes.jsm", 
-					  "resource://ctypes/win/js-ctypes-import-structs.jsm",
-					  "resource://ctypes/win/js-ctypes-import.jsm");
-	}
-	else {
-		fallbackInformation();
-	}
+
 }
 else {
 	var OS_TARGET = Components.classes["@mozilla.org/xre/app-info;1"].getService(Components.interfaces.nsIXULRuntime).OS;
@@ -33,19 +26,6 @@ else {
 function fallbackInformation() {
 	dump("There is no or not fully supported native function support available for this operating system ("+OS_TARGET+"). Use limited fallback.\n");
 	return;
-}
-
-class OSError {
-	constructor(message, code) {
-		this.message = message;
-		this.code = code;
-	}
-	toMsg() {
-		return {
-			exn: "OSError",
-			message: this.message
-		};
-	}
 }
 
 function moveFileToTrash(path, options = {}) {

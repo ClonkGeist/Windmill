@@ -34,6 +34,10 @@ Object.defineProperty(Number.prototype, "num2byte", { enumerable: false, writabl
 		return ar;
 }});
 
+function createSocketConnection(addr, port, options) {
+	return ctypesWorker("createSocket", addr, port, options);
+}
+
 var TIMES = {};
 
 function iTr(key) { TIMES[key] = (new Date).getTime(); }
