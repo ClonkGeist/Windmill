@@ -58,16 +58,6 @@ resizer {
 	border: 2px solid transparent;
 }
 
-.overallmode {
-	height: 32px;
-	width: 32px;
-	padding: 3px;
-	border-radius: 38px;
-	background-color: rgb(25, 25, 25);
-	border: 1px solid rgb(15, 15, 15);
-	color: whitesmoke;
-}
-
 .icon-the-mill {
   -moz-animation: windmill 2s infinite;
   -moz-animation-timing-function: linear;
@@ -147,20 +137,80 @@ caption {
 	display: none;
 }
 
+/* main mode */
+
+.main-mode-ui {
+	color: whitesmoke;
+	pointer-events: none;
+	
+	label {
+		font-size: 12px;
+		line-height: 12px;
+		padding: 3px 16px;
+	}
+	
+	&.cBridge .mm-play-wrapper {
+		background: $chrome-ui-active;
+	}
+	
+	&:not(.cBridge) .mm-dev-wrapper {
+		background: $chrome-ui-active;
+	}
+	
+	&.cBridge .icon-brackets:before {
+		@include -controller();
+	}
+}
+
+.mm-dev-wrapper,
+.mm-play-wrapper {
+
+	background-color: $chrome-clr-sub;
+	
+	&:hover {
+		background-color: rgb(80, 80, 80);
+	}
+}
+
+.mm-dev-wrapper {
+	transform: skew(45deg);
+}
+
+.mm-play-wrapper {
+	transform: skew(-45deg);
+}
+
+.mm-dev {
+	pointer-events: auto;
+	transform: skew(-45deg);
+}
+
+.mm-play {
+	pointer-events: auto;
+	transform: skew(45deg);
+}
+
+.mm-icon-wrapper {
+	transform: rotate(45deg);
+	background-color: $chrome-clr-sub;
+}
+
+.mm-icon-wrapper-sub {
+	transform: rotate(-45deg);
+}
+
 #switchMode {
-	width: 32px;
-	height: 32px;
-	margin-left: 1.5em;
 	transition: background-color 0.1s,
 				opacity 1s;
 	
 	pointer-events: auto;
+	height: 32px;
+	width: 32px;
+	padding: 3px;
 }
 
-#switchMode:hover,
-#switchmode.selected,
 .nav-image:hover  {
-	background: $interact-red;
+	background: $chrome-ui-active;
 }
 
 .nav-image {
@@ -179,10 +229,6 @@ caption {
 #cide-toolbar { padding-top: 5px; }
 
 .cide-tb-seperator  { width: 10px; }
-
-.icon-brackets.cBridge:before {
-	@include -controller();
-}
 
 
 button:focus, 

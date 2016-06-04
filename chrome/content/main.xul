@@ -97,9 +97,20 @@
 							</toolbox>
 						</hbox>
 					</vbox>
-					<vbox top="0" bottom="0" left="20" pack="center"  style="pointer-events: none;">
-						<box class="overallmode icon-the-mill icon-32" height="32" width="32" id="switchMode"></box>
-					</vbox>
+					<hbox top="0" bottom="0" left="20" align="center">
+						<hbox class="main-mode-ui" align="center">
+							<hbox class="mm-icon-wrapper">
+								<hbox class="mm-icon-wrapper-sub">
+									<box class="mm-icon icon-the-mill icon-32" height="32" width="32" id="switchMode"></box>
+								</hbox>
+							</hbox>
+							<vbox class="mm-buttons" flex="1">
+								<hbox class="mm-dev-wrapper mm-button"><label class="mm-dev" value="Develop" /></hbox>
+								<hbox height="2"></hbox>
+								<hbox class="mm-play-wrapper mm-button"><label class="mm-play" value="Play" /></hbox>
+							</vbox>
+						</hbox>
+					</hbox>
 				</stack>
 				<stack flex="1" class="startup-nohide">
 					<box id="modules-wrapper" flex="1" class="startup-loading">
