@@ -152,15 +152,23 @@ hook("load", function() {
 			if(mainDeck.selectedId == mainDeck.getModuleId("cbridge") || mainDeck.selectedId == mainDeck.getModuleId("cide")) {
 				// show develop mode
 				if($(".main-mode-ui").hasClass("cBridge") && $(this).hasClass("mm-dev-wrapper")) {
-					$(".main-mode-ui").removeClass("cBridge");
-					navigation.hideGroups();
-					_mmToDevelopIcon();
+					if(mainDeck.selectedId != mainDeck.getModuleId("cide")) {
+						$(".main-mode-ui").removeClass("cBridge");
+						navigation.hideGroups();
+						_mmToDevelopIcon();
+					}
+					else
+						return;
 				}
 				// show play mode
 				else if($(this).hasClass("mm-play-wrapper")) {
-					$(".main-mode-ui").addClass("cBridge");
-					navigation.showGroup("cbridge");
-					_mmToPlayIcon();
+					if(mainDeck.selectedId != mainDeck.getModuleId("cbridge")) {
+						$(".main-mode-ui").addClass("cBridge");
+						navigation.showGroup("cbridge");
+						_mmToPlayIcon();
+					}
+					else
+						return;
 				}
 				else
 					return;
