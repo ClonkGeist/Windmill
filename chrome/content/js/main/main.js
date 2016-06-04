@@ -121,22 +121,22 @@ hook("load", function() {
 		});
 
 		//Switcher zwischen cIDE/cBridge
-		$("#switchMode").click(function() {
-			/*if(!$(".togglemode-img").hasClass("invisible"))
-				return;*/
-
+		$(".mm-button").click(function() {
+			
 			if(mainDeck.selectedId == mainDeck.getModuleId("cbridge") || mainDeck.selectedId == mainDeck.getModuleId("cide")) {
-				if($(this).hasClass("cBridge")) {
-					$(this).removeClass("cBridge");
+				if($(".main-mode-ui").hasClass("cBridge") && $(this).hasClass("mm-dev-wrapper")) {
+					$(".main-mode-ui").removeClass("cBridge");
 					navigation.hideGroups();
 				}
-				else {
-					$(this).addClass("cBridge");
+				else if($(this).hasClass("mm-play-wrapper")) {
+					$(".main-mode-ui").addClass("cBridge");
 					navigation.showGroup("cbridge");
 				}
+				else
+					return;
 			}
 
-			togglePage(mainDeck.id, $(this).hasClass("cBridge")?mainDeck.getModuleId("cbridge"):mainDeck.getModuleId("cide"));
+			togglePage(mainDeck.id, $(".main-mode-ui").hasClass("cBridge")?mainDeck.getModuleId("cbridge"):mainDeck.getModuleId("cide"));
 		});
 
 		//cIDE/cBridge-Deaktivier Box (Vorerst deaktiviert..)
@@ -146,12 +146,12 @@ hook("load", function() {
 		}).mouseleave(function() { 
 			togglemode_timeout_id = setTimeout(function() {
 				$(".togglemode-img").addClass("invisible"); 
-				$("#switchMode").removeClass("selected"); 
+				$(".mm-icon").removeClass("selected"); 
 			}, 150);
 		});
-		$("#switchMode").mousedown(function() {
+		$(".mm-icon").mousedown(function() {
 			mouseholdID = setTimeout(function() {
-				$("#switchMode").addClass("selected");
+				$(".mm-icon").addClass("selected");
 				$(".togglemode-img").removeClass("invisible");
 			}, 600);
 		}).bind("mouseup mouseleave", function() {
@@ -371,9 +371,9 @@ function activateResSaveMode() {
 	$("#mainstack").fadeOut(400, function() { 
 		$("#showgames-wrapper").css("display", "-moz-box"); 
 		navigation.empty(); 
-		if($("#switchMode").hasClass("cBridge")) {
-			$("#switchMode").removeClass("cBridge");
-			$("#switchMode").attr("src", "chrome://windmill/content/img/mode-code.png");
+		if($(".mm-icon").hasClass("cBridge")) {
+			$(".mm-icon").removeClass("cBridge");
+			$(".mm-icon").attr("src", "chrome://windmill/content/img/mode-code.png");
 			navigation.hideGroups();
 		}
 	});
@@ -720,9 +720,9 @@ function saveWindowInformation() {
 }
 
 function triggerModeButtonIcon() {	
-	$("#switchMode").css("opacity", "0");
+	$(".mm-icon").css("opacity", "0");
 	setTimeout(function() {
-		$("#switchMode").removeClass("icon-the-mill").addClass("icon-brackets").css("opacity", "1");
+		$(".mm-icon").removeClass("icon-the-mill").addClass("icon-brackets").css("opacity", "1");
 	}, 1000);
 
 	if($(".startup-loading")[0]) {

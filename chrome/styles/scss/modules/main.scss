@@ -35,14 +35,13 @@ window.maximized .restore-window {
 	color: rgb(150, 150, 150);
 	cursor: default;
 	padding: 0 initial;
-}
-
-.window-button:hover {  
-	background-color: $interact_red;
+	
+	&:hover {  
+		background-color: rgb(80, 80, 80);
+	}
 }
 
 #modules-wrapper {
-	outline: 1px solid rgb(25, 25, 25);
 	filter: blur(0px);
 	transition: filter 0.8s;
 	transition-delay: 0.3s;
@@ -57,16 +56,6 @@ resizer {
 	height: 4px;
 	width: 4px;
 	border: 2px solid transparent;
-}
-
-.overallmode {
-	height: 32px;
-	width: 32px;
-	padding: 3px;
-	border-radius: 38px;
-	background-color: rgb(25, 25, 25);
-	border: 1px solid rgb(15, 15, 15);
-	color: whitesmoke;
 }
 
 .icon-the-mill {
@@ -119,14 +108,13 @@ toolbox, toolbarbutton, toolbar, button, #header {
 
 #inner-navigation button {
 	color: whitesmoke;
-	transition: color 0.3s;
 	border: none;
 	margin: 0;
 	height: 32px;
 	line-height: 40px;
 	background-color: inherit;
 	
-	transition: background-color 0.3s;
+	transition: background-color 0.1s;
 	
 	font-weight: bold;
 	padding-left: 1em;
@@ -134,11 +122,11 @@ toolbox, toolbarbutton, toolbar, button, #header {
 }
 
 #inner-navigation button:hover {
-	background: $interact_red;
+	background: $chrome-ui-active;
 }
 
 #inner-navigation button.active {
-	background: $interact_red;
+	background: $chrome-ui-active;
 }
 
 caption {
@@ -149,25 +137,85 @@ caption {
 	display: none;
 }
 
-#switchMode {
-	width: 32px;
-	height: 32px;
-	margin-left: 1.5em;
-	transition: background-color 0.3s,
+/* main mode */
+
+.main-mode-ui {
+	color: whitesmoke;
+	pointer-events: none;
+	
+	label {
+		font-size: 12px;
+		line-height: 12px;
+		padding: 3px 16px;
+	}
+	
+	&.cBridge .mm-play-wrapper {
+		background: $chrome-ui-active;
+	}
+	
+	&:not(.cBridge) .mm-dev-wrapper {
+		background: $chrome-ui-active;
+	}
+	
+	&.cBridge .icon-brackets:before {
+		@include -controller();
+	}
+}
+
+.mm-dev-wrapper,
+.mm-play-wrapper {
+
+	background-color: $chrome-clr-sub;
+	
+	&:hover {
+		background-color: rgb(80, 80, 80);
+	}
+}
+
+.mm-dev-wrapper {
+	transform: skew(45deg);
+}
+
+.mm-play-wrapper {
+	transform: skew(-45deg);
+}
+
+.mm-dev {
+	pointer-events: auto;
+	transform: skew(-45deg);
+}
+
+.mm-play {
+	pointer-events: auto;
+	transform: skew(45deg);
+}
+
+.mm-icon-wrapper {
+	transform: rotate(45deg);
+	background-color: $chrome-clr-sub;
+}
+
+.mm-icon-wrapper-sub {
+	transform: rotate(-45deg);
+}
+
+.mm-icon {
+	transition: background-color 0.1s,
 				opacity 1s;
 	
 	pointer-events: auto;
+	height: 32px;
+	width: 32px;
+	padding: 3px;
 }
 
-#switchMode:hover,
-#switchmode.selected,
 .nav-image:hover  {
-	background: $interact_red;
+	background: $chrome-ui-active;
 }
 
 .nav-image {
 	vertical-align:  middle;
-	transition: background-color 0.3s;
+	transition: background-color 0.1s;
 }
 
 .nav-image.deactivated {
@@ -181,10 +229,6 @@ caption {
 #cide-toolbar { padding-top: 5px; }
 
 .cide-tb-seperator  { width: 10px; }
-
-.icon-brackets.cBridge:before {
-	content: "\e609";
-}
 
 
 button:focus, 
@@ -233,7 +277,8 @@ caption {
 	display: none;
 }
 
-.ps-playerlistitem, .cds-listitem {
+.ps-playerlistitem,
+.cds-listitem {
 	height: 50px;
 	padding: 10px;
 	cursor: default;
@@ -241,12 +286,13 @@ caption {
 	border-left: 3px solid transparent;
 }
 
-.ps-playerlistitem:hover, .cds-listitem:hover {
+.ps-playerlistitem:hover,
+.cds-listitem:hover {
 	border-left-color: grey;
 }
 
 .ps-playerlistitem.selected  {
-	border-left-color: $interact_red;
+	border-left-color: $interact-red;
 }
 
 .cds-listitem.selected {
@@ -301,7 +347,7 @@ caption {
 }
 
 .ps-h {
-	background: $interact_red;
+	background: $interact-red;
 	color: white;
 	margin: 0;
 	line-height: 1.6em;
@@ -431,7 +477,7 @@ caption {
 	opacity: 1;
 }
 .togglemode-img.activated {
-	background-color: $interact_red;
+	background-color: $interact-red;
 }
 .togglemode-img.invisible {
 	margin-left: 18px;
