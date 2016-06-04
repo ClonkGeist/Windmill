@@ -171,6 +171,10 @@ caption {
 		opacity: 1;
 		transform: translate(0, 0)
 	}
+	
+	&.loaded #mm-svg {
+		display: -moz-box;
+	}
 }
 
 .mm-dev-wrapper,
@@ -219,6 +223,24 @@ caption {
 	width: 32px;
 	padding: 3px;
 }
+
+#mm-svg {
+	display: none;
+}
+
+#mm-svg path{
+    stroke: $clr-paper;
+    stroke-width: 2px;
+    stroke-linecap: round;
+	transition: stroke-width 0.3s;
+    fill: none;
+}
+
+.main-mode-ui.cBridge #mm-svg-to-upper-button,
+.main-mode-ui.cBridge #mm-svg-to-lower-button {
+	stroke-width: 4px;
+}
+
 
 .nav-image:hover  {
 	background: $chrome-ui-active;

@@ -102,6 +102,21 @@
 							<hbox class="mm-icon-wrapper">
 								<hbox class="mm-icon-wrapper-sub">
 									<box class="mm-icon icon-the-mill icon-32" height="32" width="32"></box>
+									<!-- MAIN MODE SVG BLOCK -->
+<svg version="1.0" id="mm-svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+width="32px" height="32px" viewBox="0 0 32 32" enable-background="new 0 0 32 32" xml:space="preserve">
+<path id="mm-svg-to-round" fill="none" stroke="#57C9E8" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+M23.63,16.17c0,0-2.7,0.02-3.26-2.08s1.09-5.74-0.13-7.66C19.47,5.19,16.7,5,16.7,5S10,4,6,7s-4,9-4,9c0,3.87,2.91,7,6.51,7h14.98
+c3.59,0,6.51-3.13,6.51-7l0,0c0-3.87-2.92-7-6.51-7H8.51C4.91,9,2,12.13,2,16"/>
+<path id="mm-svg-to-upper-button" fill="none" stroke="#9665AA" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+M20.55,21.05c-0.09-1.33-0.14-2.57,0.16-3.22c0.71-1.54,2.93-1.67,2.93-1.67s0.76-0.2,1.1-0.53s-0.02-1.13-0.02-1.13"/>
+<path id="mm-svg-to-lower-button" fill="none" stroke="#C363A7" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+M16.7,27.46c0,0,2.88-0.29,3.71-1.71c0.48-0.82,0.26-2.85,0.13-4.7l-0.09-2.17"/>
+<path id="mm-svg-to-horizontal-stick" fill="none" stroke="#E0B93C" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+M11.44,16.03L5.52,16l2.78,0.29c0,0,2.7-0.02,3.26,2.08c0.56,2.1-1.09,5.74,0.13,7.66c0.78,1.23,3.54,1.42,3.54,1.42"/>
+<path id="mm-svg-to-vertical-stick" fill="none" stroke="#BCD639" stroke-miterlimit="10" d="M15.23,5c0,0-2.88,0.29-3.71,1.71
+s0.42,6.38-0.29,7.92s-2.79,1.69-2.79,1.69l-0.08,2.77l0.02-6.2"/></svg>
+									<!-- END SVG BLOCK -->
 								</hbox>
 							</hbox>
 							<vbox class="mm-buttons" flex="1">
@@ -346,6 +361,7 @@
 	<script type="application/javascript" src="chrome://windmill/content/js/libs/color.js"/>
 	<script type="application/javascript" src="chrome://windmill/content/js/external/jquery-2.1.1.min.js"/>
 	<script type="application/javascript" src="chrome://windmill/content/js/external/jquery.mousewheel.min.js" charset="utf-8"></script>
+	<script type="application/javascript" src="chrome://windmill/content/js/external/segment.min.js" charset="utf-8"></script>
 	<script type="application/javascript" src="chrome://windmill/content/js/functionalities/workpaths.js"/>
 	<script type="application/javascript" src="chrome://windmill/content/js/functionalities/external_applications.js"/>
 	<script type="application/javascript" src="chrome://windmill/content/js/functionalities/custom-jquery.js"/>

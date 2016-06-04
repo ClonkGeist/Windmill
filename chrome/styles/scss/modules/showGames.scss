@@ -211,7 +211,7 @@ html, body, #wrapper {
 	}
 	
 	&.running:not(.runtimejoin) {
-		background-color: $clr-base;
+		opacity: 0.8; 
 	}
 
 	&.running .ref-titleimage {
@@ -382,6 +382,7 @@ html, body, #wrapper {
 	}
 	&.ref-layout-classic .reference.ref-selected {
 		outline: none;
+		
 		box-shadow: 0 1px 0 0 rgb(230, 230, 230), 
 					0 1px 0 0 rgb(230, 230, 230) inset,
 					-5px 0 0 0 $interact-orange,
@@ -418,7 +419,7 @@ html, body, #wrapper {
 h2 {
 	background-color: inherit;
 	-moz-appearance: none;
-	font-family: "Segoe UI", Verdana, sans-serif;
+	font-family: $font-stack;
 }
 
 #game-playerlist p {
@@ -442,7 +443,7 @@ h2 {
 	margin: 0;
 	font-size: 20px;
 	line-height: 20px;
-	font-family: "Segoe UI", "Trebuchet MS", Verdana, sans-serif;
+	font-family: $font-stack;
 	padding: 0;
 }
 

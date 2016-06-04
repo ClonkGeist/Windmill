@@ -119,18 +119,48 @@ hook("load", function() {
 			else
 				showCideToolbar();
 		});
+		
+		var _mm = {
+			round: new Segment(document.getElementById("mm-svg-to-round"), 0, 15),
+			lowerButton: new Segment(document.getElementById("mm-svg-to-lower-button"), 0, 9),
+			upperButton: new Segment(document.getElementById("mm-svg-to-upper-button"), 0, 7),
+			horizontalStick: new Segment(document.getElementById("mm-svg-to-horizontal-stick"), 9, 24),
+			verticalStick: new Segment(document.getElementById("mm-svg-to-vertical-stick"), 0, 16)
+		};
+		
+		var _mmToPlayIcon = () => {
+			//round.draw('100% - 54.5', '100% - 30.5', 0.6, {easing: ease.ease('elastic-out', 1, 0.3)});
+			_mm.round.draw('100% - 73', '100%', 0.3);
+			_mm.lowerButton.draw('100% - 0.1', '100%', 0.3);
+			_mm.upperButton.draw('100% - 0.1', '100%', 0.3);
+			_mm.horizontalStick.draw('0', '0% + 6', 0.3);
+			_mm.verticalStick.draw('100% - 6', '100%', 0.3);
+		}
+		
+		var _mmToDevelopIcon = () => {
+			//round.draw('100% - 54.5', '100% - 30.5', 0.6, {easing: ease.ease('elastic-out', 1, 0.3)});
+			_mm.round.draw(0, 15, 0.3);
+			_mm.lowerButton.draw(0, 9, 0.3);
+			_mm.upperButton.draw(0, 7, 0.3);
+			_mm.horizontalStick.draw(9, 24, 0.3);
+			_mm.verticalStick.draw(0, 16, 0.3);
+		}
 
 		//Switcher zwischen cIDE/cBridge
 		$(".mm-button").click(function() {
 			
 			if(mainDeck.selectedId == mainDeck.getModuleId("cbridge") || mainDeck.selectedId == mainDeck.getModuleId("cide")) {
+				// show develop mode
 				if($(".main-mode-ui").hasClass("cBridge") && $(this).hasClass("mm-dev-wrapper")) {
 					$(".main-mode-ui").removeClass("cBridge");
 					navigation.hideGroups();
+					_mmToDevelopIcon();
 				}
+				// show play mode
 				else if($(this).hasClass("mm-play-wrapper")) {
 					$(".main-mode-ui").addClass("cBridge");
 					navigation.showGroup("cbridge");
+					_mmToPlayIcon();
 				}
 				else
 					return;
@@ -722,7 +752,7 @@ function saveWindowInformation() {
 function triggerModeButtonIcon() {	
 	$(".mm-icon").css("opacity", "0");
 	setTimeout(function() {
-		$(".mm-icon").removeClass("icon-the-mill").addClass("icon-brackets").css("opacity", "1");
+		$(".mm-icon").removeClass("icon-the-mill").css("display", "none"); //.addClass("icon-brackets").css("opacity", "1");
 		$(".main-mode-ui").addClass("loaded");
 	}, 1000);
 
