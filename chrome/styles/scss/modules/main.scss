@@ -35,10 +35,10 @@ window.maximized .restore-window {
 	color: rgb(150, 150, 150);
 	cursor: default;
 	padding: 0 initial;
-}
-
-.window-button:hover {  
-	background-color: $chrome-ui-active;
+	
+	&:hover {  
+		background-color: rgb(80, 80, 80);
+	}
 }
 
 #modules-wrapper {
@@ -277,7 +277,8 @@ caption {
 	display: none;
 }
 
-.ps-playerlistitem, .cds-listitem {
+.ps-playerlistitem,
+.cds-listitem {
 	height: 50px;
 	padding: 10px;
 	cursor: default;
@@ -285,7 +286,8 @@ caption {
 	border-left: 3px solid transparent;
 }
 
-.ps-playerlistitem:hover, .cds-listitem:hover {
+.ps-playerlistitem:hover,
+.cds-listitem:hover {
 	border-left-color: grey;
 }
 
