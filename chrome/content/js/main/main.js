@@ -723,6 +723,7 @@ function triggerModeButtonIcon() {
 	$(".mm-icon").css("opacity", "0");
 	setTimeout(function() {
 		$(".mm-icon").removeClass("icon-the-mill").addClass("icon-brackets").css("opacity", "1");
+		$(".main-mode-ui").addClass("loaded");
 	}, 1000);
 
 	if($(".startup-loading")[0]) {

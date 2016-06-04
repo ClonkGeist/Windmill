@@ -139,6 +139,12 @@ caption {
 
 /* main mode */
 
+.mm-buttons {
+	opacity: 0;
+	transition: opacity 0.3s, transform 0.3s;
+	transform: translate(-5px, 0);
+}
+
 .main-mode-ui {
 	color: whitesmoke;
 	pointer-events: none;
@@ -159,6 +165,11 @@ caption {
 	
 	&.cBridge .icon-brackets:before {
 		@include -controller();
+	}
+	
+	&.loaded .mm-buttons {
+		opacity: 1;
+		transform: translate(0, 0)
 	}
 }
 
