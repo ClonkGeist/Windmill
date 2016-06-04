@@ -38,7 +38,7 @@ window.maximized .restore-window {
 }
 
 .window-button:hover {  
-	background-color: $interact-red;
+	background-color: $chrome-ui-active;
 }
 
 #modules-wrapper {
@@ -122,11 +122,11 @@ toolbox, toolbarbutton, toolbar, button, #header {
 }
 
 #inner-navigation button:hover {
-	background: $interact-red;
+	background: $chrome-ui-active;
 }
 
 #inner-navigation button.active {
-	background: $interact-red;
+	background: $chrome-ui-active;
 }
 
 caption {
@@ -199,7 +199,7 @@ caption {
 	transform: rotate(-45deg);
 }
 
-#switchMode {
+.mm-icon {
 	transition: background-color 0.1s,
 				opacity 1s;
 	

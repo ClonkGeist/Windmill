@@ -122,35 +122,21 @@ hook("load", function() {
 
 		//Switcher zwischen cIDE/cBridge
 		$(".mm-button").click(function() {
-
+			
 			if(mainDeck.selectedId == mainDeck.getModuleId("cbridge") || mainDeck.selectedId == mainDeck.getModuleId("cide")) {
-				if($(".main-mode-ui").hasClass("cBridge")) {
+				if($(".main-mode-ui").hasClass("cBridge") && $(this).hasClass("mm-dev-wrapper")) {
 					$(".main-mode-ui").removeClass("cBridge");
 					navigation.hideGroups();
 				}
-				else {
+				else if($(this).hasClass("mm-play-wrapper")) {
 					$(".main-mode-ui").addClass("cBridge");
 					navigation.showGroup("cbridge");
 				}
+				else
+					return;
 			}
 
 			togglePage(mainDeck.id, $(".main-mode-ui").hasClass("cBridge")?mainDeck.getModuleId("cbridge"):mainDeck.getModuleId("cide"));
-		});
-		
-		$(".mm-icon").click(function() {
-
-			if(mainDeck.selectedId == mainDeck.getModuleId("cbridge") || mainDeck.selectedId == mainDeck.getModuleId("cide")) {
-				if($(this).hasClass("cBridge")) {
-					$(this).removeClass("cBridge");
-					navigation.hideGroups();
-				}
-				else {
-					$(this).addClass("cBridge");
-					navigation.showGroup("cbridge");
-				}
-			}
-
-			togglePage(mainDeck.id, $(this).hasClass("cBridge")?mainDeck.getModuleId("cbridge"):mainDeck.getModuleId("cide"));
 		});
 
 		//cIDE/cBridge-Deaktivier Box (Vorerst deaktiviert..)
