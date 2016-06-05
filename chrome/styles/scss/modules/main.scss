@@ -294,6 +294,7 @@ caption {
 	background-color: rgb(245, 245, 245);
 	height: 100%;
 	width: 300px;
+	max-width: 300px;
 	overflow: hidden;
 	transition: width 0.3s;
 	color: rgb(60, 60, 60);
@@ -528,6 +529,7 @@ caption {
 
 #developerlog, #gitlog {
 	width: 800px;
+	max-width: 800px;
 	-moz-user-focus: normal;
 }
 #developerlog .ps-h {background-color: #333;}

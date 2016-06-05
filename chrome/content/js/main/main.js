@@ -234,24 +234,61 @@ hook("load", function() {
 			dlg.show();
 		});
 
+		function toggleSidebar(id) {
+			$("#"+id).toggleClass("invisible");
+			/*if($("#"+id).hasClass("invisible"))
+				$('[data-sidebarid="'+id+'"]').css("color", "");
+			else
+				$('[data-sidebarid="'+id+'"]').css("color", $("#"+id).find(".sidebar-header").css("background-color"));*/
+			let wdt = 0;
+			$(".sidebar").not(".invisible").each(function() {
+				wdt += parseInt($(this).css("max-width"));
+			});
+			if(wdt > $(window).width()) {
+				let widths = [];
+				$(".sidebar").not("#"+id+",.invisible").each(function() {
+					//Subtract width from 10000 to make sorting easier (we want to close the sidebar which is taking the most space first)
+					let sb_wdt = 10000-parseInt($(this).css("max-width"));
+					if(!widths[sb_wdt])
+						widths[sb_wdt] = [];
+					widths[sb_wdt].push(this);
+				});
+				//Closing sidebars which would overflow the window
+				for(let sb_wdt in widths) {
+					if(wdt < $(window).width())
+						continue;
+					while(widths[sb_wdt].length && wdt > $(window).width()) {
+						let sb = widths[sb_wdt].shift();
+						$(sb).addClass("invisible");
+						//$('[data-sidebarid="'+$(sb).attr("id")+'"]').css("color", "");
+						wdt -= 10000-sb_wdt;
+					}
+				}
+			}
+			
+		}
 		//Playerselection
 		$("#showPlayerSelect").click(function() {
-			$("#playerselect").toggleClass("invisible");
+			toggleSidebar("playerselect");
+			//$("#playerselect").toggleClass("invisible");
 			switchPlrPage("page-playerselection");
 		});
 		//Clonk Directory Selection
 		$("#showClonkDirs").click(function() {
-			$("#clonkdirselection").toggleClass("invisible");
+			toggleSidebar("clonkdirselection");
+			//$("#clonkdirselection").toggleClass("invisible");
 		});
 		//Log
 		$("#showLog").click(function() {
-			$("#gitlog").addClass("invisible");
-			$("#developerlog").toggleClass("invisible");
+			toggleSidebar("developerlog");
+			/*$("#gitlog").addClass("invisible");
+			$("#developerlog").toggleClass("invisible");*/
 		});
 		//Git Log
 		$("#showGitLog").click(function() {
-			$("#developerlog").addClass("invisible");
-			$("#gitlog").toggleClass("invisible");
+			toggleSidebar("gitlog");
+			/*$("#developerlog").addClass("invisible");
+			$("#gitlog").toggleClass("invisible");*/
 		});
 		let frame = $('<iframe src="resource://docs/build/de/_home/__head_de.html" flex="1" id="docFrame"></iframe>');
 		frame.appendTo($(mainDeck.element));

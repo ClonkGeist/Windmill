@@ -80,15 +80,15 @@
 									<spacer />
 									<hbox>
 										<label value="" id="nav-playername" />
-										<box class="nav-image icon-players icon-32" height="32" width="32" id="showPlayerSelect"></box>
+										<box class="nav-image icon-players icon-32" height="32" width="32" id="showPlayerSelect" data-sidebarid="playerselect"></box>
 										<spacer />
 									</hbox>
 									<box class="nav-image icon-heartbeat icon-32 devmode-elm" height="32" width="32" id="showModManager"></box> <!-- DEVMODE -->
 									<!--<box class="nav-image icon-update icon-32" height="32" width="32" id="showUpdate"></box>-->
 									<box class="nav-image icon-resource-saviour icon-32" height="32" width="32" id="showResSaveMode"></box>
-									<box class="nav-image icon-multisource icon-32" height="32" width="32" id="showClonkDirs"></box>
-									<box class="nav-image icon-git icon-32" height="32" width="32" id="showGitLog"></box>
-									<box class="nav-image icon-console icon-32" height="32" width="32" id="showLog"></box>
+									<box class="nav-image icon-multisource icon-32" height="32" width="32" id="showClonkDirs" data-sidebarid="clonkdirselection"></box>
+									<box class="nav-image icon-git icon-32" height="32" width="32" id="showGitLog" data-sidebarid="gitlog"></box>
+									<box class="nav-image icon-console icon-32" height="32" width="32" id="showLog" data-sidebarid="developerlog"></box>
 									<box class="nav-image icon-reload icon-32 devmode-elm" height="32" width="32" id="restartWindmill"></box> <!-- DEVMODE -->
 									<box class="nav-image icon-documentation icon-32 devmode-elm" height="32" width="32" id="showDocs"></box> <!-- DEVMODE -->
 									<box class="nav-image icon-screenshots icon-32" height="32" width="32" id="showScreenshots"></box>
@@ -140,7 +140,7 @@ s0.42,6.38-0.29,7.92s-2.79,1.69-2.79,1.69l-0.08,2.77l0.02-6.2"/></svg>
 						<vbox id="playerselect" class="sidebar invisible" flex="1">
 							<!-- Spielerauswahl -->
 							<vbox id="page-playerselection" class="plr-page" flex="1">
-								<hbox class="ps-h">
+								<hbox class="ps-h sidebar-header">
 									<caption>$Playerselect$</caption>
 									<spacer flex="1" />
 									<box class="icon-32 icon-add-player ps-h-icon" onclick="initNewPlayer();"></box>
@@ -188,7 +188,7 @@ s0.42,6.38-0.29,7.92s-2.79,1.69-2.79,1.69l-0.08,2.77l0.02-6.2"/></svg>
 							<!-- Spieler erstellen -->
 							
 							<vbox id="page-addplayer" class="plr-page" flex="1">
-								<hbox class="ps-h">
+								<hbox class="ps-h sidebar-header">
 									<box class="icon-32 icon-backwards ps-h-icon" onclick="switchPlrPage('page-playerselection');"></box>
 									<caption id="ap-player-caption">$AddPlayer$</caption>
 									<spacer flex="1" />
@@ -233,7 +233,7 @@ s0.42,6.38-0.29,7.92s-2.79,1.69-2.79,1.69l-0.08,2.77l0.02-6.2"/></svg>
 						
 						<vbox id="clonkdirselection" class="sidebar invisible">
 							<vbox id="page-clonkdirselection" class="cds-page" flex="1">
-								<hbox class="ps-h cds-h">
+								<hbox class="ps-h cds-h sidebar-header">
 									<caption>$ClonkDirSelection$</caption>
 								</hbox>
 								<vbox class="ps-b cds-b">
@@ -265,7 +265,7 @@ s0.42,6.38-0.29,7.92s-2.79,1.69-2.79,1.69l-0.08,2.77l0.02-6.2"/></svg>
 
 						<vbox id="gitlog" class="sidebar invisible" tabindex="-1">
 							<vbox id="page-gitlog" class="cds-page" flex="1">
-								<hbox class="ps-h cds-h">
+								<hbox class="ps-h cds-h sidebar-header">
 									<caption>Git Log</caption>
 									<spacer flex="1" />
 									<box class="icon-32 icon-clear-log ps-h-icon" onclick="clearLog('gitlog');"></box>
@@ -285,7 +285,7 @@ s0.42,6.38-0.29,7.92s-2.79,1.69-2.79,1.69l-0.08,2.77l0.02-6.2"/></svg>
 
 						<vbox id="developerlog" class="sidebar invisible" tabindex="-1">
 							<vbox id="page-log" class="cds-page" flex="1">
-								<hbox class="ps-h cds-h">
+								<hbox class="ps-h cds-h sidebar-header">
 									<caption>Log</caption>
 									<spacer flex="1" />
 									<box class="icon-32 icon-eye ps-h-icon" onclick="toggleHiddenLogEntries();"></box>
