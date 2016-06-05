@@ -532,7 +532,7 @@ caption {
 	max-width: 800px;
 	-moz-user-focus: normal;
 }
-#developerlog .ps-h {background-color: #333;}
+#developerlog .ps-h {background-color: $chrome-clr;}
 #gitlog .ps-h {background-color: rgb(241, 72, 33);}
 
 #log-entrylist { overflow-y: scroll; }
