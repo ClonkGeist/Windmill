@@ -874,7 +874,7 @@ function loadDefinitionSelectionData(infosource, dest = infosource, index = getC
 		for(var j = 0; j < c4idlist.length; j++) {
 			var listentry = c4idlist[j].split("=");
 			listentry[1] = parseInt(listentry[1]);
-			if(listentry[0] == "" || !definitions[deff])
+			if(listentry[0] == "" || !definitions[deff] || !definitions[deff].ids)
 				continue;
 
 			var def = definitions[deff].ids[listentry[0]];
