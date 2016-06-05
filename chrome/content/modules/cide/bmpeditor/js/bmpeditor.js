@@ -2,6 +2,8 @@ var canvasArray = new Array();
 var editlayer, editObj = { mode: 0 }, rulerData = {};
 var activeId;
 
+var sceneMeta = new Array();
+
 const mdPoint = 0, mdLine = 1, mdRect = 2, mdCircle = 3, mdFill = 4, mdSelectRect = 5, mdSelectCircle = 6, mdGetColor = 8,
 	  mdSelectPoly = 9, mdDefault = 10;
 const mdsThickness = 1, mdsLineThickness = 2, mdsCanFill = 4;
@@ -34,8 +36,9 @@ $(window).ready(function() {
 	});
 	$("#mds_thickness_nr").keydown(function(e) {
 		if((e.which < 48 || e.which > 57) && (e.which < 96 || e.which > 105) && e.which != 8)
-			return false;
-
+			e.stopPropagation();
+	}).keyup(function(e) {
+		updateBrushGenerator(activeId);
 		$("#mds_thickness_range").val($(this).val());
 	});
 	$("#mds_linethickness_range").mousemove(function(e) {
@@ -66,13 +69,13 @@ $(window).ready(function() {
 			//Verschiebung deaktivieren
 			if($("#movinglayer").hasClass("active")) {
 				//Callback ausführen
-				if(canvasArray[getCurrentCanvasId()].rtdata.moving_callback)
-					canvasArray[getCurrentCanvasId()].rtdata.moving_callback();
+				if(sceneMeta[getCurrentCanvasId()].rtdata.moving_callback)
+					sceneMeta[getCurrentCanvasId()].rtdata.moving_callback();
 				else { //Alternativ: Bilddaten durchgehen und Transparente Pixel aussortieren
 					var mvcnv = $("#movinglayer").get(0);
 					var mvctx = mvcnv.getContext('2d');
 					var ctx2 = $(".visible").get(0).getContext("2d");
-					var zoom = canvasArray[getCurrentCanvasId()].z;
+					var zoom = sceneMeta[getCurrentCanvasId()].z;
 					
 					var offset = $("#movinglayer").offset();
 					var cnv_offset = $(".visible").offset();
@@ -133,8 +136,8 @@ $(window).ready(function() {
 		var index = Math.floor(my/10)*16+Math.floor(mx/10);
 		
 		var id = getCurrentCanvasId();//parseInt($(".visible").attr("id").replace(/bmpCanvas-/, ""));
-		var indices = canvasArray[id].matindices;
-		var bg_mode = canvasArray[id].rtdata.matmode_underground;
+		var indices = sceneMeta[id].matindices;
+		var bg_mode = sceneMeta[id].rtdata.matmode_underground;
 		if(bg_mode)
 			index += 128;
 		
@@ -153,7 +156,7 @@ $(window).ready(function() {
 				$(elm).addClass("autoselect");
 			}
 			else if($(".spalette-elm[mat-index='"+index+"']").get(0) && index != -1) {
-				canvasArray[id].rtdata.sidepalette[$(".spalette-elm").index($(".spalette-elm[mat-index='"+index+"']").get(0))] = -1;
+				sceneMeta[id].rtdata.sidepalette[$(".spalette-elm").index($(".spalette-elm[mat-index='"+index+"']").get(0))] = -1;
 				$(".spalette-elm[mat-index='"+index+"']").css("background-color", "#000").attr("mat-index", -1);
 			}
 
@@ -161,7 +164,7 @@ $(window).ready(function() {
 				return;
 			
 			$(elm).css("background-color", getColorByIndex(id, index)).attr("mat-index", index);
-			canvasArray[id].rtdata.sidepalette[$(".spalette-elm").index(elm)] = index;
+			sceneMeta[id].rtdata.sidepalette[$(".spalette-elm").index(elm)] = index;
 		}
 
 		selectColorIndex(id, index);
@@ -174,8 +177,8 @@ $(window).ready(function() {
 		var index = Math.floor(my/10)*16+Math.floor(mx/10);
 		
 		var id = getCurrentCanvasId();//parseInt($(".visible").attr("id").replace(/bmpCanvas-/, ""));
-		var indices = canvasArray[id].matindices;
-		var bg_mode = canvasArray[id].rtdata.matmode_underground;
+		var indices = sceneMeta[id].matindices;
+		var bg_mode = sceneMeta[id].rtdata.matmode_underground;
 		if(bg_mode)
 			index += 128;
 		
@@ -189,7 +192,7 @@ $(window).ready(function() {
 		if($("#current-material-name > input").is(":focus"))
 			return;
 
-		var current_mat = canvasArray[activeId].rtdata.current_matidx;
+		var current_mat = sceneMeta[activeId].rtdata.current_matidx;
 	
 		$("#current-material-clr").css("background-color", getColorByIndex(activeId, current_mat));
 		$("#current-material-name > input").val(getMaterialByIndex(activeId, current_mat));
@@ -199,8 +202,8 @@ $(window).ready(function() {
 		var index = Math.floor(my/10)*16+Math.floor(mx/10);
 		
 		var id = getCurrentCanvasId();
-		var indices = canvasArray[id].matindices;
-		var bg_mode = canvasArray[id].rtdata.matmode_underground;
+		var indices = sceneMeta[id].matindices;
+		var bg_mode = sceneMeta[id].rtdata.matmode_underground;
 		if(bg_mode)
 			index += 128;
 
@@ -227,12 +230,12 @@ $(window).ready(function() {
 					return;
 				
 				//Farbe existiert bereits woanders
-				if(canvasArray[id].coloridx.indexOf(clr) != -1 && canvasArray[id].coloridx.indexOf(clr) != index)
+				if(sceneMeta[id].coloridx.indexOf(clr) != -1 && sceneMeta[id].coloridx.indexOf(clr) != index)
 					return;
 				
 				//Falls Farbe geändert wurde: Farbe auf dem Bild auch abändern
-				if(canvasArray[id].coloridx.indexOf(clr) != index) {
-					var cnv = canvasArray[id].c;
+				if(sceneMeta[id].coloridx.indexOf(clr) != index) {
+					var cnv = sceneMeta[id].c;
 					var ctx = cnv.getContext('2d');
 					var idata = ctx.getImageData(0, 0, cnv.width, cnv.height);
 					var data = idata.data;
@@ -241,7 +244,7 @@ $(window).ready(function() {
 						var pxclr = [data[i+2], data[i+1], data[i], 0].byte2num();
 						
 						//Farben ggf. austauschen
-						if(pxclr == canvasArray[id].coloridx[index]) {
+						if(pxclr == sceneMeta[id].coloridx[index]) {
 							data[i+2] = nclr[0];
 							data[i+1] = nclr[1];
 							data[i]   = nclr[2];
@@ -251,8 +254,8 @@ $(window).ready(function() {
 					idata.data = data;
 					ctx.putImageData(idata, 0, 0);
 				}
-				canvasArray[id].matindices[index%128] = nmat+"-"+ntex;
-				canvasArray[id].coloridx[index] = clr;
+				sceneMeta[id].matindices[index%128] = nmat+"-"+ntex;
+				sceneMeta[id].coloridx[index] = clr;
 				
 				drawMaterialPalette(id);
 				return true;
@@ -261,22 +264,22 @@ $(window).ready(function() {
 		var content = '<hbox><description>$SelectMaterialAndTexture$</description></hbox><hbox><menulist id="dlgbmpMat"><menupopup>';
 		
 		//Materialauswahl füllen
-		for(var i = 0; i < canvasArray[id].materials.length; i++)
-			content += '<menuitem id="dlgbmp-mat-'+canvasArray[id].materials[i]+'" label="'+canvasArray[id].materials[i]+'" value="'+canvasArray[id].materials[i]+'"/>';
+		for(var i = 0; i < sceneMeta[id].materials.length; i++)
+			content += '<menuitem id="dlgbmp-mat-'+sceneMeta[id].materials[i]+'" label="'+sceneMeta[id].materials[i]+'" value="'+sceneMeta[id].materials[i]+'"/>';
 		
 		content += '</menupopup></menulist><menulist id="dlgbmpTex"><menupopup>';
 		
 		//Texturauswahl füllen
-		for(var i = 0; i < canvasArray[id].textures.length; i++)
-			content += '<menuitem id="dlgbmp-tex-'+canvasArray[id].textures[i]+'" label="'+canvasArray[id].textures[i]+'" value="'+canvasArray[id].textures[i]+'"/>';
+		for(var i = 0; i < sceneMeta[id].textures.length; i++)
+			content += '<menuitem id="dlgbmp-tex-'+sceneMeta[id].textures[i]+'" label="'+sceneMeta[id].textures[i]+'" value="'+sceneMeta[id].textures[i]+'"/>';
 		
 		content += '</menupopup></menulist></hbox><hbox><description>$PickColor$</description></hbox><hbox id="dlgbmpClrPickCnt"></hbox>';
 		dlg.setContent(content);
 		dlg.show();
 		
 		//Aktuelle Materialien auswählen
-		_mainwindow.$("#dlgbmpMat").get(0).selectedIndex = canvasArray[id].materials.indexOf(cmat);
-		_mainwindow.$("#dlgbmpTex").get(0).selectedIndex = canvasArray[id].textures.indexOf(ctex);
+		_mainwindow.$("#dlgbmpMat").get(0).selectedIndex = sceneMeta[id].materials.indexOf(cmat);
+		_mainwindow.$("#dlgbmpTex").get(0).selectedIndex = sceneMeta[id].textures.indexOf(ctex);
 		
 		//Clrpicker hinzufügen
 		var clrpicker = document.createElementNS("http://www.w3.org/1999/xhtml", "input");
@@ -302,10 +305,10 @@ $(window).ready(function() {
 			return selectColorIndex(id, -1);
 		
 		//Falls Eingabe gefunden wurde, Material setzen
-		if(canvasArray[id].matindices.indexOf(input) >= 0)
-			selectColorIndex(id, canvasArray[id].matindices.indexOf(input)+128*!!(canvasArray[id].rtdata.matmode_underground));
+		if(sceneMeta[id].matindices.indexOf(input) >= 0)
+			selectColorIndex(id, sceneMeta[id].matindices.indexOf(input)+128*!!(sceneMeta[id].rtdata.matmode_underground));
 		else //Ansonsten vorheriges Material anzeigen
-			$(this).val(getMaterialByIndex(id, canvasArray[id].rtdata.current_matidx));
+			$(this).val(getMaterialByIndex(id, sceneMeta[id].rtdata.current_matidx));
 	}).keydown(function(e) {
 		if(e.key == "Enter") {
 			if($("#material-suggestion-box").find(".selected").get(0))
@@ -353,8 +356,8 @@ $(window).ready(function() {
 		for(var i = -1; i < 128; i++) {
 			//Material aussuchen
 			if(i >= 0) {
-				var clr = canvasArray[id].coloridx[i+128*!!canvasArray[id].rtdata.matmode_underground].toString(16);
-				var matname = canvasArray[id].matindices[i];
+				var clr = sceneMeta[id].coloridx[i+128*!!sceneMeta[id].rtdata.matmode_underground].toString(16);
+				var matname = sceneMeta[id].matindices[i];
 			}
 			else {
 				var clr = OC_KEYCOLOR.toString(16);
@@ -417,13 +420,13 @@ $(window).ready(function() {
 			return;
 	
 		var id = getCurrentCanvasId();
-		canvasArray[id].rtdata.mousedown = true;
-		canvasArray[id].rtdata.mousepos = [e.clientX, e.clientY];
+		sceneMeta[id].rtdata.mousedown = true;
+		sceneMeta[id].rtdata.mousepos = [e.clientX, e.clientY];
 	}).mouseup(function(e) {
 		if($(".color-matching-wizard.visible2").get(0))
 			return;
 
-		canvasArray[getCurrentCanvasId()].rtdata.mousedown = false;
+		sceneMeta[getCurrentCanvasId()].rtdata.mousedown = false;
 		
 		//Bearbeitungsvorgang abbrechen wenn Maustaste außerhalb des Canvas losgelassen wird
 		if(editObj.mode != mdSelectPoly)
@@ -438,9 +441,9 @@ $(window).ready(function() {
 			if(e.deltaY > 0)
 				changeZoom(id);
 			else if(e.deltaY < 0)
-				changeZoom(id, true),
-				
-			onUpdateZoom();
+				changeZoom(id, true);
+			else
+				onUpdateZoom(id);
 		}
 		//Horizontales Scrolling
 		else if(e.altKey) {
@@ -471,24 +474,9 @@ $(window).ready(function() {
 		rulerData.left.css("top", my+"px");
 		rulerData.top.css("left", mx+"px");
 		
-		//Nicht wenn Movinglayer aktivieren
-		if($("#movinglayer.active").get(0))
-			return;
-		
-		//Canvas verschieben
-		/*var id = getCurrentCanvasId();
-		
-		if(getCurrentMode() == mdDefault) {
-			var mxd = e.clientX-canvasArray[id].rtdata.mousepos[0], myd = e.clientY-canvasArray[id].rtdata.mousepos[1];
-			if(canvasArray[id].rtdata.mousedown) {
-				var cnv = $("#bmpCanvas-"+id);
-				var offset = cnv.offset();
-				cnv.css("top", offset.top+myd+"px").css("left", offset.left+mxd+"px");
-				$(editlayer).css("top", offset.top+myd+"px").css("left", offset.left+mxd+"px");
-			}
-			
-			canvasArray[id].rtdata.mousepos = [e.clientX, e.clientY];
-		}*/
+		let $el = $(".brush-indicator");
+		$el.css("left", mx+"px");
+		$el.css("top", my+"px");
 	});
 	$(window).resize(function() {
 		updateRulers();
@@ -531,10 +519,11 @@ $(window).ready(function() {
 			if(e.keyCode == 13)
 				$(this).trigger("focusout");
 		}).focusout(function() {
-			var zoomlvl = Math.max(1, Math.min(32, parseInt($(this).val())/100 || canvasArray[getCurrentCanvasId()].z));
-			canvasArray[getCurrentCanvasId()].z = zoomlvl;
+			let id = getCurrentCanvasId();
+			var zoomlvl = Math.max(1, Math.min(32, parseInt($(this).val())/100 || sceneMeta[getCurrentCanvasId()].z));
+			sceneMeta[id].z = zoomlvl;
 			$(this).parent().text(zoomlvl + "%");
-			onUpdateZoom();
+			onUpdateZoom(id);
 		}).focus();
 	});
 	
@@ -564,18 +553,25 @@ $(window).ready(function() {
 			$(this).removeClass("active");
 			$(this).attr("mat-index", -1);
 			$(this).css("background-color", "#000");
-			canvasArray[getCurrentCanvasId()].rtdata.sidepalette[$(".spalette-elm").index(this)] = -1;
+			sceneMeta[getCurrentCanvasId()].rtdata.sidepalette[$(".spalette-elm").index(this)] = -1;
 			return;
 		}
 		selectColorIndex(getCurrentCanvasId(), $(this).attr("mat-index") || -1);
 		$(this).addClass("active");
-		canvasArray[getCurrentCanvasId()].rtdata.current_sideindex = $(".spalette-elm").index(this);
+		sceneMeta[getCurrentCanvasId()].rtdata.current_sideindex = $(".spalette-elm").index(this);
 	}).contextmenu(function() {
 		if(!$(".spalette-elm.active").get(0))
 			return;
 
 		$(".spalette-elm.active").removeClass("active");
 		selectColorIndex(getCurrentCanvasId(), -1);
+	});
+	
+	// brush panel
+	setDraggable($("#bp-h").get(0), $("#bp-b").get(0), $("#brush-panel").get(0));
+	
+	$("#bp-preview").click(function() {
+		$("#brush-panel").removeClass("collapsed");
 	});
 	
 	/*-- Key Bindings --*/
@@ -594,6 +590,12 @@ $(window).ready(function() {
 	//Rotieren
 	bindKeyToObj(new KeyBinding("RotateACW", "Ctrl-,", function() { rotateImage(-90); }));
 	bindKeyToObj(new KeyBinding("RotateICW", "Ctrl-.", function() { rotateImage(90); }));
+	// Select Eyedropper method
+	bindKeyToObj(new KeyBinding("SelectEyedropper", "I", function() {
+		$("#md_getclr").click(function() {
+			setSelMode(Mode_Eyedropper)
+		})
+	}));
 	
 	createCideToolbar(true);
 	
@@ -633,19 +635,105 @@ function createCideToolbar(startup) {
 	return true;
 }
 
+/*-- Brush panel and generator --*/
+
+function updateBrushGenerator(id) {
+	var seed = $("#bp-gen-seed").val();
+	var size = parseInt($("#mds_thickness_nr").val());
+	
+	sceneMeta[id].brushData.size = size;
+	
+	size *= parseInt(sceneMeta[id].scene.zoomFactor);
+	
+	var c = $("#bp-preview-gen").get(0);	
+	var ctx = c.getContext("2d");
+	c.width = size;
+	c.height = size;
+	
+	ctx.clearRect(0, 0, size, size);
+	
+	var imgData = ctx.getImageData(0, 0, size, size),
+		data = imgData.data;
+	
+	var m = size/2 - 1
+	// display a double-sized version of the brush (fixes several things)
+	var inDist = (x, y) => {
+		let xm = m - x
+		let ym = m - y
+		
+		return Math.sqrt(xm*xm + ym*ym) <= m
+	}
+	
+	if(sceneMeta[id].brushData.rounded) {
+		for(let x = 0; x < size; x++)
+			for(let y = 0; y < size; y++) {
+				
+				if(!inDist(x, y))
+					continue;
+				
+				let index = (x + y*size)*4;
+				
+				data[index  ] = 0;
+				data[index+1] = 0;
+				data[index+2] = 0;
+				data[index+3] = 255;
+			}
+	}
+	else {
+		for(let x = 0; x < size; x++)
+			for(let y = 0; y < size; y++) {
+				let index = (x + y*size)*4;
+				data[index  ] = 0;
+				data[index+1] = 0;
+				data[index+2] = 0;
+				data[index+3] = 255;
+			}
+	}
+	
+	ctx.putImageData(imgData, 0, 0);
+	
+	var url = c.toDataURL("image/png", 1.0);
+	
+	document.getElementById("bp-preview").src = url;
+	
+	$("#bp-preview-main").css("background-image", "url(" + url + ")");
+	
+	updateCursor(id, url);
+}
+
+function updateCursor(id, dataUrl) {
+	
+	if(selectedMode === Mode_Draw_Shape) {
+		
+		var size = sceneMeta[id].brushData.size*sceneMeta[id].scene.zoomFactor;
+		var radius = sceneMeta[id].brushData.rounded?size:0;
+		
+		$(".brush-indicator").css({
+			marginLeft: -size/2 + "px",
+			marginTop: -size/2 + "px",
+			height: size + "px",
+			width: size + "px",
+			borderRadius: radius + "px",
+			MozOutlineRadius: radius + "px",
+		})
+	}
+}
+
+
+
 /*-- Seitenpalette --*/
 
 function updateSidePalette(id) {
 	if(id == undefined)
 		id = getCurrentCanvasId();
 
-	if(!canvasArray[id].rtdata.sidepalette)
-		canvasArray[id].rtdata.sidepalette = [];
+	if(!sceneMeta[id].rtdata.sidepalette)
+		sceneMeta[id].rtdata.sidepalette = [];
 	
 	var spelements = $(".spalette-elm");
 	$(".spalette-elm.active").removeClass("active");
 	for(var i = 0; i < spelements.length; i++) {
-		var index = canvasArray[id].rtdata.sidepalette[i];
+		var index = sceneMeta[id].rtdata.sidepalette[i];
 		if(index == undefined)
 			index = -1;
 
@@ -653,8 +741,8 @@ function updateSidePalette(id) {
 		$($(spelements).get(i)).css("background-color", getColorByIndex(id, index));
 	}
 
-	if(canvasArray[id].rtdata.current_sideindex != undefined && canvasArray[id].rtdata.current_sideindex >= 0)
-		$($(spelements).get(canvasArray[id].rtdata.current_sideindex)).addClass("active");
+	if(sceneMeta[id].rtdata.current_sideindex != undefined && sceneMeta[id].rtdata.current_sideindex >= 0)
+		$($(spelements).get(sceneMeta[id].rtdata.current_sideindex)).addClass("active");
 	return true;
 }
 
@@ -667,7 +755,7 @@ function rotateImage(angle) {
 		return;
 	
 	var id = getCurrentCanvasId();
-	var cnv = canvasArray[id].c, ctx = cnv.getContext("2d");
+	var cnv = sceneMeta[id].c, ctx = cnv.getContext("2d");
 	var idata = ctx.getImageData(0, 0, cnv.width, cnv.height), nidata;
 	if(angle && angle != 180)
 		nidata = ctx.createImageData(cnv.height, cnv.width);
@@ -721,7 +809,7 @@ function rotateImage(angle) {
 /*-- Spiegelung --*/
 /** @deprecated */
 function mirrorImage(fVertically) {
-	var id = getCurrentCanvasId(), cnv = canvasArray[id].c;
+	var id = getCurrentCanvasId(), cnv = sceneMeta[id].c;
 	if($("#movinglayer.active").get(0))
 		cnv = $("#movinglayer.active").get(0);
 
@@ -776,7 +864,7 @@ function mirrorImage(fVertically) {
 function openScalingDialog() {
 	var dlg = new WDialog("$DlgScaleImage$", MODULE_LPRE, { modal: true, css: { "width": "470px" }, 
 			btnright: [{preset: "accept", onclick: function(e, btn, _self) {
-				var cnv = canvasArray[getCurrentCanvasId()].c;
+				var cnv = sceneMeta[getCurrentCanvasId()].c;
 				var ctx = cnv.getContext("2d");
 				var nWdt = parseInt($(_self.element).find("#dbmp_newImageWidth").val()) || 1;
 				var nHgt = parseInt($(_self.element).find("#dbmp_newImageHeight").val()) || 1;
@@ -834,11 +922,11 @@ function openScalingDialog() {
 					return false;
 	}).on("input", function(e) {
 		if(_mainwindow.$("#dbmp_proportional").prop("checked")) {
-			var cnv = canvasArray[getCurrentCanvasId()].c;
+			var cnv = sceneMeta[getCurrentCanvasId()].c;
 			var p = cnv.height/cnv.width;
 			_mainwindow.$("#dbmp_newImageHeight").val(Math.floor(parseInt($(this).val())*p) || 1);
 		}
-	}).val(canvasArray[id].c.width);
+	}).val(sceneMeta[id].c.width);
 	
 	$(dlg.element).find("#dbmp_newImageHeight").keypress(function(e) {
 		if(!e.ctrlKey)
@@ -847,11 +935,11 @@ function openScalingDialog() {
 					return false;
 	}).on("input", function(e) {
 		if(_mainwindow.$("#dbmp_proportional").prop("checked")) {
-			var cnv = canvasArray[getCurrentCanvasId()].c;
+			var cnv = sceneMeta[getCurrentCanvasId()].c;
 			var p = cnv.width/cnv.height;
 			_mainwindow.$("#dbmp_newImageWidth").val(Math.floor(parseInt($(this).val())*p) || 1);
 		}
-	}).val(canvasArray[id].c.height);
+	}).val(sceneMeta[id].c.height);
 	
 	dlg = 0;
 }
@@ -862,22 +950,22 @@ function stockUndoStack(imgdata, id, fSaved) {
 	if(id == undefined)
 		id = getCurrentCanvasId();
 
-	if(!canvasArray[id].rtdata.undoStack)
-		canvasArray[id].rtdata.undoStack = [];
+	if(!sceneMeta[id].rtdata.undoStack)
+		sceneMeta[id].rtdata.undoStack = [];
 	
 	//Falls es zu groß wird, vorne entfernen
-	if(canvasArray[id].rtdata.undoStack.length+1 > MAX_UNDO_STACKSIZE)
-		canvasArray[id].rtdata.undoStack.shift();
+	if(sceneMeta[id].rtdata.undoStack.length+1 > MAX_UNDO_STACKSIZE)
+		sceneMeta[id].rtdata.undoStack.shift();
 	
 	//Falls aktuell mitten im Stack positioniert, nachfolgende Eintraege loeschen
-	if(canvasArray[id].rtdata.undoStackPosition < canvasArray[id].rtdata.undoStack.length-1)
-		canvasArray[id].rtdata.undoStack.splice(canvasArray[id].rtdata.undoStackPosition+1);
+	if(sceneMeta[id].rtdata.undoStackPosition < sceneMeta[id].rtdata.undoStack.length-1)
+		sceneMeta[id].rtdata.undoStack.splice(sceneMeta[id].rtdata.undoStackPosition+1);
 	
 	if(!imgdata)
-		imgdata = canvasArray[id].c.getContext("2d").getImageData(0, 0, canvasArray[id].c.width, canvasArray[id].c.height);
+		imgdata = sceneMeta[id].c.getContext("2d").getImageData(0, 0, sceneMeta[id].c.width, sceneMeta[id].c.height);
 	
-	canvasArray[id].rtdata.undoStack.push({ data: imgdata, saved: fSaved });
-	canvasArray[id].rtdata.undoStackPosition = canvasArray[id].rtdata.undoStack.length-1;
+	sceneMeta[id].rtdata.undoStack.push({ data: imgdata, saved: fSaved });
+	sceneMeta[id].rtdata.undoStackPosition = sceneMeta[id].rtdata.undoStack.length-1;
 
 	$(btn_undo).removeClass("deactivated");
 	$(btn_redo).addClass("deactivated");
@@ -887,13 +975,13 @@ function stockUndoStack(imgdata, id, fSaved) {
 function canUndoImageData() {
 	if(true)return
 	var id = getCurrentCanvasId();
-	if(!canvasArray[id].rtdata.undoStack)
+	if(!sceneMeta[id].rtdata.undoStack)
 		return false;
 	
-	if(canvasArray[id].rtdata.undoStack.length < 2)
+	if(sceneMeta[id].rtdata.undoStack.length < 2)
 		return false;
 	
-	if(!canvasArray[id].rtdata.undoStackPosition)
+	if(!sceneMeta[id].rtdata.undoStackPosition)
 		return false;
 
 	return true;
@@ -905,10 +993,10 @@ function undoImageData() {
 	if(!canUndoImageData())
 		return;
 	
-	canvasArray[id].rtdata.undoStackPosition--;
+	sceneMeta[id].rtdata.undoStackPosition--;
 	
-	var imgdata = canvasArray[id].rtdata.undoStack[canvasArray[id].rtdata.undoStackPosition].data;
-	var cnv = canvasArray[id].c;
+	var imgdata = sceneMeta[id].rtdata.undoStack[sceneMeta[id].rtdata.undoStackPosition].data;
+	var cnv = sceneMeta[id].c;
 	cnv.width = imgdata.width;
 	cnv.height = imgdata.height;
 	$(cnv).css("width", imgdata.width);
@@ -923,13 +1011,13 @@ function undoImageData() {
 
 function canRedoImageData() {
 	var id = getCurrentCanvasId();
-	if(!canvasArray[id].rtdata.undoStack)
+	if(!sceneMeta[id].rtdata.undoStack)
 		return false;
 	
-	if(canvasArray[id].rtdata.undoStack.length == canvasArray[id].rtdata.undoStackPosition+1)
+	if(sceneMeta[id].rtdata.undoStack.length == sceneMeta[id].rtdata.undoStackPosition+1)
 		return false;
 	
-	if(!canvasArray[id].rtdata.undoStackPosition+1 == MAX_UNDO_STACKSIZE)
+	if(!sceneMeta[id].rtdata.undoStackPosition+1 == MAX_UNDO_STACKSIZE)
 		return false;
 
 	return true;
@@ -941,10 +1029,10 @@ function redoImageData() {
 	if(!canRedoImageData())
 		return;
 	
-	canvasArray[id].rtdata.undoStackPosition++;
+	sceneMeta[id].rtdata.undoStackPosition++;
 
-	var imgdata = canvasArray[id].rtdata.undoStack[canvasArray[id].rtdata.undoStackPosition].data;
-	var cnv = canvasArray[id].c;
+	var imgdata = sceneMeta[id].rtdata.undoStack[sceneMeta[id].rtdata.undoStackPosition].data;
+	var cnv = sceneMeta[id].c;
 	cnv.width = imgdata.width;
 	cnv.height = imgdata.height;
 	$(cnv).css("width", imgdata.width);
@@ -960,7 +1048,7 @@ function redoImageData() {
 /*-- Infotoolbar --*/
 
 function updateInfotoolbar(x, y) {
-	var id = getCurrentCanvasId(), zoom = canvasArray[id].z;
+	var id = getCurrentCanvasId(), zoom = sceneMeta[id].z;
 	if(x != undefined && y != undefined) {
 		x = Math.floor(x); y = Math.floor(y);
 		var rect = editlayer.getBoundingClientRect();
@@ -987,18 +1075,18 @@ function updateInfotoolbar(x, y) {
 }
 
 function changeZoom(id, fZoomOut) {
-	if(!fZoomOut && canvasArray[id].z < 32)
-		canvasArray[id].z *= 2;
-	else if(fZoomOut && canvasArray[id].z > 1)
-		canvasArray[id].z /= 2;
+	if(!fZoomOut && sceneMeta[id].z < 32)
+		sceneMeta[id].z *= 2;
+	else if(fZoomOut && sceneMeta[id].z > 1)
+		sceneMeta[id].z /= 2;
 	else
 		return;
 
-	canvasArray[id].z = Math.max(1, Math.min(32, canvasArray[id].z));
+	sceneMeta[id].z = Math.max(1, Math.min(32, sceneMeta[id].z));
 	
-	a_S.zoomFactor = canvasArray[id].z;
+	a_S.zoomFactor = sceneMeta[id].z;
 	
-	onUpdateZoom();
+	onUpdateZoom(id);
 	return true;
 }
 
@@ -1028,11 +1116,8 @@ function centerCanvas() {
 	return true;
 }
 
-function onUpdateZoom() {
-	//Canvas vergrößern
-	var id = getCurrentCanvasId();
-	var zoom = canvasArray[id].z;
-	
+function onUpdateZoom(id) {
+	// viewport anpassen
 	a_S.updateZoom()
 	
 	//Canvas zentrieren
@@ -1044,6 +1129,9 @@ function onUpdateZoom() {
 	//Infoleiste aktualisieren
 	updateInfotoolbar();
 	
+	// cursor anpassen
+	updateBrushGenerator(id);
+	
 	return true;
 }
 
@@ -1051,11 +1139,11 @@ function selectIndexByPixel(id, x, y) {
 	var ctx2 = $("#bmpCanvas-"+id).get(0).getContext('2d');
 	var idata = ctx2.getImageData(x, y, 1, 1).data;
 	var clr = [idata[2], idata[1], idata[0], 0].byte2num();
-	var index = canvasArray[id].coloridx.indexOf(clr);
+	var index = sceneMeta[id].coloridx.indexOf(clr);
 	
-	if(canvasArray[id].matindices[index%128]) {
+	if(sceneMeta[id].matindices[index%128]) {
 		selectColorIndex(id, index);
-		if((index >= 128 && !canvasArray[id].rtdata.matmode_underground) || (index < 128 && canvasArray[id].rtdata.matmode_underground))
+		if((index >= 128 && !sceneMeta[id].rtdata.matmode_underground) || (index < 128 && sceneMeta[id].rtdata.matmode_underground))
 			switchMaterialMode();
 	}
 	else
@@ -1066,7 +1154,7 @@ function selectIndexByPixel(id, x, y) {
 
 function switchMaterialMode() {
 	var id = getCurrentCanvasId();
-	canvasArray[id].rtdata.matmode_underground = !canvasArray[id].rtdata.matmode_underground;
+	sceneMeta[id].rtdata.matmode_underground = !sceneMeta[id].rtdata.matmode_underground;
 	drawMaterialPalette(id);
 }
 
@@ -1124,7 +1212,7 @@ function updateRulers() {
 	setRulerMarker(rulert, true, xoff);
 	
 	//Einzelne Striche einzeichnen
-	var zoom = canvasArray[getCurrentCanvasId()].z;
+	var zoom = sceneMeta[getCurrentCanvasId()].z;
 	var step = Math.max(1, Math.floor(10/zoom)), pxsize = zoom;
 
 	for(var i = step, j = 1; i*zoom < rulerl.height; i+=step) {
@@ -1198,9 +1286,9 @@ function setRulerMarker(canvas, top, offset, size, text) {
 function getUnsavedFiles() {
 	var files = [];
 	for(var id in canvasArray)
-		if(canvasArray[id] && canvasArray[id].rtdata.undoStack)
-			if(!canvasArray[id].rtdata.undoStack[canvasArray[id].rtdata.undoStackPosition].saved)
-				files.push({ filepath: canvasArray[id].f.path, index: id, module: window });
+		if(sceneMeta[id] && sceneMeta[id].rtdata.undoStack)
+			if(!sceneMeta[id].rtdata.undoStack[sceneMeta[id].rtdata.undoStackPosition].saved)
+				files.push({ filepath: sceneMeta[id].f.path, index: id, module: window });
 	
 	return files;
 }
@@ -1216,8 +1304,8 @@ function saveCanvas(id) {
 		return ar;
 	};
 	
-	var c = canvasArray[id].c;
-	var ifheader = canvasArray[id].header;
+	var c = sceneMeta[id].c;
+	var ifheader = sceneMeta[id].header;
 	
 	var rowsize = ((ifheader.bpp*c.width+31)/32)*4;
 	
@@ -1242,7 +1330,7 @@ function saveCanvas(id) {
 	
 	//Colortable generieren
 	for(var i = 0; i < ifheader.clrcnt; i++)
-		colortable = colortable.concat(num2byte(canvasArray[id].coloridx[i], 4));
+		colortable = colortable.concat(num2byte(sceneMeta[id].coloridx[i], 4));
 
 	var pixelstorage = [];
 	var imgdata = c.getContext("2d").getImageData(0, 0, c.width, c.height).data;
@@ -1253,7 +1341,7 @@ function saveCanvas(id) {
 		for(var x = 0; x < c.width*4; x+=4) {
 			var pos = i*(c.width*4)+x;
 			var px = [imgdata[pos+2], imgdata[pos+1], imgdata[pos], 0];
-			var index = canvasArray[id].coloridx.indexOf(px.byte2num());//getPixelIndex(id, px);
+			var index = sceneMeta[id].coloridx.indexOf(px.byte2num());//getPixelIndex(id, px);
 			pixelstorage.push(index);
 		}
 		
@@ -1266,7 +1354,7 @@ function saveCanvas(id) {
 	var data = header.concat(dibheader).concat(colortable).concat(pixelstorage);
 	
 	//Datei schreiben
-	var f = canvasArray[id].f;
+	var f = sceneMeta[id].f;
 	var fstr = _sc.ofstream(f, _scc.PR_WRONLY|_scc.PR_TRUNCATE, 0x200);
 	var bstr = _sc.bostream();
 
@@ -1289,7 +1377,7 @@ function saveCanvas(id) {
 	//sollten TexMap-Eintraege veraendert worden sein: Neue TexMap generieren
 	var texmap_changed = false;
 	for(var i = 0; i < 128; i++) {
-		if(canvasArray[id].matindices[i] != canvasArray[id].start_matindices[i]) {
+		if(sceneMeta[id].matindices[i] != sceneMeta[id].start_matindices[i]) {
 			texmap_changed = true;
 			break;
 		}
@@ -1320,20 +1408,33 @@ function saveCanvas(id) {
 		}
 	}
 	
-	canvasArray[id].rtdata.undoStack[canvasArray[id].rtdata.undoStackPosition].saved = true;
+	// sceneMeta[id].rtdata.undoStack[sceneMeta[id].rtdata.undoStackPosition].saved = true;
 	return true;
 }
 
+class BMPImage {
+	constructor() {
+		this.fileheader = {
+		}
+		
+		this.dibheader = {
+		}
+		
+		this.data = {
+		}
+	}
+}
+
 function saveTexMap(id) {
-	var f = new _sc.file(canvasArray[id].f.parent.path+"/Material.ocg/TexMap.txt");
+	var f = new _sc.file(sceneMeta[id].f.parent.path+"/Material.ocg/TexMap.txt");
 	if(!f.exists())
 		f.create(Ci.nsIFile.NORMAL_FILE_TYPE, 0o777);
 	//Ggf. Backup erstellen
 	else if(getConfigData("BMPEditor", "BackupTexMap")) {
 		var counter = 1, dstr = (new Date()).toLocaleString().replace(/[\.: ]/gi, "-");
-		var tf = new _sc.file(canvasArray[id].f.parent.path+"/Material.ocg/TexMap-"+dstr+".txt");
+		var tf = new _sc.file(sceneMeta[id].f.parent.path+"/Material.ocg/TexMap-"+dstr+".txt");
 		if(tf.exists()) {
-			while((tf = new _sc.file(canvasArray[id].f.parent.path+"/Material.ocg/TexMap-"+dstr+" ("+counter+").txt")).exists())
+			while((tf = new _sc.file(sceneMeta[id].f.parent.path+"/Material.ocg/TexMap-"+dstr+" ("+counter+").txt")).exists())
 				counter++;
 
 			f.renameTo(undefined, "TexMap-"+dstr+" ("+counter+").txt");
@@ -1342,14 +1443,14 @@ function saveTexMap(id) {
 			f.renameTo(undefined, "TexMap-"+dstr+".txt");
 			
 		
-		f = new _sc.file(canvasArray[id].f.parent.path+"/Material.ocg/TexMap.txt");
+		f = new _sc.file(sceneMeta[id].f.parent.path+"/Material.ocg/TexMap.txt");
 		f.create(Ci.nsIFile.NORMAL_FILE_TYPE, 0o777);
 	}
 	
 	var tmdata = "# Automatically generated texmap\r\n# Index +128 for underground materials\r\n\r\n";
 	for(var i = 0; i < 128; i++)
-		if(canvasArray[id].matindices[i])
-			tmdata += i + "=" + canvasArray[id].matindices[i] + "\r\n";
+		if(sceneMeta[id].matindices[i])
+			tmdata += i + "=" + sceneMeta[id].matindices[i] + "\r\n";
 
 	
 	var fstr = _sc.ofstream(f, _scc.PR_WRONLY|_scc.PR_TRUNCATE, 0x200);
@@ -1362,7 +1463,7 @@ function saveTexMap(id) {
 	fstr.close();
 	
 	//Gespeicherte Indices als Startindices festlegen
-	canvasArray[id].start_matindices = jQuery.extend({}, canvasArray[id].matindices);
+	sceneMeta[id].start_matindices = jQuery.extend({}, sceneMeta[id].matindices);
 	
 	//Im Explorer ggf. neu laden
 	getModuleByName("cide-explorer").contentWindow.loadDirectory(f.path, 0, true);
@@ -1493,8 +1594,21 @@ function loadImage(path, id, fShow) {
 	
 	var scene = addScene(gl, document.getElementById("draw-canvas"))
 	scene.useAsRect($(".ui-rect").get(0))
-	
-	canvasArray[id] = { scene, f: file, header: infoheader, coloridx: clr_index, rtdata: {}, z: 1 };
+	scene.assignColorPalette(clr_index)
+	// showObj2(clr_index)
+	sceneMeta[id] = { 
+		scene, 
+		f: file,
+		header: infoheader,
+		coloridx: clr_index,
+		rtdata: {},
+		z: 1, // of depcrecated use
+		brushData: {
+			size: 1,
+			rounded: true,
+			// seed and distribution factor go here
+		}
+	};
 	
 	var num2byte = function(num, size) {
 		var ar = [];
@@ -1518,7 +1632,7 @@ function loadImage(path, id, fShow) {
 		for(var x = 0; x < (infoheader.width)*4; x+=4) {
 			var pos = i*(infoheader.width*4)+x;
 			var index = data[j++]; 
-			var px = num2byte(canvasArray[id].coloridx[index], 4);
+			var px = num2byte(sceneMeta[id].coloridx[index], 4);
 			
 			//Canvas-Alpha: 255 = sichtbar
 			imgdata.data[pos] = px[2]; imgdata.data[pos+1] = px[1]; imgdata.data[pos+2] = px[0]; imgdata.data[pos+3] = 255;
@@ -1534,7 +1648,7 @@ function loadImage(path, id, fShow) {
 		for(let x = 0; x < (infoheader.width)*4; x+=4) {
 			let pos = i*(infoheader.width*4)+x;
 			let index = data[j++]; 
-			let px = num2byte(canvasArray[id].coloridx[index], 4);
+			let px = num2byte(sceneMeta[id].coloridx[index], 4);
 			
 			//Canvas-Alpha: 255 = sichtbar
 			data[pos] = px[2]
@@ -1563,7 +1677,7 @@ function loadImage(path, id, fShow) {
 }
 
 function loadMaterials(id) {
-	var f = canvasArray[id].f;
+	var f = sceneMeta[id].f;
 	var scenario = _sc.file(f.parent.path+"/Scenario.txt");
 	
 	//Nur bei gültigem Szenario
@@ -1602,16 +1716,16 @@ function loadMaterials(id) {
 	}
 	
 	//In CanvasArray speichern
-	canvasArray[id].materials = list_materials;
-	canvasArray[id].textures = list_textures;
+	sceneMeta[id].materials = list_materials;
+	sceneMeta[id].textures = list_textures;
 	
 	var indices = [];
 	for(var i = 0; i < list_indices.length; i++)
 		indices[list_indices[i].index] = list_indices[i].mattex;
 
-	canvasArray[id].matindices = indices;
-	canvasArray[id].start_matindices = jQuery.extend({}, indices);
-	//canvasArray[id].indices = list_indices;
+	sceneMeta[id].matindices = indices;
+	sceneMeta[id].start_matindices = jQuery.extend({}, indices);
+	//sceneMeta[id].indices = list_indices;
 	
 	return true;
 }
@@ -1683,7 +1797,7 @@ function loadUnsupportedImage(file, id, fShow, clridxtbl) {
 	if(clridxtbl)
 		cidxt = clridxtbl;
 
-	canvasArray[id] = { c: canvas, f: file, header: 0, coloridx: cidxt, rtdata: {}, z: 1 };
+	sceneMeta[id] = { c: canvas, f: file, header: 0, coloridx: cidxt, rtdata: {}, z: 1 };
 		
 	var clone = $(".color-matching-wizard.draft").clone();
 	clone.attr("id", "cmw-wrapper-"+id);
@@ -1698,8 +1812,8 @@ function loadUnsupportedImage(file, id, fShow, clridxtbl) {
 	var imageObj = new Image();
 	imageObj.addEventListener("load", function() {
 		//Canvas-Grundeinstellungen
-		canvasArray[id].wdt = canvas.width = this.naturalWidth;
-		canvasArray[id].hgt = canvas.height = this.naturalHeight;
+		sceneMeta[id].wdt = canvas.width = this.naturalWidth;
+		sceneMeta[id].hgt = canvas.height = this.naturalHeight;
 		context.drawImage(imageObj, 0, 0, this.naturalWidth, this.naturalHeight);
 		
 		//Header erstellen
@@ -1709,7 +1823,7 @@ function loadUnsupportedImage(file, id, fShow, clridxtbl) {
 		bmpiheader.bpp = 8;
 		bmpiheader.clrcnt = 256;
 		bmpiheader.colorplane = bmpiheader.compression = bmpiheader.h_res = bmpiheader.v_res = bmpiheader.important_clr = 0;
-		canvasArray[id].header = bmpiheader;
+		sceneMeta[id].header = bmpiheader;
 		
 		//Canvas durchgehen und Farben sammeln
 		var imgdata = context.getImageData(0, 0, this.naturalWidth, this.naturalHeight);
@@ -1765,7 +1879,7 @@ function loadUnsupportedImage(file, id, fShow, clridxtbl) {
 				continue;
 			
 			//Paletteneintraege zu nicht vorhandenen Mattex-Kombinationen ueberspringen (Bei Palettenimport)
-			if(clridxtbl && !canvasArray[id].matindices[clridxtbl.indexOf(colors[i])])
+			if(clridxtbl && !sceneMeta[id].matindices[clridxtbl.indexOf(colors[i])])
 				continue;
 
 			var clr = colors[i].toString(16);
@@ -1775,7 +1889,7 @@ function loadUnsupportedImage(file, id, fShow, clridxtbl) {
 			var palette_elm = $('<div class="cmw-selectcolor-palette-element cmw-unassigned-clr" materialcolor="'+colors[i]+'"></div>');
 			$(palette_elm).css("background-color", '#'+clr);
 			wrapper.find(".cmw-selectcolor-palette-container").append(palette_elm);
-			if(clridxtbl && canvasArray[id].matindices[clridxtbl.indexOf(colors[i])])
+			if(clridxtbl && sceneMeta[id].matindices[clridxtbl.indexOf(colors[i])])
 				$(palette_elm).removeClass("cmw-unassigned-clr");
 			
 			$(palette_elm).click(function(color) { return function() {
@@ -1822,7 +1936,7 @@ function loadUnsupportedImage(file, id, fShow, clridxtbl) {
 		}
 
 		for(var i = 0; i < 128; i++) {
-			var mattex = canvasArray[id].matindices[i];
+			var mattex = sceneMeta[id].matindices[i];
 
 			if(!mattex)
 				continue;
@@ -1832,12 +1946,12 @@ function loadUnsupportedImage(file, id, fShow, clridxtbl) {
 			clone.removeClass("draft");
 			clone.find(".cmw-material-selection-option-name").text(mattex);
 			clone.attr("material-index", i);
-			if(canvasArray[id].coloridx[i]) {
-				var clr = canvasArray[id].coloridx[i].toString(16);
+			if(sceneMeta[id].coloridx[i]) {
+				var clr = sceneMeta[id].coloridx[i].toString(16);
 				for(var j = clr.length; j < 6; j++)
 					clr = "0" + clr;
 				clone.find(".cmw-material-selection-option-matchedclr").css("background", "#"+clr);
-				clone.attr("assignedclr", canvasArray[id].coloridx[i]);
+				clone.attr("assignedclr", sceneMeta[id].coloridx[i]);
 			}
 			
 			matsel.append(clone);
@@ -1866,13 +1980,13 @@ function loadUnsupportedImage(file, id, fShow, clridxtbl) {
 						$(this).find(".cmw-material-selection-option-matchedclr").css("background", "");
 						$(this).attr("assignedclr", undefined);
 						$(this).removeClass("cmw-material-selection-color-assigned");
-						canvasArray[id].coloridx[parseInt($(this).attr("material-index"))+bgmode*128] = 0;
+						sceneMeta[id].coloridx[parseInt($(this).attr("material-index"))+bgmode*128] = 0;
 					}
 				});
 				
 				//Doppelte Eintraege entfernen (-> Backgroundmode)
-				while(selected_clr && canvasArray[id].coloridx.indexOf(selected_clr) != -1)
-					canvasArray[id].coloridx[canvasArray[id].coloridx.indexOf(selected_clr)] = 0
+				while(selected_clr && sceneMeta[id].coloridx.indexOf(selected_clr) != -1)
+					sceneMeta[id].coloridx[sceneMeta[id].coloridx.indexOf(selected_clr)] = 0
 				
 				//Vorheriges Farbfeld auf unzugewiesen setzen
 				if($(this).attr("assignedclr"))
@@ -1885,7 +1999,7 @@ function loadUnsupportedImage(file, id, fShow, clridxtbl) {
 				$(this).attr("assignedclr", selected_clr);
 				$(this).find(".cmw-material-selection-option-matchedclr").css("background", selected_clr_obj.css("background-color"));
 				$(this).addClass("cmw-material-selection-color-assigned");
-				canvasArray[id].coloridx[parseInt($(this).attr("material-index"))+bgmode*128] = selected_clr;
+				sceneMeta[id].coloridx[parseInt($(this).attr("material-index"))+bgmode*128] = selected_clr;
 				
 				//Schnellauswahl ueber Strg+Mausklick
 				if(e.ctrlKey || wrapper.find(".cmw-selectcolor-palette-fastselect").hasClass("activated")) {
@@ -1908,7 +2022,7 @@ function loadUnsupportedImage(file, id, fShow, clridxtbl) {
 			
 			var bgmode = $(this).hasClass("activated");
 			wrapper.find(".cmw-material-selection-option").each(function() {
-				var nclr = canvasArray[id].coloridx[parseInt($(this).attr("material-index"))+128*bgmode];
+				var nclr = sceneMeta[id].coloridx[parseInt($(this).attr("material-index"))+128*bgmode];
 				
 				//Ggf. neue Farbe setzen
 				if(!nclr) {
@@ -1951,17 +2065,16 @@ function loadUnsupportedImage(file, id, fShow, clridxtbl) {
 					warn("$ImportUnsucessful$");
 				else {
 					//Bereits zugewiesene Farben uebernehmen
-					for(var i = 0; i < canvasArray[id].coloridx.length; i++)
-						if(canvasArray[id].coloridx[i]) {
+					for(var i = 0; i < sceneMeta[id].coloridx.length; i++)
+						if(sceneMeta[id].coloridx[i]) {
 							//Doppelte Farbzuweisungen vermeiden
-							if(r[1].indexOf(canvasArray[id].coloridx[i]) != -1)
-								r[1][r[1].indexOf(canvasArray[id].coloridx[i])] = 0;
-							r[1][i] = canvasArray[id].coloridx[i];
+							if(r[1].indexOf(sceneMeta[id].coloridx[i]) != -1)
+								r[1][r[1].indexOf(sceneMeta[id].coloridx[i])] = 0;
+							r[1][i] = sceneMeta[id].coloridx[i];
 						}
 
 					$("#cmw-wrapper-"+id).remove();
-					$("#bmpCanvas-"+id).remove();
-					canvasArray[id] = undefined;
+					sceneMeta[id] = undefined;
 
 					loadUnsupportedImage(file, id, fShow, r[1]);
 				}
@@ -1993,7 +2106,7 @@ function loadUnsupportedImage(file, id, fShow, clridxtbl) {
 			//Pruefen ob bestimmte Materialien noch nicht zugeordnet worden sind
 			var unassigned_clr = false;
 			for(var i = 0; i < colors.length; i++) {
-				if(canvasArray[id].coloridx.indexOf(colors[i]) == -1) {
+				if(sceneMeta[id].coloridx.indexOf(colors[i]) == -1) {
 					unassigned_clr = true;
 					break;
 				}
@@ -2023,7 +2136,7 @@ function loadUnsupportedImage(file, id, fShow, clridxtbl) {
 				
 				//Unzugewiesene Materialien anzeigen
 				for(var i = 0; i < colors.length; i++) {
-					if(canvasArray[id].coloridx.indexOf(colors[i]) == -1) {
+					if(sceneMeta[id].coloridx.indexOf(colors[i]) == -1) {
 						var clr = colors[i].toString(16);
 						for(var j = clr.length; j < 6; j++)
 							clr = "0" + clr;
@@ -2050,11 +2163,11 @@ function loadUnsupportedImage(file, id, fShow, clridxtbl) {
 /* Farbabfragen */
 
 function getCurrentColor(id = activeId) {
-	return getColorByIndex(id, canvasArray[id].rtdata.current_matidx);
+	return getColorByIndex(id, sceneMeta[id].rtdata.current_matidx);
 }
 
 function getColorByIndex(id, index) {
-	var clridx = canvasArray[id].coloridx, clr = OC_KEYCOLOR.toString(16);
+	var clridx = sceneMeta[id].coloridx, clr = OC_KEYCOLOR.toString(16);
 	if(index != -1)
 		clr = clridx[index].toString(16);
 	
@@ -2065,7 +2178,7 @@ function getColorByIndex(id, index) {
 }
 
 function getCurrentRGB(id) {
-	return hexToRGB(getColorByIndex(id, canvasArray[id].rtdata.current_matidx));
+	return hexToRGB(getColorByIndex(id, sceneMeta[id].rtdata.current_matidx));
 }
 
 function hexToRGB(hex) {
@@ -2087,7 +2200,7 @@ function hexToRGB(hex) {
 function getMaterialByIndex(id, index) {
 	var selection = "Sky";
 	if(index != -1)
-		selection = canvasArray[id].matindices[index%128];
+		selection = sceneMeta[id].matindices[index%128];
 	
 	return selection;
 }
@@ -2100,14 +2213,14 @@ function selectColorIndex(id, index, deckupdate) {
 	$("#current-material-clr").css("background-color", clr);
 	$("#current-material-name > input").val(selection);
 	
-	canvasArray[id].rtdata.current_matidx = index;
+	sceneMeta[id].rtdata.current_matidx = index;
 
 	$(".spalette-elm.active").removeClass("active");
-	canvasArray[id].rtdata.current_sideindex = -1;
+	sceneMeta[id].rtdata.current_sideindex = -1;
 	
 	if(index != -1 && $(".spalette-elm[mat-index='"+index+"']").get(0)) {
 		$(".spalette-elm[mat-index='"+index+"']").addClass("active");
-		canvasArray[id].rtdata.current_sideindex = $(".spalette-elm").index($(".spalette-elm[mat-index='"+index+"']").get(0));
+		sceneMeta[id].rtdata.current_sideindex = $(".spalette-elm").index($(".spalette-elm[mat-index='"+index+"']").get(0));
 	}
 
 	$(".spalette-elm[mat-index!='"+index+"']").removeClass("autoselect");
@@ -2116,8 +2229,8 @@ function selectColorIndex(id, index, deckupdate) {
 }
 
 function drawMaterialPalette(id) {
-	var clr_index = canvasArray[id].coloridx;
-	var indices = canvasArray[id].matindices;
+	var clr_index = sceneMeta[id].coloridx;
+	var indices = sceneMeta[id].matindices;
 	
 	var canvas = $("#material-palette").get(0);
 	var ctx = canvas.getContext('2d');
@@ -2125,7 +2238,7 @@ function drawMaterialPalette(id) {
 	//Leeren
 	ctx.fillType = "#000";
 	ctx.fillRect(0, 0, 160, 160);	
-	var bgmode = canvasArray[id].rtdata.matmode_underground;
+	var bgmode = sceneMeta[id].rtdata.matmode_underground;
 	if(!bgmode)
 		bgmode = 0;
 
@@ -2146,8 +2259,8 @@ function drawMaterialPalette(id) {
 
 function saveFileByPath(path) {
 	for(var id in canvasArray)
-		if(canvasArray[id])
-			if(canvasArray[id].f.path == path)
+		if(sceneMeta[id])
+			if(sceneMeta[id].f.path == path)
 				return saveCanvas(id);
 	
 	return -1;
@@ -2155,8 +2268,8 @@ function saveFileByPath(path) {
 
 function fileLoaded(path) {
 	for(var id in canvasArray)
-		if(canvasArray[id])
-			if(canvasArray[id].f.path == path)
+		if(sceneMeta[id])
+			if(sceneMeta[id].f.path == path)
 				return id;
 	
 	return -1;
@@ -2174,15 +2287,14 @@ function showDeckItem(id) {
 		showCideToolbar();
 
 	//TODO: Bearbeitungsmodus setzen
-	
 	drawMaterialPalette(id);
 	updateSidePalette(id);
 	
 	//Startmaterial auswählen
-	if(canvasArray[id].rtdata.current_matidx == undefined)
+	if(sceneMeta[id].rtdata.current_matidx == undefined)
 		selectColorIndex(id, -1);
 	else
-		selectColorIndex(id, canvasArray[id].rtdata.current_matidx);
+		selectColorIndex(id, sceneMeta[id].rtdata.current_matidx);
 
 	$(".visible").removeClass("visible");
 	$("#cmw-wrapper-"+id).addClass("visible");
@@ -2200,44 +2312,42 @@ function showDeckItem(id) {
 	*/
 	
 	a_S = _SCENES[id]
-	
-	a_S.onShow()
 	activeId = id
+	a_S.onShow()
 	
 	//Lineal und Zoom aktualisieren
-	onUpdateZoom();
+	onUpdateZoom(id);
+	
+	updateBrushGenerator(id);
 		
 	frameUpdateWindmillTitle();
 }
 
 function frameWindowTitle() { 
-	if(canvasArray[getCurrentCanvasId()])
-		return formatPath(canvasArray[getCurrentCanvasId()].f.path).substr(_sc.workpath(getCurrentCanvasId(), true).length+1);
+	if(sceneMeta[getCurrentCanvasId()])
+		return formatPath(sceneMeta[getCurrentCanvasId()].f.path).substr(_sc.workpath(getCurrentCanvasId(), true).length+1);
 	return "";
 }
 
 function removeDeckItem(id) {
-	$("#cmw-wrapper-"+id).remove();
-	
-	canvasArray[id] = null;
+	sceneMeta[id] = null;
 }
 
 
 function getReloadPars() {
 	var str = "";
 	for(var id in canvasArray) {
-		if(canvasArray[id])
-			str += id + "=" + encodeURI(canvasArray[id].f.path) + "&";
+		if(sceneMeta[id])
+			str += id + "=" + encodeURI(sceneMeta[id].f.path) + "&";
 	}
 
 	return str;
 }
 
 function getTabData(tabid) {
-	var cnv = canvasArray[tabid];
+	var cnv = sceneMeta[tabid];
 	var data = {
 		file: cnv.f,
-		// imgdata: cnv.c.getContext('2d').getImageData(0, 0, cnv.wdt, cnv.hgt),
 		wdt: cnv.wdt,
 		hgt: cnv.hgt
 	};
@@ -2246,17 +2356,15 @@ function getTabData(tabid) {
 }
 
 function dropTabData(data, tabid) {
-	loadImage(data.file.path, tabid, true);
+	loadImage(data.file, tabid, true);
 	
-	var cnv = canvasArray[tabid];
+	var cnv = sceneMeta[tabid];
 	cnv.width = data.wdt;
 	cnv.height = data.hgt;
 	cnv.c.getContext('2d').putImageData(data.imgdata, 0, 0);
 	
 	return true;
 }
-
-// draggable functionality, stolen from panel.js
 
 var mouse_x,
 	mouse_y,
@@ -2267,9 +2375,6 @@ var mouse_x,
 document.addEventListener("mousemove", function(e) {
 	mouse_x = e.screenX;
 	mouse_y = e.screenY;
-	
-	if(dragged)
-		$(dragged).offset({ top: mouse_y - offset_y, left: mouse_x - offset_x})
 });
 
 document.addEventListener("mouseup", function(e) {
@@ -2292,5 +2397,15 @@ function setDraggable(el, exclude, target) {
 		offset_x = mouse_x - $(tEl)[0].offsetLeft;
 		offset_y = mouse_y - $(tEl)[0].offsetTop;
 		dragged = tEl;
+		
+		var fn = () => {
+			if(!dragged)
+				return
+			
+			$(dragged).offset({ top: mouse_y - offset_y, left: mouse_x - offset_x})
+			requestAnimationFrame(fn)
+		}
+		
+		requestAnimationFrame(fn)
 	});
 }
