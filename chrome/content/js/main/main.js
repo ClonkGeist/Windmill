@@ -119,18 +119,56 @@ hook("load", function() {
 			else
 				showCideToolbar();
 		});
+		
+		var _mm = {
+			round: new Segment(document.getElementById("mm-svg-to-round"), 0, 15),
+			lowerButton: new Segment(document.getElementById("mm-svg-to-lower-button"), 0, 9),
+			upperButton: new Segment(document.getElementById("mm-svg-to-upper-button"), 0, 7),
+			horizontalStick: new Segment(document.getElementById("mm-svg-to-horizontal-stick"), 9, 24),
+			verticalStick: new Segment(document.getElementById("mm-svg-to-vertical-stick"), 0, 16)
+		};
+		
+		var _mmToPlayIcon = () => {
+			//round.draw('100% - 54.5', '100% - 30.5', 0.6, {easing: ease.ease('elastic-out', 1, 0.3)});
+			_mm.round.draw('100% - 73', '100%', 0.3);
+			_mm.lowerButton.draw('100% - 0.1', '100%', 0.3);
+			_mm.upperButton.draw('100% - 0.1', '100%', 0.3);
+			_mm.horizontalStick.draw('0', '0% + 6', 0.3);
+			_mm.verticalStick.draw('100% - 6', '100%', 0.3);
+		}
+		
+		var _mmToDevelopIcon = () => {
+			//round.draw('100% - 54.5', '100% - 30.5', 0.6, {easing: ease.ease('elastic-out', 1, 0.3)});
+			_mm.round.draw(0, 15, 0.3);
+			_mm.lowerButton.draw(0, 9, 0.3);
+			_mm.upperButton.draw(0, 7, 0.3);
+			_mm.horizontalStick.draw(9, 24, 0.3);
+			_mm.verticalStick.draw(0, 16, 0.3);
+		}
 
 		//Switcher zwischen cIDE/cBridge
 		$(".mm-button").click(function() {
 			
 			if(mainDeck.selectedId == mainDeck.getModuleId("cbridge") || mainDeck.selectedId == mainDeck.getModuleId("cide")) {
+				// show develop mode
 				if($(".main-mode-ui").hasClass("cBridge") && $(this).hasClass("mm-dev-wrapper")) {
-					$(".main-mode-ui").removeClass("cBridge");
-					navigation.hideGroups();
+					if(mainDeck.selectedId != mainDeck.getModuleId("cide")) {
+						$(".main-mode-ui").removeClass("cBridge");
+						navigation.hideGroups();
+						_mmToDevelopIcon();
+					}
+					else
+						return;
 				}
+				// show play mode
 				else if($(this).hasClass("mm-play-wrapper")) {
-					$(".main-mode-ui").addClass("cBridge");
-					navigation.showGroup("cbridge");
+					if(mainDeck.selectedId != mainDeck.getModuleId("cbridge")) {
+						$(".main-mode-ui").addClass("cBridge");
+						navigation.showGroup("cbridge");
+						_mmToPlayIcon();
+					}
+					else
+						return;
 				}
 				else
 					return;
@@ -196,24 +234,61 @@ hook("load", function() {
 			dlg.show();
 		});
 
+		function toggleSidebar(id) {
+			$("#"+id).toggleClass("invisible");
+			/*if($("#"+id).hasClass("invisible"))
+				$('[data-sidebarid="'+id+'"]').css("color", "");
+			else
+				$('[data-sidebarid="'+id+'"]').css("color", $("#"+id).find(".sidebar-header").css("background-color"));*/
+			let wdt = 0;
+			$(".sidebar").not(".invisible").each(function() {
+				wdt += parseInt($(this).css("max-width"));
+			});
+			if(wdt > $(window).width()) {
+				let widths = [];
+				$(".sidebar").not("#"+id+",.invisible").each(function() {
+					//Subtract width from 10000 to make sorting easier (we want to close the sidebar which is taking the most space first)
+					let sb_wdt = 10000-parseInt($(this).css("max-width"));
+					if(!widths[sb_wdt])
+						widths[sb_wdt] = [];
+					widths[sb_wdt].push(this);
+				});
+				//Closing sidebars which would overflow the window
+				for(let sb_wdt in widths) {
+					if(wdt < $(window).width())
+						continue;
+					while(widths[sb_wdt].length && wdt > $(window).width()) {
+						let sb = widths[sb_wdt].shift();
+						$(sb).addClass("invisible");
+						//$('[data-sidebarid="'+$(sb).attr("id")+'"]').css("color", "");
+						wdt -= 10000-sb_wdt;
+					}
+				}
+			}
+			
+		}
 		//Playerselection
 		$("#showPlayerSelect").click(function() {
-			$("#playerselect").toggleClass("invisible");
+			toggleSidebar("playerselect");
+			//$("#playerselect").toggleClass("invisible");
 			switchPlrPage("page-playerselection");
 		});
 		//Clonk Directory Selection
 		$("#showClonkDirs").click(function() {
-			$("#clonkdirselection").toggleClass("invisible");
+			toggleSidebar("clonkdirselection");
+			//$("#clonkdirselection").toggleClass("invisible");
 		});
 		//Log
 		$("#showLog").click(function() {
-			$("#gitlog").addClass("invisible");
-			$("#developerlog").toggleClass("invisible");
+			toggleSidebar("developerlog");
+			/*$("#gitlog").addClass("invisible");
+			$("#developerlog").toggleClass("invisible");*/
 		});
 		//Git Log
 		$("#showGitLog").click(function() {
-			$("#developerlog").addClass("invisible");
-			$("#gitlog").toggleClass("invisible");
+			toggleSidebar("gitlog");
+			/*$("#developerlog").addClass("invisible");
+			$("#gitlog").toggleClass("invisible");*/
 		});
 		let frame = $('<iframe src="resource://docs/build/de/_home/__head_de.html" flex="1" id="docFrame"></iframe>');
 		frame.appendTo($(mainDeck.element));
@@ -722,7 +797,8 @@ function saveWindowInformation() {
 function triggerModeButtonIcon() {	
 	$(".mm-icon").css("opacity", "0");
 	setTimeout(function() {
-		$(".mm-icon").removeClass("icon-the-mill").addClass("icon-brackets").css("opacity", "1");
+		$(".mm-icon").removeClass("icon-the-mill").css("display", "none"); //.addClass("icon-brackets").css("opacity", "1");
+		$(".main-mode-ui").addClass("loaded");
 	}, 1000);
 
 	if($(".startup-loading")[0]) {

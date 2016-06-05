@@ -22,6 +22,8 @@ let XULRuntime = Cc["@mozilla.org/xre/app-info;1"].getService(Components.interfa
 //XULRuntime.logConsoleErrors = true;
 var OS_TARGET = XULRuntime.OS;
 
+log(window.navigator.userAgent + " (" +OS_TARGET+")");
+
 function formatPath(path) {
 	if(!path)
 		return path;

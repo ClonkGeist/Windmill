@@ -139,6 +139,12 @@ caption {
 
 /* main mode */
 
+.mm-buttons {
+	opacity: 0;
+	transition: opacity 0.3s, transform 0.3s;
+	transform: translate(-5px, 0);
+}
+
 .main-mode-ui {
 	color: whitesmoke;
 	pointer-events: none;
@@ -159,6 +165,15 @@ caption {
 	
 	&.cBridge .icon-brackets:before {
 		@include -controller();
+	}
+	
+	&.loaded .mm-buttons {
+		opacity: 1;
+		transform: translate(0, 0)
+	}
+	
+	&.loaded #mm-svg {
+		display: -moz-box;
 	}
 }
 
@@ -208,6 +223,24 @@ caption {
 	width: 32px;
 	padding: 3px;
 }
+
+#mm-svg {
+	display: none;
+}
+
+#mm-svg path{
+    stroke: $clr-paper;
+    stroke-width: 2px;
+    stroke-linecap: round;
+	transition: stroke-width 0.3s;
+    fill: none;
+}
+
+.main-mode-ui.cBridge #mm-svg-to-upper-button,
+.main-mode-ui.cBridge #mm-svg-to-lower-button {
+	stroke-width: 4px;
+}
+
 
 .nav-image:hover  {
 	background: $chrome-ui-active;
@@ -261,6 +294,7 @@ caption {
 	background-color: rgb(245, 245, 245);
 	height: 100%;
 	width: 300px;
+	max-width: 300px;
 	overflow: hidden;
 	transition: width 0.3s;
 	color: rgb(60, 60, 60);
@@ -495,9 +529,10 @@ caption {
 
 #developerlog, #gitlog {
 	width: 800px;
+	max-width: 800px;
 	-moz-user-focus: normal;
 }
-#developerlog .ps-h {background-color: #333;}
+#developerlog .ps-h {background-color: $chrome-clr;}
 #gitlog .ps-h {background-color: rgb(241, 72, 33);}
 
 #log-entrylist { overflow-y: scroll; }

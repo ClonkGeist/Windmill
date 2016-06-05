@@ -1,6 +1,6 @@
 /*-- Windmill Interface --*/
 
-var EXPORTED_SYMBOLS = ["WindmillInterface", "sfl"];
+var EXPORTED_SYMBOLS = ["WindmillInterface", "OSError", "sfl"];
 
 function sfl(wmflags, obj, bitrange = 32) { //Wandelt Windmill-Flags in die Betriebssystem-Flags um ueber OSCONST
 	var retflags = 0;
@@ -44,5 +44,18 @@ class WindmillInterface {
 			else
 				err("Problem with executing hook: " + list[item]);
 		}
+	}
+}
+
+class OSError {
+	constructor(message, code) {
+		this.message = message;
+		this.code = code;
+	}
+	toMsg() {
+		return {
+			exn: "OSError",
+			message: this.message
+		};
 	}
 }
