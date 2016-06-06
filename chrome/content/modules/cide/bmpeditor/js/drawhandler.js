@@ -472,7 +472,7 @@ class BMPScene {
 		if(shader.unifImgBrush !== null) {
 			gl.activeTexture(gl.TEXTURE2)
 			gl.bindTexture(gl.TEXTURE_2D, this.texture_Brush)
-			gl.uniform1i(shader.unifImgWorker, 2)
+			gl.uniform1i(shader.unifImgBrush, 2)
 		}
 		
 		if(shader.unifWorkerColor && shader.unifWorkerColor !== null) {
@@ -559,13 +559,12 @@ class BMPScene {
 			unifWorkerColor: this.gl.getUniformLocation(prog, "worker_color"),
 			unifRect: this.gl.getUniformLocation(prog, "rect")
 		}
-		err(s.unifImgBrush)
+		
 		_shaders[_shaders.length] = s
 		return s
 	}
 	
 	shaderAvailable(flags) {
-		
 		for(var i = 0; i < _shaders.length; i++)
 			if(flags === _shaders[i].flags || flags === _shaders[i].type)
 				return _shaders[i]
@@ -610,7 +609,8 @@ class BMPScene {
 		
 		this.gl.activeTexture(this.gl.TEXTURE2)
 		this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture_Brush)
-		this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, document.getElementById("bp-preview-gen"))
+		
+		this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.ALPHA, this.gl.ALPHA, this.gl.UNSIGNED_BYTE, document.getElementById("bp-preview-gen"))
 	}
 	
 	setColorRGB([r, g, b]) {
@@ -630,6 +630,8 @@ class BMPScene {
 	isDirty() {
 		if(dirtyCounter !== 0)
 			return true
+		
+		return false
 	}
 	
 	undo() {

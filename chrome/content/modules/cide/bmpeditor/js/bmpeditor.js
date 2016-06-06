@@ -643,7 +643,7 @@ function updateBrushGenerator(id) {
 	
 	sceneMeta[id].brushData.size = size;
 	
-	size *= parseInt(sceneMeta[id].scene.zoomFactor);
+	// size *= parseInt(sceneMeta[id].scene.zoomFactor);
 	
 	var c = $("#bp-preview-gen").get(0);	
 	var ctx = c.getContext("2d");

@@ -68,7 +68,9 @@ uniform vec3 worker_color;\n\
 \
 varying vec2 uv;\n\
 void main(void) {\n\
-	gl_FragColor = vec4(texture2D(img_brush, uv).rg, worker_color.b, 1.0);\n\
+	if(texture2D(img_brush, uv).a < 1.0)\n\
+		discard;\n\
+	gl_FragColor = vec4(worker_color, 1.0);\n\
 }"
 		]
 	}
@@ -162,16 +164,14 @@ function parseShader(gl, string, type, shaderInteralType) {
 		shader = gl.createShader(gl.FRAGMENT_SHADER)
 	else if (type == "x-shader/x-vertex")
 		shader = gl.createShader(gl.VERTEX_SHADER)
-	else// TODO: err msg
+	else {
+		log("Invalid shader type given")
 		return false
+	}
 	
-	// set shader source
 	gl.shaderSource(shader, string)
-	
-	// Compile the shader program
 	gl.compileShader(shader)
 	
-	// See if it compiled successfully
 	if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
 		log("An error occurred compiling the shaders ("+shaderInteralType+"): \n" + gl.getShaderInfoLog(shader))
 		return false

@@ -68,6 +68,8 @@ function initCtrls() {
 		r.y = e.clientY - a_S.canvas.offsetTop
 		
 		a_S.updateUiRectPos(r)
+		
+		e.stopPropagation()
 	})
 	
 	$(".ui-thumb.top").mousedown((e) => {
