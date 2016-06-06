@@ -20,7 +20,7 @@ var IniHighlightRules = function() {
             }]
         }, {
             token: 'punctuation.definition.comment.ini',
-            regex: ';.*',
+            regex: '(#|\/\/).*',
             push_: [{
                 token: 'comment.line.semicolon.ini',
                 regex: '$|^',

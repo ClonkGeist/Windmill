@@ -251,12 +251,16 @@ function addScript(lang, index, path, fShow, skipLoading) {
 					scendefs.unshift("Objects.ocd");
 				scendefs.push(sessions[index].relpath);
 				sessions[index].scendata["PlayerX"] = sessions[index].scendata["Player1"];
-				if(scendefs.length != sessions[index].scenariodefs.length)
-					deflist_changed = true;
-				else
-					for(var i = 0; i < scendata.length; i++)
-						if(sessions[index].scenariodefs.indexOf(scendefs[i]) == -1)
-							deflist_changed = true;
+
+				//if(scendefs.length != sessions[index].scenariodefs.length)
+				//	deflist_changed = true;
+
+				for(var i = 0; i < scendefs.length; i++)
+					if(sessions[index].scenariodefs.indexOf(scendefs[i]) == -1) {
+						deflist_changed = true;
+						if(!definitions[scendefs[i]])
+							definitions[scendefs[i]] = { ids: [] };
+					}
 
 				sessions[index].scenariodefs = scendefs;
 				Task.spawn(function*() {
@@ -378,10 +382,12 @@ function addScript(lang, index, path, fShow, skipLoading) {
 			definitions[def] = { ids: [], loading: true };
 			definitions[def].task = Task.spawn(function*() {
 				definitions[def].d = yield loadDefinitionsFrom(def, 0, def);
-				if(!definitions[def].d)
+				if(!definitions[def].d) {
 					definitions[def] = undefined;
-
-				definitions[def].loading = false;
+					delete definitions[def];
+				}
+				else
+					definitions[def].loading = false;
 				if(promises[def])
 					promises[def]();
 			});
@@ -404,8 +410,7 @@ function loadScenarioContentToElements(index, skipDefsel) {
 			loadDefinitionSelectionData(this, undefined, index);
 			loadDefinitionSelection(this, index);
 		});
-	}
-
+	} 
 	//Sonstige Eintraege fuellen
 	getWrapper("[data-scenario-sect!='']", index).each(function() {
 		if(!$(this).attr("data-scenario-key"))
@@ -546,7 +551,7 @@ function reloadDefinitions() {
 			definitions[def] = { ids: [] };
 			definitions[def].d = yield loadDefinitionsFrom(def, 0, def, 0, true);
 			if(!definitions[def].d)
-				EventInfo($(getWrapper(".loadingPage-subCaption").text()));
+				EventInfo(getWrapper(".loadingPage-subCaption").text());
 		}
 	});
 	task.then(function() {
@@ -869,7 +874,7 @@ function loadDefinitionSelectionData(infosource, dest = infosource, index = getC
 		for(var j = 0; j < c4idlist.length; j++) {
 			var listentry = c4idlist[j].split("=");
 			listentry[1] = parseInt(listentry[1]);
-			if(listentry[0] == "")
+			if(listentry[0] == "" || !definitions[deff] || !definitions[deff].ids)
 				continue;
 
 			var def = definitions[deff].ids[listentry[0]];
@@ -1054,7 +1059,7 @@ function loadDefinitionsFrom(path, fullpath, maindef, flags, skipError = true) {
 		setLoadingSubCaption(path);
 
 		let f = _sc.file(path);
-		if(!f.isDirectory()) {
+		if(!f.exists() || !f.isDirectory()) {
 			reportLoadingError(maindef, "Could not load " + path);
 			return;
 		}

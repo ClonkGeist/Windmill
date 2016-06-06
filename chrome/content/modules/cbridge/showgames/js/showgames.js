@@ -251,7 +251,7 @@ function showMasterServerGames(info) {
 
 				$("#game-title").html(r.Title);
 				$("#game-time").attr("data-starttime", !(state & REFSTATE_Lobby)?r.StartTime:0);
-				$("#game-hostname").text(Locale(" $on$ ") + r.Client[0].Name);
+				$("#game-hostname").text(Locale(" $on$ ") + r.Client[0].Name.replace(/&amp;/, "&"));
 				$("#game-comment").html(r.Comment || "");
 
 				$("#game-playerlist").empty();
