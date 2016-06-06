@@ -12,20 +12,70 @@
 	line-height: 24px;
 	cursor: pointer;
 	
-	transition: background-color 0.3s;
+	&:hover { 
+		background-color: grey;
+		color: $clr-paper;
+	}
 }
 
-.toolbar-option:hover { 
+#ce-popup {
+	-moz-appearance: none;
+	background: transparent;
+	padding: 0;
+	border: none;
+	border-bottom: 1px solid $clr-border;
+	outline: none;
+	color: rgb(40, 40, 40);
+	
+	opacity: 0;
+	transform: translate(0, -5px);
+	transition: opacity .3s, transform .3s;
+	
+	&.shown {
+		opacity: 1;
+		transform: translate(0, 0);
+	}
+}
+
+.cep-wrapper {
+	padding: 5px;
+}
+
+.cep-option {
+	padding: 3px 5px;
+	
+	&:hover {
+		background-color: $clr-paper;
+	}
+	
+	&:before {
+		@include -checked();
+		color: transparent;
+		letter-spacing: 0;
+		font-family: 'icomoon';
+		font-size: 16px;
+		line-height: 16px;
+		height: 1em;
+		padding-top: 5px;
+		cursor: default;
+	}
+	
+	&.checked:before {
+		color: $interact-blue;
+	}
+}
+
+#ce-popup > * {
 	background-color: $clr-empty;
-	transition: background-color 0s;
 }
 
-.nav-image:hover {
-	background-color: #eee;
-}
-
-.nav-image.deselected {
+#ce-popup-btn {
+	line-height: 24px;
 	color: grey;
+	
+	&:hover {
+		color: $ui-text-clr;
+	}
 }
 
 #searchinput {

@@ -200,13 +200,31 @@ $(window).load(function() {
 		}
 	});
 
-	$(".nav-image").click(function() {
-		$(this).toggleClass("deselected");
-	});
-
 	//Arbeitsumgebungen verstecken
-	$("#showClonkDirs").click(function() { $(".we-clonkdir").css("display", $(this).hasClass("deselected")?"none":""); });
-	$("#showWorkspaces").click(function() { $(".we-workspace").css("display", $(this).hasClass("deselected")?"none":""); });
+	
+	$("#showClonkDirs").click(function(e) {
+		$(this).toggleClass("checked");
+		$(".we-clonkdir").css("display", $(this).hasClass("checked")?"":"none");
+		e.preventDefault();
+	});
+	$("#showWorkspaces").click(function(e) {
+		$(this).toggleClass("checked");
+		$(".we-workspace").css("display", $(this).hasClass("checked")?"":"none");
+		e.preventDefault();
+	});
+		
+	$("#ce-popup-btn").click(function(e) {
+		let el = document.getElementById("ce-popup");
+		
+		if($("el").hasClass("shown")) {
+			$(el).removeClass("shown")
+			el.hidePopup();
+		}
+		else {
+			el.openPopup(null, null, 10, 24);
+			$(el).addClass("shown")
+		}
+	});
 });
 
 function createNewWorkEnvironmentDlg(parentWorkEnv, parentContainer) {

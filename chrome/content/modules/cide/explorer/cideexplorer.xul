@@ -118,12 +118,18 @@
 
 	<vbox id="wrapper" flex="1">
 		<hbox class="toolbar">
-			<box class="nav-image icon-clonkpath icon-24" height="24" width="24" id="showClonkDirs"></box>
-			<box class="nav-image icon-workspace icon-24" height="24" width="24" id="showWorkspaces"></box>
+			<box id="ce-popup-btn" class="icon-bars-ref-1-3 icon-16" height="16" width="16"></box>
 			<spacer flex="1" />
 			<vbox class="toolbar-option" id="importWorkEnvironment">$WEToolbarImport$</vbox>
 			<vbox class="toolbar-option" id="newWorkEnvironment">$WEToolbarNew$</vbox>
 		</hbox>
+		<panel id="ce-popup" noautofocus="true" position="after_start" top="24" onpopuphiding="this.className=''; event.stopPropagation()">
+			<vbox class="cep-wrapper">
+				<!-- search input might be best placed here -->
+				<hbox id="showClonkDirs" class="checked cep-option"><label value="$showClonkDirs$"/></hbox>
+				<hbox id="showWorkspaces" class="checked cep-option"><label value="$showWorkspaces$"/></hbox>
+			</vbox>
+		</panel>
 		<vbox class="searchbox">
 			<textbox id="searchinput" class="hidden"/>
 		</vbox>

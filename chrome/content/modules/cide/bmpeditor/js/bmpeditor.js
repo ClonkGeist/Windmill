@@ -643,8 +643,6 @@ function updateBrushGenerator(id) {
 	
 	sceneMeta[id].brushData.size = size;
 	
-	// size *= parseInt(sceneMeta[id].scene.zoomFactor);
-	
 	var c = $("#bp-preview-gen").get(0);	
 	var ctx = c.getContext("2d");
 	c.width = size;
@@ -656,7 +654,7 @@ function updateBrushGenerator(id) {
 		data = imgData.data;
 	
 	var m = size/2 - 1
-	// display a double-sized version of the brush (fixes several things)
+	
 	var inDist = (x, y) => {
 		let xm = m - x
 		let ym = m - y
@@ -692,16 +690,16 @@ function updateBrushGenerator(id) {
 	
 	ctx.putImageData(imgData, 0, 0);
 	
-	var url = c.toDataURL("image/png", 1.0);
+	var dataURL = c.toDataURL("image/png", 1.0);
 	
-	document.getElementById("bp-preview").src = url;
+	document.getElementById("bp-preview").src = dataURL;
 	
-	$("#bp-preview-main").css("background-image", "url(" + url + ")");
+	$("#bp-preview-main").css("background-image", "url(" + dataURL + ")");
 	
-	updateCursor(id, url);
+	updateCursor(id, dataURL);
 }
 
-function updateCursor(id, dataUrl) {
+function updateCursor(id, dataURL) {
 	
 	if(selectedMode === Mode_Draw_Shape) {
 		
