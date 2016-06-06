@@ -63,11 +63,13 @@ void main(void) {\n\
 ,
 "precision mediump float;\n\
 \
-uniform sampler2D img_worker;\n\
+uniform sampler2D img_brush;\n\
 uniform vec3 worker_color;\n\
 \
 varying vec2 uv;\n\
 void main(void) {\n\
+	if(texture2D(img_brush, uv).a < 1.0)\n\
+		discard;\n\
 	gl_FragColor = vec4(worker_color, 1.0);\n\
 }"
 		]
@@ -162,18 +164,16 @@ function parseShader(gl, string, type, shaderInteralType) {
 		shader = gl.createShader(gl.FRAGMENT_SHADER)
 	else if (type == "x-shader/x-vertex")
 		shader = gl.createShader(gl.VERTEX_SHADER)
-	else// TODO: err msg
+	else {
+		log("Invalid shader type given")
 		return false
+	}
 	
-	// set shader source
 	gl.shaderSource(shader, string)
-	
-	// Compile the shader program
 	gl.compileShader(shader)
 	
-	// See if it compiled successfully
 	if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-		console.log("An error occurred compiling the shaders ("+shaderInteralType+"): \n" + gl.getShaderInfoLog(shader))
+		log("An error occurred compiling the shaders ("+shaderInteralType+"): \n" + gl.getShaderInfoLog(shader))
 		return false
 	}
 	return shader

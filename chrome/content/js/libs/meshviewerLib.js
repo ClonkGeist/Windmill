@@ -323,8 +323,11 @@ function Meshviewer() {
 		gl.enable(gl.BLEND);
 		gl.disable(gl.DEPTH_TEST);
 		
+		// gl.enable(gl.CULL_FACE);
+		// gl.cullFace(gl.BACK);
+		
 		gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
-				
+		
 		this._id = id;
 		this.currentScene;
 		

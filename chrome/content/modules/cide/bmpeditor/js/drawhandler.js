@@ -14,6 +14,8 @@ const
 
 var buffer = []
 
+var DEBUG_WEBGL = false
+var _o
 function initGl(id) {
 	var c = document.getElementById(id)
 	
@@ -24,7 +26,6 @@ function initGl(id) {
 			antialias: false, 
 			depth: false, 
 			stencil: false,
-			// alpha: false
 		})
 	}
 	catch(e) {
@@ -33,6 +34,47 @@ function initGl(id) {
 	
 	if(!gl)
 		return
+	
+	if(DEBUG_WEBGL) {
+		var o = {
+			id
+		}
+		
+		let onGlError = (e, funcName, args) => {
+			log(WebGLDebugUtils.glEnumToString(e) + " was caused by calling '" + funcName + "'\n" +
+				"\n" + o.excertCallStack()
+			)
+		}
+		
+		var callstackLength = 0
+		
+		o._callStack = new Array(callstackLength)
+		o._currentCallStackIndex = 0
+		let glTraceCallstack = (functionName, args) => {
+			let str = ""
+			
+			args = new Map(Object.entries(args))
+			args.forEach((v) => {
+				str += v + ", "
+			})
+			
+			o._callStack[o._currentCallStackIndex] = functionName + ": " + str + "\n"
+			o._currentCallStackIndex = (o._currentCallStackIndex + 1) % callstackLength
+		}
+		
+		o.excertCallStack = () => {
+			let s = "WebGlInstance ("+o.id+") CallStack:\n"
+			
+			for(let i = 0; i < callstackLength; i++)
+				s += o._callStack[(o._currentCallStackIndex + i) % callstackLength]
+			
+			return s + "-\tend\t-"
+		}
+		
+		_o = o
+		
+		gl = WebGLDebugUtils.makeDebugContext(gl, onGlError, glTraceCallstack)
+	}
 	
 	_gl = gl
 	
@@ -86,6 +128,7 @@ class BMPScene {
 		
 		this.texture_Combined = this.createTexture()
 		this.texture_Worker = this.createTexture()
+		this.texture_Brush = this.createTexture()
 		
 		this._undoStacks = []
 		this.dirtyCounter = 0
@@ -344,7 +387,8 @@ class BMPScene {
 		
 		// draw new
 		this.useShaderOfType(shaderType)
-		/*
+		this.setUniforms()
+		
 		// sort points by x
 		if(x1 > x2) {
 			let temp = x1
@@ -356,28 +400,33 @@ class BMPScene {
 			y2 = temp
 		}
 		
-		var slope = y2 - y1 / x2 - x1
+		var slope = (y2 - y1 + 1) / (x2 - x1 + 1)
 		
-		var y = y1,
-			yMax = y += slope
-		
-		for(let x = x1; x <= x2; x++) {
-			for(; y <= yMax; y++) {
-				shape.setCenterAt(x, y)
-				this.setInputRect(shape.rect)
-				
-				this.setUniforms()
-				this.gl.drawArrays(this.gl.TRIANGLES, 0, 6)
+		if(y1 <= y2)
+			for(let x = x1; x <= x2; x++) {
+				for(let y = 0; y < slope; y++) {
+					shape.setCenterAt(x, y + parseInt(y1))
+					this.setInputRect(shape.rect)
+					
+					this.updateInputRectUniform()
+					this.gl.drawArrays(this.gl.TRIANGLES, 0, 6)
+				}
+				y1 += slope
 			}
-			
-			yMax += slope
-		}*/
-		shape.setCenterAt(x2, y2)
-		this.setInputRect(shape.rect)
-		this.setUniforms()
-		this.gl.drawArrays(this.gl.TRIANGLES, 0, 6)
-			
-		// TODO: use copySubTexImage
+		else
+			for(let x = x1; x <= x2; x++) {
+				for(let y = 0; y > slope; y--) {
+					shape.setCenterAt(x, parseInt(y1) - y)
+					this.setInputRect(shape.rect)
+					
+					this.updateInputRectUniform()
+					this.gl.drawArrays(this.gl.TRIANGLES, 0, 6)
+				}
+				y1 += slope
+			}
+		
+		// TODO: use copySubTexImage (which requires bounding box of line and shape ends)
+		this.gl.activeTexture(this.gl.TEXTURE0)
 		this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture_Combined)
 		this.gl.copyTexImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGB, 0, 0, this.width, this.height, 0)
 	}
@@ -391,7 +440,6 @@ class BMPScene {
 		this.setUniforms()
 		this.gl.drawArrays(this.gl.TRIANGLES, 0, 6)
 		
-		this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture_Combined)
 		this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture_Combined)
 		this.gl.copyTexImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGB, 0, 0, this.width, this.height, 0)
 	}
@@ -421,6 +469,12 @@ class BMPScene {
 			gl.uniform1i(shader.unifImgWorker, 1)
 		}
 		
+		if(shader.unifImgBrush !== null) {
+			gl.activeTexture(gl.TEXTURE2)
+			gl.bindTexture(gl.TEXTURE_2D, this.texture_Brush)
+			gl.uniform1i(shader.unifImgBrush, 2)
+		}
+		
 		if(shader.unifWorkerColor && shader.unifWorkerColor !== null) {
 			gl.uniform3fv(shader.unifWorkerColor, this.getCurrentWorkerColor())
 		}
@@ -428,6 +482,10 @@ class BMPScene {
 		if(shader.unifRect && shader.unifRect !== null) {
 			gl.uniform4fv(shader.unifRect, this.getInputRect())
 		}
+	}
+	
+	updateInputRectUniform() {
+		this.gl.uniform4fv(this.shader.unifRect, this.getInputRect())
 	}
 	
 	useShaderOfType(type) {
@@ -490,15 +548,16 @@ class BMPScene {
 			return false
 		
 		var s = {
-			flags: flags,
+			flags: flags, /// @deprecated
 			type: flags,
 			prog: prog,
 			attrPos: this.gl.getAttribLocation(prog, "pos"),
 			attrUv: this.gl.getAttribLocation(prog, "uUV"),
 			unifImgSource: this.gl.getUniformLocation(prog, "img_source"),
 			unifImgWorker: this.gl.getUniformLocation(prog, "img_worker"),
+			unifImgBrush: this.gl.getUniformLocation(prog, "img_brush"),
 			unifWorkerColor: this.gl.getUniformLocation(prog, "worker_color"),
-			unifRect: this.gl.getUniformLocation(prog, "rect"),
+			unifRect: this.gl.getUniformLocation(prog, "rect")
 		}
 		
 		_shaders[_shaders.length] = s
@@ -506,7 +565,6 @@ class BMPScene {
 	}
 	
 	shaderAvailable(flags) {
-		
 		for(var i = 0; i < _shaders.length; i++)
 			if(flags === _shaders[i].flags || flags === _shaders[i].type)
 				return _shaders[i]
@@ -517,6 +575,8 @@ class BMPScene {
 	onShow() {		
 		this.canvas.width = this.width
 		this.canvas.height = this.height
+		
+		this.gl.viewport(0, 0, this.width, this.height)
 		
 		this.bindAttribBuffer()
 		this.render()
@@ -544,28 +604,23 @@ class BMPScene {
 		this.render()
 	}
 	
-	getDryWorker() {
-		return this.dryWorker
-	}
-	
-	createDryWorker() {
-		this.dryWorker = new UniColorTex(this.width, this.height)
-		return this.dryWorker
-	}
-	
-	useDryWorker(worker) {
-		this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture_Worker)
-		this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.ALPHA, this.width, this.height, 0, this.gl.ALPHA, this.gl.UNSIGNED_BYTE, worker.data)
-		this.ptexture_Worker = this.texture_Worker
-	}
-	
-	uploadBrush(shape) {
+	uploadBrush() {
+		let size = sceneMeta[activeId].brushData.size
+		
+		this.gl.activeTexture(this.gl.TEXTURE2)
+		this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture_Brush)
+		
+		this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.ALPHA, this.gl.ALPHA, this.gl.UNSIGNED_BYTE, document.getElementById("bp-preview-gen"))
 	}
 	
 	setColorRGB([r, g, b]) {
 		this.currentColorRGB[0] = r
 		this.currentColorRGB[1] = g
 		this.currentColorRGB[2] = b
+	}
+	
+	assignColorPalette(reference) {
+		this.colorPalette = reference
 	}
 	
 	/** 
@@ -575,6 +630,8 @@ class BMPScene {
 	isDirty() {
 		if(dirtyCounter !== 0)
 			return true
+		
+		return false
 	}
 	
 	undo() {

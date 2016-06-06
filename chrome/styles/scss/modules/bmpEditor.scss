@@ -21,10 +21,18 @@ canvas {
 .canvas-dimension {
 	position: relative;
 	flex: 1;
+	cursor: none;
 }
 
 .visible {
 	display: block !important;
+}
+
+.brush-indicator {
+	position: fixed;
+	outline: 1px solid white;
+	border: 1px solid black;
+	pointer-events: none;
 }
 
 /* ruler */
@@ -74,19 +82,30 @@ canvas {
 	height: 18px;
 }
 
-/* toolbar */
+.page {
+	display: flex;
+	flex-direction: column;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	position: absolute;
+}
+
+.page-content {
+	flex: 1;
+	position: relative;
+	overflow: scroll;
+}
 
 #toolbar {
-	position: fixed;
-	bottom: 0;
-	width: 100%;
-	cursor: default;
-	z-index: 5;
-	padding-left: 19px; /* 18px from ruler plus 1 because of its border*/
+	min-height: 16px;
 	padding-right: 4px;
 	background-color: rgb(220, 220, 220);
 	color: rgb(40, 40, 40);
 	box-sizing: border-box;
+	cursor: default;
+	z-index: 5;
 }
 
 #toolbar > *{
@@ -128,6 +147,36 @@ canvas {
 	display: inline-block;
 	font-size: 12px;
 	margin-left: 4px;
+}
+
+/* brush panel */
+#brush-panel {
+	
+	position: fixed;
+	top: 360px;
+	right: 0px;
+	width: 170px;
+	background-color: rgb(235, 235, 235);
+	z-index: 8;
+	outline: 1px solid rgb(200, 200, 200);
+}
+
+#bp-b > * {
+	display: flex;
+	flex-direction: row;
+}
+
+#bp-preview-gen {
+	display: none;
+}
+
+#bp-preview-main {
+	outline: 1px solid $clr-border;
+	background-color: $clr-paper;
+	height: 32px;
+	width: 32px;
+	background-repeat: no-repeat;
+	background-position: center;
 }
 
 
@@ -244,9 +293,14 @@ input[type=range]::-moz-range-track {
 	padding-right: 5px;
 	
 	box-sizing: border-box;
+	
+	&:hover {
+		color: green;
+	}
 }
 
-#material-b {
+#material-b,
+#bp-b {
 	padding: 5px;
 }
 
