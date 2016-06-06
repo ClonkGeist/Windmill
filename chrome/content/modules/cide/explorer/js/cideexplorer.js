@@ -201,6 +201,7 @@ $(window).load(function() {
 	});
 
 	//Arbeitsumgebungen verstecken
+	
 	$("#showClonkDirs").click(function(e) {
 		$(this).toggleClass("checked");
 		$(".we-clonkdir").css("display", $(this).hasClass("checked")?"":"none");
@@ -210,6 +211,19 @@ $(window).load(function() {
 		$(this).toggleClass("checked");
 		$(".we-workspace").css("display", $(this).hasClass("checked")?"":"none");
 		e.preventDefault();
+	});
+		
+	$("#ce-popup-btn").click(function(e) {
+		let el = document.getElementById("ce-popup");
+		
+		if($("el").hasClass("shown")) {
+			$(el).removeClass("shown")
+			el.hidePopup();
+		}
+		else {
+			el.openPopup(null, null, 10, 24);
+			$(el).addClass("shown")
+		}
 	});
 });
 

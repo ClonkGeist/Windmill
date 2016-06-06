@@ -18,30 +18,58 @@
 	}
 }
 
-#menu-list {
+#ce-popup {
 	-moz-appearance: none;
 	background: transparent;
-	outline: 1px solid yellow;
 	padding: 0;
-	border: 1px solid gainsboro;
+	border: none;
+	border-bottom: 1px solid $clr-border;
+	outline: none;
 	color: rgb(40, 40, 40);
 	
-	.checked:before {
-		@include -checked();
-		color: $interact-blue;
-		letter-spacing: 0;
-		font-family: 'icomoon';
-		margin-right: -5px;
-		font-size: 16px;
-		line-height: 16px;
+	opacity: 0;
+	transform: translate(0, -5px);
+	transition: opacity .3s, transform .3s;
+	
+	&.shown {
+		opacity: 1;
+		transform: translate(0, 0);
 	}
 }
 
-#menu-list > * {
-	background-color: rgb(235, 235, 235);
+.cep-wrapper {
+	padding: 5px;
 }
 
-.ce-menu {
+.cep-option {
+	padding: 3px 5px;
+	
+	&:hover {
+		background-color: $clr-paper;
+	}
+	
+	&:before {
+		@include -checked();
+		color: transparent;
+		letter-spacing: 0;
+		font-family: 'icomoon';
+		font-size: 16px;
+		line-height: 16px;
+		height: 1em;
+		padding-top: 5px;
+		cursor: default;
+	}
+	
+	&.checked:before {
+		color: $interact-blue;
+	}
+}
+
+#ce-popup > * {
+	background-color: $clr-empty;
+}
+
+#ce-popup-btn {
 	line-height: 24px;
 	color: grey;
 	
