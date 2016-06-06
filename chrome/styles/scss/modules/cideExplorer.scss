@@ -12,20 +12,42 @@
 	line-height: 24px;
 	cursor: pointer;
 	
-	transition: background-color 0.3s;
+	&:hover { 
+		background-color: grey;
+		color: $clr-paper;
+	}
 }
 
-.toolbar-option:hover { 
-	background-color: $clr-empty;
-	transition: background-color 0s;
+#menu-list {
+	-moz-appearance: none;
+	background: transparent;
+	outline: 1px solid yellow;
+	padding: 0;
+	border: 1px solid gainsboro;
+	color: rgb(40, 40, 40);
+	
+	.checked:before {
+		@include -checked();
+		color: $interact-blue;
+		letter-spacing: 0;
+		font-family: 'icomoon';
+		margin-right: -5px;
+		font-size: 16px;
+		line-height: 16px;
+	}
 }
 
-.nav-image:hover {
-	background-color: #eee;
+#menu-list > * {
+	background-color: rgb(235, 235, 235);
 }
 
-.nav-image.deselected {
+.ce-menu {
+	line-height: 24px;
 	color: grey;
+	
+	&:hover {
+		color: $ui-text-clr;
+	}
 }
 
 #searchinput {
