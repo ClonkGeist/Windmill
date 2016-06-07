@@ -144,6 +144,9 @@ function showMasterServerGames(info) {
 	current_references = obj;
 	$("#reference-list").removeClass("refresh");
 
+	let currentref = $(".reference.ref-selected").attr("id");
+	$(".reference:not(.reference-draft").remove();
+	$("#game-info-motd").html("");
 	if(obj["Clonk Rage"]) { // <--- Bei MS-Wechsel auf Open Clonk wechseln
 		$("#game-info-motd").html(obj["Clonk Rage"][0].MOTD + " <a href='"+obj["Clonk Rage"][0].MOTDURL+"'>" +
 								  obj["Clonk Rage"][0].MOTDURL + " </a>");
@@ -163,9 +166,6 @@ function showMasterServerGames(info) {
 		else
 			return 0;
 	});
-
-	let currentref = $(".reference.ref-selected").attr("id");
-	$(".reference:not(.reference-draft").remove();
 
 	for(var i = 0; i < obj["Reference"].length; i++) {
 		if(obj["Reference"][i]) {
@@ -322,8 +322,9 @@ function showMasterServerGames(info) {
 
 			$("#reference-list").append(clone);
 
-			if(currentref == clone.attr("id"))
+			if(currentref == clone.attr("id")) {
 				clone.trigger("click");
+			}
 
 			if(getConfigData("ShowGame", "PortScan")) {
 				//Ports überprüfen
@@ -342,6 +343,9 @@ function showMasterServerGames(info) {
 				ShowReferenceNotification(ref);
 		}
 	}
+
+	if(!$(".ref-selected").length)
+		$("#game-info").removeClass("selected-ref");
 }
 
 function joinGame(ref) {
@@ -641,22 +645,29 @@ function getMasterServerInformation(call) {
 	if((mservcache && (new Date()).getTime() < mservtime + 15000) || deactivateRequests)
 		return call(mservcache);
 
-	var req, rv;
-	req = new XMLHttpRequest();
-
-	req.onreadystatechange = function() {
-		if(req.readyState == 4 && req.status == 404)
-			rv = -1;
-		if(req.readyState == 4 && req.status == 200) {
-			rv = req.responseText;	
-			mservcache = rv;
+	jQuery.ajax({
+		url: ms_url,
+		type: "GET",
+		timeout: 5000,
+		success: function(response) { 
+			$("#information-bar").removeClass("visible");
+			$("#wrapper").removeClass("ajax-request-failed");
+			mservcache = response;
 			mservtime = (new Date()).getTime();
-			call(rv);
+			call(response);
+		},
+		error: function(jqXHR, textStatus, errorThrown) {
+			$(".reference:not(.reference-draft").remove();
+			$("#wrapper").addClass("ajax-request-failed");
+			log(`An error has occured while trying to load the masterserver data. (${textStatus}: ${errorThrown})`);
+			$("#information-bar").addClass("visible");
+			if(textStatus === "timeout") {  
+				$("#information-bar").text(Locale("$MSRequestTimeout$"));
+			} else {
+				$("#information-bar").text(Locale("$MSUnknownError$"));
+			}
 		}
-	}
-
-	req.open("GET", ms_url, true);
-	req.send();
+	});
 
 	return true;
 }

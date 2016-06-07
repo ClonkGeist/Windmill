@@ -462,6 +462,26 @@ h2 {
 	}
 }
 
+/* information bar */
+
+#information-bar {
+	background: rgba(0, 0, 0, 0.7);
+	color: white;
+	padding: 0 16px;
+	line-height: 50px;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 10000;
+	height: 0px;
+	overflow: hidden;
+	&.visible {
+		height: 50px;
+	}
+	transition: height 0.4s;
+}
+
 /* button */
 
 #ressavemode-btn {
