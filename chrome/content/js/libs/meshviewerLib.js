@@ -2139,12 +2139,11 @@ function RenderError(string) {
 
 function numberString(str) {
 	var i = 0;
-	var s = str.replace(/(\r\n|\n|\r)/g, function(match) {
+	
+	return "\n0: " + str.replace(/(\r\n|\n|\r)/g, function(match) {
 		i++;
 		return match + i +": ";
 	});
-	
-	return "\n0: " + s;
 }
 
 function bumpFlags(flags) {
