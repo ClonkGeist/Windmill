@@ -77,7 +77,7 @@ hook("startLoadingRoutine", function() {
 	function* loadPlayerFile(entry, time) {
 		let text, img, imgstr = "chrome://windmill/content/img/playerselection/DefaultPlayer.png";
 		if(!entry.isDir) {
-			let group = readC4GroupFile(_sc.file(entry.path));
+			let group = yield readC4GroupFile(_sc.file(entry.path));
 			text = group.getEntryByName("Player.txt").data.byte2str();
 			img = group.getEntryByName("BigIcon.png");
 			if(img)

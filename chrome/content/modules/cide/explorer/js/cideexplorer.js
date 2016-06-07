@@ -72,7 +72,7 @@ function explorerLoadWorkEnvironments(parentWorkEnv, container) {
 			loadDirectory(workenvs[c].path, getTreeCntById(id), false, false, blacklist);
 		}
 		//Ansonsten vorher Verzeichnis vorbereiten (c4group-explodes)
-		else {
+		else if(workenvs[i].rejectPreparation) {
 			PrepareDirectory(workenvs[c].path, function() {
 				$("#msg-loading").remove();
 
@@ -636,7 +636,7 @@ function initializeContextMenu() {
 	//Umbenennen
 	treeContextMenu.addEntry("$ctxrename$", 0, function() {
 		renameTreeObj($(getCurrentTreeSelection()));
-	}, 0, { identifier: 'ctxRename' });
+	}, 0, { identifier: 'ctxRename', noFocusReset: true });
 	//Löschen
 	treeContextMenu.addEntry("$ctxdelete$", 0, function() {
 		removeTreeEntry($(getCurrentTreeSelection()));

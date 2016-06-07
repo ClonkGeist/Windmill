@@ -121,18 +121,18 @@ class _ContextMenuEntry {
 						}).then(function() {
 							_this.unlock();
 							if($(".contextmenu").prop("contextmenu_obj"))
-								$(".contextmenu").prop("contextmenu_obj").hideMenu();
+								$(".contextmenu").prop("contextmenu_obj").hideMenu(_this.options.noFocusReset);
 						}, function(err) {
 							log(err);					
 							_this.unlock();
 							if($(".contextmenu").prop("contextmenu_obj"))
-								$(".contextmenu").prop("contextmenu_obj").hideMenu();
+								$(".contextmenu").prop("contextmenu_obj").hideMenu(_this.options.noFocusReset);
 						});	
 					}
 					else {
 						this.clickHandler(target, e.target, this);
 						if($(".contextmenu").prop("contextmenu_obj"))
-							$(".contextmenu").prop("contextmenu_obj").hideMenu();
+							$(".contextmenu").prop("contextmenu_obj").hideMenu(this.options.noFocusReset);
 					}
 				});
 			}
@@ -323,7 +323,7 @@ class _ContextMenu {
 		if(this.getOption("post_opening_callback"))
 			this.options.post_opening_callback(obj_by);
 	}
-	hideMenu() {
+	hideMenu(noFocusReset) {
 		if(!this.element)
 			return;
 		if(this.locked)
@@ -338,7 +338,9 @@ class _ContextMenu {
 			$(this.element).remove();
 		this.element = 0;
 
-		$(this.opened_by).focus();
+		if(!noFocusReset)
+			$(this.opened_by).focus();
+
 		this.opened_by = 0;
 	}
 	

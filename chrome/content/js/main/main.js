@@ -148,33 +148,30 @@ hook("load", function() {
 
 		//Switcher zwischen cIDE/cBridge
 		$(".mm-button").click(function() {
-			
-			if(mainDeck.selectedId == mainDeck.getModuleId("cbridge") || mainDeck.selectedId == mainDeck.getModuleId("cide")) {
-				// show develop mode
-				if($(".main-mode-ui").hasClass("cBridge") && $(this).hasClass("mm-dev-wrapper")) {
-					if(mainDeck.selectedId != mainDeck.getModuleId("cide")) {
-						$(".main-mode-ui").removeClass("cBridge");
-						navigation.hideGroups();
-						_mmToDevelopIcon();
-					}
-					else
-						return;
-				}
-				// show play mode
-				else if($(this).hasClass("mm-play-wrapper")) {
-					if(mainDeck.selectedId != mainDeck.getModuleId("cbridge")) {
-						$(".main-mode-ui").addClass("cBridge");
-						navigation.showGroup("cbridge");
-						_mmToPlayIcon();
-					}
-					else
-						return;
+			// show develop mode
+			if($(this).hasClass("mm-dev-wrapper")) {
+				if(mainDeck.selectedId != mainDeck.getModuleId("cide")) {
+					$(".main-mode-ui").removeClass("cBridge");
+					navigation.hideGroups();
+					_mmToDevelopIcon();
+					togglePage(mainDeck.id, mainDeck.getModuleId("cide"));
 				}
 				else
 					return;
 			}
-
-			togglePage(mainDeck.id, $(".main-mode-ui").hasClass("cBridge")?mainDeck.getModuleId("cbridge"):mainDeck.getModuleId("cide"));
+			// show play mode
+			else if($(this).hasClass("mm-play-wrapper")) {
+				if(mainDeck.selectedId != mainDeck.getModuleId("cbridge")) {
+					$(".main-mode-ui").addClass("cBridge");
+					navigation.showGroup("cbridge");
+					_mmToPlayIcon();
+					togglePage(mainDeck.id, mainDeck.getModuleId("cbridge"));
+				}
+				else
+					return;
+			}
+			else
+				return;
 		});
 
 		//cIDE/cBridge-Deaktivier Box (Vorerst deaktiviert..)
@@ -265,30 +262,23 @@ hook("load", function() {
 					}
 				}
 			}
-			
 		}
 		//Playerselection
 		$("#showPlayerSelect").click(function() {
 			toggleSidebar("playerselect");
-			//$("#playerselect").toggleClass("invisible");
 			switchPlrPage("page-playerselection");
 		});
 		//Clonk Directory Selection
 		$("#showClonkDirs").click(function() {
 			toggleSidebar("clonkdirselection");
-			//$("#clonkdirselection").toggleClass("invisible");
 		});
 		//Log
 		$("#showLog").click(function() {
 			toggleSidebar("developerlog");
-			/*$("#gitlog").addClass("invisible");
-			$("#developerlog").toggleClass("invisible");*/
 		});
 		//Git Log
 		$("#showGitLog").click(function() {
 			toggleSidebar("gitlog");
-			/*$("#developerlog").addClass("invisible");
-			$("#gitlog").toggleClass("invisible");*/
 		});
 		let frame = $('<iframe src="resource://docs/build/de/_home/__head_de.html" flex="1" id="docFrame"></iframe>');
 		frame.appendTo($(mainDeck.element));
@@ -593,7 +583,7 @@ function NavItem() {
 
 			if(!this.code || this.code == "") {
 				if(topnav.get(this.group).selectedID == this.id)
-					$(topnav.obj).append("<button id='navitem-"+this.id+"' label='"+this.label+"' class='nav-item active'/>");
+					$(topnav.obj).append("<button id='navitem-"+this.id+"' label='"+this.label+"' class='nav-item nav-active'/>");
 				else
 					$(topnav.obj).append("<button id='navitem-"+this.id+"' label='"+this.label+"' class='nav-item'/>");
 			} else
@@ -604,23 +594,18 @@ function NavItem() {
 			
 			if(typeof this.callfn == "function") {
 				$(this.obj).click(function() { 
-					$(".nav-item.active").removeClass("active");
-					$(this).addClass("active");
+					$(".nav-item.nav-active").removeClass("nav-active");
+					$(this).addClass("nav-active");
 					topnav.get(_self.group).selectedID = _self.id;
 					_self.callfn();
 				});
 			}
 			else {
 				$(this.obj).click(function() {
-					$(".nav-item.active").removeClass("active");
-					$(this).addClass("active");
+					$(".nav-item.nav-active").removeClass("nav-active");
+					$(this).addClass("nav-active");
 					_self.top_navigation.get(_self.group).selectedID = _self.id;
 				});
-			}
-			
-			if(topnav.get(this.group).selectedID == this.id) {
-				//Vorerst mit Timeout "gehackt"; active-Klasse verschwindet sonst sofort (auch wenn schon im Code vorher vorhanden...)
-				setTimeout(function() { $(_self.obj).addClass("active"); }, 2);
 			}
 		}
 		else {

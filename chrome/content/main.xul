@@ -356,7 +356,6 @@ s0.42,6.38-0.29,7.92s-2.79,1.69-2.79,1.69l-0.08,2.77l0.02-6.2"/></svg>
 </vbox>
 
 	<script type="application/javascript" src="chrome://windmill/content/js/main/import.js"/>
-	<script type="application/javascript" src="chrome://windmill/content/js/external/js-inflate.js"/>
 	<script type="application/javascript" src="chrome://windmill/content/js/libs/c4group.js"/>
 	<script type="application/javascript" src="chrome://windmill/content/js/libs/color.js"/>
 	<script type="application/javascript" src="chrome://windmill/content/js/external/jquery-2.1.1.min.js"/>
