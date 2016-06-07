@@ -225,6 +225,9 @@ class Deck extends WindmillObject {
 
 					return ovdata;
 				}
+				
+				if(el.contentWindow.execHook)
+					el.contentWindow.execHook("addedToDeck", this.id, index, this)
 			});
 		}
 
