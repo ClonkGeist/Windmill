@@ -102,7 +102,7 @@ canvas {
 	min-height: 16px;
 	padding-right: 4px;
 	background-color: rgb(220, 220, 220);
-	color: rgb(40, 40, 40);
+	color: $text-clr;
 	box-sizing: border-box;
 	cursor: default;
 	z-index: 5;
@@ -179,6 +179,10 @@ canvas {
 	background-position: center;
 }
 
+#bp-preview {
+	image-rendering: -moz-crisp-edges;
+}
+
 
 /*
 	having both enabled fails due to https://css-tricks.com/almanac/selectors/s/selection/
@@ -186,12 +190,12 @@ canvas {
 	*/
 #toolbar input[type=text]::-moz-selection {
 	background-color: $interact-red;
-	color: white;
+	color: whitesmoke;
 }
 
 #toolbar input[type=text] {
 	background-color: rgb(220, 220, 220);
-	color: rgb(40, 40, 40);
+	color: $text-clr;
 	outline: 1px solid rgb(180, 180,180);
 	border: none;
 	margin: 0;
@@ -208,7 +212,7 @@ input[type=range] {
 }
 
 input[type=range]::-moz-range-thumb {
-	background-color: rgb(80, 80, 80);
+	background-color: $ui-text-clr;
 	border: none;
 	margin-bottom: 0;
 }
@@ -240,7 +244,7 @@ input[type=range]::-moz-range-track {
 }
 
 .spalette-elm.active {
-	border: 2px solid rgb(0, 165, 207);
+	border: 2px solid $interact-blue;
 }
 
 #spalette-b {
@@ -315,8 +319,8 @@ input[type=range]::-moz-range-track {
 	display: inline-block;
 	height: 22px;
 	line-height: 22px;
-	font-family: "Segoe UI", "Trebuchet MS", sans-serif;
-	color: rgb(40, 40, 40);
+	font-family: $font-stack;
+	color: $text-clr;
 }
 
 #current-material-name > input {
@@ -358,11 +362,10 @@ select {
 	min-width: 100%;
 	min-height: 100%;
 	position: absolute;
-	background-color: rgb(245, 245, 245);
-	color: rgb(40, 40, 40);
-	font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+	background-color: $clr-base;
+	color: $text-clr;
+	font-family: $font-stack;
 	
-	/*padding: 20px 40px 0 40px;*/
 	padding: 20px 40px;
 	box-sizing: border-box;
 	
@@ -385,8 +388,6 @@ select {
 }
 
 .cmw-preview-canvas {
-	/*width: 100px;
-	height: 100px;*/
 	position: inherit;
 	display: inherit;
 	box-sizing: border-box;
@@ -543,23 +544,8 @@ select {
 	line-height: 50px;
 	padding: 0 10px;
 	color: grey;
-	/*
-	background: repeating-linear-gradient(
-		-45deg,
-		gainsboro,
-		gainsboro 5px,
-		rgb(200,200, 200) 5px,
-		rgb(200,200, 200) 6px
-	);*/
 }
-.cmw-button:hover {/*
-	background: repeating-linear-gradient(
-			-45deg,
-			gainsboro,
-			gainsboro 5px,
-			rgb(180, 180, 180) 5px,
-			rgb(180, 180, 180) 6px
-		);*/
+.cmw-button:hover {
 	color: rgb(40, 40, 40);
 }
 
