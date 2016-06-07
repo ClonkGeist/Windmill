@@ -34,28 +34,20 @@ function readC4GroupBytes(data) {
 		return false;
 	}
 
-	//Bytes als Blob für JSInflate
-	var datablob = "";
-	for(var i = 0; i < data.length; i++)
-	  datablob += String.fromCharCode(data[i]);
-	
-	//Inflate
-	var ndata = JSInflate.inflate(datablob);
-	data = [];
-	
-	//Blob to Byte Array
-	for(var i = 0; i < ndata.length; i++) {
-		data.push(ndata[i].charCodeAt(0));
-	}
-	
-	var c4g_headerdata = data.slice(0, 204);
-	var c4g_contentdata = data.slice(204, data.length);
-	
-	var c4g_header = getGroupHeader(c4g_headerdata);
-	var c4g_content = getGroupContent(c4g_contentdata, c4g_header.entries);
-	
-	var groupfile = new C4GroupFile(c4g_header, c4g_content);
-	return groupfile;
+	return new Promise(function(resolve, reject) {
+		let worker = new Worker("chrome://windmill/content/js/libs/c4group.worker.js");
+		worker.postMessage(data);
+		worker.onmessage = function(e) {
+			let c4g_headerdata = e.data.slice(0, 204);
+			let c4g_contentdata = e.data.slice(204, e.data.length);
+			
+			let c4g_header = getGroupHeader(c4g_headerdata);
+			let c4g_content = getGroupContent(c4g_contentdata, c4g_header.entries);
+			
+			let groupfile = new C4GroupFile(c4g_header, c4g_content);
+			resolve(groupfile);
+		}
+	});
 }
 
 function C4GroupHead() {

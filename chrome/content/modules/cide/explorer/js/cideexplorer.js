@@ -72,7 +72,7 @@ function explorerLoadWorkEnvironments(parentWorkEnv, container) {
 			loadDirectory(workenvs[c].path, getTreeCntById(id), false, false, blacklist);
 		}
 		//Ansonsten vorher Verzeichnis vorbereiten (c4group-explodes)
-		else {
+		else if(workenvs[i].rejectPreparation) {
 			PrepareDirectory(workenvs[c].path, function() {
 				$("#msg-loading").remove();
 

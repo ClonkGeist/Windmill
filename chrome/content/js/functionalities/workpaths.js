@@ -20,6 +20,7 @@ class WorkEnvironment {
 			this.options.rejectDeletion = true;
 			this.options.rejectRename = true;
 			this.options.rejectMove = true;
+			this.options.rejectPreparation = true;
 		}
 		if(unloaded)
 			this.header.Workspace.Unloaded = unloaded;
