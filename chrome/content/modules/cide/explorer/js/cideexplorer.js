@@ -636,7 +636,7 @@ function initializeContextMenu() {
 	//Umbenennen
 	treeContextMenu.addEntry("$ctxrename$", 0, function() {
 		renameTreeObj($(getCurrentTreeSelection()));
-	}, 0, { identifier: 'ctxRename' });
+	}, 0, { identifier: 'ctxRename', noFocusReset: true });
 	//Löschen
 	treeContextMenu.addEntry("$ctxdelete$", 0, function() {
 		removeTreeEntry($(getCurrentTreeSelection()));
