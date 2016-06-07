@@ -81,14 +81,15 @@
 				<canvas id="bp-preview-gen" height="32" width="32"></canvas>
 				<div id="bp-preview-main"></div>
 				<input id="rounded-brush" type="checkbox" checked="true"></input>
+				<label for="rounded-brush">$rounded$</label>
 			</div>
 			<div>
 				<input type="text" id="bp-gen-seed" value="3" maxlength="3"/>
-				<input type="range" id="fg" min="1" max="100" value="3"/>
+				<input type="range" id="fg" min="1" max="50" value="3"/>
 			</div>
 			<div>
 				<input type="text" id="bp-gen-dist" value="3" maxlength="3"/>
-				<input type="range" id="fgh" min="1" max="100" value="3"/>
+				<input type="range" id="fgh" min="1" max="50" value="3"/>
 			</div>
 		</div>
 	</div>
@@ -154,10 +155,10 @@
 			
 			<div id="mds_filled" class="toolbarbutton toolsettings active">$fill$</div>
 
-			<img id="bp-preview" height="16" width="16" />
 			<div id="mds_thickness" class="toolbarbutton toolsettings">
+				<img id="bp-preview" height="16" width="16" />
 				<input type="text" id="mds_thickness_nr" value="3" maxlength="3"/>px
-				<input type="range" id="mds_thickness_range" min="1" max="100" value="3"/>
+				<input type="range" id="mds_thickness_range" min="1" max="50" value="3"/>
 			</div>
 			
 			<div class="toolbarsplitter"></div>

@@ -574,6 +574,15 @@ $(window).ready(function() {
 		$("#brush-panel").removeClass("collapsed");
 	});
 	
+	$("#rounded-brush").change(function(e) {
+		sceneMeta[activeId].brushData.rounded = this.checked;
+		updateBrushGenerator(activeId);
+	});
+	
+	$("#mds_thickness_range").on("input", function() {
+		updateBrushGenerator(activeId);
+	});
+	
 	/*-- Key Bindings --*/
 	
 	//Speichern
@@ -653,20 +662,26 @@ function updateBrushGenerator(id) {
 	var imgData = ctx.getImageData(0, 0, size, size),
 		data = imgData.data;
 	
-	var m = size/2 - 1
+	var m = size/2
+	let offset = 0
+	
+	if(size % 2 === 0)
+		offset = 0.5;
+	
+	sceneMeta[id].brushData.offset = offset;
 	
 	var inDist = (x, y) => {
 		let xm = m - x
 		let ym = m - y
 		
-		return Math.sqrt(xm*xm + ym*ym) <= m
+		return Math.sqrt(xm*xm + ym*ym) < m
 	}
 	
 	if(sceneMeta[id].brushData.rounded) {
 		for(let x = 0; x < size; x++)
 			for(let y = 0; y < size; y++) {
 				
-				if(!inDist(x, y))
+				if(!inDist(x + 0.5, y + 0.5))
 					continue;
 				
 				let index = (x + y*size)*4;
