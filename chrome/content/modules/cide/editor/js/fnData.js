@@ -174,6 +174,10 @@ function initParamlist() {
 var paramListPositioned = false;
 
 function updateParamlist(key, paramId) {
+	if(!getConfigData("Scripteditor", "ParameterList")) {
+		hideParamlist();
+		return false;
+	}
 	
 	if(key == lastKey && paramId == lastParamId)
 		return true;

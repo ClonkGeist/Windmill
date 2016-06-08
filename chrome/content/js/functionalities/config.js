@@ -227,6 +227,7 @@ function initializeConfig() {
 
 	//Scripteditor
 	addConfigString("Scripteditor", "Completers", 2);
+	addConfigString("Scripteditor", "ParameterList", true);
 
 	//ScenarioSettings
 	addConfigString("ScenarioSettings", "AlwaysUseScenarioSettings", true);

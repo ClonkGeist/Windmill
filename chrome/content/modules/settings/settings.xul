@@ -171,6 +171,8 @@
 									</menupopup>
 								</menulist>
 							</hbox>
+							<checkbox label="$ShowParameterList$" class="autoinit" flex="1" default-cfgsect="Scripteditor" default-cfgkey="ParameterList"/>
+							
 						</vbox>
 						<caption label="Explorer" class="toggle-contents" onclick="toggleContents(this)"/>
 						<vbox>
@@ -196,11 +198,11 @@
 						<vbox>
 							<checkbox label="$ActivatePortScanner$" class="autoinit" flex="1" default-cfgsect="ShowGame" default-cfgkey="PortScan"/>
 							<checkbox label="$ShowNotificationsForEmptyGames$" class="autoinit" flex="1" default-cfgsect="ShowGame" default-cfgkey="NotificationsShowEmpty"/>
+							<hbox id="cbridge-gameport">
+								<label value="$GamePort$" control="cbridge-gameport-textbox" flex="1"/>
+								<textbox class="autoinit" flex="3" default-cfgsect="StartGame" default-cfgkey="GamePort"/>
+							</hbox>
 						</vbox>
-						<hbox id="cbridge-gameport" >
-							<label value="$GamePort$" control="cbridge-gameport-textbox" flex="1"/>
-							<textbox class="autoinit" flex="3" default-cfgsect="StartGame" default-cfgkey="GamePort"/>
-						</hbox>
 					</vbox>
 				</stack>
 				
@@ -210,7 +212,7 @@
 					<vbox id="settings-page-keybindings" class="settings-page" top="0" bottom="0">
 						<caption class="big" label="$pkbCaption$"/>
 						
-						<listbox id="pkb-keybindings-list">
+						<listbox id="pkb-keybindings-list" flex="1">
 							<listhead>
 								<listhead label="$pkbListDescription$"/>
 								<listhead label="$pkbListAssignedKey$" width="200px"/>
