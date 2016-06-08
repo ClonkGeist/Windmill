@@ -41,16 +41,17 @@ function readModuleInfo(path) {
 	var module = new _module();
 	let promise = OS.File.read(path, {encoding: "utf-8"});
 	promise.then(function(text) {
-		let moduleini = parseINI2(text, { matchEmptyValues: true }), elm, config = [];
+		let moduleini = parseINI2(text, { matchEmptyValues: true }), elm, config = [], keybindings = [];
 		while(elm = moduleini.next().value) {
 			if(typeof elm != "string") {
 				if(elm.sect == "Module") 
 					module[elm.key.toLowerCase()] = elm.val;
 				else if(elm.sect == "Custom")
 					module[elm.key.toLowerCase()] = elm.val;
-				else if(elm.sect == "Config") {
+				else if(elm.sect == "Config")
 					config.push([elm.key, elm.val]);
-				}
+				else if(elm.sect == "KeyBindings")
+					keybindings.push([elm.key, elm.val]);
 			}
 		}
 		let sect = module.configsectionname || module.modulename || module.name, cfg = getConfig();
@@ -87,6 +88,15 @@ function readModuleInfo(path) {
 				else
 					log(`Module loading warning: The specified config entry "${sect}::${key}" is already used by another module. (${module.modulename})`, "warning");
 			}
+		}
+		if(!module.languageprefix)
+			return log(`An error has occured while trying to load the module "${module.modulename}": No language prefix was specified`, "error");
+		if(!customKeyBindings)
+			customKeyBindings = []
+		for(let kb of keybindings) {
+			let name = module.languageprefix + "_" + kb[0];
+			if(!customKeyBindings[name])
+				customKeyBindings[name] = kb[1];
 		}
 
 		//Modulpfad und relativer Pfad speichern
