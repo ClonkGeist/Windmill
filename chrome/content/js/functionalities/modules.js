@@ -41,13 +41,51 @@ function readModuleInfo(path) {
 	var module = new _module();
 	let promise = OS.File.read(path, {encoding: "utf-8"});
 	promise.then(function(text) {
-		let moduleini = parseINI2(text), elm;
+		let moduleini = parseINI2(text, { matchEmptyValues: true }), elm, config = [];
 		while(elm = moduleini.next().value) {
 			if(typeof elm != "string") {
 				if(elm.sect == "Module") 
 					module[elm.key.toLowerCase()] = elm.val;
 				else if(elm.sect == "Custom")
 					module[elm.key.toLowerCase()] = elm.val;
+				else if(elm.sect == "Config") {
+					config.push([elm.key, elm.val]);
+				}
+			}
+		}
+		let sect = module.configsectionname || module.modulename || module.name, cfg = getConfig();
+		if(!sect)
+			return log("An error has occured while trying to load a module: No name was specified.", "error");
+		else {
+			for(let item of config) {
+				let type = "string", key = item[0], val = item[1];
+				type = val.match(/^[a-zA-Z]+(?=\:)/)
+				if(!type) {
+					val = val.replace(/^([a-zA-Z]+)\\\:/, "$1:");
+					if(/^[0-9.]+$/.test(val))
+						type = "number";
+					else {
+						switch(val.toLowerCase()) {
+							case "true":
+							case "false":
+								type = "boolean";
+								break;
+
+							default:
+								type = "string";
+								break;
+						}
+					}
+				}
+				else {
+					val = val.replace(/^[a-zA-Z]+\:/, "");
+					type = type[0];
+				}
+
+				if(!cfg[sect] || !cfg[sect][key])
+					addConfigString(sect, key, val, type);
+				else
+					log(`Module loading warning: The specified config entry "${sect}::${key}" is already used by another module. (${module.modulename})`, "warning");
 			}
 		}
 

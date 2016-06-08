@@ -35,9 +35,9 @@ function parseCssStyle(el) {
 	return str;
 }
 
-function* parseINI2(value) {
+function* parseINI2(value, options = {}) {
 	if(typeof value == "string")
-		value = parseINIArray(value);
+		value = parseINIArray(value, options);
 	
 	for(var sect in value) {
 		if(value[sect])
@@ -50,7 +50,7 @@ function* parseINI2(value) {
 	}
 }	
 
-function parseINIArray(text) {
+function parseINIArray(text, options = {}) {
 	var lines = text.split("\n");
 	var data = [], current_section = 0;
 	for(var i = 0; i < lines.length; i++) {
@@ -58,14 +58,17 @@ function parseINIArray(text) {
 		if(line.search(/[^=\[]+#/) == 0)
 			continue;
 		
+		let linepattern = ".=.";
+		if(options.matchEmptyValues)
+			linepattern = ".=";
 		if(line.search(/[^=.]*\[[^=.]+\][^=.]*/) == 0) {
 			//Section
 			current_section = line.match(/[^=.]*\[([^=.]+)\][^=.]*/)[1];
 			data[current_section] = [];
 		}
-		else if(line.search(/.=./) != -1) {
+		else if(line.search(RegExp(linepattern)) != -1) {
 			var key = line.match(/(.+?)=/)[1];
-			var value = line.match(/.+?=(.+)/)[1];
+			var value = line.match(/.+?=(.*)/)[1];
 
 			if(!data[current_section])
 				data[current_section] = [];

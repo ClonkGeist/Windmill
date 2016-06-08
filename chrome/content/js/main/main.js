@@ -65,6 +65,9 @@ hook("load", function() {
 			});
 			prepended_html = '<div style="font-size: 4.8em">Windmill</div>';
 		}
+
+		//Config initialisieren
+		initializeConfig();
 		
 		//Modulinformationen einlesen
 		$("#startup-loading").html(prepended_html+"Loading Module Information");
@@ -78,8 +81,6 @@ hook("load", function() {
 			return -2;
 		}
 		$("#startup-loading").html("Loading Config");
-		//Config initialisieren
-		initializeConfig();
 
 		//Config einlesen
 		try { yield loadConfig(); } catch(e) {}
