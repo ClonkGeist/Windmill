@@ -58,7 +58,7 @@ var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
 var OC_HiglightRules = function() {
 
     var keywords = (
-        "break|continue|for|while|return|else|if|in|this|public|global|protected|func|private"
+        "break|continue|for|while|return|else|if|in|this|public|global|protected|func|private|new"
     );
 	
 	var varDeclarations = (
@@ -231,26 +231,25 @@ oop.inherits(FoldMode, BaseFoldMode);
 
 var OC_FN_NAMES = "Anim_AbsX|Anim_AbsY|Anim_Action|Anim_Const|Anim_Dist|Anim_Linear|Anim_X|Anim_XDir|\
 Anim_Y|Anim_YDir|Trans_Identity|Trans_Mul|Trans_Rotate|Trans_Scale|Trans_Translate|\
-GetAnimationLength|GetAnimationName|GetAnimationPosition|GetAnimationWeight|\
-GetRootAnimation|PlayAnimation|SetAnimationBoneTransform|SetAnimationPosition|SetAnimationWeight|\
-StopAnimation|TransformBone|Abs|Angle|ArcCos|ArcSin|BoundBy|Cos|Distance|DoRGBaValue|GetBit|\
-GetRGBaValue|HSL|HSL2RGB|HSLa|Inside|Max|Min|RGB|RGB2HSL|RGBa|Random|RandomX|SetBit|SetRGBaValue|\
-Sin|SplitRGBaValue|Sqrt|Tan|ToggleBit|EditCursor|FatalError|LogCallStack|ReloadDef|ReloadParticle|\
-StartScriptProfiler|StopScriptProfiler|AddEffect|CheckEffect|EffectCall|GetEffect|GetEffectCount|\
-RemoveEffect|Sound|SoundAt|Bubble|Smoke|GetClimate|GetSeason|GetTemperature|GetWind|LaunchLighting|\
-SetSeason|SetTemperature|SetWind|LaunchEarthquake|LaunchVolcano|PlaceAnimal|PlaceVegation|GetActMapVal|\
-GetDefCoreVal|GetMaterialVal|GetObjectInfoCoreVal|GetObjectVal|GetPlayerInfoCoreVal|GetPlayerVal|\
-GetScenarioVal|FrameCounter|GameOver|GetGravity|IsNetwork|ResetGamma|SetGameSpeed|SetGamma|SetGravity|\
-AddMsgBoardCmd|DoScoreboardShow|ScoreboardCol|SetScoreboardData|SortScoreboard|CanInsertMaterial|\
-ExtractLiquid|ExtractMaterialAmount|GBackLiquid|GBackSemiSolid|GBackSky|GetAverageTextureColor|GetMaterial|\
-GetMaterialCount|GetTexture|InsertMaterial|Material|MaterialName|BlastFree|CastPXS|ClearFreeRect|DigFree|\
-DigFreeRect|DrawDefMap|DrawMap|DrawMaterialQuad|FindConstructionSite|GetMatAdjust|GetPatLength|InLiquid|\
-LandscapeHeight|LandscapeWidth|PathFree|PathFree2|SetClimate|SetMatAdjust|ShakeFree|CustomMessage|Log|Message|\
-PlayerMessage|Music|MusicLevel|SetPlayList|GetLeagueProgressData|GetLegueScore|SetLeaguePerformance|\
-SetLeagueProgressData|ActIdle|GetActTime|GetAction|GetActionTarget|GetDir|GetPhase|GetProcedure|\
-SetAction|SetActionData|SetActionTargets|SetBridgeActionData|SetDir|SetPhase|GetCategory|SetCategory|\
-AddCommand|AppendCommand|FinishCommand|GetCommand|SetCommand|ComponentAll|GetComponent|SetComponent|\
-Collect|Contained|Contents|ContentsCount|GrabContents|ScrollContents|ShiftContents|Buy|CastObjects|\
+GetAnimationLength|GetAnimationName|GetAnimationPosition|GetAnimationWeight|GetRootAnimation|PlayAnimation|\
+SetAnimationBoneTransform|SetAnimationPosition|SetAnimationWeight|StopAnimation|TransformBone|Abs|Angle|\
+ArcCos|ArcSin|BoundBy|Cos|Distance|DoRGBaValue|GetBit|GetRGBaValue|HSL|HSL2RGB|HSLa|Inside|Max|Min|\
+RGB|RGB2HSL|RGBa|Random|RandomX|SetBit|SetRGBaValue|Sin|SplitRGBaValue|Sqrt|Tan|ToggleBit|EditCursor|\
+FatalError|LogCallStack|ReloadDef|ReloadParticle|StartScriptProfiler|StopScriptProfiler|AddEffect|\
+CreateEffect|CheckEffect|EffectCall|GetEffect|GetEffectCount|RemoveEffect|Sound|SoundAt|Bubble|Smoke|\
+GetClimate|GetSeason|GetTemperature|GetWind|LaunchLighting|SetSeason|SetTemperature|SetWind|LaunchEarthquake|\
+LaunchVolcano|PlaceAnimal|PlaceVegation|GetActMapVal|GetDefCoreVal|GetMaterialVal|GetObjectInfoCoreVal|\
+GetObjectVal|GetPlayerInfoCoreVal|GetPlayerVal|GetScenarioVal|FrameCounter|GameOver|GetGravity|IsNetwork|\
+ResetGamma|SetGameSpeed|SetGamma|SetGravity|AddMsgBoardCmd|DoScoreboardShow|ScoreboardCol|SetScoreboardData|\
+SortScoreboard|CanInsertMaterial|ExtractLiquid|ExtractMaterialAmount|GBackLiquid|GBackSemiSolid|GBackSky|\
+GetAverageTextureColor|GetMaterial|GetMaterialCount|GetTexture|InsertMaterial|Material|MaterialName|BlastFree|\
+CastPXS|ClearFreeRect|DigFree|DigFreeRect|DrawDefMap|DrawMap|DrawMaterialQuad|FindConstructionSite|GetMatAdjust|\
+GetPatLength|InLiquid|LandscapeHeight|LandscapeWidth|PathFree|PathFree2|SetClimate|SetMatAdjust|ShakeFree|\
+CustomMessage|Log|Message|PlayerMessage|Music|MusicLevel|SetPlayList|GetLeagueProgressData|GetLegueScore|\
+SetLeaguePerformance|SetLeagueProgressData|ActIdle|GetActTime|GetAction|GetActionTarget|GetDir|GetPhase|\
+GetProcedure|SetAction|SetActionData|SetActionTargets|SetBridgeActionData|SetDir|SetPhase|GetCategory|\
+SetCategory|AddCommand|AppendCommand|FinishCommand|GetCommand|SetCommand|ComponentAll|GetComponent|\
+SetComponent|Collect|Contained|Contents|ContentsCount|GrabContents|ScrollContents|ShiftContents|Buy|CastObjects|\
 CheckConstructionSite|ComposeContents|CreateConstruction|CreateContents|CreateObject|PlaceObjects|\
 DoCrewExp|GetController|GetCrew|GetCrewCount|GetCrewEnabled|GetCursor|GetHiRank|GrabObjectInfo|MakeCrewMember|\
 SetCrewEnabled|SetCrewStatus|AttachMesh|DetachMesh|GetClrModulation|GetColor|GetMeshMaterial|\
