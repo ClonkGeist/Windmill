@@ -66,6 +66,17 @@ hook("load", function() {
 
 			t.shift();
 			var key_corename = t.join('_');
+			if(_mainwindow.keyBindingList) {
+				let no_customization = false;
+				for(let kb of _mainwindow.keyBindingList) {
+					if(kb.getIdentifier() == key) {
+						no_customization = kb.options.no_customization
+						break;
+					}
+				}
+				if(no_customization)
+					continue;
+			}
 
 			//ggf. neuen Header erzeugen
 			if(prefix != current_prefix) {

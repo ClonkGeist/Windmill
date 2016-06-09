@@ -67,7 +67,7 @@ function initializeSassObserver() {
 		snapshot = yield getSassSnapshot();
 		let sass_files_changed = false;
 		for(let def of ssDefs) {
-			if(!snapshot[def.scss] || snapshot[def.scss] < def.modified) {
+			if(!snapshot[def.scss] || snapshot[def.scss] < def.modified || (def.cssTarget && !(yield OS.File.exists(_sc.chpath + "/" + def.cssTarget)))) {
 				log("Sass: Scss-File modification detected: " + (def.name || def.index) + " (" + def.scss + ")", false, "sass")
 				let f = _sc.file(_sc.chpath+"/styles/scss/" + def.scss)
 				yield reloadStylesheet(f, def);

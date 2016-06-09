@@ -146,6 +146,7 @@ function createTreeElement(tree, label, container, open, img, filename, special,
 				if($(cnt).children("li")[0]) {
 					onTreeFileDragDrop(cnt, _sc.file(path+"/"+f.leafName));
 					sortTreeContainerElements(cnt);
+					$(cnt).children(".treeelm-container-empty").remove();
 				}
 			}
 		});
@@ -235,18 +236,18 @@ function createTreeElement(tree, label, container, open, img, filename, special,
 			promise.then(function(result) {
 				//Elemente verschieben
 				if(containerloaded) {
-					if(e_id >= 0) {
-						$(d_obj).detach().appendTo(getTreeCntById(e_id));
-						if(d_cnt[0])
-							$(d_cnt).detach().appendTo(getTreeCntById(e_id));
-						sortTreeContainerElements(getTreeCntById(e_id));
-					}
-					else {
-						$(d_obj).detach().appendTo(MAINTREE_OBJ);
-						if(d_cnt[0])
-							$(d_cnt).detach().appendTo(MAINTREE_OBJ);
-						sortTreeContainerElements(MAINTREE_OBJ);
-					}
+					let container = MAINTREE_OBJ, prev_parent = $(d_obj).parent();
+					if(e_id >= 0)
+						container = getTreeCntById(e_id)
+
+					$(d_obj).detach().appendTo(container);
+					if(d_cnt[0])
+						$(d_cnt).detach().appendTo(container);
+
+					sortTreeContainerElements(container);
+					$(container).children(".treeelm-container-empty").remove();
+					if(!$(prev_parent).children("[filename!='']").length)
+						createEmptyTemplate(prev_parent);
 				}
 				else
 					$(d_obj).remove();
@@ -319,6 +320,12 @@ function createTreeElement(tree, label, container, open, img, filename, special,
 
 	TREE_ELM_ID++;
 	return TREE_ELM_ID-1;
+}
+
+function createEmptyTemplate(container) {
+	createTreeElement(container, Locale("$treeelm_container_empty$", "DEX"), false, false, false, false, "treeelm-container-empty");
+	
+	return true;
 }
 
 /* CALLBACKS
@@ -650,6 +657,7 @@ function pasteFile(target) {
 
 function sortTreeContainerElements(obj) {
 	var cont = getTreeCntById(getTreeObjId(obj)), aContElm;
+
 	if(!$(cont)[0])
 		cont = MAINTREE_OBJ;
 	

@@ -38,6 +38,17 @@ var togglemode_timeout_id;
 hook("load", function() {
 	Task.spawn(function*() {
 		let sass_snapshot = yield OS.File.exists(_sc.profd+"/sass-snapshot.json"), prepended_html = "";
+		if(sass_snapshot) {
+			try {
+				let stat;
+				if(stat = yield OS.File.stat(_sc.chpath+"/styles/main.css")) {
+					if(!stat.size)
+						sass_snapshot = false;
+				}
+			} catch(e) {
+				sass_snapshot = false;
+			}
+		}
 		//Falls keine generierten CSS-Dateien gefunden wurden: In speziellen Modus uebergehen
 		if(!sass_snapshot) {
 			//Sehr rudimentaeres Design anzeigen. (Alles verstecken, nur Statusinformation anzeigen)

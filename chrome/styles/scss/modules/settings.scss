@@ -19,6 +19,10 @@ caption.big
 	margin: 1em 0;
 }
 
+.toggle-contents + vbox {
+	padding-left: 1em;
+}
+
 /*		preferences		*/
 
 
