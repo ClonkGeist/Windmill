@@ -581,7 +581,8 @@ hook("load", function() {
 			//Objekte auflisten
 			for(var i = 0; i < ref.Resource.length; i++) {
 				var res = ref.Resource[i];
-				if(res.Type == "Definitions" && res.Filename.split('.')[res.Filename.split('.').length-1] == "c4d") //TODO: Für OC auf ocd ändern!
+				let leaf = res.Filename.split('.').pop();
+				if(res.Type == "Definitions" && (leaf === "c4d" || leaf === "ocd"))
 					content += '<listitem label="'+res.Filename+'" class="sgdlg-objectlistitem"/>';
 			}
 
