@@ -29,7 +29,7 @@ hook("load", function() {
 				if(!entry.isDir)
 					continue;
 
-				try { text = yield OS.File.read(entry.path+"/language.ini", {encoding: "utf-8"}); } catch(e) { continue; }
+				try { text = yield OS.File.read(entry.path+"/langcfg.ini", {encoding: "utf-8"}); } catch(e) { continue; }
 
 				let parser = parseINIArray(text);
 				$("#languageselection").append('<menuitem label="'+parser["Head"]["Lang"]+' - '+parser["Head"]["Name"]+'" value="'+entry.name+'" />');
