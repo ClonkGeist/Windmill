@@ -23,7 +23,8 @@ function initializeLanguage() {
 						subnamespace = content.Head.SubNamespace;
 					if(content.Language) {
 						for(let key in content.Language)
-							__l[prefix+"_"+subnamespace+key] = content.Language[key];
+							if(!__l[prefix+"_"+subnamespace+key])
+								__l[prefix+"_"+subnamespace+key] = content.Language[key];
 					}
 				}
 			}
@@ -36,7 +37,7 @@ function initializeLanguage() {
 
 			yield* loadLanguageFiles(_sc.chpath+"/content/locale/"+langname);
 			langs.push(langname);
-			if(langname != "en-US" && cfg.Head.FallbackLang && langs.indexOf(langname) == -1)
+			if(langname != "en-US" && cfg.Head.FallbackLang && langs.indexOf(cfg.Head.FallbackLang) == -1)
 				langname = cfg.Head.FallbackLang;
 		}
 	});
