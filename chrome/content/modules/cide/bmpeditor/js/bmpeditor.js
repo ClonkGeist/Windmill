@@ -26,7 +26,7 @@ $(window).ready(function() {
 				continue;
 
 			var split = query[i].split("=");
-			loadImage(decodeURI(split[1]), parseInt(split[0]), true);
+			addCideFile(decodeURI(split[1]), parseInt(split[0]), true);
 		}
 	}
 	
@@ -1588,7 +1588,7 @@ function loadImageFileData(file, id) {
 	return [infoheader, clr_index, data, bitmap_header];
 }
 
-function loadImage(path, id, fShow) {
+function addCideFile(path, id, fShow) {
 	let file = path;
 	//Da am BMPEditor noch gearbeitet wird, fuers erste die nsIFile-Variante verwenden. Spaeter dann auf OS.File umsteigen.
 	if(!(path instanceof Ci.nsIFile))
@@ -2369,7 +2369,7 @@ function getTabData(tabid) {
 }
 
 function dropTabData(data, tabid) {
-	loadImage(data.file, tabid, true);
+	addCideFile(data.file, tabid, true);
 	
 	var cnv = sceneMeta[tabid];
 	cnv.width = data.wdt;

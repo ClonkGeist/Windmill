@@ -182,7 +182,7 @@ function getCurrentWrapperIndex() {
 		return -1;
 }
 
-function addScript(lang, index, path, fShow, skipLoading) {
+function addCideFile(path, index, fShow, skipLoading) {
 	var clone = $(".scenario-settings.draft").clone();
 	clone.removeClass("draft");
 	clone.attr("id", "scensettings-session-"+index);
@@ -324,11 +324,11 @@ function addScript(lang, index, path, fShow, skipLoading) {
 
 		if(!md_editorframe.contentWindow.readyState) {
 			md_editorframe.contentWindow.addEventListener("load", function(){
-				this.addScript(lang, index, path, true);
+				this.addCideFile(path, index, true);
 			});
 		}
 		else
-			md_editorframe.contentWindow.addScript(lang, index, path, true);
+			md_editorframe.contentWindow.addCideFile(path, index, true);
 		updateErrorLog();
 	}
 
@@ -1307,7 +1307,7 @@ function dropTabData(data, tabid) {
 	}
 
 	sessions[tabid] = data;
-	addScript(0, tabid, data.path, true, data.loading?false:{current_page: data.current_page}).then(function() {
+	addCideFile(data.path, tabid, true, data.loading?false:{current_page: data.current_page}).then(function() {
 		if(data.runtime) {
 			let ao = data.runtime.adding_overlay;
 			if(ao) {

@@ -638,46 +638,87 @@ function getUnsavedFiles(deck) {
 /** Einzelne Bearbeitugnsfenster und -module starten/öffnen **/
 
 function openFileInDeck(path, fSideDeck) {
-	let deck = fSideDeck?sidedeck:maindeck;
+	let opened_deck = fSideDeck?sidedeck:maindeck;
 	path = formatPath(path);
 	let splittedpath = path.split("/"),
 		filename = splittedpath.pop(),
-		parentpath = formatPath(splittedpath.join("/")),
+		parentpath = splittedpath.join("/"),
 		fext = filename.split(".").pop().toLowerCase();
 
-	//Files behandeln je nach Fileextension
-	switch(fext) {
-		case "c":
-			addTexteditor(path, filename, parentpath, "ocscript", deck);
-			break;
-		case "txt":
-		case "material":
-			switch(filename.toLowerCase()) {
-				case "defcore.txt":
-				case "scenario.txt":
-				case "particle.txt":
-				case "parameterdefs.txt":
-				case "teams.txt":
-				case "playercontrols.txt":
-				case "player.txt":
-				case "objectinfo.txt":
-				case "objects.txt":
-					addTexteditor(path, filename, parentpath, "ini", deck);
-					break;
-				case "landscape.txt":
-					addTexteditor(path, filename, parentpath, "c4landscape", deck);
-					break;
-				default:
-					if(filename.match(/StringTbl..\.txt/i))
-						addTexteditor(path, filename, parentpath, "ini", deck);
-					else
-						addTexteditor(path, filename, parentpath, "text", deck);
-					break;
+	let matched_module;
+
+	//Iterate through modules and their matching groups
+	for(let mname in _mainwindow.MODULE_DEF_LIST) {
+		let module = _mainwindow.MODULE_DEF_LIST[mname];
+		//Currently hardcoded for scenario settings..
+		if(module.name == "scenario-settings" && !getConfigData("ScenarioSettings", "AlwaysUseScenarioSettings"))
+			continue;
+
+		if(module.cidemodule && module.matchinggroup) {
+			for(let group of module.matchinggroup) {
+				let pattern = new RegExp(group.filepattern, group.filepatternmodifier || "i");
+				if(!pattern.test(filename) || (matched_module && matched_module.priority > parseInt(group.priority)))
+					continue;
+
+				matched_module = { module, group, priority: parseInt(group.priority) };
 			}
-			break;
-		case "ocm":
-			addTexteditor(path, filename, parentpath, "ini", deck);
-			break;
+		}
+	}
+
+	//If an appropriate module was found, open the file in this module
+	if(matched_module) {
+		let {module, group} = matched_module;
+
+		//Special handling for the audioplayer
+		if(module.name == "audioplayer")
+			return addAudioplayer(path);
+
+		//These kind of checks needs to be standardized... TODO
+		if(module.name == "meshviewer") {
+			//Check if OgreXMLConverter is available
+			let ogrexmlconverter = getAppById("ogrexmlcnv");
+			if(!ogrexmlconverter.isAvailable()) {
+				let dlg = new WDialog("$DlgOgreXMLConverterNotAvailable$", MODULE_LPRE, { css: {"width": "600px"}, btnright: ["accept"]});
+				dlg.setContent('<description style="margin-bottom: 1em">$DlgOgreXMLConverterDesc$</description><description>$DlgOgreXMLConverterDesc2$</description>');
+				dlg.show();
+				dlg = 0;
+				return;
+			}
+		}
+
+		let extprgid = group.externalprogramid;
+		//Eventually use external program to open the file with
+		if(extprgid && getConfigData("CIDE", "AU_"+extprgid))
+			return OpenFileWithProgram(path, getConfigData("CIDE", "ExtProg_"+extprgid));
+
+		let {deck, frame} = prepareDeck(opened_deck, module.name, path);
+		if(!deck)
+			return;
+
+		let fext = filename.split('.').pop();
+		let icon = "chrome://windmill/content/img/explorer/icon-fileext-"+fext+".png";
+		if(group.icon)
+			icon = group.icon.replace(/%FILEEXTENSION%/g, fext).replace(/\\%/g, "%");
+
+		// we have to insert the text after the libraries have been read out
+		if(!frame.contentWindow.readyState) {
+			// insert into deck control and save index
+			let index = deck.add(frame, filename, true, true, false, {altLabel: parentpath.split("/").pop(), switchLabels: true, icon, filepath: path });
+
+			frame.contentWindow.addEventListener("load", function(){
+				this.addCideFile(path, index, true);
+				updateFrameWindowTitleDeck(deck, index);
+			});
+		}
+		else {
+			// insert into deck control and save index
+			let index = deck.add(frame, filename, true, true, false, {altLabel: parentpath.split("/").pop(), switchLabels: true, icon, filepath: path });
+
+			frame.contentWindow.addCideFile(path, index, true);
+		}
+	}
+	/*switch(fext) {
+		
 		case "mesh":
 			addMeshviewer(path, filename, parentpath, deck);
 			break;
@@ -695,7 +736,7 @@ function openFileInDeck(path, fSideDeck) {
 
 		default:
 			break;
-	}
+	}*/
 }
 
 var md_audioplayer = -1;
@@ -753,109 +794,7 @@ function prepareDeck(deck, modulename, path) {
 		}
 	}
 
-	return { deck, module };
-}
-
-function addTexteditor(path, filename, parentpath, lang, deck) {
-	if(getConfigData("CIDE", "AU_Script") && lang == "ocscript")
-		return OpenFileWithProgram(path, getConfigData("CIDE", "ExtProg_Script"));
-	if(["text", "ini", "c4landscape"].indexOf(lang) != -1 && getConfigData("CIDE", "AU_Text"))
-		return OpenFileWithProgram(path, getConfigData("CIDE", "ExtProg_Text"));
-
-	var modulename = "scripteditor";
-	//TODO: In Einstellungen verstellbar
-	if(filename.toUpperCase() == "SCENARIO.TXT" && getConfigData("ScenarioSettings", "AlwaysUseScenarioSettings"))
-		modulename = "scenario-settings";
-
-	var {deck, module} = prepareDeck(deck, modulename, path);
-	if(!deck)
-		return;
-
-	let fext = filename.split('.').pop();
-	var icon = "chrome://windmill/content/img/explorer/icon-fileext-"+fext+".png";
-
-	// we have to insert the text after the libraries have been read out
-	if(!module.contentWindow.readyState) {
-		// insert into deck control and safe index
-		var index = deck.add(module, filename, true, true, false, {altLabel: parentpath.split("/").pop(), switchLabels: true, icon, filepath: path });
-
-		module.contentWindow.addEventListener("load", function(){
-			this.addScript(lang, index, path, true);
-			updateFrameWindowTitleDeck(deck, index);
-		});
-	}
-	else {
-		// insert into deck control and safe index
-		var index = deck.add(module, filename, true, true, false, {altLabel: parentpath.split("/").pop(), switchLabels: true, icon, filepath: path });
-
-		module.contentWindow.addScript(lang, index, path, true);
-	}	
-}
-
-function addMeshviewer(path, filename, parentpath, deck) {
-	//Pruefen, ob OgreXMLConverter verfuegbar ist
-	let ogrexmlconverter = getAppById("ogrexmlcnv");
-	if(!ogrexmlconverter.isAvailable()) {
-		let dlg = new WDialog("$DlgOgreXMLConverterNotAvailable$", MODULE_LPRE, { css: {"width": "600px"}, btnright: ["accept"]});
-		dlg.setContent('<description style="margin-bottom: 1em">$DlgOgreXMLConverterDesc$</description><description>$DlgOgreXMLConverterDesc2$</description>');
-		dlg.show();
-		dlg = 0;
-		return;
-	}
-	//Modul vorbereiten
-	var {deck, module} = prepareDeck(deck, "meshviewer", path);
-	if(!deck)
-		return;
-
-	if(!module.contentWindow.readyState) {
-		module.contentWindow.addEventListener("load", function(){
-			var index = deck.add(module, filename, true, true, false, {altLabel: parentpath.split("/").pop(), switchLabels: true, icon: "chrome://windmill/content/img/explorer/icon-fileext-mesh.png", filepath: path });
-
-			this.initModelviewer(path, index);
-			updateFrameWindowTitleDeck(deck, index);
-		});
-	}
-	else {
-		var index = deck.add(module, filename, true, true, false, {altLabel: parentpath.split("/").pop(), switchLabels: true, icon: "chrome://windmill/content/img/explorer/icon-fileext-mesh.png", filepath: path });
-
-		module.contentWindow.initModelviewer(path, index);
-	}
-}
-
-function addImgEditor(path, filename, parentpath, fBMP, deck) {
-	if(getConfigData("CIDE", "AU_GraphicsBMP") && fBMP)
-		return OpenFileWithProgram(path, getConfigData("CIDE", "ExtProg_GraphicsBMP"));
-	if(getConfigData("CIDE", "AU_GraphicsPNG") && !fBMP)
-		return OpenFileWithProgram(path, getConfigData("CIDE", "ExtProg_GraphicsPNG"));
-
-	if(!getConfigData("Global", "DevMode") && fBMP) {
-		warn("$beta_bmpeditor_not_available$");
-		return;
-	}
-	var modulename = fBMP?"bmpeditor":"imagepreview";
-
-	var {deck, module} = prepareDeck(deck, modulename, path);
-	if(!deck)
-		return;
-
-	let fext = filename.split('.').pop();
-	var icon = "chrome://windmill/content/img/explorer/icon-fileext-"+fext+".png";
-
-	if(!module.contentWindow.readyState) {
-		var index = deck.add(module, filename, true, true, false, {altLabel: parentpath.split("/").pop(), switchLabels: true, icon, filepath: path });
-
-		module.contentWindow.addEventListener("load", function() {
-			this.loadImage(path, index, true);
-			updateFrameWindowTitleDeck(deck, index);
-		});
-	}
-	else {
-		var index = deck.add(module, filename, true, true, false, {altLabel: parentpath.split("/").pop(), switchLabels: true, icon, filepath: path });
-
-		module.contentWindow.loadImage(path, index, true);
-	}
-
-	return true;
+	return { deck, frame: module };
 }
 
 function OpenFileWithProgram(path, extprogstr) {

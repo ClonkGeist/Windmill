@@ -41,7 +41,7 @@ function readModuleInfo(path) {
 	var module = new _module();
 	return Task.spawn(function*() {
 		let text = yield OS.File.read(path, {encoding: "utf-8"});
-		let moduleini = parseINI2(text, { matchEmptyValues: true }), elm, config = [], keybindings = [];
+		let moduleini = parseINI2(text, { matchEmptyValues: true }), elm, config = [], keybindings = [], matchinggroup = [];
 		while(elm = moduleini.next().value) {
 			if(typeof elm != "string") {
 				if(elm.sect == "Module") 
@@ -52,8 +52,13 @@ function readModuleInfo(path) {
 					config.push([elm.key, elm.val]);
 				else if(elm.sect == "KeyBindings")
 					keybindings.push([elm.key, elm.val]);
+				else if(/^MatchingGroup/.test(elm.sect))
+					matchinggroup[matchinggroup.length-1][elm.key.toLowerCase()] = elm.val;
 			}
+			else if(/^MatchingGroup/.test(elm))
+				matchinggroup.push({priority: 0});
 		}
+		module.matchinggroup = matchinggroup;
 		let sect = module.configsectionname || module.modulename || module.name, cfg = getConfig();
 		if(!sect)
 			return log(`Module Loading Error (${path}): No name was specified.`, "error");
