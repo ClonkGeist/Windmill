@@ -271,13 +271,13 @@ function getFunctionDetection(id, session) {
 				hideParamlist();
 				return;
 			}
-			
+
 			while(pos.column || pos.row) {
 				
 				// another function call increased initial call count value?
 				if(initialCallCount != CALL_COUNT)
 					break;
-				
+
 				switch (token.type) {
 					case "statement-ending": // ;
 						hideParamlist();
@@ -285,12 +285,12 @@ function getFunctionDetection(id, session) {
 						break;
 					
 					case "paren.rparen":
-						if(token.value === ")")
+						if(/^\)+$/.test(token.value))
 							level += pos.column - token.start;
 						break;
 					
 					case "paren.lparen":
-						if(token.value === "(")
+						if(/^\(+$/.test(token.value))
 							level -= pos.column - token.start;
 						break;
 					
