@@ -248,3 +248,7 @@ function getModule(id, fElement) {
 	
 	return $(MODULE_LIST[id]);
 }
+
+function getModuleDefs() { return MODULE_DEF_LIST; }
+
+registerInheritableObject("getModuleDefs");

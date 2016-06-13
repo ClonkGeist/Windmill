@@ -717,26 +717,6 @@ function openFileInDeck(path, fSideDeck) {
 			frame.contentWindow.addCideFile(path, index, true);
 		}
 	}
-	/*switch(fext) {
-		
-		case "mesh":
-			addMeshviewer(path, filename, parentpath, deck);
-			break;
-		case "bmp":
-			addImgEditor(path, filename, parentpath, true, deck);
-			break;
-		case "png":
-		case "jpg":
-			addImgEditor(path, filename, parentpath, false, deck);
-			break;
-		case "ogg":
-		case "wav":
-			addAudioplayer(path);
-			break;
-
-		default:
-			break;
-	}*/
 }
 
 var md_audioplayer = -1;

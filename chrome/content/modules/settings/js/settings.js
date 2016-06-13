@@ -12,13 +12,26 @@ hook("load", function() {
 
 		loadEditorThemes(_sc.chpath + "/content/modules/cide/editor/js/ace");
 
-		$(".extprogram").each(function() {
-			let type = $(this).attr("id").replace(/row-/, "");
-			if(getConfigData("CIDE", "ExtProg_"+type))
-				$(this).find(".view-directory-path").text(getConfigData("CIDE", "ExtProg_"+type));
-			if(getConfigData("CIDE", "AU_"+type))
-				$(this).find(".extprogram-always-use").prop("checked", true);
-		});
+		let modules = getModuleDefs(), extprogids = [];
+		for(let mname in modules) {
+			let module = modules[mname];
+			if(!module.cidemodule || !module.matchinggroup)
+				continue;
+
+			for(let group of module.matchinggroup)
+				if(group.externalprogramid && extprogids.indexOf(group.externalprogramid) == -1)
+					extprogids.push(group.externalprogramid);
+		}
+		for(let extprogid of extprogids) {
+			let clone = $(".extprogram.draft").clone();
+			clone.removeClass("draft");
+			clone.find(".extprogram-label").attr("value", Locale("$ExtProg_"+extprogid+"Lbl$"));
+			if(getConfigData("CIDE", "ExtProg_"+extprogid))
+				clone.find(".view-directory-path").text(getConfigData("CIDE", "ExtProg_"+extprogid));
+			if(getConfigData("CIDE", "AU_"+extprogid))
+				clone.find(".extprogram-always-use").prop("checked", true);
+			clone.appendTo($("#extprogram-list"));
+		}
 
 		let iterator;
 		Task.spawn(function*() {
