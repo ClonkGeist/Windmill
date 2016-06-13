@@ -39,25 +39,108 @@ function loadModules(path) {
 
 function readModuleInfo(path) {
 	var module = new _module();
-	let promise = OS.File.read(path, {encoding: "utf-8"});
-	promise.then(function(text) {
-		let moduleini = parseINI2(text), elm;
+	return Task.spawn(function*() {
+		let text = yield OS.File.read(path, {encoding: "utf-8"});
+		let moduleini = parseINI2(text, { matchEmptyValues: true }), elm, config = [], keybindings = [], matchinggroup = [];
 		while(elm = moduleini.next().value) {
 			if(typeof elm != "string") {
 				if(elm.sect == "Module") 
 					module[elm.key.toLowerCase()] = elm.val;
 				else if(elm.sect == "Custom")
 					module[elm.key.toLowerCase()] = elm.val;
+				else if(elm.sect == "Config")
+					config.push([elm.key, elm.val]);
+				else if(elm.sect == "KeyBindings")
+					keybindings.push([elm.key, elm.val]);
+				else if(/^MatchingGroup/.test(elm.sect))
+					matchinggroup[matchinggroup.length-1][elm.key.toLowerCase()] = elm.val;
 			}
+			else if(/^MatchingGroup/.test(elm))
+				matchinggroup.push({priority: 0});
+		}
+		module.matchinggroup = matchinggroup;
+		let sect = module.configsectionname || module.modulename || module.name, cfg = getConfig();
+		if(!sect)
+			return log(`Module Loading Error (${path}): No name was specified.`, "error");
+		else {
+			for(let item of config) {
+				let type = "string", key = item[0], val = item[1];
+				type = val.match(/^[a-zA-Z]+(?=\:)/)
+				if(!type) {
+					val = val.replace(/^([a-zA-Z]+)\\\:/, "$1:");
+					if(/^[0-9.]+$/.test(val))
+						type = "number";
+					else {
+						switch(val.toLowerCase()) {
+							case "true":
+							case "false":
+								type = "boolean";
+								break;
+
+							default:
+								type = "string";
+								break;
+						}
+					}
+				}
+				else {
+					val = val.replace(/^[a-zA-Z]+\:/, "");
+					type = type[0];
+				}
+
+				if(!cfg[sect] || !cfg[sect][key])
+					addConfigString(sect, key, val, type);
+				else
+					log(`Module Loading Warning (${module.modulename}): The specified config entry "${sect}::${key}" is already used by another module.`, "warning");
+			}
+		}
+		if(!module.languageprefix)
+			return log(`Module Loading Error (${module.modulename}): No language prefix was specified`, "error");
+		if(!customKeyBindings)
+			customKeyBindings = []
+		for(let kb of keybindings) {
+			let name = module.languageprefix + "_" + kb[0];
+			if(!customKeyBindings[name])
+				customKeyBindings[name] = kb[1];
 		}
 
 		//Modulpfad und relativer Pfad speichern
 		module.path = formatPath(path);
+		module.dir = formatPath(module.path).replace(/\/module.ini/, "");
 		module.relpath = module.path.replace(RegExp(formatPath(_sc.chpath+"/content/")), "").replace(/\/module.ini/, "");
+
+		//Read module stylesheet definitions
+		if(module.stylesheetdef) {
+			if(/\.json/.test(module.stylesheetdef)) {
+				let stylesheet_def;
+				//Don't let wrong module configuration crash Windmill.
+				try {
+					stylesheet_def = yield OS.File.read(formatPath(module.dir+"/"+module.stylesheetdef), { encoding: "utf-8" });
+				}
+				catch(e) {
+					log(`Module Loading Error (${module.modulename}): Could not load stylesheet definitions.`, "error")
+					log(e.message, "error");
+					log(e.stack, "error");
+				}
+				if(stylesheet_def) {
+					try {
+						module.stylesheets = JSON.parse(stylesheet_def.replace(/%MODULEPATH%/g, "content/"+module.relpath));
+					}
+					catch(e) {
+						log(`Module Loading Error (${module.modulename}): An error has occured while trying to parse the stylesheet definitions.`, "error");
+						log(e.message, "error");
+						log(e.stack, "error");
+					}
+					if(module.stylesheets && module.stylesheets.constructor.name != "Array")
+						log(`Module Loading Error (${module.modulename}): The given stylesheets definitions are not wrapped in an array.`, "error");
+				}
+			}
+			else
+				log(`Module Loading Error (${module.modulename}): Stylesheet definitions need to be saved as a JSON object.`, "error");
+		}
 
 		MODULE_DEF_LIST[module.name] = module;
 	});
-	return promise;
 }
 
 var MODULE_CNT = 0;
@@ -165,3 +248,7 @@ function getModule(id, fElement) {
 	
 	return $(MODULE_LIST[id]);
 }
+
+function getModuleDefs() { return MODULE_DEF_LIST; }
+
+registerInheritableObject("getModuleDefs");

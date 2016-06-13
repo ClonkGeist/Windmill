@@ -10,7 +10,7 @@ $(document).ready(function() {
 			if(!entry.isDir)
 				continue;
 
-			try { text = yield OS.File.read(entry.path+"/language.ini", {encoding: "utf-8"}); } catch(e) { continue; }
+			try { text = yield OS.File.read(entry.path+"/langcfg.ini", {encoding: "utf-8"}); } catch(e) { continue; }
 
 			let parser = parseINIArray(text);
 			$("#languageselection").append('<option value="'+entry.name+'">'+parser["Head"]["Lang"]+' - '+parser["Head"]["Name"]+'</option>');

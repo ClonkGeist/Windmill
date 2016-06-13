@@ -87,8 +87,12 @@ class ConfigEntry extends WindmillObject {
 
 				case "int":
 				case "integer":
-				case "number":
 					val = parseInt(val);
+					break;
+
+				case "number":
+				case "float":
+					val = parseFloat(val);
 					break;
 			}
 		}
@@ -179,64 +183,9 @@ function initializeConfig() {
 	addConfigString("Global", "Language", "en-US");
 	addConfigString("Global", "ShowHiddenLogs", false);
 
-	//CBridge
-
-	//ShowGame
-	addConfigString("ShowGame", "Notifications", "[]", "array");
-	addConfigString("ShowGame", "PortScan", true);
-	addConfigString("ShowGame", "NotificationsShowEmpty", false);
-	addConfigString("ShowGame", "MasterserverURL", "http://league.clonkspot.org/");
-
-	//HostGame
-	addConfigString("HostGame", "PasswordActivated", false);
-	addConfigString("HostGame", "Password", "");
-	addConfigString("HostGame", "Comment", "");
-	addConfigString("HostGame", "League", false);
-	addConfigString("HostGame", "Fullscreen", true);
-	addConfigString("HostGame", "RunTimeJoin", false);
-	addConfigString("HostGame", "SignUp", true);
-	addConfigString("HostGame", "Network", false);
-
 	//StartGame
 	addConfigString("StartGame", "Record", true);
 	addConfigString("StartGame", "GamePort", 11111);
-
-	//CIDE
-	addConfigString("CIDE", "HideUnsupportedFiles", true);
-	addConfigString("CIDE", "AlwaysUseExternalProg", false);
-	addConfigString("CIDE", "ExtProg_Script", "");
-	addConfigString("CIDE", "ExtProg_Text", "");
-	addConfigString("CIDE", "ExtProg_GraphicsPNG", "");
-	addConfigString("CIDE", "ExtProg_GraphicsBMP", "");
-	addConfigString("CIDE", "ExtProg_Audio", "");
-	addConfigString("CIDE", "AU_Script", false);
-	addConfigString("CIDE", "AU_Text", false);
-	addConfigString("CIDE", "AU_GraphicsPNG", false);
-	addConfigString("CIDE", "AU_GraphicsBMP", false);
-	addConfigString("CIDE", "AU_Audio", false);
-	addConfigString("CIDE", "EditorTheme", "rocking-horse");
-	addConfigString("CIDE", "CommandLineParameters", "--editor --nonetwork %SCENARIO%"); 
-	addConfigString("CIDE", "WorkspaceParentDirectory", "", "path");
-	addConfigString("CIDE", "FileProtection", true);
-	addConfigString("CIDE", "RejectScenarioBackup", true);
-
-	//Audiomodule
-	addConfigString("Audiomodule", "Volume", 100);
-	addConfigString("Audiomodule", "Loop", false);
-	addConfigString("Audiomodule", "Autoplay", false);
-
-	//Scripteditor
-	addConfigString("Scripteditor", "Completers", 2);
-	addConfigString("Scripteditor", "ParameterList", true);
-
-	//ScenarioSettings
-	addConfigString("ScenarioSettings", "AlwaysUseScenarioSettings", true);
-	addConfigString("ScenarioSettings", "UseModuleCache", false);
-
-	//BMP-Editor
-	addConfigString("BMPEditor", "HideUnusedMat", true);
-	addConfigString("BMPEditor", "ScaleCanvas", true);
-	addConfigString("BMPEditor", "SaveTexMapBehaviour", 1);
 
 	return true;
 }

@@ -22,9 +22,17 @@ function initializeSassObserver() {
 			return log("SS Obsever: styleshett deflist not viable", false, "sass")
 		
 		ssDefs = JSON.parse(str)
+		//Concatenate stylesheet definitions of other modules
+		for(let modulename in MODULE_DEF_LIST) {
+			let module = MODULE_DEF_LIST[modulename];
+			if(module.stylesheets && module.stylesheets.constructor.name == "Array")
+				ssDefs = ssDefs.concat(module.stylesheets);
+		}
 
 		for(let i in ssDefs) {
 			let def = ssDefs[i];
+			if(typeof def != "object")
+				continue;
 			def.scss = formatPath(def.scss)
 			def.cssTarget = formatPath(def.cssTarget)
 			
@@ -33,6 +41,8 @@ function initializeSassObserver() {
 			def.leafName = s[s.length - 1]
 			def.fScss = _sc.file(_sc.chpath+"/styles/scss/" + def.scss)
 			def.children = []
+			if(!def.fScss.exists())
+				def.fScss = _sc.file(_sc.chpath+"/"+def.scss)
 			
 			// ensure such file exists and get last modified time
 			if(def.fScss.exists())
@@ -53,8 +63,8 @@ function initializeSassObserver() {
 		
 		setInterval(function() {
 			for(let i = 0; i < ssDefs.length; i++) {
-				let f = _sc.file(_sc.chpath+"/styles/scss/" + ssDefs[i].scss)
-				if(!f.exists())
+				let f = ssDefs[i].fScss;//_sc.file(_sc.chpath+"/styles/scss/" + ssDefs[i].scss)
+				if(!f || !f.exists())
 					continue
 				if(f.lastModifiedTime !== ssDefs[i].modified) {
 					log("Sass: Scss-File modification detected: " + (ssDefs[i].name || ssDefs[i].index), false, "sass")
@@ -69,7 +79,7 @@ function initializeSassObserver() {
 		for(let def of ssDefs) {
 			if(!snapshot[def.scss] || snapshot[def.scss] < def.modified || (def.cssTarget && !(yield OS.File.exists(_sc.chpath + "/" + def.cssTarget)))) {
 				log("Sass: Scss-File modification detected: " + (def.name || def.index) + " (" + def.scss + ")", false, "sass")
-				let f = _sc.file(_sc.chpath+"/styles/scss/" + def.scss)
+				let f = def.fScss;//_sc.file(_sc.chpath+"/styles/scss/" + def.scss)
 				yield reloadStylesheet(f, def);
 				sass_files_changed = true;
 			}
