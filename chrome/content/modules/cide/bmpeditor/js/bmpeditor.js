@@ -1,21 +1,11 @@
-var canvasArray = new Array();
+
 var editlayer, editObj = { mode: 0 }, rulerData = {};
 var activeId;
 
 var sceneMeta = new Array();
 
-const mdPoint = 0, mdLine = 1, mdRect = 2, mdCircle = 3, mdFill = 4, mdSelectRect = 5, mdSelectCircle = 6, mdGetColor = 8,
-	  mdSelectPoly = 9, mdDefault = 10;
-const mdsThickness = 1, mdsLineThickness = 2, mdsCanFill = 4;
 const OC_KEYCOLOR = 0x0;
 const MAX_UNDO_STACKSIZE = 32;
-
-//Einstellungen für einzelne Bearbeitungsmodi:
-var modesettings = { settings: [mdsThickness, 
-					mdsLineThickness,
-					mdsCanFill,
-					mdsCanFill],
-					 filled: true};
 
 $(window).ready(function() {
 	//Bei Reload Tabdaten Laden
@@ -69,13 +59,13 @@ $(window).ready(function() {
 			//Verschiebung deaktivieren
 			if($("#movinglayer").hasClass("active")) {
 				//Callback ausführen
-				if(sceneMeta[getCurrentCanvasId()].rtdata.moving_callback)
-					sceneMeta[getCurrentCanvasId()].rtdata.moving_callback();
+				if(sceneMeta[activeId].rtdata.moving_callback)
+					sceneMeta[activeId].rtdata.moving_callback();
 				else { //Alternativ: Bilddaten durchgehen und Transparente Pixel aussortieren
 					var mvcnv = $("#movinglayer").get(0);
 					var mvctx = mvcnv.getContext('2d');
 					var ctx2 = $(".visible").get(0).getContext("2d");
-					var zoom = sceneMeta[getCurrentCanvasId()].z;
+					var zoom = sceneMeta[activeId].z;
 					
 					var offset = $("#movinglayer").offset();
 					var cnv_offset = $(".visible").offset();
@@ -100,28 +90,6 @@ $(window).ready(function() {
 				$("#movinglayer").removeClass("active");
 			}
 		}
-		
-		$(".toolsettings").removeClass("settings-active");
-		if(modesettings.settings[getCurrentMode()]) {
-			var mds = modesettings.settings[getCurrentMode()];
-			
-			//Einzelne Elemente aktivieren
-			switch(mds) {
-				case mdsThickness:
-					$("#mds_thickness").addClass("settings-active");
-					break;
-				
-				case mdsLineThickness:
-					$("#mds_linethickness").addClass("settings-active");
-					break;
-				
-				case mdsCanFill:
-					$("#mds_filled").addClass("settings-active");
-					if(!modesettings.filled)
-						$("#mds_linethickness").addClass("settings-active");
-					break;
-			}
-		}
 	});
 	
 	//Materialpalette
@@ -135,7 +103,7 @@ $(window).ready(function() {
 		var mx = e.clientX - rect.left, my = e.clientY - rect.top;
 		var index = Math.floor(my/10)*16+Math.floor(mx/10);
 		
-		var id = getCurrentCanvasId();//parseInt($(".visible").attr("id").replace(/bmpCanvas-/, ""));
+		var id = activeId;//parseInt($(".visible").attr("id").replace(/bmpCanvas-/, ""));
 		var indices = sceneMeta[id].matindices;
 		var bg_mode = sceneMeta[id].rtdata.matmode_underground;
 		if(bg_mode)
@@ -176,7 +144,7 @@ $(window).ready(function() {
 		var mx = e.clientX - rect.left, my = e.clientY - rect.top;
 		var index = Math.floor(my/10)*16+Math.floor(mx/10);
 		
-		var id = getCurrentCanvasId();//parseInt($(".visible").attr("id").replace(/bmpCanvas-/, ""));
+		var id = activeId;//parseInt($(".visible").attr("id").replace(/bmpCanvas-/, ""));
 		var indices = sceneMeta[id].matindices;
 		var bg_mode = sceneMeta[id].rtdata.matmode_underground;
 		if(bg_mode)
@@ -201,7 +169,7 @@ $(window).ready(function() {
 		var mx = e.clientX - rect.left, my = e.clientY - rect.top;
 		var index = Math.floor(my/10)*16+Math.floor(mx/10);
 		
-		var id = getCurrentCanvasId();
+		var id = activeId;
 		var indices = sceneMeta[id].matindices;
 		var bg_mode = sceneMeta[id].rtdata.matmode_underground;
 		if(bg_mode)
@@ -295,7 +263,7 @@ $(window).ready(function() {
 		$(this).val('');
 	}).focusout(function() {
 		var input = $(this).val(), cmat, ctext;
-		var id = getCurrentCanvasId();
+		var id = activeId;
 		
 		//Suggestionbox ausblenden
 		$("#material-suggestion-box").removeClass("active");
@@ -342,7 +310,7 @@ $(window).ready(function() {
 			return false;
 		}
 	}).keyup(function(e) {
-		var id = getCurrentCanvasId();
+		var id = activeId;
 		var current_selection = $("#material-suggestion-box").find(".selected").find(".suggestion-box-name").text();
 		
 		//Vorschlagsbox leeren
@@ -419,24 +387,26 @@ $(window).ready(function() {
 		if($(".color-matching-wizard.visible2").get(0))
 			return;
 	
-		var id = getCurrentCanvasId();
+		var id = activeId;
 		sceneMeta[id].rtdata.mousedown = true;
 		sceneMeta[id].rtdata.mousepos = [e.clientX, e.clientY];
 	}).mouseup(function(e) {
 		if($(".color-matching-wizard.visible2").get(0))
 			return;
 
-		sceneMeta[getCurrentCanvasId()].rtdata.mousedown = false;
+		sceneMeta[activeId].rtdata.mousedown = false;
 		
 		//Bearbeitungsvorgang abbrechen wenn Maustaste außerhalb des Canvas losgelassen wird
+		/*
 		if(editObj.mode != mdSelectPoly)
 			editObj = {};
+		*/
 	}).mousewheel(function(e) {
 		if($(".color-matching-wizard.visible2").get(0))
 			return;
 
 		//Zoomen
-		var id = getCurrentCanvasId();
+		var id = activeId;
 		if(e.ctrlKey) {
 			if(e.deltaY > 0)
 				changeZoom(id);
@@ -480,7 +450,7 @@ $(window).ready(function() {
 	});
 	$(window).resize(function() {
 		updateRulers();
-		centerCanvas(getCurrentCanvasId());
+		centerCanvas(activeId);
 	});
 	$("#switch-material-mode").click(function() {
 		switchMaterialMode();
@@ -488,7 +458,7 @@ $(window).ready(function() {
 	
 	//Color-Matching-Wizard: Visuelles Feedback fuer Fastselect per Druck auf Ctrl
 	$(document).keydown(function(e) {
-		var wrapper = $("#cmw-wrapper-"+getCurrentCanvasId());
+		var wrapper = $("#cmw-wrapper-"+activeId);
 		if(!wrapper.get(0))
 			return;
 		
@@ -496,7 +466,7 @@ $(window).ready(function() {
 			wrapper.find(".cmw-selectcolor-palette-fastselect").addClass("activated").addClass("ctrlKeyPressed");
 	});
 	$(document).keyup(function(e) {
-		var wrapper = $("#cmw-wrapper-"+getCurrentCanvasId());
+		var wrapper = $("#cmw-wrapper-"+activeId);
 		if(!wrapper.get(0))
 			return;
 
@@ -519,8 +489,8 @@ $(window).ready(function() {
 			if(e.keyCode == 13)
 				$(this).trigger("focusout");
 		}).focusout(function() {
-			let id = getCurrentCanvasId();
-			var zoomlvl = Math.max(1, Math.min(32, parseInt($(this).val())/100 || sceneMeta[getCurrentCanvasId()].z));
+			let id = activeId;
+			var zoomlvl = Math.max(1, Math.min(32, parseInt($(this).val())/100 || sceneMeta[activeId].z));
 			sceneMeta[id].z = zoomlvl;
 			$(this).parent().text(zoomlvl + "%");
 			onUpdateZoom(id);
@@ -553,18 +523,18 @@ $(window).ready(function() {
 			$(this).removeClass("active");
 			$(this).attr("mat-index", -1);
 			$(this).css("background-color", "#000");
-			sceneMeta[getCurrentCanvasId()].rtdata.sidepalette[$(".spalette-elm").index(this)] = -1;
+			sceneMeta[activeId].rtdata.sidepalette[$(".spalette-elm").index(this)] = -1;
 			return;
 		}
-		selectColorIndex(getCurrentCanvasId(), $(this).attr("mat-index") || -1);
+		selectColorIndex(activeId, $(this).attr("mat-index") || -1);
 		$(this).addClass("active");
-		sceneMeta[getCurrentCanvasId()].rtdata.current_sideindex = $(".spalette-elm").index(this);
+		sceneMeta[activeId].rtdata.current_sideindex = $(".spalette-elm").index(this);
 	}).contextmenu(function() {
 		if(!$(".spalette-elm.active").get(0))
 			return;
 
 		$(".spalette-elm.active").removeClass("active");
-		selectColorIndex(getCurrentCanvasId(), -1);
+		selectColorIndex(activeId, -1);
 	});
 	
 	// brush panel
@@ -586,10 +556,10 @@ $(window).ready(function() {
 	/*-- Key Bindings --*/
 	
 	//Speichern
-	bindKeyToObj(new KeyBinding("Save", "Ctrl-S", function() { saveCanvas(getCurrentCanvasId()); }));
+	bindKeyToObj(new KeyBinding("Save", "Ctrl-S", function() { saveCanvas(activeId); }));
 	//Zoom
-	bindKeyToObj(new KeyBinding("ZoomIn", "Ctrl-+", function() { changeZoom(getCurrentCanvasId()); }));
-	bindKeyToObj(new KeyBinding("ZoomOut", "Ctrl--", function() { changeZoom(getCurrentCanvasId(), true); }));
+	bindKeyToObj(new KeyBinding("ZoomIn", "Ctrl-+", function() { changeZoom(activeId); }));
+	bindKeyToObj(new KeyBinding("ZoomOut", "Ctrl--", function() { changeZoom(activeId, true); }));
 	//Undo/Redo
 	bindKeyToObj(new KeyBinding("Undo", "Ctrl-Z", function() { undoImageData(); }));
 	bindKeyToObj(new KeyBinding("Redo", "Ctrl-Y", function() { redoImageData(); }));
@@ -616,7 +586,7 @@ $(window).ready(function() {
 var btn_undo, btn_redo;
 
 function createCideToolbar(startup) {
-	addCideToolbarButton("icon-save", function() { saveCanvas(getCurrentCanvasId()); });
+	addCideToolbarButton("icon-save", function() { saveCanvas(activeId); });
 	addCideToolbarButton("seperator");
 	addCideToolbarButton("icon-reflect-h", function() { mirrorImage(); });
 	addCideToolbarButton("icon-reflect-v", function() { mirrorImage(true); });
@@ -638,7 +608,7 @@ function createCideToolbar(startup) {
 		undoImageData();
 	});
 
-	if($("#cmw-wrapper-"+getCurrentCanvasId()).get(0) || startup)
+	if($("#cmw-wrapper-"+activeId).get(0) || startup)
 		hideCideToolbar();
 	
 	return true;
@@ -738,7 +708,7 @@ function updateCursor(id, dataURL) {
 
 function updateSidePalette(id) {
 	if(id == undefined)
-		id = getCurrentCanvasId();
+		id = activeId;
 
 	if(!sceneMeta[id].rtdata.sidepalette)
 		sceneMeta[id].rtdata.sidepalette = [];
@@ -767,7 +737,7 @@ function rotateImage(angle) {
 	if(!angle)
 		return;
 	
-	var id = getCurrentCanvasId();
+	var id = activeId;
 	var cnv = sceneMeta[id].c, ctx = cnv.getContext("2d");
 	var idata = ctx.getImageData(0, 0, cnv.width, cnv.height), nidata;
 	if(angle && angle != 180)
@@ -822,7 +792,7 @@ function rotateImage(angle) {
 /*-- Spiegelung --*/
 /** @deprecated */
 function mirrorImage(fVertically) {
-	var id = getCurrentCanvasId(), cnv = sceneMeta[id].c;
+	var id = activeId, cnv = sceneMeta[id].c;
 	if($("#movinglayer.active").get(0))
 		cnv = $("#movinglayer.active").get(0);
 
@@ -877,7 +847,7 @@ function mirrorImage(fVertically) {
 function openScalingDialog() {
 	var dlg = new WDialog("$DlgScaleImage$", MODULE_LPRE, { modal: true, css: { "width": "470px" }, 
 			btnright: [{preset: "accept", onclick: function(e, btn, _self) {
-				var cnv = sceneMeta[getCurrentCanvasId()].c;
+				var cnv = sceneMeta[activeId].c;
 				var ctx = cnv.getContext("2d");
 				var nWdt = parseInt($(_self.element).find("#dbmp_newImageWidth").val()) || 1;
 				var nHgt = parseInt($(_self.element).find("#dbmp_newImageHeight").val()) || 1;
@@ -926,7 +896,7 @@ function openScalingDialog() {
 				   '</rows></grid></hbox>');
 	dlg.show();
 	
-	var id = getCurrentCanvasId();
+	var id = activeId;
 	
 	$(dlg.element).find("#dbmp_newImageWidth").keypress(function(e) {
 		if(!e.ctrlKey)
@@ -935,7 +905,7 @@ function openScalingDialog() {
 					return false;
 	}).on("input", function(e) {
 		if(_mainwindow.$("#dbmp_proportional").prop("checked")) {
-			var cnv = sceneMeta[getCurrentCanvasId()].c;
+			var cnv = sceneMeta[activeId].c;
 			var p = cnv.height/cnv.width;
 			_mainwindow.$("#dbmp_newImageHeight").val(Math.floor(parseInt($(this).val())*p) || 1);
 		}
@@ -948,7 +918,7 @@ function openScalingDialog() {
 					return false;
 	}).on("input", function(e) {
 		if(_mainwindow.$("#dbmp_proportional").prop("checked")) {
-			var cnv = sceneMeta[getCurrentCanvasId()].c;
+			var cnv = sceneMeta[activeId].c;
 			var p = cnv.width/cnv.height;
 			_mainwindow.$("#dbmp_newImageWidth").val(Math.floor(parseInt($(this).val())*p) || 1);
 		}
@@ -961,7 +931,7 @@ function openScalingDialog() {
 /** @deprecated */
 function stockUndoStack(imgdata, id, fSaved) {
 	if(id == undefined)
-		id = getCurrentCanvasId();
+		id = activeId;
 
 	if(!sceneMeta[id].rtdata.undoStack)
 		sceneMeta[id].rtdata.undoStack = [];
@@ -987,7 +957,7 @@ function stockUndoStack(imgdata, id, fSaved) {
 /** @deprecated */
 function canUndoImageData() {
 	if(true)return
-	var id = getCurrentCanvasId();
+	var id = activeId;
 	if(!sceneMeta[id].rtdata.undoStack)
 		return false;
 	
@@ -1001,7 +971,7 @@ function canUndoImageData() {
 }
 /** @deprecated */
 function undoImageData() {
-	var id = getCurrentCanvasId();
+	var id = activeId;
 
 	if(!canUndoImageData())
 		return;
@@ -1023,7 +993,7 @@ function undoImageData() {
 }
 
 function canRedoImageData() {
-	var id = getCurrentCanvasId();
+	var id = activeId;
 	if(!sceneMeta[id].rtdata.undoStack)
 		return false;
 	
@@ -1037,7 +1007,7 @@ function canRedoImageData() {
 }
 /** @deprecated */
 function redoImageData() {
-	var id = getCurrentCanvasId();
+	var id = activeId;
 	
 	if(!canRedoImageData())
 		return;
@@ -1061,7 +1031,7 @@ function redoImageData() {
 /*-- Infotoolbar --*/
 
 function updateInfotoolbar(x, y) {
-	var id = getCurrentCanvasId(), zoom = sceneMeta[id].z;
+	var id = activeId, zoom = sceneMeta[id].z;
 	if(x != undefined && y != undefined) {
 		x = Math.floor(x); y = Math.floor(y);
 		var rect = editlayer.getBoundingClientRect();
@@ -1166,7 +1136,7 @@ function selectIndexByPixel(id, x, y) {
 }
 
 function switchMaterialMode() {
-	var id = getCurrentCanvasId();
+	var id = activeId;
 	sceneMeta[id].rtdata.matmode_underground = !sceneMeta[id].rtdata.matmode_underground;
 	drawMaterialPalette(id);
 }
@@ -1178,10 +1148,6 @@ function pointInPolygon(px, py, poly) {
 				inside = !inside;
 	}
     return inside;
-}
-
-function getCurrentCanvasId() { 	
-	return activeId || 0;
 }
 
 function updateRulers() {
@@ -1225,7 +1191,7 @@ function updateRulers() {
 	setRulerMarker(rulert, true, xoff);
 	
 	//Einzelne Striche einzeichnen
-	var zoom = sceneMeta[getCurrentCanvasId()].z;
+	var zoom = sceneMeta[activeId].z;
 	var step = Math.max(1, Math.floor(10/zoom)), pxsize = zoom;
 
 	for(var i = step, j = 1; i*zoom < rulerl.height; i+=step) {
@@ -1298,7 +1264,7 @@ function setRulerMarker(canvas, top, offset, size, text) {
 
 function getUnsavedFiles() {
 	var files = [];
-	for(var id in canvasArray)
+	for(var id in sceneMeta)
 		if(sceneMeta[id] && sceneMeta[id].rtdata.undoStack)
 			if(!sceneMeta[id].rtdata.undoStack[sceneMeta[id].rtdata.undoStackPosition].saved)
 				files.push({ filepath: sceneMeta[id].f.path, index: id, module: window });
@@ -1482,34 +1448,6 @@ function saveTexMap(id) {
 	getModuleByName("cide-explorer").contentWindow.loadDirectory(f.path, 0, true);
 	
 	return true;
-}
-
-function getCurrentMode() {
-	var id = $(".toolbarbutton.active").attr("id");
-	switch(id) {
-		case "md_point":
-			return mdPoint;
-		case "md_line":
-			return mdLine;
-		case "md_rect":
-			return mdRect;
-		case "md_circle":
-			return mdCircle;
-		case "md_fill":
-			return mdFill;
-		case "md_selrect":
-			return mdSelectRect;
-		case "md_selcircle":
-			return mdSelectCircle;
-		case "md_getclr":
-			return mdGetColor;
-		case "md_selpoly":
-			return mdSelectPoly;
-		case "md_default":
-			return mdDefault;
-	}
-	
-	return mdPoint;
 }
 
 function getBitmapInfoHeader(data) {
@@ -1728,7 +1666,7 @@ function loadMaterials(id) {
 		list_indices = list_indices.concat(mdata[2]);
 	}
 	
-	//In CanvasArray speichern
+	//In sceneMeta speichern
 	sceneMeta[id].materials = list_materials;
 	sceneMeta[id].textures = list_textures;
 	
@@ -2271,7 +2209,7 @@ function drawMaterialPalette(id) {
 /* Deck functionalities */
 
 function saveFileByPath(path) {
-	for(var id in canvasArray)
+	for(var id in sceneMeta)
 		if(sceneMeta[id])
 			if(sceneMeta[id].f.path == path)
 				return saveCanvas(id);
@@ -2280,7 +2218,7 @@ function saveFileByPath(path) {
 }
 
 function fileLoaded(path) {
-	for(var id in canvasArray)
+	for(var id in sceneMeta)
 		if(sceneMeta[id])
 			if(sceneMeta[id].f.path == path)
 				return id;
@@ -2337,8 +2275,8 @@ function showDeckItem(id) {
 }
 
 function frameWindowTitle() { 
-	if(sceneMeta[getCurrentCanvasId()])
-		return formatPath(sceneMeta[getCurrentCanvasId()].f.path).substr(_sc.workpath(getCurrentCanvasId(), true).length+1);
+	if(sceneMeta[activeId])
+		return formatPath(sceneMeta[activeId].f.path).substr(_sc.workpath(activeId, true).length+1);
 	return "";
 }
 
@@ -2349,7 +2287,7 @@ function removeDeckItem(id) {
 
 function getReloadPars() {
 	var str = "";
-	for(var id in canvasArray) {
+	for(var id in sceneMeta) {
 		if(sceneMeta[id])
 			str += id + "=" + encodeURI(sceneMeta[id].f.path) + "&";
 	}

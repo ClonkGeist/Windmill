@@ -684,7 +684,41 @@ select {
 	margin-bottom: -3px;
 	cursor: se-resize;
 }
-
+/*
 .ui-sel {
-	
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	pointer-events: none;
+	position: absolute;
+	outline: 1px solid yellow;
+}*/
+
+#ui-sel {
+	pointer-events: none;
+	outline: 0px solid yellow;
+}
+
+.sel-p {
+	pointer-events: auto;
+}
+
+.sel-g {
+	stroke-width: 0.1px;
+	stroke-linecap: square;
+	stroke: rgb(40, 40, 40);
+	fill: none;
+}
+
+.sel-scnd {
+	stroke: rgb(220, 220, 220);
+	stroke-dasharray: 0.5px;
+	animation: dash 1s linear infinite;
+}
+
+@keyframes dash {
+  to {
+	stroke-dashoffset: 1;
+  }
 }

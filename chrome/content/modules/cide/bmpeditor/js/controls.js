@@ -1,7 +1,6 @@
 /**
 	TODO:
 	
-	interpolate Free-Draw-steps
 	undo manager
 */
 
@@ -91,6 +90,10 @@ function initCtrls() {
 	$("#md_getclr").click(function() {
 		setSelMode(Mode_Eyedropper)
 	})
+	
+	$("#md_selrect").click(function() {
+		setSelMode(Mode_Sel_Rect)
+	})
 }
 
 function setSelMode(mode) {
@@ -146,6 +149,27 @@ class DefaultMode {
 	onMouseup(x = 0, y = 0, scene, modifier) {
 		
 	}
+	
+	checkForAlternateRect() {
+		// keep center if alt button pressed
+		if(this.modifiers & MODIFIER_ALT) {
+			let offsetX = Math.abs(this.newX - this.startX)
+			let offsetY = Math.abs(this.newY - this.startY)
+			
+			this.rect.w = offsetX*2
+			this.rect.x = this.startX - offsetX
+			
+			this.rect.h = offsetY*2
+			this.rect.y = this.startY - offsetY
+		}
+		else {
+			this.rect.w = this.newX - this.rect.x
+			this.rect.h = this.newY - this.rect.y
+			
+			this.rect.x = this.startX
+			this.rect.y = this.startY
+		}
+	}
 }
 
 class Mode_Eyedropper extends DefaultMode {
@@ -153,7 +177,7 @@ class Mode_Eyedropper extends DefaultMode {
 		// let clr = scene.getPixelColor(x, y)
 	}
 }
-
+var drawTimeout;
 class Mode_Draw_Shape extends DefaultMode {
 	
 	constructor(op_id, scene, x, y) {
@@ -188,6 +212,9 @@ class Mode_Draw_Shape extends DefaultMode {
 	
 	onMousemove(x = 0, y = 0, scene, modifier) {
 		
+		if(drawTimeout)
+			return
+		
 		if(modifier & MODIFIER_SHIFT)
 			return
 		
@@ -202,6 +229,8 @@ class Mode_Draw_Shape extends DefaultMode {
 		
 		this.lastX = x
 		this.lastY = y
+		
+		drawTimeout = setTimeout(function() { drawTimeout = false; }, 10)
 	}
 	
 	onMouseup(x = 0, y = 0, scene, modifier) {
@@ -349,6 +378,60 @@ class Mode_Draw_Circle extends DefaultMode {
 	}
 }
 
+/* Selection controls */
+
+
+class Mode_Sel_Rect extends DefaultMode {
+	constructor(op_id, scene) {
+		super(op_id, scene)
+	
+		this.startX = x
+		this.startY = y
+		
+		this.rect = new Rect(x, y, 0, 0)
+		
+		this.unstopped = false
+	}
+	
+	onSceneFocus(scene) {
+		this.unstopped = true
+		
+		let fn = () => {
+			if(!this.unstopped)
+				return
+			
+			this.checkForAlternateRect();
+			
+			$(".sel-r").
+				attr("x", this.rect.x).
+				attr("y", this.rect.y).
+				attr("width", this.rect.w).
+				atrr("height", this.rect.h)
+			
+			requestAnimationFrame(fn)
+		}
+		
+		requestAnimationFrame(fn)
+	}
+	
+	onMousemove(x = 0, y = 0, scene, modifiers) {
+		this.newX = x
+		this.newY = y
+		this.modifiers = modifiers
+	}
+	
+	onMouseup(x = 0, y = 0, scene, modifiers) {
+		this.unstopped = false
+		
+		this.rect.ensureFormat()
+		
+		// this.scene.selMask
+	}
+	
+	finish() {
+	}
+}
+
 /* Shapes */
 
 
@@ -480,6 +563,103 @@ class Rect {
 		}
 	}
 }
+
+
+
+function svgPathFromMask(mask, w, h) {
+	
+	let h2 = h  -1
+	let w2 = w  -1
+	
+	//let pointMask = new Uint8Array(w2*h2)
+	let pointMask = mask
+	
+	let maskIndex, curr, below, right, pointIndex
+	
+	var startPoints = []
+	
+	for(let y = 0; y < h2; y++)
+		for(let x = 0; x < w2; x++) {
+			maskIndex = x + y*w
+			
+			curr = mask[maskIndex]
+			below = mask[maskIndex + w]
+			right = mask[maskIndex + 1]
+									
+			if(curr ^ right) {
+				pointIndex = maskIndex - w
+				pointMask[pointIndex] += DIR_DOWN
+				
+				if(pointMask[pointIndex] === DIR_BOTH)
+					startPoints.push(pointIndex)
+			}
+			
+			if(curr ^ below) {
+				
+				pointIndex = maskIndex - 1
+				pointMask[pointIndex] += DIR_RIGHT
+			}
+			
+			mask[maskIndex] = 0
+		}
+	
+	var str = ""
+	
+	let start, x, y, max
+	
+	var getNext = function*(index) {
+		let data = pointMask[index]
+		while(data && data !== DIR_BOTH) {
+			
+			if(data === DIR_RIGHT) {
+				index += 1
+				yield "h 1 "
+			}
+			else {
+				index += w
+				yield "v 1 "
+			}
+			
+			data = pointMask[index]
+		}
+	}
+	
+	for(let f = 0; f < startPoints.length; f++) {
+		
+		start = startPoints[f]
+		
+		// get coords
+		y = Math.floor(start/w)
+		x = start % w
+
+		
+		// add starting point (move to)
+		str += "M" + x + " " + y + " "
+		
+		// follow outline to right
+		str += "h 1 "
+		for(let s of getNext(start + 1))
+			str += s
+		
+		
+				
+		// add starting point (move to)
+		str += "M" + x + " " + y + " "
+		
+		// follow outline to below
+		
+		str += "v 1 "
+		for(let s of getNext(start + w))
+			str += s
+		
+	}
+	
+	document.getElementById("sel-p1").setAttribute("d", str)
+	document.getElementById("sel-p2").setAttribute("d", str)
+	
+	return pointMask
+}
+
 
 var _profilerIds = {}
 class Profiler {

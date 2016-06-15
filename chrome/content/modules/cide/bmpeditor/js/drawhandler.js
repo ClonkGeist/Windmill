@@ -304,6 +304,10 @@ class BMPScene {
 		
 		this.updateZoom()
 		this.gl.viewport(0, 0, w, h)
+		
+		// work with additional margin of 1 at each side
+		this.selMask = new Uint8Array((w+2)*(h+2))
+		this._selPointMask = new Uint8Array((w+2)*(h+2))
 	}
 	
 	// flip y coords	
@@ -575,6 +579,8 @@ class BMPScene {
 	onShow() {		
 		this.canvas.width = this.width
 		this.canvas.height = this.height
+		
+		// document.getElementById("ui-sel").setAttribute("viewbox", "0 0 "+ this.width + " " + this.height);
 		
 		this.gl.viewport(0, 0, this.width, this.height)
 		
