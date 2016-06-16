@@ -14,6 +14,11 @@ function log(str, hidden, type) {
 	if(logitems.length > MAX_LOG_ENTRIES && !getConfigData("Global", "DisableLogLimitation"))
 		$(logitems[1]).remove();
 
+	//Shorthand for logging
+	if(typeof hidden == "string" && !type) {
+		type = hidden;
+		hidden = false;
+	}
 	let clone = _mainwindow.$("#developerlog .log-listitem.draft").clone();
 	clone.removeClass("draft");
 	clone.appendTo(_mainwindow.$("#log-entrylist"));

@@ -102,37 +102,9 @@
 									<column flex="1"/>
 									<column flex="1"/>
 								</columns>
-								<rows>
-									<row id="row-Script" class="extprogram">
-										<label value="$scriptfile$"/>
-										<description class="view-directory-path">$pathempty$</description>
-										<button label="$browse$" oncommand="openProgramDialog(this)"/>
-										<checkbox class="extprogram-always-use"/>
-										<box class="extprogram-clear nav-image icon-trashbin icon-32" height="32" width="32"></box>
-									</row>
-									<row id="row-Text" class="extprogram">
-										<label value="$textfile$"/>
-										<description class="view-directory-path">$pathempty$</description>
-										<button label="$browse$" oncommand="openProgramDialog(this)"/>
-										<checkbox class="extprogram-always-use"/>
-										<box class="extprogram-clear nav-image icon-trashbin icon-32" height="32" width="32"></box>
-									</row>
-									<row id="row-GraphicsPNG" class="extprogram">
-										<label value="$graphicspng$"/>
-										<description class="view-directory-path">$pathempty$</description>
-										<button label="$browse$" oncommand="openProgramDialog(this)"/>
-										<checkbox class="extprogram-always-use"/>
-										<box class="extprogram-clear nav-image icon-trashbin icon-32" height="32" width="32"></box>
-									</row>
-									<row id="row-GraphicsBMP" class="extprogram">
-										<label value="$graphicsbmp$"/>
-										<description class="view-directory-path">$pathempty$</description>
-										<button label="$browse$" oncommand="openProgramDialog(this)"/>
-										<checkbox class="extprogram-always-use"/>
-										<box class="extprogram-clear nav-image icon-trashbin icon-32" height="32" width="32"></box>
-									</row>
-									<row id="row-Audio" class="extprogram">
-										<label value="$audiofile$"/>
+								<rows id="extprogram-list">
+									<row class="extprogram draft">
+										<label class="extprogram-label"/>
 										<description class="view-directory-path">$pathempty$</description>
 										<button label="$browse$" oncommand="openProgramDialog(this)"/>
 										<checkbox class="extprogram-always-use"/>

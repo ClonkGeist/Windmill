@@ -630,7 +630,7 @@ function cap(i, min, max) {
 	return i;
 }
 
-function loadImage(file, tabId, fShow) {
+function addCideFile(path, tabId, fShow) {
 	
 	$("#wrapper").append("\
 		<div id=\"wrapper-"+tabId+"\" class=\"preview-wrapper\">\
@@ -640,10 +640,10 @@ function loadImage(file, tabId, fShow) {
 	
 	var session = __iP.initSession(tabId);
 	
-	let promise = session.loadImage(file, document.getElementById("preview-"+tabId));
+	let promise = session.loadImage(path, document.getElementById("preview-"+tabId));
 	
 	if(fShow || !$(".visible")[0])
-			showDeckItem(tabId);
+		showDeckItem(tabId);
 	
 	return promise;
 }
@@ -684,7 +684,7 @@ window.addEventListener("load", function(){
 				continue;
 
 			var split = query[i].split("=");
-			loadImage(decodeURI(split[1]), parseInt(split[0]), true);
+			addCideFile(decodeURI(split[1]), parseInt(split[0]), true);
 		}
 	}
 	
@@ -707,7 +707,7 @@ function getTabData(tabid) {
 }
 
 function dropTabData(data, tabid) {
-	loadImage(data.path, tabid, true).then(function(session) {
+	addCideFile(data.path, tabid, true).then(function(session) {
 		session.ensureRect();
 		session.isDrawing = false;
 		session.rectWidth = parseFloat(data.rect.rectWidth);

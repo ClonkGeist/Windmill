@@ -13,7 +13,42 @@ var editors = {},
 
 function TabManager() { return editors; }
 	
-function addScript(highlightMode, id, path, fShow) {
+function addCideFile(path, id, fShow) {
+	let highlightMode = "text", filename = path.split("/").pop().toLowerCase();
+	switch(filename.split(".").pop()) {
+		case "c":
+			highlightMode = "ocscript";
+			break;
+		case "txt":
+		case "material":
+			switch(filename) {
+				case "defcore.txt":
+				case "scenario.txt":
+				case "particle.txt":
+				case "parameterdefs.txt":
+				case "teams.txt":
+				case "playercontrols.txt":
+				case "player.txt":
+				case "objectinfo.txt":
+				case "objects.txt":
+					highlightMode = "ini";
+					break;
+				case "landscape.txt":
+					highlightMode = "c4landscape";
+					break;
+				default:
+					if(filename.match(/StringTbl..\.txt/i))
+						highlightMode = "ini";
+					else
+						highlightMode = "text";
+					break;
+			}
+			break;
+
+		case "ocm":
+			highlightMode = "ini";
+			break;
+	}
 	return Task.spawn(function*() {
 		let text = yield OS.File.read(path, {encoding: "utf-8"});
 		if(!ace)
@@ -186,7 +221,7 @@ function getTabData(tabid) {
 }
 
 function dropTabData(data, tabid) {
-	addScript(data.lang, tabid, data.path, true).then(function() {
+	addCideFile(data.path, tabid, true).then(function() {
 		editors[tabid].getSession().setScrollLeft(data.scrollx);
 		editors[tabid].getSession().setScrollTop(data.scrolly);
 	});
