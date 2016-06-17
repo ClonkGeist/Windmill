@@ -308,6 +308,9 @@ class BMPScene {
 		// work with additional margin of 1 at each side
 		this.selMask = new Uint8Array((w+2)*(h+2))
 		this._selPointMask = new Uint8Array((w+2)*(h+2))
+		
+		document.getElementById("ui-sel").setAttribute("viewBox", "0 0 "+ w + " " + h)
+		document.getElementById("ui-sel").setAttribute("height", this.height*this.zoomFactor)
 	}
 	
 	// flip y coords	
@@ -323,6 +326,8 @@ class BMPScene {
 	updateZoom() {
 		$(this.canvas).css("width", (this.width*this.zoomFactor) + "px")
 		$(this.canvas).css("height", (this.height*this.zoomFactor) + "px")
+		
+		document.getElementById("ui-sel").setAttribute("height", this.height*this.zoomFactor)
 		
 		if(this.currentRect)
 			this.updateUiRectPos()
@@ -576,12 +581,12 @@ class BMPScene {
 		return false
 	}
 
-	onShow() {		
+	onShow() {
 		this.canvas.width = this.width
 		this.canvas.height = this.height
 		
-		// document.getElementById("ui-sel").setAttribute("viewbox", "0 0 "+ this.width + " " + this.height);
-		
+		document.getElementById("ui-sel").setAttribute("viewBox", "0 0 "+ this.width + " " + this.height)
+		document.getElementById("ui-sel").setAttribute("height", this.height*this.zoomFactor)
 		this.gl.viewport(0, 0, this.width, this.height)
 		
 		this.bindAttribBuffer()

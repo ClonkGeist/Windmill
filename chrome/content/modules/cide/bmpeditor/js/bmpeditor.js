@@ -426,6 +426,9 @@ $(window).ready(function() {
 		$("#ruler-left").css("left", $(this).scrollLeft()+"px");
 		$("#ruler-top").css("top", $(this).scrollTop()+"px");
 	});
+	
+	var brushX, brushY;
+	
 	document.addEventListener("mousemove", function(e) {
 		if($(".color-matching-wizard.visible2").get(0))
 			return;
@@ -438,16 +441,24 @@ $(window).ready(function() {
 			return;
 		
 		$(".rulerdisplay.hidden").removeClass("hidden");
-
-		var mx = e.clientX, my = e.clientY;
 		
-		rulerData.left.css("top", my+"px");
-		rulerData.top.css("left", mx+"px");
-		
-		let $el = $(".brush-indicator");
-		$el.css("left", mx+"px");
-		$el.css("top", my+"px");
+		brushX = e.clientX
+		brushY = e.clientY
 	});
+	
+	let brushFn = () => {
+		let $el = $(".brush-indicator")
+		$el.css("left", brushX+"px")
+		$el.css("top", brushY+"px")
+		
+		rulerData.top.css("left", brushX+"px")
+		rulerData.left.css("top", brushY+"px")
+		
+		requestAnimationFrame(brushFn)
+	}
+	
+	requestAnimationFrame(brushFn)
+	
 	$(window).resize(function() {
 		updateRulers();
 		centerCanvas(activeId);

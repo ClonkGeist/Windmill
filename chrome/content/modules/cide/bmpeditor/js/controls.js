@@ -14,7 +14,6 @@ const
 	
 
 function initCtrls() {
-	selectedMode = Mode_Draw_Shape
 	
 	$(".canvas-wrapper").mousedown(function(e) {
 		if(!selectedMode || e.which !== 1 || $(".color-matching-wizard.visible2").get(0))
@@ -94,11 +93,18 @@ function initCtrls() {
 	$("#md_selrect").click(function() {
 		setSelMode(Mode_Sel_Rect)
 	})
+	
+	setSelMode(Mode_Draw_Shape)
 }
 
 function setSelMode(mode) {
 	if(a_Mode)
 		a_Mode.finish()
+	
+	if(mode == Mode_Draw_Shape)
+		$(".canvas-dimension").addClass("brush-mode")
+	else
+		$(".canvas-dimension").removeClass("brush-mode")
 	
 	selectedMode = mode
 }
@@ -127,8 +133,8 @@ function getEventModifiers(e) {
 	onSceneFocus(scene)
 	onMousemove(x, y, scene)
 	onMouseup(x, y, scene)
-	bake()
-	rebuild()
+	finish()
+	checkForAlternateRect()
 
 */
 class DefaultMode {
@@ -258,24 +264,7 @@ class Mode_Draw_Rect extends DefaultMode {
 			if(!this.unstopped)
 				return
 			
-			// keep center if alt button pressed
-			if(this.modifiers & MODIFIER_ALT) {
-				let offsetX = Math.abs(this.newX - this.startX)
-				let offsetY = Math.abs(this.newY - this.startY)
-				
-				this.rect.w = offsetX*2
-				this.rect.x = this.startX - offsetX
-				
-				this.rect.h = offsetY*2
-				this.rect.y = this.startY - offsetY
-			}
-			else {
-				this.rect.w = this.newX - this.rect.x
-				this.rect.h = this.newY - this.rect.y
-				
-				this.rect.x = this.startX
-				this.rect.y = this.startY
-			}
+			this.checkForAlternateRect()
 			
 			this.scene.shaderType = SHADER_TYPE_BACKBUFFER
 			this.scene.setInputRect(this.rect)
@@ -328,24 +317,7 @@ class Mode_Draw_Circle extends DefaultMode {
 			if(!this.unstopped)
 				return
 			
-			// keep center if alt button pressed
-			if(this.modifiers & MODIFIER_ALT) {
-				let offsetX = Math.abs(this.newX - this.startX)
-				let offsetY = Math.abs(this.newY - this.startY)
-				
-				this.rect.w = offsetX*2
-				this.rect.x = this.startX - offsetX
-				
-				this.rect.h = offsetY*2
-				this.rect.y = this.startY - offsetY
-			}
-			else {
-				this.rect.w = this.newX - this.rect.x
-				this.rect.h = this.newY - this.rect.y
-				
-				this.rect.x = this.startX
-				this.rect.y = this.startY
-			}
+			this.checkForAlternateRect()
 			
 			this.scene.shaderType = SHADER_TYPE_BACKBUFFER
 			this.scene.setInputRect(this.rect)
@@ -382,7 +354,7 @@ class Mode_Draw_Circle extends DefaultMode {
 
 
 class Mode_Sel_Rect extends DefaultMode {
-	constructor(op_id, scene) {
+	constructor(op_id, scene, x = 0, y = 0) {
 		super(op_id, scene)
 	
 		this.startX = x
@@ -400,13 +372,13 @@ class Mode_Sel_Rect extends DefaultMode {
 			if(!this.unstopped)
 				return
 			
-			this.checkForAlternateRect();
+			this.checkForAlternateRect()
 			
-			$(".sel-r").
-				attr("x", this.rect.x).
-				attr("y", this.rect.y).
-				attr("width", this.rect.w).
-				atrr("height", this.rect.h)
+			$(".sel-r")
+				.attr("x", this.rect.w < 0?this.rect.x + this.rect.w : this.rect.x)
+				.attr("y", this.rect.h < 0?this.rect.y + this.rect.h : this.rect.y)
+				.attr("width", Math.abs(this.rect.w))
+				.attr("height", Math.abs(this.rect.h))
 			
 			requestAnimationFrame(fn)
 		}
