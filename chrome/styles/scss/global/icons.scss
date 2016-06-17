@@ -369,3 +369,12 @@
 .icon-limiter:before { 
 	content: "L";
 }
+
+/* needs to be renamed */ 
+.icon-minus:before {
+	@include -mines();
+}
+
+.icon-plus:before {
+	@include -plus();
+}
