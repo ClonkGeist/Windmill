@@ -89,7 +89,21 @@
 				<stack>
 					<vbox id="settings-page-cide" class="settings-page" top="0" bottom="0">
 						<caption class="big" label="$cide$" />
-						<vbox>
+						<hbox class="modulewrapper">
+							<description flex="1"> <!-- for line wrapping -->
+								<vbox class="moduleentry draft">
+									<spacer flex="1"/>
+									<hbox class="moduleinfo">
+										<hbox class="moduletitle" flex="3">Scripteditor</hbox>
+										<hbox class="modulecontrols" flex="1">
+											<spacer flex="1"/>
+											<box class="modulectrl icon-update icon-32" height="32" width="32"></box>
+										</hbox>
+									</hbox>
+								</vbox>
+							</description>
+						</hbox>
+						<!--<vbox>
 							<checkbox label="$ActivateFileProtection$" id="cide-fileprotection" class="autoinit" flex="1" default-cfgsect="CIDE" default-cfgkey="FileProtection"/>
 						</vbox>
 						
@@ -115,7 +129,6 @@
 						</vbox>
 						<caption label="$acetheme$" class="toggle-contents" onclick="toggleContents(this)"/>
 						<vbox>
-							<!-- ace theme selection -->
 							<hbox>
 								<listbox id="editor-theme-list" flex="1">
 								</listbox>
@@ -123,12 +136,6 @@
 							<hbox>
 								<button label="$applytheme$" oncommand="setAceTheme()" />
 							</hbox>
-							<!-- font size of explorer -->
-							<!--
-							<hbox>
-								<label value="Explorer Font Size" control="explorer-font-size"/>
-								<textbox id="explorer-font-size" type="number" />px
-							</hbox>-->
 						</vbox>
 						<caption label="Scripteditor" class="toggle-contents" onclick="toggleContents(this)"/>
 						<vbox>
@@ -156,7 +163,7 @@
 						<vbox>
 							<checkbox label="$AlwaysUseScenarioSettings$" id="scenariosettings-always-use" class="autoinit" flex="1" default-cfgsect="ScenarioSettings" default-cfgkey="AlwaysUseScenarioSettings"/>
 							<checkbox label="$UseModuleCache$" id="scenariosettings-module-cache" class="autoinit" flex="1" default-cfgsect="ScenarioSettings" default-cfgkey="UseModuleCache"/>
-						</vbox>
+						</vbox>-->
 					</vbox>
 				</stack>
 				

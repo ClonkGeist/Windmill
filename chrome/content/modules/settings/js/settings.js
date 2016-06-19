@@ -21,6 +21,20 @@ hook("load", function() {
 			for(let group of module.matchinggroup)
 				if(group.externalprogramid && extprogids.indexOf(group.externalprogramid) == -1)
 					extprogids.push(group.externalprogramid);
+
+			//Create module overview
+			if(module.cidemodule) {
+				let clone = $(".moduleentry.draft").clone();
+				clone.removeClass("draft");
+				clone.find(".moduletitle").text(Locale(module.modulename, module.languageprefix));
+				let gradient = "linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 48%, rgba(255, 255, 255, 0.8) 90%),";
+				if(!module.settings.previewimage)
+					clone.css("background-image", gradient+"url(chrome://windmill/content/"+formatPath(module.relpath)+"/previewimage.png)");
+				else
+					clone.css("background-image", gradient+"url(chrome://windmill/content/"+formatPath(module.relpath)+"/"+module.settings.previewimage+")");
+				
+				clone.appendTo($("#settings-page-cide > .modulewrapper > description"));
+			}
 		}
 		for(let extprogid of extprogids) {
 			let clone = $(".extprogram.draft").clone();
@@ -64,7 +78,7 @@ hook("load", function() {
 			else
 				changeNeedsRestart = false;
 		});
-		$("#completerSelection").parent()[0].selectedItem = $("#completerSelection").find('menuitem[value="'+completers+'"]')[0];
+		//$("#completerSelection").parent()[0].selectedItem = $("#completerSelection").find('menuitem[value="'+completers+'"]')[0];
 
 		//KeyBindings auflisten
 		var keybindings = _mainwindow.customKeyBindings, current_prefix;

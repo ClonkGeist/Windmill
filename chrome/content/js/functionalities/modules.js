@@ -42,6 +42,7 @@ function readModuleInfo(path) {
 	return Task.spawn(function*() {
 		let text = yield OS.File.read(path, {encoding: "utf-8"});
 		let moduleini = parseINI2(text, { matchEmptyValues: true }), elm, config = [], keybindings = [], matchinggroup = [];
+		module.settings = {};
 		while(elm = moduleini.next().value) {
 			if(typeof elm != "string") {
 				if(elm.sect == "Module") 
@@ -54,6 +55,8 @@ function readModuleInfo(path) {
 					keybindings.push([elm.key, elm.val]);
 				else if(/^MatchingGroup/.test(elm.sect))
 					matchinggroup[matchinggroup.length-1][elm.key.toLowerCase()] = elm.val;
+				else if(elm.sect = "Settings")
+					module.settings[elm.key.toLowerCase()] = elm.val;
 			}
 			else if(/^MatchingGroup/.test(elm))
 				matchinggroup.push({priority: 0});
