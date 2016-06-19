@@ -22,7 +22,8 @@ function initGl(id) {
 	var gl
 	
 	try {
-		gl = c.getContext("experimental-webgl", {
+		//gl = c.getContext("experimental-webgl", {
+		gl = c.getContext("webgl", {
 			antialias: false,
 			depth: false,
 			stencil: false,
@@ -700,10 +701,15 @@ class BMPScene {
 		Special functionalities
 	*/
 	
+	// this output is flipped by its y axis
 	readPixels(x, y, w, h) {
-		let target = new Uint8Array(w*h*3)
+		// flip y
+		y = this.height - y - h
 		
-		this.gl.readPixels(x, y, w, h, this.gl.RGB, this.gl.UNSIGNED_BYTE, target)
+		let target = new Uint8Array(w*h*4)
+		
+		this.gl.finish()
+		this.gl.readPixels(x, y, w, h, this.gl.RGBA, this.gl.UNSIGNED_BYTE, target)
 		
 		return target
 	}

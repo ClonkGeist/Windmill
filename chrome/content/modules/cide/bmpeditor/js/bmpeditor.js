@@ -1285,13 +1285,13 @@ function getUnsavedFiles() {
 
 function saveCanvas(id) {
 	var num2byte = function(num, size) {
-		var ar = [];
-		for(var i = 0; i < size; i++) {
+		let ar = []
+		for(let i = 0; i < size; i++) {
 			ar.push(num & 0xFF);
-			num >>= 8;
+			num >>= 8
 		}
 		
-		return ar;
+		return ar
 	};
 	
 	let scene = sceneMeta[id].scene
@@ -1332,16 +1332,24 @@ function saveCanvas(id) {
 	//Pixelstorage erstellen (von unten links nach oben rechts)
 	var padding_bytes = (4-(w%4))%4;
 	
-	let w2 = w*3
-	var pos, j, x
+	let w2 = w*4
+	var pos, j, x,
+		ar = []
 	
-	for(let y = h - 1; y >= 0; y--) {
-		for(x = 0; x < w2; x +=3) {
-			pos = y*(w2)+x;
+	// alpha auf 0 setzen
+	ar[3] = 0
+	
+	for(let y = 0; y < h; y++) {
+		for(x = 0; x < w2; x +=4) {
+			pos = y*(w2)+x
+			
+			ar[0] = imgdata[pos+2]
+			ar[1] = imgdata[pos+1]
+			ar[2] = imgdata[pos  ]
 			
 			pixelstorage.push(
 				sceneMeta[id].coloridx.indexOf(
-					[imgdata[pos+2], imgdata[pos+1], imgdata[pos], 0].byte2num()
+					ar.byte2num()
 				)
 			)
 		}
@@ -1350,8 +1358,7 @@ function saveCanvas(id) {
 		for(j = 0; j < padding_bytes; j++)
 			pixelstorage.push(0);
 	}
-	log(pos)
-	log(imgdata.length)
+	
 	//Daten zusammenstellen
 	var data = header.concat(dibheader).concat(colortable).concat(pixelstorage);
 	
