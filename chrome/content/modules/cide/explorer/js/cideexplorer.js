@@ -564,53 +564,53 @@ function initializeContextMenu() {
 	var submenu_new = new ContextMenu(0, [ //Neu
 		//Spielinhalte
 
-		["$ctxObject$", 0, function*() {
-			yield CreateNewGamefile("ocd", $(getCurrentTreeSelection()));
+		["$ctxObject$", 0, function*(target) {
+			yield CreateNewGamefile("ocd", $(target));
 		}, 0, { iconsrc: "chrome://windmill/content/img/explorer/icon-fileext-ocd.png" }],
-		["$ctxScenario$", 0, function*() {
-			yield CreateNewGamefile("ocs", $(getCurrentTreeSelection()));
+		["$ctxScenario$", 0, function*(target) {
+			yield CreateNewGamefile("ocs", $(target));
 		}, 0, { iconsrc: "chrome://windmill/content/img/explorer/icon-fileext-ocs.png" }],
 
 		"seperator",
 
 		//Ordner
 
-		["$ctxfolder$", 0, function*() { // Ordner erstellen
-			yield createNewFile(true, "$create_newfolder$", true, "chrome://windmill/content/img/explorer/icon-directory.png");
+		["$ctxfolder$", 0, function*(target) { // Ordner erstellen
+			yield createNewFile(true, "$create_newfolder$", true, "chrome://windmill/content/img/explorer/icon-directory.png", null, target);
 		}, 0, { iconsrc: "chrome://windmill/content/img/explorer/icon-directory.png" }],
-		["$ctxobjfolder$", 0, function*() { // Objektordner erstellen
-			yield createNewFile(true, "$create_newobjfolder$.ocd", true);
+		["$ctxobjfolder$", 0, function*(target) { // Objektordner erstellen
+			yield createNewFile(true, "$create_newobjfolder$.ocd", true, undefined, undefined, target);
 		}, 0, { iconsrc: "chrome://windmill/content/img/explorer/icon-fileext-ocd.png" }],
-		["$ctxscenfolder$", 0, function*() { // Rundenordner erstellen
-			yield createNewFile(true, "$create_newscenfolder$.ocf", true);
+		["$ctxscenfolder$", 0, function*(target) { // Rundenordner erstellen
+			yield createNewFile(true, "$create_newscenfolder$.ocf", true, undefined, undefined, target);
 		}, 0, { iconsrc: "chrome://windmill/content/img/explorer/icon-fileext-ocf.png" }],
 
 		//Textdateien
 		"seperator",
 
-		["$ctxtext$", 0, function*() { // Textdatei erstellen
-			yield createNewFile(false, "$create_newtxt$.txt");
+		["$ctxtext$", 0, function*(target) { // Textdatei erstellen
+			yield createNewFile(false, "$create_newtxt$.txt", false, undefined, undefined, target);
 		}, 0, { iconsrc: "chrome://windmill/content/img/explorer/icon-fileext-txt.png" }],
 
 		//Bilddateien
 		"seperator",
 
-		["$ctxgbmp$", 0, function*() { //BMPDatei erstellen
-			yield createNewFile(false, "$create_newimg$.bmp", false);
+		["$ctxgbmp$", 0, function*(target) { //BMPDatei erstellen
+			yield createNewFile(false, "$create_newimg$.bmp", false, undefined, undefined, target);
 		}, 0, { iconsrc: "chrome://windmill/content/img/explorer/icon-fileext-bmp.png" }],
-		["$ctxgpng$", 0, function*() { //PNGDatei erstellen
-			yield createNewFile(false, "$create_newimg$.png", false);
+		["$ctxgpng$", 0, function*(target) { //PNGDatei erstellen
+			yield createNewFile(false, "$create_newimg$.png", false, undefined, undefined, target);
 		}, 0, { iconsrc: "chrome://windmill/content/img/explorer/icon-fileext-png.png" }],
-		["$ctxgjpg$", 0, function*() { //JPGDatei erstellen
-			yield createNewFile(false, "$create_newimg$.jpg", false);
+		["$ctxgjpg$", 0, function*(target) { //JPGDatei erstellen
+			yield createNewFile(false, "$create_newimg$.jpg", false, undefined, undefined, target);
 		}, 0, { iconsrc: "chrome://windmill/content/img/explorer/icon-fileext-jpg.png" }],
 
 		//Scriptdateien
 		"seperator",
 
-		["$ctxscript$", 0, function*() { //Scriptdatei erstellen
-			yield createNewFile(false, "$create_newscript$.c", false, null, 
-					"/*-- New Scriptfile --*/\r\n\r\nfunc Initialize() {\r\n  return true;\r\n}\r\n");
+		["$ctxscript$", 0, function*(target) { //Scriptdatei erstellen
+			yield createNewFile(false, "$create_newscript$.c", false, undefined, 
+					"/*-- New Scriptfile --*/\r\n\r\nfunc Initialize() {\r\n  return true;\r\n}\r\n", target);
 		}, 0, { iconsrc: "chrome://windmill/content/img/explorer/icon-fileext-c.png" }]
 	], MODULE_LPRE, { allowIcons: true });
 
@@ -1006,9 +1006,9 @@ function CreateNewGamefile(type, treeobj) {
 function getFullPathForSelection() { return _sc.workpath() + getTreeObjPath(getCurrentTreeSelection()); }
 
 //Neue Datei erstellen
-function createNewFile(is_dir, name, container, image, content = "") {
-	let cntpath = _sc.workpath() + getTreeObjPath(getCurrentTreeSelection()), path = cntpath + "/" + Locale(name);
-	let cnt = getTreeCntById(getTreeObjId(getCurrentTreeSelection()));
+function createNewFile(is_dir, name, container, image, content = "", target = getCurrentTreeSelection()) {
+	let cntpath = _sc.workpath() + getTreeObjPath(target), path = cntpath + "/" + Locale(name);
+	let cnt = getTreeCntById(getTreeObjId(target));
 	let task = Task.spawn(function*() {
 		if(!is_dir) {
 			let new_fname = yield* UniqueFilename(path, true);
