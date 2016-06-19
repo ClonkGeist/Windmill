@@ -188,21 +188,21 @@ caption {
 }
 
 .mm-dev-wrapper {
-	transform: skew(45deg);
+	transform: skew(-45deg);
 }
 
 .mm-play-wrapper {
-	transform: skew(-45deg);
+	transform: skew(45deg);
 }
 
 .mm-dev {
 	pointer-events: auto;
-	transform: skew(-45deg);
+	transform: skew(45deg);
 }
 
 .mm-play {
 	pointer-events: auto;
-	transform: skew(45deg);
+	transform: skew(-45deg);
 }
 
 .mm-icon-wrapper {
