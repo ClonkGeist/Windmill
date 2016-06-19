@@ -2,6 +2,7 @@
 	TODO:
 	
 	undo manager
+	make readPixels only give RGBs; byte2num in saveImage needs to get adjusted to fit with color without alpha values
 */
 
 
@@ -180,10 +181,12 @@ class DefaultMode {
 
 class Mode_Eyedropper extends DefaultMode {
 	onMouseup(x = 0, y = 0, scene, modifier) {
-		// let clr = scene.getPixelColor(x, y)
+		let clr = scene.readPixels(x, y, 1, 1)
+		log(clr)
 	}
 }
-var drawTimeout;
+var drawTimeout
+
 class Mode_Draw_Shape extends DefaultMode {
 	
 	constructor(op_id, scene, x, y) {

@@ -1,5 +1,5 @@
 
-hook("load", () => {
+hook("load", () => {	
 	initGl("draw-canvas")
 })
 
@@ -23,9 +23,10 @@ function initGl(id) {
 	
 	try {
 		gl = c.getContext("experimental-webgl", {
-			antialias: false, 
-			depth: false, 
+			antialias: false,
+			depth: false,
 			stencil: false,
+			preserveDrawingBuffer: true
 		})
 	}
 	catch(e) {
@@ -699,10 +700,10 @@ class BMPScene {
 		Special functionalities
 	*/
 	
-	getPixelColor(x, y) {
-		let target = new Uint8Array(3)
+	readPixels(x, y, w, h) {
+		let target = new Uint8Array(w*h*3)
 		
-		this.gl.readPixels(x, y, 1, 1, this.gl.UNSIGNED_BYTE, target)
+		this.gl.readPixels(x, y, w, h, this.gl.RGB, this.gl.UNSIGNED_BYTE, target)
 		
 		return target
 	}

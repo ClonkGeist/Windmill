@@ -427,7 +427,7 @@ $(window).ready(function() {
 		$("#ruler-top").css("top", $(this).scrollTop()+"px");
 	});
 	
-	var brushX, brushY;
+	var brushX = 0, brushY = 0;
 	
 	document.addEventListener("mousemove", function(e) {
 		if($(".color-matching-wizard.visible2").get(0))
@@ -1294,24 +1294,27 @@ function saveCanvas(id) {
 		return ar;
 	};
 	
-	var c = sceneMeta[id].c;
-	var ifheader = sceneMeta[id].header;
+	let scene = sceneMeta[id].scene
+	let w = scene.width
+	let h = scene.height
 	
-	var rowsize = ((ifheader.bpp*c.width+31)/32)*4;
+	var ifheader = sceneMeta[id].header
+	
+	var rowsize = ((ifheader.bpp*w+31)/32)*4;
 	
 	//BMP-Header erstellen
 	var header = [0x42, 0x4d];
-	header = header.concat(num2byte(1078+rowsize*c.height, 4)); //Dateigröße (Noch ohne Pixelstorage)
+	header = header.concat(num2byte(1078+rowsize*h, 4)); //Dateigröße (Noch ohne Pixelstorage)
 	header = header.concat([0, 0, 0, 0,]); //Reserved
 	header = header.concat(num2byte(1078, 4)); //Offset bis zum bitmap image data
 
 	//DIB-Header erstellen
 	var dibheader = num2byte(40, 4);
-	dibheader = dibheader.concat(num2byte(c.width, 4));
-	dibheader = dibheader.concat(num2byte(c.height, 4));
+	dibheader = dibheader.concat(num2byte(w, 4));
+	dibheader = dibheader.concat(num2byte(h, 4));
 	dibheader = dibheader.concat([1, 0, 8, 0,
 								  0, 0, 0, 0]); // compression
-	dibheader = dibheader.concat(num2byte(rowsize*c.height,4)); // image size
+	dibheader = dibheader.concat(num2byte(rowsize*h,4)); // image size
 	dibheader = dibheader.concat([0, 0, 0, 0, 0, 0, 0, 0, // resolution
 								  0, 1, 0, 0, // color palette (256)
 								  0, 1, 0, 0]); // important colors (256)
@@ -1319,27 +1322,36 @@ function saveCanvas(id) {
 	var colortable = [];
 	
 	//Colortable generieren
-	for(var i = 0; i < ifheader.clrcnt; i++)
+	for(let i = 0; i < ifheader.clrcnt; i++)
 		colortable = colortable.concat(num2byte(sceneMeta[id].coloridx[i], 4));
 
 	var pixelstorage = [];
-	var imgdata = c.getContext("2d").getImageData(0, 0, c.width, c.height).data;
-
+	
+	var imgdata = scene.readPixels(0, 0, w, h)
+	
 	//Pixelstorage erstellen (von unten links nach oben rechts)
-	var padding_bytes = (4-(c.width%4))%4;
-	for(var i = c.height-1; i >= 0; i--) {
-		for(var x = 0; x < c.width*4; x+=4) {
-			var pos = i*(c.width*4)+x;
-			var px = [imgdata[pos+2], imgdata[pos+1], imgdata[pos], 0];
-			var index = sceneMeta[id].coloridx.indexOf(px.byte2num());//getPixelIndex(id, px);
-			pixelstorage.push(index);
+	var padding_bytes = (4-(w%4))%4;
+	
+	let w2 = w*3
+	var pos, j, x
+	
+	for(let y = h - 1; y >= 0; y--) {
+		for(x = 0; x < w2; x +=3) {
+			pos = y*(w2)+x;
+			
+			pixelstorage.push(
+				sceneMeta[id].coloridx.indexOf(
+					[imgdata[pos+2], imgdata[pos+1], imgdata[pos], 0].byte2num()
+				)
+			)
 		}
 		
 		//Um Padding Bytes auffüllen
-		for(var j = 0; j < padding_bytes; j++)
+		for(j = 0; j < padding_bytes; j++)
 			pixelstorage.push(0);
 	}
-	
+	log(pos)
+	log(imgdata.length)
 	//Daten zusammenstellen
 	var data = header.concat(dibheader).concat(colortable).concat(pixelstorage);
 	

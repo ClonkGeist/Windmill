@@ -301,11 +301,12 @@ input[type=range]::-moz-range-track {
 .toolbar-collapse {
 	float: right;
 	padding-right: 5px;
+	color: rgb(180, 180, 180);
 	
 	box-sizing: border-box;
 	
 	&:hover {
-		color: green;
+		color: #777;
 	}
 }
 
@@ -717,9 +718,18 @@ select {
 	stroke-dasharray: 5px;
 	animation: dash 0.5s linear infinite;
 }
-
+/*
 @keyframes dash {
   to {
+	stroke-dashoffset: 10px;
+  }
+}*/
+
+@keyframes dash {
+  50% {
+	stroke-dashoffset: 0px;
+  }
+  51% {
 	stroke-dashoffset: 10px;
   }
 }
