@@ -701,14 +701,13 @@ class BMPScene {
 		Special functionalities
 	*/
 	
-	// this output is flipped by its y axis
+	// this output is flipped by its y-axis
 	readPixels(x, y, w, h) {
 		// flip y
 		y = this.height - y - h
 		
 		let target = new Uint8Array(w*h*4)
 		
-		this.gl.finish()
 		this.gl.readPixels(x, y, w, h, this.gl.RGBA, this.gl.UNSIGNED_BYTE, target)
 		
 		return target
