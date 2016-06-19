@@ -120,9 +120,9 @@ s0.42,6.38-0.29,7.92s-2.79,1.69-2.79,1.69l-0.08,2.77l0.02-6.2"/></svg>
 								</hbox>
 							</hbox>
 							<vbox class="mm-buttons" flex="1">
-								<hbox class="mm-play-wrapper mm-button"><label class="mm-play" value="$play$" /></hbox>
+								<vbox class="mm-play-wrapper mm-button"><label class="mm-play" value="$play$" /></vbox>
 								<hbox height="2"></hbox>
-								<hbox class="mm-dev-wrapper mm-button"><label class="mm-dev" value="$develop$" /></hbox>
+								<vbox class="mm-dev-wrapper mm-button"><label class="mm-dev" value="$develop$" /></vbox>
 							</vbox>
 						</hbox>
 					</hbox>
