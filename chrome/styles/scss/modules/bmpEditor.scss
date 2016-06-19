@@ -707,17 +707,28 @@ select {
 }
 
 .sel-g {
-	stroke-width: 1px;
+	stroke-width: 1;
 	stroke-linecap: square;
 	stroke: $clr-sel-dark;
 	fill: none;
+	vector-effect: non-scaling-stroke;
+	
+	* {
+		vector-effect: non-scaling-stroke;
+		shape-rendering: crispEdges;
+	}
 }
 
 .sel-scnd {
 	stroke: $clr-sel-light;
-	stroke-dasharray: 5px;
+	stroke-dasharray: 5;
 	animation: dash 0.5s linear infinite;
 }
+
+.sel-c {
+	shape-rendering: crispEdges;
+}
+
 /*
 @keyframes dash {
   to {
@@ -726,10 +737,7 @@ select {
 }*/
 
 @keyframes dash {
-  50% {
-	stroke-dashoffset: 0px;
-  }
-  51% {
+  to {
 	stroke-dashoffset: 10px;
   }
 }
