@@ -181,6 +181,7 @@ caption {
 .mm-play-wrapper {
 
 	background-color: $chrome-clr-sub;
+	pointer-events: auto;
 	
 	&:hover {
 		background-color: rgb(80, 80, 80);
@@ -196,12 +197,10 @@ caption {
 }
 
 .mm-dev {
-	pointer-events: auto;
 	transform: skew(45deg);
 }
 
 .mm-play {
-	pointer-events: auto;
 	transform: skew(-45deg);
 }
 
