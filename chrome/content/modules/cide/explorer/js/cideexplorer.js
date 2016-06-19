@@ -255,13 +255,14 @@ function createNewWorkEnvironmentDlg(parentWorkEnv, parentContainer) {
 				let cdirs = getConfigData("Global", "ClonkDirectories") || [];
 
 				//Ueberpruefen ob Pfad bereits vorhanden ist
-				if(cdirs.indexOf(path) != -1) {
-					error("$DlgErrWEAlreadyLoaded$");
-					return -1;
-				}
+				for(let i  = 0; i < cdirs.length; i++)
+					if(cdirs[i] && cdirs[i].path == path) {
+						error("$DlgErrWEAlreadyLoaded$");
+						return -1;
+					}
 
 				//Ansonsten der Liste hinzufuegen und speichern
-				cdirs.push(path);
+				cdirs.push({path, active: false});
 				setConfigData("Global", "ClonkDirectories", cdirs, true);
 
 				let workenv = createWorkEnvironment(path, _mainwindow.WORKENV_TYPE_ClonkPath);

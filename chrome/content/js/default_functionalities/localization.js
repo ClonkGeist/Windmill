@@ -44,6 +44,9 @@ function localizeModule() {
 
 		//Attribute durchgehen
 		jQuery.each(obj.attributes, function(j, attr) {
+			if(!$(obj).attr(attr.name))
+				return;
+
 			let match = $(obj).attr(attr.name).match(rgx);
 			if(match) {
 				$(obj).attr(attr.name, $(obj).attr(attr.name).replace(rgx, (match) => {
