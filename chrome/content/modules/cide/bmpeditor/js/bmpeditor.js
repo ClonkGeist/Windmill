@@ -1,8 +1,9 @@
 
 var editlayer, editObj = { mode: 0 }, rulerData = {};
-var activeId;
 
 var sceneMeta = new Array();
+
+function TabManager() { return sceneMeta; }
 
 const OC_KEYCOLOR = 0x0;
 const MAX_UNDO_STACKSIZE = 32;
@@ -28,7 +29,7 @@ $(window).ready(function() {
 		if((e.which < 48 || e.which > 57) && (e.which < 96 || e.which > 105) && e.which != 8)
 			e.stopPropagation();
 	}).keyup(function(e) {
-		updateBrushGenerator(activeId);
+		updateBrushGenerator(CM_ACTIVEID);
 		$("#mds_thickness_range").val($(this).val());
 	});
 	$("#mds_linethickness_range").mousemove(function(e) {
@@ -59,13 +60,13 @@ $(window).ready(function() {
 			//Verschiebung deaktivieren
 			if($("#movinglayer").hasClass("active")) {
 				//Callback ausführen
-				if(sceneMeta[activeId].rtdata.moving_callback)
-					sceneMeta[activeId].rtdata.moving_callback();
+				if(sceneMeta[CM_ACTIVEID].rtdata.moving_callback)
+					sceneMeta[CM_ACTIVEID].rtdata.moving_callback();
 				else { //Alternativ: Bilddaten durchgehen und Transparente Pixel aussortieren
 					var mvcnv = $("#movinglayer").get(0);
 					var mvctx = mvcnv.getContext('2d');
 					var ctx2 = $(".visible").get(0).getContext("2d");
-					var zoom = sceneMeta[activeId].z;
+					var zoom = sceneMeta[CM_ACTIVEID].z;
 					
 					var offset = $("#movinglayer").offset();
 					var cnv_offset = $(".visible").offset();
@@ -103,7 +104,7 @@ $(window).ready(function() {
 		var mx = e.clientX - rect.left, my = e.clientY - rect.top;
 		var index = Math.floor(my/10)*16+Math.floor(mx/10);
 		
-		var id = activeId;//parseInt($(".visible").attr("id").replace(/bmpCanvas-/, ""));
+		var id = CM_ACTIVEID;//parseInt($(".visible").attr("id").replace(/bmpCanvas-/, ""));
 		var indices = sceneMeta[id].matindices;
 		var bg_mode = sceneMeta[id].rtdata.matmode_underground;
 		if(bg_mode)
@@ -144,7 +145,7 @@ $(window).ready(function() {
 		var mx = e.clientX - rect.left, my = e.clientY - rect.top;
 		var index = Math.floor(my/10)*16+Math.floor(mx/10);
 		
-		var id = activeId;//parseInt($(".visible").attr("id").replace(/bmpCanvas-/, ""));
+		var id = CM_ACTIVEID;//parseInt($(".visible").attr("id").replace(/bmpCanvas-/, ""));
 		var indices = sceneMeta[id].matindices;
 		var bg_mode = sceneMeta[id].rtdata.matmode_underground;
 		if(bg_mode)
@@ -160,16 +161,16 @@ $(window).ready(function() {
 		if($("#current-material-name > input").is(":focus"))
 			return;
 
-		var current_mat = sceneMeta[activeId].rtdata.current_matidx;
+		var current_mat = sceneMeta[CM_ACTIVEID].rtdata.current_matidx;
 	
-		$("#current-material-clr").css("background-color", getColorByIndex(activeId, current_mat));
-		$("#current-material-name > input").val(getMaterialByIndex(activeId, current_mat));
+		$("#current-material-clr").css("background-color", getColorByIndex(CM_ACTIVEID, current_mat));
+		$("#current-material-name > input").val(getMaterialByIndex(CM_ACTIVEID, current_mat));
 	}).contextmenu(function(e) {
 		var rect = matpalette.getBoundingClientRect();
 		var mx = e.clientX - rect.left, my = e.clientY - rect.top;
 		var index = Math.floor(my/10)*16+Math.floor(mx/10);
 		
-		var id = activeId;
+		var id = CM_ACTIVEID;
 		var indices = sceneMeta[id].matindices;
 		var bg_mode = sceneMeta[id].rtdata.matmode_underground;
 		if(bg_mode)
@@ -263,7 +264,7 @@ $(window).ready(function() {
 		$(this).val('');
 	}).focusout(function() {
 		var input = $(this).val(), cmat, ctext;
-		var id = activeId;
+		var id = CM_ACTIVEID;
 		
 		//Suggestionbox ausblenden
 		$("#material-suggestion-box").removeClass("active");
@@ -310,7 +311,7 @@ $(window).ready(function() {
 			return false;
 		}
 	}).keyup(function(e) {
-		var id = activeId;
+		var id = CM_ACTIVEID;
 		var current_selection = $("#material-suggestion-box").find(".selected").find(".suggestion-box-name").text();
 		
 		//Vorschlagsbox leeren
@@ -387,14 +388,14 @@ $(window).ready(function() {
 		if($(".color-matching-wizard.visible2").get(0))
 			return;
 	
-		var id = activeId;
+		var id = CM_ACTIVEID;
 		sceneMeta[id].rtdata.mousedown = true;
 		sceneMeta[id].rtdata.mousepos = [e.clientX, e.clientY];
 	}).mouseup(function(e) {
 		if($(".color-matching-wizard.visible2").get(0))
 			return;
 
-		sceneMeta[activeId].rtdata.mousedown = false;
+		sceneMeta[CM_ACTIVEID].rtdata.mousedown = false;
 		
 		//Bearbeitungsvorgang abbrechen wenn Maustaste außerhalb des Canvas losgelassen wird
 		/*
@@ -406,7 +407,7 @@ $(window).ready(function() {
 			return;
 
 		//Zoomen
-		var id = activeId;
+		var id = CM_ACTIVEID;
 		if(e.ctrlKey) {
 			if(e.deltaY > 0)
 				changeZoom(id);
@@ -437,7 +438,7 @@ $(window).ready(function() {
 		rulerData.fq = (rulerData.fq + 1)%3;
 		if(rulerData.fq)
 			return;
-		if(activeId === null)
+		if(CM_ACTIVEID === null)
 			return;
 		
 		$(".rulerdisplay.hidden").removeClass("hidden");
@@ -461,7 +462,7 @@ $(window).ready(function() {
 	
 	$(window).resize(function() {
 		updateRulers();
-		centerCanvas(activeId);
+		centerCanvas(CM_ACTIVEID);
 	});
 	$("#switch-material-mode").click(function() {
 		switchMaterialMode();
@@ -469,7 +470,7 @@ $(window).ready(function() {
 	
 	//Color-Matching-Wizard: Visuelles Feedback fuer Fastselect per Druck auf Ctrl
 	$(document).keydown(function(e) {
-		var wrapper = $("#cmw-wrapper-"+activeId);
+		var wrapper = $("#cmw-wrapper-"+CM_ACTIVEID);
 		if(!wrapper.get(0))
 			return;
 		
@@ -477,7 +478,7 @@ $(window).ready(function() {
 			wrapper.find(".cmw-selectcolor-palette-fastselect").addClass("activated").addClass("ctrlKeyPressed");
 	});
 	$(document).keyup(function(e) {
-		var wrapper = $("#cmw-wrapper-"+activeId);
+		var wrapper = $("#cmw-wrapper-"+CM_ACTIVEID);
 		if(!wrapper.get(0))
 			return;
 
@@ -500,8 +501,8 @@ $(window).ready(function() {
 			if(e.keyCode == 13)
 				$(this).trigger("focusout");
 		}).focusout(function() {
-			let id = activeId;
-			var zoomlvl = Math.max(1, Math.min(32, parseInt($(this).val())/100 || sceneMeta[activeId].z));
+			let id = CM_ACTIVEID;
+			var zoomlvl = Math.max(1, Math.min(32, parseInt($(this).val())/100 || sceneMeta[CM_ACTIVEID].z));
 			sceneMeta[id].z = zoomlvl;
 			$(this).parent().text(zoomlvl + "%");
 			onUpdateZoom(id);
@@ -534,18 +535,18 @@ $(window).ready(function() {
 			$(this).removeClass("active");
 			$(this).attr("mat-index", -1);
 			$(this).css("background-color", "#000");
-			sceneMeta[activeId].rtdata.sidepalette[$(".spalette-elm").index(this)] = -1;
+			sceneMeta[CM_ACTIVEID].rtdata.sidepalette[$(".spalette-elm").index(this)] = -1;
 			return;
 		}
-		selectColorIndex(activeId, $(this).attr("mat-index") || -1);
+		selectColorIndex(CM_ACTIVEID, $(this).attr("mat-index") || -1);
 		$(this).addClass("active");
-		sceneMeta[activeId].rtdata.current_sideindex = $(".spalette-elm").index(this);
+		sceneMeta[CM_ACTIVEID].rtdata.current_sideindex = $(".spalette-elm").index(this);
 	}).contextmenu(function() {
 		if(!$(".spalette-elm.active").get(0))
 			return;
 
 		$(".spalette-elm.active").removeClass("active");
-		selectColorIndex(activeId, -1);
+		selectColorIndex(CM_ACTIVEID, -1);
 	});
 	
 	// brush panel
@@ -556,21 +557,21 @@ $(window).ready(function() {
 	});
 	
 	$("#rounded-brush").change(function(e) {
-		sceneMeta[activeId].brushData.rounded = this.checked;
-		updateBrushGenerator(activeId);
+		sceneMeta[CM_ACTIVEID].brushData.rounded = this.checked;
+		updateBrushGenerator(CM_ACTIVEID);
 	});
 	
 	$("#mds_thickness_range").on("input", function() {
-		updateBrushGenerator(activeId);
+		updateBrushGenerator(CM_ACTIVEID);
 	});
 	
 	/*-- Key Bindings --*/
 	
 	//Speichern
-	bindKeyToObj(new KeyBinding("Save", "Ctrl-S", function() { saveCanvas(activeId); }));
+	bindKeyToObj(new KeyBinding("Save", "Ctrl-S", function() { saveTab(CM_ACTIVEID); }));
 	//Zoom
-	bindKeyToObj(new KeyBinding("ZoomIn", "Ctrl-+", function() { changeZoom(activeId); }));
-	bindKeyToObj(new KeyBinding("ZoomOut", "Ctrl--", function() { changeZoom(activeId, true); }));
+	bindKeyToObj(new KeyBinding("ZoomIn", "Ctrl-+", function() { changeZoom(CM_ACTIVEID); }));
+	bindKeyToObj(new KeyBinding("ZoomOut", "Ctrl--", function() { changeZoom(CM_ACTIVEID, true); }));
 	//Undo/Redo
 	bindKeyToObj(new KeyBinding("Undo", "Ctrl-Z", function() { undoImageData(); }));
 	bindKeyToObj(new KeyBinding("Redo", "Ctrl-Y", function() { redoImageData(); }));
@@ -597,7 +598,7 @@ $(window).ready(function() {
 var btn_undo, btn_redo;
 
 function createCideToolbar(startup) {
-	addCideToolbarButton("icon-save", function() { saveCanvas(activeId); });
+	addCideToolbarButton("icon-save", function() { saveTab(CM_ACTIVEID); });
 	addCideToolbarButton("seperator");
 	addCideToolbarButton("icon-reflect-h", function() { mirrorImage(); });
 	addCideToolbarButton("icon-reflect-v", function() { mirrorImage(true); });
@@ -619,7 +620,7 @@ function createCideToolbar(startup) {
 		undoImageData();
 	});
 
-	if($("#cmw-wrapper-"+activeId).get(0) || startup)
+	if($("#cmw-wrapper-"+CM_ACTIVEID).get(0) || startup)
 		hideCideToolbar();
 	
 	return true;
@@ -719,7 +720,7 @@ function updateCursor(id, dataURL) {
 
 function updateSidePalette(id) {
 	if(id == undefined)
-		id = activeId;
+		id = CM_ACTIVEID;
 
 	if(!sceneMeta[id].rtdata.sidepalette)
 		sceneMeta[id].rtdata.sidepalette = [];
@@ -748,7 +749,7 @@ function rotateImage(angle) {
 	if(!angle)
 		return;
 	
-	var id = activeId;
+	var id = CM_ACTIVEID;
 	var cnv = sceneMeta[id].c, ctx = cnv.getContext("2d");
 	var idata = ctx.getImageData(0, 0, cnv.width, cnv.height), nidata;
 	if(angle && angle != 180)
@@ -803,7 +804,7 @@ function rotateImage(angle) {
 /*-- Spiegelung --*/
 /** @deprecated */
 function mirrorImage(fVertically) {
-	var id = activeId, cnv = sceneMeta[id].c;
+	var id = CM_ACTIVEID, cnv = sceneMeta[id].c;
 	if($("#movinglayer.active").get(0))
 		cnv = $("#movinglayer.active").get(0);
 
@@ -858,7 +859,7 @@ function mirrorImage(fVertically) {
 function openScalingDialog() {
 	var dlg = new WDialog("$DlgScaleImage$", MODULE_LPRE, { modal: true, css: { "width": "470px" }, 
 			btnright: [{preset: "accept", onclick: function(e, btn, _self) {
-				var cnv = sceneMeta[activeId].c;
+				var cnv = sceneMeta[CM_ACTIVEID].c;
 				var ctx = cnv.getContext("2d");
 				var nWdt = parseInt($(_self.element).find("#dbmp_newImageWidth").val()) || 1;
 				var nHgt = parseInt($(_self.element).find("#dbmp_newImageHeight").val()) || 1;
@@ -907,7 +908,7 @@ function openScalingDialog() {
 				   '</rows></grid></hbox>');
 	dlg.show();
 	
-	var id = activeId;
+	var id = CM_ACTIVEID;
 	
 	$(dlg.element).find("#dbmp_newImageWidth").keypress(function(e) {
 		if(!e.ctrlKey)
@@ -916,7 +917,7 @@ function openScalingDialog() {
 					return false;
 	}).on("input", function(e) {
 		if(_mainwindow.$("#dbmp_proportional").prop("checked")) {
-			var cnv = sceneMeta[activeId].c;
+			var cnv = sceneMeta[CM_ACTIVEID].c;
 			var p = cnv.height/cnv.width;
 			_mainwindow.$("#dbmp_newImageHeight").val(Math.floor(parseInt($(this).val())*p) || 1);
 		}
@@ -929,7 +930,7 @@ function openScalingDialog() {
 					return false;
 	}).on("input", function(e) {
 		if(_mainwindow.$("#dbmp_proportional").prop("checked")) {
-			var cnv = sceneMeta[activeId].c;
+			var cnv = sceneMeta[CM_ACTIVEID].c;
 			var p = cnv.width/cnv.height;
 			_mainwindow.$("#dbmp_newImageWidth").val(Math.floor(parseInt($(this).val())*p) || 1);
 		}
@@ -942,7 +943,7 @@ function openScalingDialog() {
 /** @deprecated */
 function stockUndoStack(imgdata, id, fSaved) {
 	if(id == undefined)
-		id = activeId;
+		id = CM_ACTIVEID;
 
 	if(!sceneMeta[id].rtdata.undoStack)
 		sceneMeta[id].rtdata.undoStack = [];
@@ -968,7 +969,7 @@ function stockUndoStack(imgdata, id, fSaved) {
 /** @deprecated */
 function canUndoImageData() {
 	if(true)return
-	var id = activeId;
+	var id = CM_ACTIVEID;
 	if(!sceneMeta[id].rtdata.undoStack)
 		return false;
 	
@@ -982,7 +983,7 @@ function canUndoImageData() {
 }
 /** @deprecated */
 function undoImageData() {
-	var id = activeId;
+	var id = CM_ACTIVEID;
 
 	if(!canUndoImageData())
 		return;
@@ -1004,7 +1005,7 @@ function undoImageData() {
 }
 
 function canRedoImageData() {
-	var id = activeId;
+	var id = CM_ACTIVEID;
 	if(!sceneMeta[id].rtdata.undoStack)
 		return false;
 	
@@ -1018,7 +1019,7 @@ function canRedoImageData() {
 }
 /** @deprecated */
 function redoImageData() {
-	var id = activeId;
+	var id = CM_ACTIVEID;
 	
 	if(!canRedoImageData())
 		return;
@@ -1042,7 +1043,7 @@ function redoImageData() {
 /*-- Infotoolbar --*/
 
 function updateInfotoolbar(x, y) {
-	var id = activeId, zoom = sceneMeta[id].z;
+	var id = CM_ACTIVEID, zoom = sceneMeta[id].z;
 	if(x != undefined && y != undefined) {
 		x = Math.floor(x); y = Math.floor(y);
 		var rect = editlayer.getBoundingClientRect();
@@ -1147,7 +1148,7 @@ function selectIndexByPixel(id, x, y) {
 }
 
 function switchMaterialMode() {
-	var id = activeId;
+	var id = CM_ACTIVEID;
 	sceneMeta[id].rtdata.matmode_underground = !sceneMeta[id].rtdata.matmode_underground;
 	drawMaterialPalette(id);
 }
@@ -1202,7 +1203,7 @@ function updateRulers() {
 	setRulerMarker(rulert, true, xoff);
 	
 	//Einzelne Striche einzeichnen
-	var zoom = sceneMeta[activeId].z;
+	var zoom = sceneMeta[CM_ACTIVEID].z;
 	var step = Math.max(1, Math.floor(10/zoom)), pxsize = zoom;
 
 	for(var i = step, j = 1; i*zoom < rulerl.height; i+=step) {
@@ -1283,7 +1284,7 @@ function getUnsavedFiles() {
 	return files;
 }
 
-function saveCanvas(id) {
+function saveTab(id) {
 	var num2byte = function(num, size) {
 		let ar = []
 		for(let i = 0; i < size; i++) {
@@ -1419,19 +1420,6 @@ function saveCanvas(id) {
 	
 	// sceneMeta[id].rtdata.undoStack[sceneMeta[id].rtdata.undoStackPosition].saved = true;
 	return true;
-}
-
-class BMPImage {
-	constructor() {
-		this.fileheader = {
-		}
-		
-		this.dibheader = {
-		}
-		
-		this.data = {
-		}
-	}
 }
 
 function saveTexMap(id) {
@@ -1570,16 +1558,19 @@ function addCideFile(path, id, fShow) {
 	
 	let gl = getGl()
 	
-	if(!gl)
+	if(!gl) {
+		log("Bmpeditor: Gl hasn't been found", false, "error")
 		return
+	}
 	
 	var scene = addScene(gl, document.getElementById("draw-canvas"))
 	scene.useAsRect($(".ui-rect").get(0))
 	scene.assignColorPalette(clr_index)
-	// showObj2(clr_index)
+	
 	sceneMeta[id] = { 
 		scene, 
 		f: file,
+		path: file.path,
 		header: infoheader,
 		coloridx: clr_index,
 		rtdata: {},
@@ -1587,7 +1578,7 @@ function addCideFile(path, id, fShow) {
 		brushData: {
 			size: 1,
 			rounded: true,
-			// seed and distribution factor go here
+			// seed and distribution factors go here
 		}
 	};
 	
@@ -1601,44 +1592,6 @@ function addCideFile(path, id, fShow) {
 		return ar;
 	};
 	
-	//ggf. zum Pixel Array springen
-	if(1078 < bitmap_header.offset_pxarray)
-		data.splice(0, bitmap_header.offset_pxarray-1078);
-	
-	//Bild aus Pixelstorage generieren
-	/*
-	var j = 0;
-	var padding_bytes = (4-(infoheader.width%4))%4;
-	for(var i = Math.abs(infoheader.height)-1; i >= 0; i--) {
-		for(var x = 0; x < (infoheader.width)*4; x+=4) {
-			var pos = i*(infoheader.width*4)+x;
-			var index = data[j++]; 
-			var px = num2byte(sceneMeta[id].coloridx[index], 4);
-			
-			//Canvas-Alpha: 255 = sichtbar
-			imgdata.data[pos] = px[2]; imgdata.data[pos+1] = px[1]; imgdata.data[pos+2] = px[0]; imgdata.data[pos+3] = 255;
-		}
-		
-		j += padding_bytes;
-	}
-	*/
-	var texData = new Uint8Array()
-	var w = infoheader.width
-	/*
-	for(let i = Math.abs(infoheader.height)-1; i >= 0; i--) {
-		for(let x = 0; x < (infoheader.width)*4; x+=4) {
-			let pos = i*(infoheader.width*4)+x;
-			let index = data[j++]; 
-			let px = num2byte(sceneMeta[id].coloridx[index], 4);
-			
-			//Canvas-Alpha: 255 = sichtbar
-			data[pos] = px[2]
-			data[pos+1] = px[1]
-			data[pos+2] = px[0]
-		}
-	}*/
-	
-	//scene.initWithData()
 	scene.initWithTexture(file.path)
 	
 	//Bitmap anzeigen
@@ -1649,6 +1602,9 @@ function addCideFile(path, id, fShow) {
 
 	//Canvas zentrieren
 	centerCanvas(id);
+	
+	log("Init bmp-scene: id("+id+")")
+	log(scene)
 	
 	//Canvas ggf. anzeigen
 	if(fShow || !a_S)
@@ -1761,6 +1717,7 @@ function loadMaterialData(file) {
 /* Bildreperatur */
 
 function loadUnsupportedImage(file, id, fShow, clridxtbl) {
+	log("Unsupported image has been detected")
 	//Canvas erstellen und Bild anzeigen
 	$("body").append("<canvas id='bmpCanvas-"+id+"' class='image-canvas'></canvas>");
 	var canvas = document.getElementById("bmpCanvas-"+id);
@@ -2143,7 +2100,7 @@ function loadUnsupportedImage(file, id, fShow, clridxtbl) {
 
 /* Farbabfragen */
 
-function getCurrentColor(id = activeId) {
+function getCurrentColor(id = CM_ACTIVEID) {
 	return getColorByIndex(id, sceneMeta[id].rtdata.current_matidx);
 }
 
@@ -2238,27 +2195,9 @@ function drawMaterialPalette(id) {
 
 /* Deck functionalities */
 
-function saveFileByPath(path) {
-	for(var id in sceneMeta)
-		if(sceneMeta[id])
-			if(sceneMeta[id].f.path == path)
-				return saveCanvas(id);
-	
-	return -1;
-}
-
-function fileLoaded(path) {
-	for(var id in sceneMeta)
-		if(sceneMeta[id])
-			if(sceneMeta[id].f.path == path)
-				return id;
-	
-	return -1;
-}
-
 function showDeckItem(id) {
 	//Auswahl deaktivieren bei Tabwechsel
-	if(id !== activeId)
+	if(id !== CM_ACTIVEID)
 		$("#movinglayer").removeClass("active");
 	
 	//Fuer Color-Matching-Wizard die Toolbar deaktivieren
@@ -2293,7 +2232,7 @@ function showDeckItem(id) {
 	*/
 	
 	a_S = _SCENES[id]
-	activeId = id
+	CM_ACTIVEID = id
 	a_S.onShow()
 	
 	//Lineal und Zoom aktualisieren
@@ -2305,8 +2244,8 @@ function showDeckItem(id) {
 }
 
 function frameWindowTitle() { 
-	if(sceneMeta[activeId])
-		return formatPath(sceneMeta[activeId].f.path).substr(_sc.workpath(activeId, true).length+1);
+	if(sceneMeta[CM_ACTIVEID])
+		return formatPath(sceneMeta[CM_ACTIVEID].f.path).substr(_sc.workpath(CM_ACTIVEID, true).length+1);
 	return "";
 }
 
