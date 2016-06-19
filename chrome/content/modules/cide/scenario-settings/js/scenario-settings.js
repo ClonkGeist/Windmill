@@ -901,6 +901,8 @@ function loadDefinitionSelectionData(infosource, dest = infosource, index = getC
 			def.defcore = { DefCore: { id: listentry[0] } };
 			def.title = listentry[0];
 			def.desc = Locale("$DefInvalid$");
+			if(!definitions[deff])
+				definitions[deff] = {ids: [], d: []};
 			definitions[deff].ids[listentry[0]] = def;
 			definitions[deff].d.push(def);
 

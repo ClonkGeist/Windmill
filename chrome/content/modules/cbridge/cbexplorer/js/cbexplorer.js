@@ -221,7 +221,7 @@ function getTreeEntryData(entry, fext) {
 function noContainer(fext) {return fext == "ocs"; }
 function noDragDropItem() {return true;}
 
-function onTreeDeselect(obj) { $("#previewimage").attr("src", ""); }
+function onTreeDeselect(obj) { }
 
 let filecache = {}, refreshAchievements = function() {};
 

@@ -51,7 +51,7 @@ function checkSavingPermissions(index) {
 	return parent.onCideModuleSavingPermissions(formatPath(TabManager()[index][cda.path]));
 }
 
-function onCideModuleSavingPermissions(...pars) { parent.onCideModuleSavingPermissions(...pars); }
+function onCideModuleSavingPermissions(...pars) { return parent.onCideModuleSavingPermissions(...pars); }
 
 function getUnsavedFiles() {
 	if(!window.checkIfTabIsUnsaved)
