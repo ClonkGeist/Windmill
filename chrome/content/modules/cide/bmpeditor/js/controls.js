@@ -2,38 +2,81 @@
 	TODO:
 	
 	undo manager
-	make readPixels only give RGBs; byte2num in saveImage needs to get adjusted to fit with color without alpha values
+	selection behaviour
+	double image setup (for background and foreground setups)
 */
 
 
-var selectedMode, inMode, a_Mode
+class ModeHandler {
+	constructor() {
+		
+	}
+	get selected() {
+		return sceneMeta[CM_ACTIVEID]._selectedMode || false
+	}
+	
+	set selected(mode) {
+		if(this.active)
+			this.active.finish()
+	
+		if(mode == Mode_Draw_Shape)
+			$(".canvas-dimension").addClass("brush-mode")
+		else
+			$(".canvas-dimension").removeClass("brush-mode")
+	
+		sceneMeta[CM_ACTIVEID]._selectedMode = mode
+	}
+	
+	get active() {
+		return sceneMeta[CM_ACTIVEID]._activeMode || false
+	}
+	
+	set active(m) {
+		sceneMeta[CM_ACTIVEID]._activeMode = m
+	}
+	
+	get busy() {
+		return sceneMeta[CM_ACTIVEID]._inMode
+	}
+	
+	set busy(f) {
+		sceneMeta[CM_ACTIVEID]._inMode = f
+	}
+	
+	create(scene, x, y) {
+		this.active = new this.selected(sceneMeta[CM_ACTIVEID]._operandIndex, scene, x, y)
+		sceneMeta[CM_ACTIVEID]._operandIndex++
+	}
+}
+
+var Mode = new ModeHandler()
 
 const
 	MODIFIER_CTRL = 1,
 	MODIFIER_SHIFT = 2,
 	MODIFIER_ALT = 4
-	
 
 function initCtrls() {
 	
 	$(".canvas-wrapper").mousedown(function(e) {
-		if(!selectedMode || e.which !== 1 || $(".color-matching-wizard.visible2").get(0))
+		if(e.which !== 1 || CM_ACTIVEID === -1 || !Mode.selected || $(".color-matching-wizard.visible2").get(0))
 			return
 		
-		inMode = true
 		let rect = this.getBoundingClientRect()
 		
-		var x = e.clientX - rect.left,
+		let x = e.clientX - rect.left,
 			y = e.clientY - rect.top;
 		
-		var [x, y] = a_S.screenToTexture(x, y)
-		a_Mode = new selectedMode(0, a_S, x, y)
-		a_Mode.onSceneFocus(a_S)
+		Mode.busy = true
+		
+		let [x, y] = a_S.screenToTexture(x, y)
+		Mode.create(0, a_S, x, y)
+		Mode.active.onSceneFocus(a_S)
 	})
 
 	$("body").mousemove(function(e) {
 		
-		if(!inMode || $(".color-matching-wizard.visible2").get(0))
+		if(!Mode.busy || $(".color-matching-wizard.visible2").get(0))
 			return
 		
 		let rect = $(".canvas-wrapper").get(0).getBoundingClientRect()
@@ -42,11 +85,11 @@ function initCtrls() {
 			y = e.clientY - rect.top;
 		
 		var [x, y] = a_S.screenToTexture(x, y)
-		a_Mode.onMousemove(x, y, a_S, getEventModifiers(e))
+		Mode.active.onMousemove(x, y, a_S, getEventModifiers(e))
 	})
 
 	$("body").mouseup(function(e) {
-		if(!inMode || e.which !== 1 ||  $(".color-matching-wizard.visible2").get(0))
+		if(!Mode.busy || e.which !== 1 ||  $(".color-matching-wizard.visible2").get(0))
 			return
 		
 		let rect = $(".canvas-wrapper").get(0).getBoundingClientRect()
@@ -55,9 +98,9 @@ function initCtrls() {
 			y = e.clientY - rect.top;
 		
 		var [x, y] = a_S.screenToTexture(x, y)
-		a_Mode.onMouseup(x, y, a_S, getEventModifiers(e))
+		Mode.active.onMouseup(x, y, a_S, getEventModifiers(e))
 		
-		inMode = false
+		Mode.busy = false
 	})
 	
 	$(".ui-rect").mousedown((e) => {
@@ -76,39 +119,26 @@ function initCtrls() {
 	})
 	
 	$("#md_point").click(function() {
-		setSelMode(Mode_Draw_Shape)
+		Mode.selected = Mode_Draw_Shape
 	})
 	
 	$("#md_rect").click(function() {
-		setSelMode(Mode_Draw_Rect)
+		Mode.selected = Mode_Draw_Rect
 	})
 	
 	$("#md_circle").click(function() {
-		setSelMode(Mode_Draw_Circle)
+		Mode.selected = Mode_Draw_Circle
 	})
 	
 	$("#md_getclr").click(function() {
-		setSelMode(Mode_Eyedropper)
+		Mode.selected = Mode_Eyedropper
 	})
 	
 	$("#md_selrect").click(function() {
-		setSelMode(Mode_Sel_Rect)
+		Mode.selected = Mode_Sel_Rect
 	})
-	
-	setSelMode(Mode_Draw_Shape)
 }
 
-function setSelMode(mode) {
-	if(a_Mode)
-		a_Mode.finish()
-	
-	if(mode == Mode_Draw_Shape)
-		$(".canvas-dimension").addClass("brush-mode")
-	else
-		$(".canvas-dimension").removeClass("brush-mode")
-	
-	selectedMode = mode
-}
 
 function getEventModifiers(e) {
 	let mods = 0

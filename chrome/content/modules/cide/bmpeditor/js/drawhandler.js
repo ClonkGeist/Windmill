@@ -22,7 +22,6 @@ function initGl(id) {
 	var gl
 	
 	try {
-		//gl = c.getContext("experimental-webgl", {
 		gl = c.getContext("webgl", {
 			antialias: false,
 			depth: false,

@@ -382,7 +382,7 @@ $(window).ready(function() {
 		mirrorTop: $("#ruler-left-display"),
 		fq: 0 
 	};
-	
+	/* TODO: nach deprecated stuff durchsuchen */
 	//Maussteuerung
 	$(document).mousedown(function(e) {
 		if($(".color-matching-wizard.visible2").get(0))
@@ -396,12 +396,6 @@ $(window).ready(function() {
 			return;
 
 		sceneMeta[CM_ACTIVEID].rtdata.mousedown = false;
-		
-		//Bearbeitungsvorgang abbrechen wenn Maustaste außerhalb des Canvas losgelassen wird
-		/*
-		if(editObj.mode != mdSelectPoly)
-			editObj = {};
-		*/
 	}).mousewheel(function(e) {
 		if($(".color-matching-wizard.visible2").get(0))
 			return;
@@ -1118,7 +1112,7 @@ function onUpdateZoom(id) {
 	//Canvas zentrieren
 	centerCanvas();
 	
-	//Lineal neu zeichnen
+	//Lineale neu zeichnen
 	updateRulers();
 	
 	//Infoleiste aktualisieren
@@ -1126,8 +1120,6 @@ function onUpdateZoom(id) {
 	
 	// cursor anpassen
 	updateBrushGenerator(id);
-	
-	return true;
 }
 
 function selectIndexByPixel(id, x, y) {
@@ -1545,6 +1537,8 @@ function loadImageFileData(file, id) {
 }
 
 function addCideFile(path, id, fShow) {
+	log("Init bmp-scene: id("+id+")")
+	log(scene)
 	let file = path;
 	//Da am BMPEditor noch gearbeitet wird, fuers erste die nsIFile-Variante verwenden. Spaeter dann auf OS.File umsteigen.
 	if(!(path instanceof Ci.nsIFile))
@@ -1601,10 +1595,7 @@ function addCideFile(path, id, fShow) {
 	loadMaterials(id);
 
 	//Canvas zentrieren
-	centerCanvas(id);
-	
-	log("Init bmp-scene: id("+id+")")
-	log(scene)
+	centerCanvas(id)
 	
 	//Canvas ggf. anzeigen
 	if(fShow || !a_S)
