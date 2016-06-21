@@ -62,10 +62,10 @@ button:focus *
 		background-color: $clr-paper;
 	}
 	
-	spacer {
+	/*spacer {
 		border-right: 1px solid $clr-border;
 		background-color: $clr-empty;
-	}
+	}*/
 }
 
 #settings-nav {
@@ -263,8 +263,9 @@ listitem:focus
 	border: 1px solid $chrome-clr;
 	background: white;
 	margin: 10px;
-	cursor: pointer;
-		
+	
+	&.configurable { cursor: pointer; }
+
 	spacer {
 		background: none !important;
 		border: none !important;
@@ -285,6 +286,22 @@ listitem:focus
 			opacity: 1;
 		}
 	}
+}
+
+/*-- Module Subpage --*/
+
+.module-subpage-header {
+	border-bottom: 1px solid gainsboro;
+	margin: 0 1em;
+	padding: 0 3em;
+}
+
+.module-subpage-caption {
+	font-size: 1.5em;
+}
+
+.module-subpage-button {
+	/*-- button style --*/
 }
 
 /*	need some space	*/

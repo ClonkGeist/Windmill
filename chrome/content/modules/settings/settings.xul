@@ -94,18 +94,19 @@
 								<vbox class="moduleentry draft">
 									<spacer flex="1"/>
 									<hbox class="moduleinfo">
-										<hbox class="moduletitle" flex="3">Scripteditor</hbox>
+										<hbox class="moduletitle">Scripteditor</hbox>
+										<box class="modulectrl icon-info icon-16" height="16" width="16"></box>
+										<spacer flex="1"/>
 										<hbox class="modulecontrols" flex="1">
 											<spacer flex="1"/>
-											<box class="modulectrl icon-update icon-32" height="32" width="32"></box>
+											<box class="modulectrl icon-external icon-24" height="24" width="24"></box>
+											<box class="modulectrl icon-togglestate icon-24" height="24" width="24"></box>
 										</hbox>
 									</hbox>
 								</vbox>
 							</description>
 						</hbox>
-						<!--<vbox>
-							<checkbox label="$ActivateFileProtection$" id="cide-fileprotection" class="autoinit" flex="1" default-cfgsect="CIDE" default-cfgkey="FileProtection"/>
-						</vbox>
+						<!--
 						
 						<caption label="Programs" class="toggle-contents" onclick="toggleContents(this)"/>
 						<vbox>
@@ -153,17 +154,21 @@
 							<checkbox label="$ShowParameterList$" class="autoinit" flex="1" default-cfgsect="Scripteditor" default-cfgkey="ParameterList"/>
 							
 						</vbox>
-						<caption label="Explorer" class="toggle-contents" onclick="toggleContents(this)"/>
-						<vbox>
-							<checkbox label="$CopyOnDragDrop$" id="explorer-copy-on-drag-drop" class="autoinit" flex="1" default-cfgsect="Explorer" default-cfgkey="CopyOnDragDrop"/>
-							<checkbox label="$HideUnsupportedFiles$" id="explorer-hide-unsupported-files" class="autoinit" flex="1" default-cfgsect="CIDE" default-cfgkey="HideUnsupportedFiles"/>
-							<checkbox label="$ScenarioDefinitionPolyfill$" id="explorer-scendef-polyfill" class="autoinit" flex="1" default-cfgsect="CIDE" default-cfgkey="RejectScenarioBackup"/>
-						</vbox>
+						
 						<caption label="Scenario Settings" class="toggle-contents" onclick="toggleContents(this)"/>
-						<vbox>
-							<checkbox label="$AlwaysUseScenarioSettings$" id="scenariosettings-always-use" class="autoinit" flex="1" default-cfgsect="ScenarioSettings" default-cfgkey="AlwaysUseScenarioSettings"/>
-							<checkbox label="$UseModuleCache$" id="scenariosettings-module-cache" class="autoinit" flex="1" default-cfgsect="ScenarioSettings" default-cfgkey="UseModuleCache"/>
-						</vbox>-->
+						-->
+					</vbox>
+					<vbox id="settings-page-cide-subpage" class="settings-page module-subpage" top="0" bottom="0">
+						<hbox class="module-subpage-header">
+							<caption class="module-subpage-caption" label="Modulename" />
+							<spacer flex="1"/>
+							<button class="module-subpage-button module-subpage-back" label="$Back$"/>
+						</hbox>
+						<vbox class="module-subpage-content" flex="1">
+							<vbox class="module-subpage-loaded-content">
+								
+							</vbox>
+						</vbox>
 					</vbox>
 				</stack>
 				

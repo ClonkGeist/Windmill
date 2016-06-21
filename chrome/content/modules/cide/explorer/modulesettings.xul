@@ -1,0 +1,6 @@
+<vbox>
+	<checkbox label="$ActivateFileProtection$" id="cide-fileprotection" class="autoinit" flex="1" default-cfgsect="CIDE" default-cfgkey="FileProtection"/>
+	<checkbox label="$CopyOnDragDrop$" id="explorer-copy-on-drag-drop" class="autoinit" flex="1" default-cfgsect="Explorer" default-cfgkey="CopyOnDragDrop"/>
+	<checkbox label="$HideUnsupportedFiles$" id="explorer-hide-unsupported-files" class="autoinit" flex="1" default-cfgsect="CIDE" default-cfgkey="HideUnsupportedFiles"/>
+	<checkbox label="$ScenarioDefinitionPolyfill$" id="explorer-scendef-polyfill" class="autoinit" flex="1" default-cfgsect="CIDE" default-cfgkey="RejectScenarioBackup"/>
+</vbox>

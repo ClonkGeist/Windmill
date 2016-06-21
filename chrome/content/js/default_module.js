@@ -177,6 +177,8 @@ if(top != window) {
 	var MODULE_NAME = $(window.frameElement).attr("name");
 	var MODULE_PATH = $(window.frameElement).attr("src");
 	var MODULE_DEF = getModuleDef(MODULE_NAME);
+	if(!MODULE_DEF)
+		MODULE_DEF = { mainfile: "", languageprefix: "" };
 	var MODULE_LANG = (function() {var t = MODULE_DEF.mainfile.split('.'); return t[t.length-1];})();
 	var MODULE_LPRE = MODULE_DEF.languageprefix;
 	

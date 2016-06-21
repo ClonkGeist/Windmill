@@ -336,21 +336,6 @@
 .icon-liquidlevel:before {
 	@include -liquidlevel();
 }
-.icon-borders:before {
-	content: "B";
-}
-.icon-border-top:before {
-	content: "BT";
-}
-.icon-border-right:before {
-	content: "BR";
-}
-.icon-border-bottom:before {
-	content: "BB";
-}
-.icon-border-left:before {
-	content: "BL";
-}
 .icon-auto-scan-side:before { 
 	content: "AutoS";
 }
@@ -368,4 +353,14 @@
 }
 .icon-limiter:before { 
 	content: "L";
+}
+.icon-info:before {
+    @include -warning();
+    translate: rotate(180deg);
+}
+.icon-external:before {
+    content: "E";
+}
+.icon-togglestate:before {
+	content: "TS";
 }

@@ -23,7 +23,8 @@ hook("load", function() {
 					extprogids.push(group.externalprogramid);
 
 			//Create module overview
-			if(module.cidemodule) {
+			if(module.cidemodule || module.cbridgemodule) {
+				let target = module.cidemodule?"#settings-page-cide":"#settings-page-cbridge";
 				let clone = $(".moduleentry.draft").clone();
 				clone.removeClass("draft");
 				clone.find(".moduletitle").text(Locale(module.modulename, module.languageprefix));
@@ -32,9 +33,42 @@ hook("load", function() {
 					clone.css("background-image", gradient+"url(chrome://windmill/content/"+formatPath(module.relpath)+"/previewimage.png)");
 				else
 					clone.css("background-image", gradient+"url(chrome://windmill/content/"+formatPath(module.relpath)+"/"+module.settings.previewimage+")");
-				
-				clone.appendTo($("#settings-page-cide > .modulewrapper > description"));
+
+				clone.appendTo($(target+" > .modulewrapper > description"));
+				if(module.isconfigurable) {
+					clone.addClass("configurable");
+					clone.click(function() {
+						//Prepare subpage
+						let subpage = $($(this).parents("stack")[0]).find(".module-subpage");
+						subpage.css("display", "-moz-box").find(".module-subpage-caption").text(Locale(module.modulename, module.languageprefix));
+
+						//Load settings content from module
+						//TODO: Maybe some kind of check if module X was added and the user "trusted" it? So scripts will not be executed until the user allows it.
+						//      Or an unexploitable script protection..
+						let path = module.path.split("/");
+						path.pop();
+						path = path.join("/");
+						path += "/"+(module.settings.path?module.settings.path:"modulesettings.xul");
+						if(path.split(".").pop().toLowerCase() != "xul") {
+							log(`An error occured while trying to load the settings of the ${module.modulename} module:`, "error");
+							log("The specified target file is not supported. (Currently supported formats: xul)", "error");
+						}
+							
+						$(target+"-subpage .module-subpage-loaded-content").empty();
+						OS.File.read(path, {encoding: "utf-8"}).then(function(content) {
+							//Parse XUL and add content to DOM
+							//TODO: If possible warn the user if the added content wants to execute scripts
+							$(jQuery.parseHTML(Locale(content))).appendTo($(target+"-subpage .module-subpage-loaded-content"));
+						}, function(reason) {
+							log(`An error occured while trying to load the settings of the ${module.modulename} module:`, "error");
+							log(reason, "error");
+						});
+					});
+				}
 			}
+			$(".module-subpage-button.module-subpage-back").click(function() {
+				$($(this).parents(".module-subpage")[0]).css("display", "none");
+			}).click();
 		}
 		for(let extprogid of extprogids) {
 			let clone = $(".extprogram.draft").clone();
