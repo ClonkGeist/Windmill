@@ -617,7 +617,7 @@ class BMPScene {
 	}
 	
 	uploadBrush() {
-		let size = sceneMeta[activeId].brushData.size
+		let size = sceneMeta[CM_ACTIVEID].brushData.size
 		
 		this.gl.activeTexture(this.gl.TEXTURE2)
 		this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture_Brush)

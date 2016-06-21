@@ -69,8 +69,8 @@ function initCtrls() {
 		
 		Mode.busy = true
 		
-		let [x, y] = a_S.screenToTexture(x, y)
-		Mode.create(0, a_S, x, y)
+		[x, y] = a_S.screenToTexture(x, y)
+		Mode.create(a_S, x, y)
 		Mode.active.onSceneFocus(a_S)
 	})
 
@@ -84,7 +84,7 @@ function initCtrls() {
 		var x = e.clientX - rect.left,
 			y = e.clientY - rect.top;
 		
-		var [x, y] = a_S.screenToTexture(x, y)
+		[x, y] = a_S.screenToTexture(x, y)
 		Mode.active.onMousemove(x, y, a_S, getEventModifiers(e))
 	})
 
@@ -97,7 +97,7 @@ function initCtrls() {
 		var x = e.clientX - rect.left,
 			y = e.clientY - rect.top;
 		
-		var [x, y] = a_S.screenToTexture(x, y)
+		[x, y] = a_S.screenToTexture(x, y)
 		Mode.active.onMouseup(x, y, a_S, getEventModifiers(e))
 		
 		Mode.busy = false
@@ -223,14 +223,14 @@ class Mode_Draw_Shape extends DefaultMode {
 		super(op_id, scene)
 		
 		scene.uploadBrush()
-		this.shape = new Shape(sceneMeta[activeId].brushData.size)
+		this.shape = new Shape(sceneMeta[CM_ACTIVEID].brushData.size)
 		
 		this.lastX = x
 		this.lastY = y
 		
 		//this.color = scene.getSelRGB()
 		
-		let color = getCurrentRGB(activeId)
+		let color = getCurrentRGB(CM_ACTIVEID)
 		if(color === null)
 			this.color = new Float32Array([0, 0, 0])
 		else {

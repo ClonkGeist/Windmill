@@ -692,7 +692,7 @@ function updateBrushGenerator(id) {
 
 function updateCursor(id, dataURL) {
 	
-	if(selectedMode === Mode_Draw_Shape) {
+	if(Mode.selected === Mode_Draw_Shape) {
 		
 		var size = sceneMeta[id].brushData.size*sceneMeta[id].scene.zoomFactor;
 		var radius = sceneMeta[id].brushData.rounded?size:0;
