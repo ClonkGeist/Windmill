@@ -250,36 +250,6 @@ class BMPScene {
 		})
 	}
 	
-	initWithData(data, width, height) {
-		let gl = this.gl
-		
-		this.texture_Combined = this.createTexture()
-		gl.activeTexture(gl.TEXTURE0)
-		gl.bindTexture(gl.TEXTURE_2D, this.texture_Combined)
-		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true)
-		gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1)
-		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, data)
-		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false)
-		gl.bindTexture(gl.TEXTURE_2D, null)
-				
-		this.setDimensions(width, height)
-		
-		this.texture_Worker = this.createTexture()
-		gl.activeTexture(gl.TEXTURE1)
-		gl.bindTexture(gl.TEXTURE_2D, this.texture_Worker)
-		gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1)
-		gl.texImage2D(gl.TEXTURE_2D, 0, gl.ALPHA, width, height, 0, gl.ALPHA, gl.UNSIGNED_BYTE, null)
-		gl.bindTexture(gl.TEXTURE_2D, null)
-		
-		
-		this.ptexture_Source = this.texture_Combined
-		this.ptexture_Worker = this.texture_Worker
-		
-		this.initialized = true
-		
-		this.render()
-	}
-	
 	createTexture() {
 		let gl = this.gl
 		let tex = gl.createTexture()
@@ -300,7 +270,7 @@ class BMPScene {
 		return this.initialized
 	}
 		
-	setDimensions(w = 0, h = 0) {
+	setDimensions(w = 1, h = 1) {
 		this.width = w
 		this.height = h
 		

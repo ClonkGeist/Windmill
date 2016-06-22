@@ -853,56 +853,26 @@ function mirrorImage(fVertically) {
 function openScalingDialog() {
 	var dlg = new WDialog("$DlgScaleImage$", MODULE_LPRE, { modal: true, css: { "width": "470px" }, 
 			btnright: [{preset: "accept", onclick: function(e, btn, _self) {
-				var cnv = sceneMeta[CM_ACTIVEID].c;
-				var ctx = cnv.getContext("2d");
-				var nWdt = parseInt($(_self.element).find("#dbmp_newImageWidth").val()) || 1;
-				var nHgt = parseInt($(_self.element).find("#dbmp_newImageHeight").val()) || 1;
-				var idata = ctx.getImageData(0, 0, cnv.width, cnv.height);
 
-				cnv.width = nWdt;
-				cnv.height = nHgt;
-				$(cnv).css("width", nWdt);
-				$(cnv).css("height", nHgt);
+				sceneMeta[CM_ACTIVEID].scene.setDimensions(
+					parseInt($(_self.element).find("#dbmp_newImageWidth").val()),
+					parseInt($(_self.element).find("#dbmp_newImageHeight").val())
+				)
 				
-				ctx.fillStyle = "#000";
-				ctx.fillRect(0, 0, nWdt, nHgt);
-
-				//Bildinhalte skalieren (nearest neighbor)
-				if(!$(_self.element).find("#dbmp_scalecanvas").prop("checked")) {
-					var newIdata = ctx.getImageData(0, 0, nWdt, nHgt);
-					for(var y = 0; y < nHgt; y++)
-						for(var x = 0; x < nWdt; x++) {
-							var nx = Math.floor((x-1)*(idata.width-1)/(cnv.width-1)+1),
-								ny = Math.floor((y-1)*(idata.height-1)/(cnv.height-1)+1);
-							
-							var off1 = (y*(nWdt*4)) + (x*4),
-								off2 = (ny*(idata.width*4)) + (nx*4);
-
-							newIdata.data[off1] = idata.data[off2];
-							newIdata.data[off1+1] = idata.data[off2+1];
-							newIdata.data[off1+2] = idata.data[off2+2];
-							newIdata.data[off1+3] = 255;
-						}
-					
-					idata = newIdata;
-				}
+				centerCanvas()
 				
-				ctx.putImageData(idata, 0, 0);
-				stockUndoStack();
 				setConfigData("BMPEditor", "ScaleCanvas", $(_self.element).find("#dbmp_scalecanvas").prop("checked"));
 				saveConfig([["BMPEditor", "ScaleCanvas"]]);
 			}}, "cancel"]});
 	
 	dlg.setContent('<hbox><description style="width: 400px;">$DlgScaleImageDesc$</description></hbox>' +
 				   '<hbox><grid><columns><column flex="1" /><column flex="2" /><column/></columns>'+
-				   '<rows><row><label value="$DlgWidth$"/><textbox id="dbmp_newImageWidth" /><label value="px"/></row>' +
-				   '<row><label value="$DlgHeight$"/><textbox id="dbmp_newImageHeight" /><label value="px"/></row>' +
+				   '<rows><row><label value="$DlgWidth$"/><textbox id="dbmp_newImageWidth" /><label value="units"/></row>' +
+				   '<row><label value="$DlgHeight$"/><textbox id="dbmp_newImageHeight" /><label value="units"/></row>' +
 				   '<row><checkbox id="dbmp_proportional" label="$DlgProportionalValues$" /></row>' +
 				   '<row><checkbox id="dbmp_scalecanvas" label="$DlgScaleCanvas$" checked="'+getConfigData("BMPEditor", "ScaleCanvas")+'" /></row>' +
 				   '</rows></grid></hbox>');
 	dlg.show();
-	
-	var id = CM_ACTIVEID;
 	
 	$(dlg.element).find("#dbmp_newImageWidth").keypress(function(e) {
 		if(!e.ctrlKey)
@@ -911,11 +881,11 @@ function openScalingDialog() {
 					return false;
 	}).on("input", function(e) {
 		if(_mainwindow.$("#dbmp_proportional").prop("checked")) {
-			var cnv = sceneMeta[CM_ACTIVEID].c;
-			var p = cnv.height/cnv.width;
+			var scene = sceneMeta[CM_ACTIVEID].scene;
+			var p = scene.height/scene.width;
 			_mainwindow.$("#dbmp_newImageHeight").val(Math.floor(parseInt($(this).val())*p) || 1);
 		}
-	}).val(sceneMeta[id].c.width);
+	}).val(sceneMeta[CM_ACTIVEID].scene.width);
 	
 	$(dlg.element).find("#dbmp_newImageHeight").keypress(function(e) {
 		if(!e.ctrlKey)
@@ -924,11 +894,11 @@ function openScalingDialog() {
 					return false;
 	}).on("input", function(e) {
 		if(_mainwindow.$("#dbmp_proportional").prop("checked")) {
-			var cnv = sceneMeta[CM_ACTIVEID].c;
-			var p = cnv.width/cnv.height;
+			var scene = sceneMeta[CM_ACTIVEID].scene;
+			var p = scene.width/scene.height;
 			_mainwindow.$("#dbmp_newImageWidth").val(Math.floor(parseInt($(this).val())*p) || 1);
 		}
-	}).val(sceneMeta[id].c.height);
+	}).val(sceneMeta[CM_ACTIVEID].scene.height);
 	
 	dlg = 0;
 }
