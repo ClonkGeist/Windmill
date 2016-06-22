@@ -95,12 +95,15 @@
 									<spacer flex="1"/>
 									<hbox class="moduleinfo">
 										<hbox class="moduletitle">Scripteditor</hbox>
-										<box class="modulectrl icon-info icon-16" height="16" width="16"></box>
+										<vbox class="infotooltip">
+											<spacer flex="7"/>
+											<box class="modulectrl icon-info icon-16" height="16"></box>
+											<spacer flex="4"/>
+										</vbox>
 										<spacer flex="1"/>
 										<hbox class="modulecontrols" flex="1">
 											<spacer flex="1"/>
-											<box class="modulectrl icon-external icon-24" height="24" width="24"></box>
-											<box class="modulectrl icon-togglestate icon-24" height="24" width="24"></box>
+											<box class="modulectrl icon-togglestate icon-24"></box>
 										</hbox>
 									</hbox>
 								</vbox>
@@ -155,8 +158,16 @@
 							<checkbox label="$ActivatePortScanner$" class="autoinit" flex="1" default-cfgsect="ShowGame" default-cfgkey="PortScan"/>
 							<checkbox label="$ShowNotificationsForEmptyGames$" class="autoinit" flex="1" default-cfgsect="ShowGame" default-cfgkey="NotificationsShowEmpty"/>
 							<hbox id="cbridge-gameport">
-								<label value="$GamePort$" control="cbridge-gameport-textbox" flex="1"/>
-								<textbox class="autoinit" flex="3" default-cfgsect="StartGame" default-cfgkey="GamePort"/>
+								<hbox flex="1">
+									<label value="$GamePort$" control="cbridge-gameport-textbox"/>
+									<vbox class="infotooltip" data-tooltip="$TooltipSGGamePort$">
+										<spacer flex="2"/>
+										<box class="modulectrl icon-info icon-16" height="16"></box>
+										<spacer flex="7"/>
+									</vbox>
+									<spacer flex="1"/>
+								</hbox>
+								<textbox id="cbridge-gameport-textbox" class="autoinit" flex="3" default-cfgsect="StartGame" default-cfgkey="GamePort"/>
 							</hbox>
 						</vbox>
 					</vbox>

@@ -236,7 +236,10 @@ if(top != window) {
 		}, 1000);
 	}
 
-	hook("load", localizeModule);
+	hook("load", function() {
+		localizeModule();
+		initializeTooltips();
+	});
 
 	$(window).focus(function() {
 		if(window._createCideToolbar && (!parent || (parent != window && !parent._createCideToolbar))) {
@@ -276,6 +279,16 @@ else {
 		return worker.post(fnname, pars);
 	}
 	registerInheritableObject("ctypesWorker");
+}
+
+function initializeTooltips(container) {
+	$("[data-tooltip!='']", container).each(function() {
+		let desc = $(this).attr("data-tooltip");
+		if(!desc)
+			return;
+		$(this).removeAttr("data-tooltip");
+		tooltip(this, desc);
+	});
 }
 
 //Suche nach naechstem Element im DOM (Unter Beruecksichtigung aller Ebenen im angegebenen Container)

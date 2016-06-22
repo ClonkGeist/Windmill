@@ -255,6 +255,25 @@ listitem:focus
 	font-style: italic;
 }
 
+/*-- Infotooltip --*/
+
+.infotooltip {
+	width: 16px;
+	color: white;
+	.icon-info {
+		box-sizing: border-box;
+		height: 16px;
+		border: 1px solid black;
+		background: black;
+		border-radius: 9px;
+		transition: background 0.3s;
+		margin-left: 0.1em;
+		&:hover {
+			background: $chrome-ui-active;
+		}
+	}
+}
+
 /*-- Module Overview --*/
 
 .moduleentry {
@@ -264,7 +283,10 @@ listitem:focus
 	background: white;
 	margin: 10px;
 	
-	&.configurable { cursor: pointer; }
+	&.configurable {
+		cursor: pointer;
+		.icon-16:before, .icon-16, .icon-24, .moduleinfo { cursor: pointer; }
+	}
 
 	spacer {
 		background: none !important;
@@ -280,6 +302,13 @@ listitem:focus
 		padding: 0.2em;
 		opacity: 0.6;
 		transition: opacity 0.2s;
+		cursor: default;
+		.icon-24:before {
+			line-height: 1.4em;
+		}
+		.icon-24:before {
+			cursor: pointer;
+		}
 	}
 	&:hover {
 		.moduleinfo { 

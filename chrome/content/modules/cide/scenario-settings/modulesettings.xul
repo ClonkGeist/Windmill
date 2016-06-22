@@ -1,4 +1,12 @@
 <vbox>
 	<checkbox label="$AlwaysUseScenarioSettings$" id="scenariosettings-always-use" class="autoinit" flex="1" default-cfgsect="ScenarioSettings" default-cfgkey="AlwaysUseScenarioSettings"/>
-	<checkbox label="$UseModuleCache$" id="scenariosettings-module-cache" class="autoinit" flex="1" default-cfgsect="ScenarioSettings" default-cfgkey="UseModuleCache"/>
+	<hbox>
+		<checkbox label="$UseModuleCache$" id="scenariosettings-module-cache" class="autoinit" default-cfgsect="ScenarioSettings" default-cfgkey="UseModuleCache"/>
+		<vbox class="infotooltip" data-tooltip="$TooltipSCEModuleCache$">
+			<spacer flex="7"/>
+			<box class="modulectrl icon-info icon-16" height="16"></box>
+			<spacer flex="4"/>
+		</vbox>
+		<spacer flex="1"/>
+	</hbox>
 </vbox>

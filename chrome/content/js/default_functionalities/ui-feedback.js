@@ -4,27 +4,41 @@
 
 var tooltipTimeout, tooltipEl;
 
-function tooltip(targetEl, desc, lang = MODULE_LANG, duration) {
-	desc = Locale(desc);
+function tooltip(targetEl, desc, lang = MODULE_LANG, duration, options = {}) {
+	desc = Locale(desc, options.lpre);
 	if(!duration)
 		duration = 600; // ms
 
 	$(targetEl).mouseenter(function() {
 		clearTooltip();
 		
+		let target = this;
+		if(options.target)
+			target = options.target;
 		tooltipTimeout = setTimeout(() => {
-			var el = $('<'+(lang === "html"?'div':'panel noautofocus="true"')+' class="windmill-tooltip"></'+(lang == "html"?'div':'panel')+'>')[0];
+			var el = $('<'+(lang === "html"?'div':'panel noautofocus="true" noautohide="true"')+' class="windmill-tooltip"></'+(lang == "html"?'div':'panel')+'>')[0];
+			
+			if(options.css)
+				$(el).css(options.css);
 
 			$(lang === "html"?"body":document.documentElement).append(el);
 			$(el).text(desc);
 
-			let {width, height, top, left} = this.getBoundingClientRect();
+			let {width, height, top, left} = target.getBoundingClientRect();
+			// something is positioning all tooltips 5px too far to the bottom right (though its position absolute in html or relies on screen coordinates in xul)
+			top -= 5;
+			left -= 5;
 			// panels need to be opened, so the size values are set
 			if(lang != "html")
 				el.openPopup();
+			
+			if(options.offset) {
+				top += options.offset.top || 0;
+				left += options.offset.left || 0;
+			}
 			// if its too near to the upper border
 			if(top-$(el).height() < 0)
-				top += $(this).height();
+				top += $(target).height();
 			else // otherwise lift it so the original element is still visible
 				top -= $(el).height();
 

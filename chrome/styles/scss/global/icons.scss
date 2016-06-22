@@ -356,7 +356,8 @@
 }
 .icon-info:before {
     @include -warning();
-    translate: rotate(180deg);
+	display: inline-block;
+	transform: rotate(180deg) translate(0, -1px);
 }
 .icon-external:before {
     content: "E";

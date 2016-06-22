@@ -25,7 +25,11 @@ hook("load", function() {
 				let target = module.cidemodule?"#settings-page-cide":"#settings-page-cbridge";
 				let clone = $(".moduleentry.draft").clone();
 				clone.removeClass("draft");
+				
+				//Title and description
 				clone.find(".moduletitle").text(Locale(module.modulename, module.languageprefix));
+				tooltip(clone.find(".icon-info")[0], module.description, "xul", 150, { target: clone.find(".moduleinfo")[0], lpre: module.languageprefix, css: {"max-width": "260px", "width": "260px"} });
+				
 				let gradient = "linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 48%, rgba(255, 255, 255, 0.8) 90%),";
 				if(!module.settings.previewimage)
 					clone.css("background-image", gradient+"url(chrome://windmill/content/"+formatPath(module.relpath)+"/previewimage.png)");
@@ -108,7 +112,6 @@ hook("load", function() {
 			if(reason != StopIteration)
 				throw reason;
 		});
-
 
 		//KeyBindings auflisten
 		var keybindings = _mainwindow.customKeyBindings, current_prefix;
@@ -238,23 +241,23 @@ hook("load", function() {
 
 						_mainwindow.restartWindmill();
 					}}, "cancel"]});
-				
+
 				var liststr = '<vbox id="dex-dlg-gffiles" class="dlg-checklistbox">';
 				for(var i = 0; i < files.length; i++)
 					liststr += '<hbox class="dlg-checklistitem" data-fileindex="'+i+'">'+files[i].filepath.replace(_sc.workpath(files[i])+"/", "")+'</hbox>';
-				
+
 				liststr += "</vbox>"
 
 				dlg.setContent('<description>$DlgUnsavedChangesDesc$</description>'+liststr+
 							   '<description>$DlgUnsavedChangesDesc2$</description>');
 				dlg.show();
-				
+
 				$(dlg.element).find(".dlg-checklistitem").click(function() {
 					var index = parseInt($(this).attr("data-fileindex"));
 					_mainwindow.mainDeck.show(_mainwindow.mainDeck.getModuleId("cide"));
 					getModuleByName("cide").contentWindow.fileLoadedInModule($(files[index].module).attr("name"), files[index].filepath, true);
 				});
-				
+
 				return;
 			}
 			else
@@ -291,9 +294,6 @@ hook("load", function() {
 			setConfigData("CIDE", "ExtProg_"+id, "");
 			$(this).parent().find(".view-directory-path").text(Locale("$pathempty$"));
 		});
-		tooltip($("#explorer-scendef-polyfill")[0], "$TooltipDEXScendefPolyfill$");
-		tooltip($("#scenariosettings-module-cache")[0], "$TooltipSCEModuleCache$");
-		tooltip($("#cbridge-gameport")[0], "$TooltipSGGamePort$");
 	}, 1);
 });
 
@@ -339,6 +339,7 @@ function autoInitialize(container) {
 			setConfigData(sect, key, val);
 		});
 	});
+	initializeTooltips(container);
 }
 
 function showDeckItem() {
