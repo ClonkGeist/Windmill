@@ -1585,20 +1585,20 @@ function addCideFile(path, id, fShow) {
 		return ar;
 	};
 	
-	scene.initWithTexture(file.path)
-	
-	//Bitmap anzeigen
-	//stockUndoStack(imgdata, id, true);
-	
-	//Materialien und Texturen laden
-	loadMaterials(id);
+	scene.initWithTexture(file.path).then(() => {
+		//Materialien und Texturen laden
+		loadMaterials(id);
 
-	//Canvas zentrieren
-	centerCanvas(id)
-	
-	//Canvas ggf. anzeigen
-	if(fShow || a_S === undefined)
-		showDeckItem(id);
+		//Canvas zentrieren
+		centerCanvas(id)
+		
+		//Canvas ggf. anzeigen
+		if(fShow || a_S === undefined)
+			showDeckItem(id);
+	},
+	(e, src) => {
+		log("an error occured while tryint to load bmp image (" + src + ")")
+	})
 
 	return true;
 }

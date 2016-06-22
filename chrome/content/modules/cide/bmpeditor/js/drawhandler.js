@@ -207,43 +207,47 @@ class BMPScene {
 	}
 	
 	initWithTexture(src) {
-		var img = new Image()
 		
-		img.onload = () => {
-			let gl = this.gl
+		return new Promise((resolve, reject) => {
+			var img = new Image()
 			
-			this.texture_Combined = this.createTexture()
-			gl.activeTexture(gl.TEXTURE0)
-			gl.bindTexture(gl.TEXTURE_2D, this.texture_Combined)
-			this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true)
-			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, img)
-			this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, false)
-			gl.bindTexture(gl.TEXTURE_2D, null)
-						
-			this.setDimensions(img.width, img.height)
+			img.onload = () => {
+				let gl = this.gl
+				
+				this.texture_Combined = this.createTexture()
+				gl.activeTexture(gl.TEXTURE0)
+				gl.bindTexture(gl.TEXTURE_2D, this.texture_Combined)
+				this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true)
+				gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, img)
+				this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, false)
+				gl.bindTexture(gl.TEXTURE_2D, null)
+							
+				this.setDimensions(img.width, img.height)
+				
+				this.texture_Worker = this.createTexture()
+				gl.activeTexture(gl.TEXTURE1)
+				gl.bindTexture(gl.TEXTURE_2D, this.texture_Worker)
+				gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1)
+				gl.texImage2D(gl.TEXTURE_2D, 0, gl.ALPHA, this.width, this.height, 0, gl.ALPHA, gl.UNSIGNED_BYTE, null)
+				gl.bindTexture(gl.TEXTURE_2D, null)
+				
+				
+				this.ptexture_Source = this.texture_Combined
+				this.ptexture_Worker = this.texture_Worker
+				
+				this.initialized = true
+				
+				this.render()
+				
+				resolve()
+			}
 			
-			this.texture_Worker = this.createTexture()
-			gl.activeTexture(gl.TEXTURE1)
-			gl.bindTexture(gl.TEXTURE_2D, this.texture_Worker)
-			gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1)
-			gl.texImage2D(gl.TEXTURE_2D, 0, gl.ALPHA, this.width, this.height, 0, gl.ALPHA, gl.UNSIGNED_BYTE, null)
-			gl.bindTexture(gl.TEXTURE_2D, null)
-			
-			
-			this.ptexture_Source = this.texture_Combined
-			this.ptexture_Worker = this.texture_Worker
-			
-			this.initialized = true
-			
-			this.render()
-			
-			centerCanvas()
-		}
+			img.onerror = function(e) {
+				reject(e, src)
+			}
 		
-		img.onerror = function(e) {
-		}
-		
-		img.src = "file:" + src
+			img.src = "file:" + src
+		})
 	}
 	
 	initWithData(data, width, height) {
