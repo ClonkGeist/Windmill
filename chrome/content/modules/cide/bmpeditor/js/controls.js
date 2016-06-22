@@ -212,8 +212,11 @@ class DefaultMode {
 
 class Mode_Eyedropper extends DefaultMode {
 	onMouseup(x = 0, y = 0, scene, modifier) {
-		let clr = scene.readPixels(x, y, 1, 1)
-		log(clr)
+		selectColorIndex(CM_ACTIVEID,
+			sceneMeta[CM_ACTIVEID].coloridx.indexOf(
+				Array.prototype.byte2num.call(scene.readPixels(x, y, 1, 1).slice(0, 3).reverse())
+			)
+		)
 	}
 }
 var drawTimeout
