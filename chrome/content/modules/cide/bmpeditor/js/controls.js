@@ -70,6 +70,7 @@ function initCtrls() {
 		Mode.busy = true
 		
 		[x, y] = a_S.screenToTexture(x, y)
+		
 		Mode.create(a_S, x, y)
 		Mode.active.onSceneFocus(a_S)
 	})

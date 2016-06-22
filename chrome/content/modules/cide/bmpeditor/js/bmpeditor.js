@@ -1535,8 +1535,7 @@ function loadImageFileData(file, id) {
 }
 
 function addCideFile(path, id, fShow) {
-	log("Init bmp-scene: id("+id+")")
-	log(scene)
+	
 	let file = path;
 	//Da am BMPEditor noch gearbeitet wird, fuers erste die nsIFile-Variante verwenden. Spaeter dann auf OS.File umsteigen.
 	if(!(path instanceof Ci.nsIFile))
@@ -2158,7 +2157,6 @@ function selectColorIndex(id, index, deckupdate) {
 function drawMaterialPalette(id) {
 	
 	if(!sceneMeta[id]) {
-		log("failed to draw mat palette with id: " + id)
 		return
 	}
 	
@@ -2178,6 +2176,7 @@ function drawMaterialPalette(id) {
 	//Und neu füllen
 	for(var i = 0; i < 128; i++) {
 		ctx.fillStyle = "#000";
+		
 		if(indices[i] || !getConfigData("BMPEditor", "HideUnusedMat"))
 			ctx.fillStyle = getColorByIndex(id, i+128*bgmode);
 		
@@ -2223,18 +2222,6 @@ function showDeckItem(id) {
 	$(".visible").removeClass("visible");
 	$("#cmw-wrapper-"+id).addClass("visible");
 	
-	/*
-	if(canUndoImageData())
-		$(btn_undo).removeClass("deactivated");
-	else
-		$(btn_undo).addClass("deactivated");
-	
-	if(canRedoImageData())
-		$(btn_redo).removeClass("deactivated");
-	else
-		$(btn_redo).addClass("deactivated");
-	*/
-	
 	a_S.onShow()
 	
 	//Lineal und Zoom aktualisieren
@@ -2252,6 +2239,11 @@ function frameWindowTitle() {
 }
 
 function removeDeckItem(id) {
+	if(CM_ACTIVEID === id)
+		a_S = undefined
+	
+	CM_ACTIVEID = -1
+	
 	sceneMeta[id] = null;
 }
 
