@@ -8,7 +8,7 @@ function TabManager() { return sceneMeta; }
 const OC_KEYCOLOR = 0x0;
 const MAX_UNDO_STACKSIZE = 32;
 
-$(window).ready(function() {
+hook("load", function() {
 	//Bei Reload Tabdaten Laden
 	var query = location.search.substr(1).split('&');
 	if(query) {
@@ -145,9 +145,9 @@ $(window).ready(function() {
 		var mx = e.clientX - rect.left, my = e.clientY - rect.top;
 		var index = Math.floor(my/10)*16+Math.floor(mx/10);
 		
-		var id = CM_ACTIVEID;//parseInt($(".visible").attr("id").replace(/bmpCanvas-/, ""));
-		var indices = sceneMeta[id].matindices;
-		var bg_mode = sceneMeta[id].rtdata.matmode_underground;
+		var id = CM_ACTIVEID;
+		var indices = sceneMeta[CM_ACTIVEID].matindices;
+		var bg_mode = sceneMeta[CM_ACTIVEID].rtdata.matmode_underground;
 		if(bg_mode)
 			index += 128;
 		
@@ -155,8 +155,8 @@ $(window).ready(function() {
 		if(!indices[index%128] && getConfigData("BMPEditor", "HideUnusedMat"))
 			index = -1;
 		
-		$("#current-material-clr").css("background-color", getColorByIndex(id, index));
-		$("#current-material-name > input").val(getMaterialByIndex(id, index));
+		$("#current-material-clr").css("background-color", getColorByIndex(CM_ACTIVEID, index));
+		$("#current-material-name > input").val(getMaterialByIndex(CM_ACTIVEID, index));
 	}).mouseleave(function(e) { //Anzeige zurücksetzen
 		if($("#current-material-name > input").is(":focus"))
 			return;
@@ -1409,8 +1409,6 @@ function saveTab(id) {
 			dlg.show();
 		}
 	}
-	
-	// sceneMeta[id].rtdata.undoStack[sceneMeta[id].rtdata.undoStackPosition].saved = true;
 	return true;
 }
 
@@ -1561,7 +1559,7 @@ function addCideFile(path, id, fShow) {
 	scene.useAsRect($(".ui-rect").get(0))
 	scene.assignColorPalette(clr_index)
 	
-	sceneMeta[id] = { 
+	sceneMeta[id] = {
 		scene, 
 		f: file,
 		path: file.path,
@@ -1598,7 +1596,7 @@ function addCideFile(path, id, fShow) {
 	centerCanvas(id)
 	
 	//Canvas ggf. anzeigen
-	if(fShow || !a_S)
+	if(fShow || a_S === undefined)
 		showDeckItem(id);
 
 	return true;
@@ -2158,6 +2156,12 @@ function selectColorIndex(id, index, deckupdate) {
 }
 
 function drawMaterialPalette(id) {
+	
+	if(!sceneMeta[id]) {
+		log("failed to draw mat palette with id: " + id)
+		return
+	}
+	
 	var clr_index = sceneMeta[id].coloridx;
 	var indices = sceneMeta[id].matindices;
 	
@@ -2187,9 +2191,18 @@ function drawMaterialPalette(id) {
 /* Deck functionalities */
 
 function showDeckItem(id) {
+	
+	// since this function might be called before the actual cideFileInstance is created
+	// save check to prevent from crashing (silently...)
+	if(!sceneMeta[id])
+		return
+	
 	//Auswahl deaktivieren bei Tabwechsel
 	if(id !== CM_ACTIVEID)
 		$("#movinglayer").removeClass("active");
+	
+	a_S = sceneMeta[id].scene
+	CM_ACTIVEID = id
 	
 	//Fuer Color-Matching-Wizard die Toolbar deaktivieren
 	if($("#cmw-wrapper-"+id).get(0))
@@ -2222,8 +2235,6 @@ function showDeckItem(id) {
 		$(btn_redo).addClass("deactivated");
 	*/
 	
-	a_S = _SCENES[id]
-	CM_ACTIVEID = id
 	a_S.onShow()
 	
 	//Lineal und Zoom aktualisieren
