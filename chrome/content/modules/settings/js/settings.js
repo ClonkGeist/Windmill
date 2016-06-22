@@ -10,8 +10,6 @@ hook("load", function() {
 			$(this).text(getConfigData(options.cfgsect, options.cfgkey));
 		});
 
-		loadEditorThemes(_sc.chpath + "/content/modules/cide/editor/js/ace");
-
 		let modules = getModuleDefs(), extprogids = [];
 		for(let mname in modules) {
 			let module = modules[mname];
@@ -37,6 +35,8 @@ hook("load", function() {
 				clone.appendTo($(target+" > .modulewrapper > description"));
 				if(module.isconfigurable) {
 					clone.addClass("configurable");
+					//If we want to add an addon interface some time, "true" shall be replaced by a check if the module is an addon
+					let allowscripts = true || module.settings.allowscripts;
 					clone.click(function() {
 						//Prepare subpage
 						let subpage = $($(this).parents("stack")[0]).find(".module-subpage");
@@ -44,7 +44,7 @@ hook("load", function() {
 
 						//Load settings content from module
 						//TODO: Maybe some kind of check if module X was added and the user "trusted" it? So scripts will not be executed until the user allows it.
-						//      Or an unexploitable script protection..
+						//      Or an unexploitable script protection.. (that also includes XML Namespaces)
 						let path = module.path.split("/");
 						path.pop();
 						path = path.join("/");
@@ -53,12 +53,17 @@ hook("load", function() {
 							log(`An error occured while trying to load the settings of the ${module.modulename} module:`, "error");
 							log("The specified target file is not supported. (Currently supported formats: xul)", "error");
 						}
-							
+
 						$(target+"-subpage .module-subpage-loaded-content").empty();
 						OS.File.read(path, {encoding: "utf-8"}).then(function(content) {
 							//Parse XUL and add content to DOM
 							//TODO: If possible warn the user if the added content wants to execute scripts
-							$(jQuery.parseHTML(Locale(content))).appendTo($(target+"-subpage .module-subpage-loaded-content"));
+							//$(jQuery.parseHTML(Locale(content), document, allowscripts)).appendTo($(target+"-subpage .module-subpage-loaded-content"));
+							$(target+"-subpage .module-subpage-loaded-content").append(Locale(content));
+							//Because jQuery is in the mainwindow context, all scripts are executed in the mainwindow context.
+							//Maybe we need something selfmade for this task.
+							_mainwindow.execHook({ name: "onSubpageLoaded", caller: window });
+							autoInitialize($(target+"-subpage .module-subpage-loaded-content"));
 						}, function(reason) {
 							log(`An error occured while trying to load the settings of the ${module.modulename} module:`, "error");
 							log(reason, "error");
@@ -103,16 +108,7 @@ hook("load", function() {
 			if(reason != StopIteration)
 				throw reason;
 		});
-		
-		let completers = getConfigData("Scripteditor", "Completers");
-		$("#completerSelection").parent().on("command", function(e) {
-			setConfigData("Scripteditor", "Completers", $(this)[0].selectedItem.value);
-			if(parseInt($(this)[0].selectedItem.value) != completers)
-				changeNeedsRestart = true;
-			else
-				changeNeedsRestart = false;
-		});
-		//$("#completerSelection").parent()[0].selectedItem = $("#completerSelection").find('menuitem[value="'+completers+'"]')[0];
+
 
 		//KeyBindings auflisten
 		var keybindings = _mainwindow.customKeyBindings, current_prefix;
@@ -284,44 +280,7 @@ hook("load", function() {
 			});
 		}
 
-		//Simplere Einstellungselemente automatisch initialisieren
-		$(".autoinit").each(function() {
-			let sect = $(this).attr("default-cfgsect");
-			let key = $(this).attr("default-cfgkey");
-			if(!sect || !key)
-				throw "No section or key for auto initialized settings element defined.";
-			let val = getConfigData(sect, key), event = "command";
-
-			//Wert und Event je nach Elementart setzen
-			switch($(this).prop("tagName").toLowerCase()) {
-				case "checkbox":
-					$(this).attr("checked", val);
-					break;
-
-				case "textbox":
-					event = "input";
-					$(this).val(val);
-					break;
-
-				default:
-					$(this).val(val);
-					break;
-			}
-			//Bei Veraenderung diese in der Config temporaer speichern
-			$(this).on(event, function() {
-				switch($(this).prop("tagName").toLowerCase()) {
-					case "checkbox":
-						val = $(this).attr("checked");
-						break;
-
-					default:
-						val = $(this).val();
-						break;
-				}
-
-				setConfigData(sect, key, val);
-			});
-		});
+		autoInitialize();
 
 		$(".extprogram-always-use").on("command", function() {
 			let id = $(this).parent().attr("id").replace(/row-/, "");
@@ -340,6 +299,47 @@ hook("load", function() {
 
 const TEMPORARY_DATA_PATH = _sc.profd+"/tmp";
 let clearTempDataTask;
+
+function autoInitialize(container) {
+	//Simplere Einstellungselemente automatisch initialisieren
+	$(".autoinit", container).each(function() {
+		let sect = $(this).attr("default-cfgsect");
+		let key = $(this).attr("default-cfgkey");
+		if(!sect || !key)
+			throw "No section or key for auto initialized settings element defined.";
+		let val = getConfigData(sect, key), event = "command";
+
+		//Wert und Event je nach Elementart setzen
+		switch($(this).prop("tagName").toLowerCase()) {
+			case "checkbox":
+				$(this).attr("checked", val);
+				break;
+
+			case "textbox":
+				event = "input";
+				$(this).val(val);
+				break;
+
+			default:
+				$(this).val(val);
+				break;
+		}
+		//Bei Veraenderung diese in der Config temporaer speichern
+		$(this).on(event, function() {
+			switch($(this).prop("tagName").toLowerCase()) {
+				case "checkbox":
+					val = $(this).attr("checked");
+					break;
+
+				default:
+					val = $(this).val();
+					break;
+			}
+
+			setConfigData(sect, key, val);
+		});
+	});
+}
 
 function showDeckItem() {
 	if(clearTempDataTask)
@@ -645,46 +645,6 @@ function openProgramDialog(obj, extApp) {
 		else
 			$(obj).parent().find(".view-directory-path").text(path);
 	}
-
-	return true;
-}
-
-function loadEditorThemes(path) {
-	//ace-Ordner
-	var f = _sc.file(path);
-	if(!f.exists() || !f.isDirectory())
-		return;
-
-	//Verzeichnisse einzelnd untersuchen
-	var entries = f.directoryEntries;
-
-	while(entries.hasMoreElements()) {
-		var entry = entries.getNext().QueryInterface(Ci.nsIFile);
-		if(entry.leafName.split("-")[0] == "theme") //überprüfen ob die Datei mit "theme-" beginnt
-			insertEditorTheme(entry);
-	}
-}
-
-function insertEditorTheme(entry) {
-	// cut it out
-	var name = entry.leafName.substr(6, entry.leafName.length - 9);
-
-	$('#editor-theme-list').append('<listitem label="'+name+'" class="list-acethemes" />');
-}
-
-function setAceTheme() {
-	var themename = $(".list-acethemes:selected").prop("label");
-	var modules = getModulesByName("scripteditor");
-
-	for(var i = 0; i < modules.length; i++) {
-		if(!modules[i] || !modules[i].contentWindow)
-			continue;
-
-		modules[i].contentWindow.applyTheme(themename);
-	}
-
-	setConfigData("CIDE", "EditorTheme", themename);
-	saveConfig();
 
 	return true;
 }

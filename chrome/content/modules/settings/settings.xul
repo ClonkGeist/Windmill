@@ -128,34 +128,6 @@
 								</rows>
 							</grid>	
 						</vbox>
-						<caption label="$acetheme$" class="toggle-contents" onclick="toggleContents(this)"/>
-						<vbox>
-							<hbox>
-								<listbox id="editor-theme-list" flex="1">
-								</listbox>
-							</hbox>
-							<hbox>
-								<button label="$applytheme$" oncommand="setAceTheme()" />
-							</hbox>
-						</vbox>
-						<caption label="Scripteditor" class="toggle-contents" onclick="toggleContents(this)"/>
-						<vbox>
-							<hbox>
-								<label value="$selectcompleter$" flex="1" />
-								<menulist flex="1">
-									<menupopup id="completerSelection">
-										<menuitem label="$AceCmp_NoCompleters$" value="0" />
-										<menuitem label="$AceCmp_KeywordsOnly$" value="1" />
-										<menuitem label="$AceCmp_KeywordsAndFuncs$" value="2" />
-										<menuitem label="$AceCmp_Everything$" value="3" />
-									</menupopup>
-								</menulist>
-							</hbox>
-							<checkbox label="$ShowParameterList$" class="autoinit" flex="1" default-cfgsect="Scripteditor" default-cfgkey="ParameterList"/>
-							
-						</vbox>
-						
-						<caption label="Scenario Settings" class="toggle-contents" onclick="toggleContents(this)"/>
 						-->
 					</vbox>
 					<vbox id="settings-page-cide-subpage" class="settings-page module-subpage" top="0" bottom="0">
@@ -165,7 +137,7 @@
 							<button class="module-subpage-button module-subpage-back" label="$Back$"/>
 						</hbox>
 						<vbox class="module-subpage-content" flex="1">
-							<vbox class="module-subpage-loaded-content">
+							<vbox class="module-subpage-loaded-content" flex="1">
 								
 							</vbox>
 						</vbox>
