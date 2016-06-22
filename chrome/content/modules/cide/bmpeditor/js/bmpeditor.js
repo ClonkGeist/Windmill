@@ -1570,7 +1570,9 @@ function addCideFile(path, id, fShow) {
 			size: 1,
 			rounded: true,
 			// seed and distribution factors go here
-		}
+		},
+		_selectedMode: Mode_Draw_Shape,
+		_operandIndex: 0
 	};
 	
 	var num2byte = function(num, size) {
@@ -2157,6 +2159,7 @@ function selectColorIndex(id, index, deckupdate) {
 function drawMaterialPalette(id) {
 	
 	if(!sceneMeta[id]) {
+		log("failed to draw mat palette with id: " + id, false , "error")
 		return
 	}
 	
