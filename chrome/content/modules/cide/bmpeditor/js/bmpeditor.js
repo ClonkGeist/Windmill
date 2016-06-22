@@ -6,7 +6,7 @@ var sceneMeta = new Array();
 function TabManager() { return sceneMeta; }
 
 const OC_KEYCOLOR = 0x0;
-const MAX_UNDO_STACKSIZE = 32;
+const MAX_UNDO_STACKSIZE = 20;
 
 hook("load", function() {
 	//Bei Reload Tabdaten Laden
@@ -901,107 +901,6 @@ function openScalingDialog() {
 	}).val(sceneMeta[CM_ACTIVEID].scene.height);
 	
 	dlg = 0;
-}
-/** @deprecated */
-/*-- Undostack --*/
-/** @deprecated */
-function stockUndoStack(imgdata, id, fSaved) {
-	if(id == undefined)
-		id = CM_ACTIVEID;
-
-	if(!sceneMeta[id].rtdata.undoStack)
-		sceneMeta[id].rtdata.undoStack = [];
-	
-	//Falls es zu groß wird, vorne entfernen
-	if(sceneMeta[id].rtdata.undoStack.length+1 > MAX_UNDO_STACKSIZE)
-		sceneMeta[id].rtdata.undoStack.shift();
-	
-	//Falls aktuell mitten im Stack positioniert, nachfolgende Eintraege loeschen
-	if(sceneMeta[id].rtdata.undoStackPosition < sceneMeta[id].rtdata.undoStack.length-1)
-		sceneMeta[id].rtdata.undoStack.splice(sceneMeta[id].rtdata.undoStackPosition+1);
-	
-	if(!imgdata)
-		imgdata = sceneMeta[id].c.getContext("2d").getImageData(0, 0, sceneMeta[id].c.width, sceneMeta[id].c.height);
-	
-	sceneMeta[id].rtdata.undoStack.push({ data: imgdata, saved: fSaved });
-	sceneMeta[id].rtdata.undoStackPosition = sceneMeta[id].rtdata.undoStack.length-1;
-
-	$(btn_undo).removeClass("deactivated");
-	$(btn_redo).addClass("deactivated");
-	return true;
-}
-/** @deprecated */
-function canUndoImageData() {
-	if(true)return
-	var id = CM_ACTIVEID;
-	if(!sceneMeta[id].rtdata.undoStack)
-		return false;
-	
-	if(sceneMeta[id].rtdata.undoStack.length < 2)
-		return false;
-	
-	if(!sceneMeta[id].rtdata.undoStackPosition)
-		return false;
-
-	return true;
-}
-/** @deprecated */
-function undoImageData() {
-	var id = CM_ACTIVEID;
-
-	if(!canUndoImageData())
-		return;
-	
-	sceneMeta[id].rtdata.undoStackPosition--;
-	
-	var imgdata = sceneMeta[id].rtdata.undoStack[sceneMeta[id].rtdata.undoStackPosition].data;
-	var cnv = sceneMeta[id].c;
-	cnv.width = imgdata.width;
-	cnv.height = imgdata.height;
-	$(cnv).css("width", imgdata.width);
-	$(cnv).css("height", imgdata.height);
-	cnv.getContext("2d").putImageData(imgdata, 0, 0);
-	
-	$(btn_redo).removeClass("deactivated");	
-	if(!canUndoImageData())
-		$(btn_undo).addClass("deactivated");
-	return true;
-}
-
-function canRedoImageData() {
-	var id = CM_ACTIVEID;
-	if(!sceneMeta[id].rtdata.undoStack)
-		return false;
-	
-	if(sceneMeta[id].rtdata.undoStack.length == sceneMeta[id].rtdata.undoStackPosition+1)
-		return false;
-	
-	if(!sceneMeta[id].rtdata.undoStackPosition+1 == MAX_UNDO_STACKSIZE)
-		return false;
-
-	return true;
-}
-/** @deprecated */
-function redoImageData() {
-	var id = CM_ACTIVEID;
-	
-	if(!canRedoImageData())
-		return;
-	
-	sceneMeta[id].rtdata.undoStackPosition++;
-
-	var imgdata = sceneMeta[id].rtdata.undoStack[sceneMeta[id].rtdata.undoStackPosition].data;
-	var cnv = sceneMeta[id].c;
-	cnv.width = imgdata.width;
-	cnv.height = imgdata.height;
-	$(cnv).css("width", imgdata.width);
-	$(cnv).css("height", imgdata.height);
-	cnv.getContext("2d").putImageData(imgdata, 0, 0);
-	
-	$(btn_undo).removeClass("deactivated");
-	if(!canRedoImageData())
-		$(btn_redo).addClass("deactivated");
-	return true;
 }
 
 /*-- Infotoolbar --*/

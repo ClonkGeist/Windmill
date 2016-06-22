@@ -64,12 +64,12 @@ function initCtrls() {
 		
 		let rect = this.getBoundingClientRect()
 		
-		let x = e.clientX - rect.left,
+		var x = e.clientX - rect.left,
 			y = e.clientY - rect.top;
 		
 		Mode.busy = true
 		
-		[x, y] = a_S.screenToTexture(x, y)
+		var [x, y] = a_S.screenToTexture(x, y)
 		
 		Mode.create(a_S, x, y)
 		Mode.active.onSceneFocus(a_S)

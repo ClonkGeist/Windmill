@@ -139,6 +139,8 @@ class BMPScene {
 		this.selShape = Shape_Circle
 		
 		this.currentColorRGB = new Float32Array(3)
+		
+		this._stackHolder = {}
 	}
 	
 	set ptexture_Source (tex) {
@@ -286,6 +288,8 @@ class BMPScene {
 		
 		document.getElementById("ui-sel").setAttribute("viewBox", "0 0 "+ w + " " + h)
 		document.getElementById("ui-sel").setAttribute("height", this.height*this.zoomFactor)
+		
+		
 	}
 	
 	// flip y coords	
@@ -636,7 +640,8 @@ class BMPScene {
 		
 	}
 	
-	addUndoStep() {
+	manifestUndoStep() {
+		
 	}
 	
 	onSave() {
@@ -684,6 +689,16 @@ class BMPScene {
 		this.gl.readPixels(x, y, w, h, this.gl.RGBA, this.gl.UNSIGNED_BYTE, target)
 		
 		return target
+	}
+}
+
+class UndoStack {
+	constructor(w, h, gl, tex) {
+		this.gl = gl
+		this.w = w
+		this.h = h
+		
+		this.userCount = 0
 	}
 }
 
