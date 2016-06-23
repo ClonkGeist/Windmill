@@ -26,7 +26,7 @@ function Locale(str, prefix, ...pars) {
 	return str;
 }
 
-function localizeModule() {
+function localizeModule(container) {
 	let rgx = /\$(::)?[a-zA-Z0-9_]+?\$/g;
 
 	function getReplacement(lgreplace) {
@@ -82,8 +82,11 @@ function localizeModule() {
 		jQuery.each($(obj).children("*"), fnLocale);
 	}
 
-	if(MODULE_LANG == "html")
-		jQuery.each($("body > *"), fnLocale);
-	else if(MODULE_LANG == "xul")
-		jQuery.each($(document.documentElement).children("*"), fnLocale);
+	if(!container) {
+		if(MODULE_LANG == "html")
+			container = $("body > *");
+		else if(MODULE_LANG == "xul")
+			container = $(document.documentElement).children("*");
+	}
+	jQuery.each(container, fnLocale);
 }

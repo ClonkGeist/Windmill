@@ -6,7 +6,7 @@ class ConfigEntry extends WindmillObject {
 		this.sect = sect;
 		this.key = key;
 		this.type = type;
-		this.defaultvalue = this.tempvalue = this.value = value;
+		this._value = this.defaultvalue = this.tempvalue = this.value =  value;
 		this.readOnly = readOnly;
 		this.alwaysSave = alwaysSave;
 		this.runTimeOnly = runTimeOnly;

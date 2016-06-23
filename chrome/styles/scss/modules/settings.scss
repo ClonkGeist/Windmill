@@ -289,10 +289,35 @@ listitem:focus
 	border: 1px solid $chrome-clr;
 	background: white;
 	margin: 10px;
+	position: relative;
 	
+	.modulebackground { transition: filter 0.4s; }
+	.modulebglayer {
+		opacity: 0;
+		@include scanlines(rgba(210, 210, 210, 0.7), 8px, 1px);
+		transition: opacity 0.4s;
+	}
+	.icon-togglestate {
+		/*color: $chrome-ui-active;*/
+		transition: color 0.4s;
+	}
+	.icon-warning {
+		color: $interact-red;
+		margin: 0 0.7em 0 0.4em;
+	}
+	&:not(.forced) {
+		.module-forced {
+			display: none;
+		}
+	}
 	&.configurable {
 		cursor: pointer;
 		.icon-16:before, .icon-16, .icon-24, .moduleinfo { cursor: pointer; }
+	}
+	&.deactivated {
+		.modulebackground { filter: grayscale(100%); }
+		.modulebglayer { opacity: 1; }
+		.icon-togglestate { color: grey; }
 	}
 
 	spacer {

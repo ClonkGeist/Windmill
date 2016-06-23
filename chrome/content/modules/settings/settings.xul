@@ -91,22 +91,30 @@
 						<caption class="big" label="$cide$" />
 						<hbox class="modulewrapper">
 							<description flex="1"> <!-- for line wrapping -->
-								<vbox class="moduleentry draft">
-									<spacer flex="1"/>
-									<hbox class="moduleinfo">
-										<hbox class="moduletitle">Scripteditor</hbox>
-										<vbox class="infotooltip">
-											<spacer flex="7"/>
-											<box class="modulectrl icon-info icon-16" height="16"></box>
-											<spacer flex="4"/>
-										</vbox>
+								<stack class="moduleentry draft">
+									<vbox class="modulebackground"></vbox>
+									<vbox class="modulebglayer"></vbox>
+									<vbox class="moduleentrycontent">
 										<spacer flex="1"/>
-										<hbox class="modulecontrols" flex="1">
+										<hbox class="moduleinfo">
+											<vbox class="module-forced">
+												<spacer flex="7"/>
+												<box class="modulectrl icon-warning icon-16" height="16"></box>
+												<spacer flex="4"/>
+											</vbox>
+											<hbox class="moduletitle">Scripteditor</hbox>
+											<vbox class="infotooltip">
+												<spacer flex="7"/>
+												<box class="modulectrl icon-info icon-16" height="16"></box>
+												<spacer flex="4"/>
+											</vbox>
 											<spacer flex="1"/>
-											<box class="modulectrl icon-togglestate icon-24"></box>
+											<hbox class="modulecontrols" flex="1">
+												<spacer flex="1"/>
+											</hbox>
 										</hbox>
-									</hbox>
-								</vbox>
+									</vbox>
+								</stack>
 							</description>
 						</hbox>
 						<!--<caption label="Programs" class="toggle-contents" onclick="toggleContents(this)"/>

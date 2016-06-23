@@ -70,6 +70,14 @@ $hover-blue-bg: rgba(0, 165, 207, 0.15);
 	justify-content: center;
 }
 
+@mixin scanlines($clr, $spacing, $thickness) {
+	background-image: repeating-linear-gradient(-45deg, 
+		transparent, 
+		transparent $spacing,
+		$clr $spacing, 
+		$clr $spacing+$thickness);
+}
+
 a {
 	color: #36F;
 }

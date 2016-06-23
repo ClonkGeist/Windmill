@@ -95,7 +95,7 @@ function onConfigSave() {
 		var key = $(this).attr("id").match(/config-.+?-(.*)/i)[1];
 
 		if(key) {
-			if(_mainwindow.CONFIG[sect][key].value)
+			if(_mainwindow.CONFIG[sect] && _mainwindow.CONFIG[sect][key].value)
 				if($(this).find(".cfg-val").val() == (_mainwindow.CONFIG[sect][key].value.toString()))
 					$(this).removeClass("configChanged");
 		}

@@ -179,11 +179,7 @@ html, body, #wrapper {
 		1px 0 0 0 rgb(230, 230, 230) inset, 
 		0 1px 0 0 rgb(230, 230, 230) inset;
 	
-	background-image: repeating-linear-gradient(-45deg, 
-		transparent, 
-		transparent 4px, 
-		rgb(240, 240, 240) 4px, 
-		rgb(240, 240, 240) 5px);
+	@include scanlines(rgb(240, 240, 240), 4px, 1px);
 	
 	p {
 		margin: 0;

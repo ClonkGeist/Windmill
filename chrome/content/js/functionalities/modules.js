@@ -66,6 +66,7 @@ function readModuleInfo(path) {
 		if(!sect)
 			return log(`Module Loading Error (${path}): No name was specified.`, "error");
 		else {
+			addConfigString("Modules", module.name+"_State", 0);
 			for(let item of config) {
 				let type = "string", key = item[0], val = item[1];
 				type = val.match(/^[a-zA-Z]+(?=\:)/)
@@ -150,9 +151,16 @@ var MODULE_CNT = 0;
 
 function createModule(name, obj, fClearParent, fHide, options = {}) {
 	var mod = getModuleDef(name);
-	
-	if(!mod)
-		return alert("Could not load module " + name + ": Module does not exist");
+
+	if(!mod) {
+		log("Module Creation Error: Module does not exist.", "error");
+		return alert("Could not load module " + name + ": Module does not exist.");
+	}
+
+	if(getConfigData("Modules", name+"_State") == 2) {
+		log("Module Creation Error: Module is deactivated.", "error");
+		return alert("Could not load module " + name + ": Module is deactivated.");
+	}
 
 	/* container aufräumen? 
 		TODO: Not so fine, weil nav Element bestehen bleiben - 

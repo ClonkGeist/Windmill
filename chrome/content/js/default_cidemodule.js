@@ -67,6 +67,14 @@ function getUnsavedFiles() {
 	return files;
 }
 
+function getTabFileList() {
+	let tabs = TabManager(), files = [];
+	for(let id in tabs)
+		if(tabs[id])
+			files.push({ filepath: tabs[cda.active_id][cda.path], index: id, module: window });
+	return files;
+}
+
 function saveFileByPath(path) {
 	let tabs = TabManager();
 	for(var id in tabs)

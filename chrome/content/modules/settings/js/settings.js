@@ -25,12 +25,107 @@ hook("load", function() {
 				//Title and description
 				clone.find(".moduletitle").text(Locale(module.modulename, module.languageprefix));
 				tooltip(clone.find(".icon-info")[0], module.description, "xul", 150, { target: clone.find(".moduleinfo")[0], lpre: module.languageprefix, css: {"max-width": "260px", "width": "260px"} });
+				tooltip(clone.find(".icon-warning")[0], "$ForcedModuleDeactivation$", "xul", 150);
 				
 				let gradient = "linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 48%, rgba(255, 255, 255, 0.8) 90%),";
 				if(!module.settings.previewimage)
-					clone.css("background-image", gradient+"url(chrome://windmill/content/"+formatPath(module.relpath)+"/previewimage.png)");
+					clone.find(".modulebackground").css("background-image", gradient+"url(chrome://windmill/content/"+formatPath(module.relpath)+"/previewimage.png)");
 				else
-					clone.css("background-image", gradient+"url(chrome://windmill/content/"+formatPath(module.relpath)+"/"+module.settings.previewimage+")");
+					clone.find(".modulebackground").css("background-image", gradient+"url(chrome://windmill/content/"+formatPath(module.relpath)+"/"+module.settings.previewimage+")");
+
+				//[TODO/ADDONS:] Addons should not be able to use this option
+				if(!module.isnotdeactivatable) {
+					let state = getConfigData("Modules", module.name+"_State");
+					if(state)
+						clone.addClass("deactivated"+(state==2?" forced":""));
+					let btn = $("<box class='modulectrl icon-togglestate icon-24'></box>");
+					btn.click(function(e) {
+						e.stopPropagation();
+						if(getConfigData("Modules", module.name+"_State")) {
+							setConfigData("Modules", module.name+"_State", 0, true);
+							clone.removeClass("deactivated forced");
+							return;
+						}
+
+						let forced_mode = false;
+						if(e.ctrlKey)
+							forced_mode = true;
+						//For CIDE modules: show warning about unsaved changes.
+						if(module.cidemodule) {
+							function cleanUnusedModules() {
+								let modules = getModulesByName(module.name);
+								for(let module of modules) {
+									if(forced_mode || module.contentWindow.parent.MODULE_NAME == "cide") {
+										getModuleByName("cide").contentWindow.detachModule(module);
+										$(module).remove();
+									}
+								}
+								setConfigData("Modules", module.name+"_State", 1+forced_mode, true);
+								clone.addClass("deactivated"+(forced_mode?" forced":""));
+							}
+
+							//Get list of all unsaved changes
+							let files;
+							files = getModuleByName("cide").contentWindow.getUnsavedFiles();
+
+							if(!files || !files.length) {
+								//create confirmation dialog
+								dlg = new WDialog("$DlgConfirmModuleDeactivation$", MODULE_LPRE, { modal: true, css: { "width": "450px" },
+									btnright: [{preset: "accept", onclick: function(e, btn, _self) {
+										//remove iframes
+										cleanUnusedModules();
+									}}, "cancel"]});
+								dlg.setContent(Locale("<description>$DlgConfirmModuleDeactivationDesc"+(forced_mode?"Forced":"")+"$</description>"));
+								dlg.show();
+							}
+							else {
+								//create dialog
+								dlg = new WDialog("$DlgUnsavedChanges$", MODULE_LPRE, { modal: true, css: { "width": "450px" },
+									btnright: [{preset: "accept", onclick: function(e, btn, _self) {
+										$(_self.element).find(".dlg-checklistitem.selected").each(function() {
+											let index = parseInt($(this).attr("data-fileindex"));
+
+											//Save tab
+											if(files[index].module.saveFileByPath)
+												files[index].module.saveFileByPath(files[index].filepath);
+										});
+										//switch back to settings
+										_mainwindow.mainDeck.show(_mainwindow.mainDeck.getModuleId("settings"));
+										//remove iframes
+										cleanUnusedModules();
+									}}, {preset:"cancel", onclick: function() {
+										//switch back to settings
+										_mainwindow.mainDeck.show(_mainwindow.mainDeck.getModuleId("settings"));
+									}}]});
+
+								//Generate list of unsaved files
+								let liststr = '<vbox id="dex-dlg-gffiles" class="dlg-checklistbox">';
+								for(let i = 0; i < files.length; i++)
+									if(files[i].module.MODULE_NAME == module.name)
+										liststr += '<hbox class="dlg-checklistitem" data-fileindex="'+i+'">'+files[i].filepath.replace(_sc.workpath(files[i])+"/", "")+'</hbox>';
+
+								liststr += "</vbox>"
+
+								dlg.setContent('<description>$DlgUnsavedChangesDesc$</description>'+liststr+
+											   '<description>$DlgUnsavedChangesDesc3$</description>'+
+											   (forced_mode?"<hbox class=\"dlg-infobox\"><description>$DlgUnsavedChangesDesc3Forced$</description></hbox>":""));
+								dlg.show();
+
+								$(dlg.element).find(".dlg-checklistitem").click(function() {
+									let index = parseInt($(this).attr("data-fileindex"));
+									_mainwindow.mainDeck.show(_mainwindow.mainDeck.getModuleId("cide"));
+									getModuleByName("cide").contentWindow.fileLoadedInModule($(files[index].module).attr("name"), files[index].filepath, true);
+								});
+
+								return;
+							}
+						}
+						else {
+							//TODO: Handling of other modules.
+						}
+					});
+					btn.appendTo(clone.find(".modulecontrols"));
+				}
 
 				clone.appendTo($(target+" > .modulewrapper > description"));
 				let showconfig = module.isconfigurable;
@@ -97,8 +192,8 @@ hook("load", function() {
 							OS.File.read(path, {encoding: "utf-8"}).then(function(content) {
 								//Parse XUL and add content to DOM
 								//TODO: If possible warn the user if the added content wants to execute scripts
-								//$(jQuery.parseHTML(Locale(content), document, allowscripts)).appendTo($(target+"-subpage .module-subpage-loaded-content"));
-								$(target+"-subpage .module-subpage-loaded-content").append(Locale(content));
+								$(target+"-subpage .module-subpage-loaded-content").append(content);
+								localizeModule($(target+"-subpage .module-subpage-loaded-content"));
 								//Because jQuery is in the mainwindow context, all scripts are executed in the mainwindow context.
 								//Maybe we need something selfmade for this task.
 								_mainwindow.execHook({ name: "onSubpageLoaded", caller: window });
@@ -408,7 +503,7 @@ function showDeckItem() {
 		if(val != -1)
 			clearTempDataTask = false;
 	}, function(reason) {
-		log("Temp Data calculation failed: " + reason);
+		log("Temp Data calculation failed: " + reason, "error");
 		clearTempDataTask = false;
 		$("#clear-temp-data").attr("data-additional", Locale("$Failed$"));
 	});
@@ -430,7 +525,7 @@ function clearTemporaryData() {
 		EventInfo("$EI_TempCleared$");
 		clearTempDataTask = false;
 	}).then(null, function(reason) {
-		log("Clearing temporary data failed: " + reason);
+		log("Clearing temporary data failed: " + reason, "error");
 		EventInfo("An error occured while trying to clear temporary data.");
 	});
 }

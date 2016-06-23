@@ -1,5 +1,4 @@
 <vbox>
-	<checkbox label="$AlwaysUseScenarioSettings$" id="scenariosettings-always-use" class="autoinit" flex="1" default-cfgsect="ScenarioSettings" default-cfgkey="AlwaysUseScenarioSettings"/>
 	<hbox>
 		<checkbox label="$UseModuleCache$" id="scenariosettings-module-cache" class="autoinit" default-cfgsect="ScenarioSettings" default-cfgkey="UseModuleCache"/>
 		<vbox class="infotooltip" data-tooltip="$TooltipSCEModuleCache$">
