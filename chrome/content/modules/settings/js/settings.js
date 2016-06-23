@@ -10,15 +10,11 @@ hook("load", function() {
 			$(this).text(getConfigData(options.cfgsect, options.cfgkey));
 		});
 
-		let modules = getModuleDefs(), extprogids = [];
+		let modules = getModuleDefs();
 		for(let mname in modules) {
 			let module = modules[mname];
 			if(!module.cidemodule || !module.matchinggroup)
 				continue;
-
-			for(let group of module.matchinggroup)
-				if(group.externalprogramid && extprogids.indexOf(group.externalprogramid) == -1)
-					extprogids.push(group.externalprogramid);
 
 			//Create module overview
 			if(module.cidemodule || module.cbridgemodule) {
@@ -37,7 +33,15 @@ hook("load", function() {
 					clone.css("background-image", gradient+"url(chrome://windmill/content/"+formatPath(module.relpath)+"/"+module.settings.previewimage+")");
 
 				clone.appendTo($(target+" > .modulewrapper > description"));
-				if(module.isconfigurable) {
+				let showconfig = module.isconfigurable;
+				if(module.cidemodule)
+					for(let {externalprogramid} of module.matchinggroup)
+						if(externalprogramid) {
+							showconfig = true;
+							break;
+						}
+
+				if(showconfig) {
 					clone.addClass("configurable");
 					//If we want to add an addon interface some time, "true" shall be replaced by a check if the module is an addon
 					let allowscripts = true || module.settings.allowscripts;
@@ -45,49 +49,71 @@ hook("load", function() {
 						//Prepare subpage
 						let subpage = $($(this).parents("stack")[0]).find(".module-subpage");
 						subpage.css("display", "-moz-box").find(".module-subpage-caption").text(Locale(module.modulename, module.languageprefix));
+						$(target+"-subpage .extprogram-list .extprogram:not(.draft)").remove();
+
+						//Show external program list for this module
+						if(module.cidemodule) {
+							let extprogids = [];
+							for(let {externalprogramid} of module.matchinggroup)
+								if(externalprogramid && extprogids.indexOf(externalprogramid) == -1) {
+									let clone = $(".extprogram.draft").clone();
+									clone.removeClass("draft");
+									clone.find(".extprogram-label").attr("value", Locale("$ExtProg_"+externalprogramid+"Lbl$"));
+									if(getConfigData("CIDE", "ExtProg_"+externalprogramid))
+										clone.find(".view-directory-path").text(getConfigData("CIDE", "ExtProg_"+externalprogramid));
+									if(getConfigData("CIDE", "AU_"+externalprogramid))
+										clone.find(".extprogram-always-use").prop("checked", true);
+									clone.find(".extprogram-browse").on("command", function() {
+										openProgramDialog(this, undefined, externalprogramid);
+									});
+									clone.find(".extprogram-always-use").on("command", function() {
+										setConfigData("CIDE", "AU_"+externalprogramid, $(this).prop("checked"));
+									});
+									clone.find(".extprogram-clear").click(function() {
+										setConfigData("CIDE", "ExtProg_"+externalprogramid, "");
+										clone.find(".view-directory-path").text(Locale("$pathempty$"));
+									});
+									clone.appendTo($(target+"-subpage .extprogram-list"));
+
+									//Dont show the same programid multiple times
+									extprogids.push(externalprogramid);
+								}
+						}
 
 						//Load settings content from module
 						//TODO: Maybe some kind of check if module X was added and the user "trusted" it? So scripts will not be executed until the user allows it.
 						//      Or an unexploitable script protection.. (that also includes XML Namespaces)
-						let path = module.path.split("/");
-						path.pop();
-						path = path.join("/");
-						path += "/"+(module.settings.path?module.settings.path:"modulesettings.xul");
-						if(path.split(".").pop().toLowerCase() != "xul") {
-							log(`An error occured while trying to load the settings of the ${module.modulename} module:`, "error");
-							log("The specified target file is not supported. (Currently supported formats: xul)", "error");
-						}
+						if(module.isconfigurable) {
+							let path = module.path.split("/");
+							path.pop();
+							path = path.join("/");
+							path += "/"+(module.settings.path?module.settings.path:"modulesettings.xul");
+							if(path.split(".").pop().toLowerCase() != "xul") {
+								log(`An error occured while trying to load the settings of the ${module.modulename} module:`, "error");
+								log("The specified target file is not supported. (Currently supported formats: xul)", "error");
+							}
 
-						$(target+"-subpage .module-subpage-loaded-content").empty();
-						OS.File.read(path, {encoding: "utf-8"}).then(function(content) {
-							//Parse XUL and add content to DOM
-							//TODO: If possible warn the user if the added content wants to execute scripts
-							//$(jQuery.parseHTML(Locale(content), document, allowscripts)).appendTo($(target+"-subpage .module-subpage-loaded-content"));
-							$(target+"-subpage .module-subpage-loaded-content").append(Locale(content));
-							//Because jQuery is in the mainwindow context, all scripts are executed in the mainwindow context.
-							//Maybe we need something selfmade for this task.
-							_mainwindow.execHook({ name: "onSubpageLoaded", caller: window });
-							autoInitialize($(target+"-subpage .module-subpage-loaded-content"));
-						}, function(reason) {
-							log(`An error occured while trying to load the settings of the ${module.modulename} module:`, "error");
-							log(reason, "error");
-						});
+							$(target+"-subpage .module-subpage-loaded-content").empty();
+							OS.File.read(path, {encoding: "utf-8"}).then(function(content) {
+								//Parse XUL and add content to DOM
+								//TODO: If possible warn the user if the added content wants to execute scripts
+								//$(jQuery.parseHTML(Locale(content), document, allowscripts)).appendTo($(target+"-subpage .module-subpage-loaded-content"));
+								$(target+"-subpage .module-subpage-loaded-content").append(Locale(content));
+								//Because jQuery is in the mainwindow context, all scripts are executed in the mainwindow context.
+								//Maybe we need something selfmade for this task.
+								_mainwindow.execHook({ name: "onSubpageLoaded", caller: window });
+								autoInitialize($(target+"-subpage .module-subpage-loaded-content"));
+							}, function(reason) {
+								log(`An error occured while trying to load the settings of the ${module.modulename} module:`, "error");
+								log(reason, "error");
+							});
+						}
 					});
 				}
 			}
 			$(".module-subpage-button.module-subpage-back").click(function() {
 				$($(this).parents(".module-subpage")[0]).css("display", "none");
 			}).click();
-		}
-		for(let extprogid of extprogids) {
-			let clone = $(".extprogram.draft").clone();
-			clone.removeClass("draft");
-			clone.find(".extprogram-label").attr("value", Locale("$ExtProg_"+extprogid+"Lbl$"));
-			if(getConfigData("CIDE", "ExtProg_"+extprogid))
-				clone.find(".view-directory-path").text(getConfigData("CIDE", "ExtProg_"+extprogid));
-			if(getConfigData("CIDE", "AU_"+extprogid))
-				clone.find(".extprogram-always-use").prop("checked", true);
-			clone.appendTo($("#extprogram-list"));
 		}
 
 		let iterator;
@@ -284,16 +310,6 @@ hook("load", function() {
 		}
 
 		autoInitialize();
-
-		$(".extprogram-always-use").on("command", function() {
-			let id = $(this).parent().attr("id").replace(/row-/, "");
-			setConfigData("CIDE", "AU_"+id, $(this).prop("checked"));
-		});
-		$(".extprogram-clear").click(function() {
-			let id = $(this).parent().attr("id").replace(/row-/, "");
-			setConfigData("CIDE", "ExtProg_"+id, "");
-			$(this).parent().find(".view-directory-path").text(Locale("$pathempty$"));
-		});
 	}, 1);
 });
 
@@ -608,10 +624,7 @@ function openPathDialog(id) {
 	return true;
 }
 
-function openProgramDialog(obj, extApp) {
-	var type = $(obj).parent().attr("id");
-	type = type.replace(/row-/, "");
-
+function openProgramDialog(obj, extApp, type) {
 	//Filepicker öffnen
 	var fp = _sc.filepicker();
 	fp.init(window, Locale("$choose_program$"), Ci.nsIFilePicker.modeOpen);

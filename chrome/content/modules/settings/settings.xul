@@ -109,9 +109,7 @@
 								</vbox>
 							</description>
 						</hbox>
-						<!--
-						
-						<caption label="Programs" class="toggle-contents" onclick="toggleContents(this)"/>
+						<!--<caption label="Programs" class="toggle-contents" onclick="toggleContents(this)"/>
 						<vbox>
 							<grid>
 								<columns>
@@ -130,8 +128,7 @@
 									</row>
 								</rows>
 							</grid>	
-						</vbox>
-						-->
+						</vbox>-->
 					</vbox>
 					<vbox id="settings-page-cide-subpage" class="settings-page module-subpage" top="0" bottom="0">
 						<hbox class="module-subpage-header">
@@ -140,6 +137,24 @@
 							<button class="module-subpage-button module-subpage-back" label="$Back$"/>
 						</hbox>
 						<vbox class="module-subpage-content" flex="1">
+							<vbox class="module-subpage-content-header">
+								<vbox class="extprogram-list">
+									<vbox class="extprogram draft">
+										<hbox>
+											<label class="extprogram-label" flex="1"/>
+											<description class="view-directory-path" flex="8">$pathempty$</description>
+											<button label="$browse$" class="extprogram-browse" />
+										</hbox>
+										<hbox>
+											<checkbox class="extprogram-always-use" label="$AlwaysUseExternalProgram$" />
+											<hbox flex="1">
+												<spacer flex="1"/>
+												<box class="extprogram-clear nav-image icon-trashbin icon-32" height="32" width="32"></box>
+											</hbox>
+										</hbox>
+									</vbox>
+								</vbox>
+							</vbox>
 							<vbox class="module-subpage-loaded-content" flex="1">
 								
 							</vbox>

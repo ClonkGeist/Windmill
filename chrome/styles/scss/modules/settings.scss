@@ -233,6 +233,13 @@ listitem:focus
 	color: #999;
 }
 
+/* external programs */
+
+.extprogram {
+	background: #dadada;
+	padding: 0.6em;
+}
+
 /* external applications */
 
 #application-list {
@@ -331,6 +338,10 @@ listitem:focus
 
 .module-subpage-button {
 	/*-- button style --*/
+}
+
+.module-subpage-content {
+	padding: 1.2em 1.6em;
 }
 
 /*	need some space	*/
