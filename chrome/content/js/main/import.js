@@ -42,7 +42,7 @@ function log(str) {
 }
 
 try {
-	var {devtools} = Cu.import("resource://gre/modules/devtools/Loader.jsm", {});
+	var {devtools} = Cu.import("resource://devtools/shared/Loader.jsm", {});
 	let { DebuggerServer } = require("devtools/server/main");
 	if(!DebuggerServer.initialized) {
 	  DebuggerServer.init();
