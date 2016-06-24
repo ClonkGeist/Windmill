@@ -232,8 +232,6 @@ class Mode_Draw_Shape extends DefaultMode {
 		this.lastX = x
 		this.lastY = y
 		
-		//this.color = scene.getSelRGB()
-		
 		let color = getCurrentRGB(CM_ACTIVEID)
 		if(color === null)
 			this.color = new Float32Array([0, 0, 0])

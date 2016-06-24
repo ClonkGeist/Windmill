@@ -577,9 +577,11 @@ hook("load", function() {
 	bindKeyToObj(new KeyBinding("RotateICW", "Ctrl-.", function() { rotateImage(90); }));
 	// Select Eyedropper method
 	bindKeyToObj(new KeyBinding("SelectEyedropper", "I", function() {
-		$("#md_getclr").click(function() {
-			setSelMode(Mode_Eyedropper)
-		})
+		$("#md_getclr").click()
+	}));
+	// Select Brush method
+	bindKeyToObj(new KeyBinding("SelectDrawBrush", "B", function() {
+		$("#md_point").click()
 	}));
 	
 	createCideToolbar(true);
@@ -858,6 +860,8 @@ function openScalingDialog() {
 					parseInt($(_self.element).find("#dbmp_newImageWidth").val()),
 					parseInt($(_self.element).find("#dbmp_newImageHeight").val())
 				)
+				
+				sceneMeta[CM_ACTIVEID].scene.render()
 				
 				centerCanvas()
 				
@@ -1235,7 +1239,7 @@ function saveTab(id) {
 	bstr.close();
 	fstr.close();
 	
-	EventInfo("$EI_Saved$", -1);
+	EventInfo("$EI_Saved$", -1, true);
 	
 	//Verhalten zum Speichern der TexMaps:
 	// 0: Automatisch Speichern sofern Aenderung festgestellt
@@ -1466,7 +1470,7 @@ function addCideFile(path, id, fShow) {
 			showDeckItem(id);
 	},
 	(e, src) => {
-		log("an error occured while tryint to load bmp image (" + src + ")")
+		log("an error occured while trying to init with bmp image (" + src + ")")
 	})
 
 	return true;

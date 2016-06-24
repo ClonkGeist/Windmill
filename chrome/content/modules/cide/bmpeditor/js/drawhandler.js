@@ -288,8 +288,6 @@ class BMPScene {
 		
 		document.getElementById("ui-sel").setAttribute("viewBox", "0 0 "+ w + " " + h)
 		document.getElementById("ui-sel").setAttribute("height", this.height*this.zoomFactor)
-		
-		
 	}
 	
 	// flip y coords	
