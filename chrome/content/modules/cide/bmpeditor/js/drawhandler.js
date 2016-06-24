@@ -272,10 +272,10 @@ class BMPScene {
 		return this.initialized
 	}
 		
-	setDimensions(w = 1, h = 1) {
+	setDimensions(w = 1, h = 1, align = -1) {
 		this.width = w
 		this.height = h
-		
+		log(align)
 		this.canvas.width = w
 		this.canvas.height = h
 		

@@ -106,7 +106,7 @@ function initCtrls() {
 	
 	$(".ui-rect").mousedown((e) => {
 		let r = a_S.currentRect
-		
+		log("mouse down")
 		r.x = e.clientX - a_S.canvas.offsetLeft,
 		r.y = e.clientY - a_S.canvas.offsetTop
 		

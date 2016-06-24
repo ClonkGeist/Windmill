@@ -855,10 +855,16 @@ function mirrorImage(fVertically) {
 function openScalingDialog() {
 	var dlg = new WDialog("$DlgScaleImage$", MODULE_LPRE, { modal: true, css: { "width": "470px" }, 
 			btnright: [{preset: "accept", onclick: function(e, btn, _self) {
+				
+				let align = _mainwindow.$(".dbmp_imgAlign").find(".dlg-selected-icon").attr("data-align-pos") || "11"
+				
+				if(!_mainwindow.document.getElementById("dbmp_scalecanvas").checked)
+					align = -1
 
 				sceneMeta[CM_ACTIVEID].scene.setDimensions(
 					parseInt($(_self.element).find("#dbmp_newImageWidth").val()),
-					parseInt($(_self.element).find("#dbmp_newImageHeight").val())
+					parseInt($(_self.element).find("#dbmp_newImageHeight").val()),
+					align
 				)
 				
 				sceneMeta[CM_ACTIVEID].scene.render()
@@ -868,20 +874,49 @@ function openScalingDialog() {
 				setConfigData("BMPEditor", "ScaleCanvas", $(_self.element).find("#dbmp_scalecanvas").prop("checked"));
 				saveConfig([["BMPEditor", "ScaleCanvas"]]);
 			}}, "cancel"]});
-	
+	/**
+		data-align-pos:
+		first value is align on x-axis:
+			0: left
+			1: center
+			2: right
+		
+		second value is align on y-axis:
+			0: top
+			1: center
+			2: bottom
+		
+		so 11 aligns the image at the canvases center. 02 at its left bottom corner
+	*/
 	dlg.setContent('<hbox><description style="width: 400px;">$DlgScaleImageDesc$</description></hbox>' +
 				   '<hbox><grid><columns><column flex="1" /><column flex="2" /><column/></columns>'+
 				   '<rows><row><label value="$DlgWidth$"/><textbox id="dbmp_newImageWidth" /><label value="units"/></row>' +
 				   '<row><label value="$DlgHeight$"/><textbox id="dbmp_newImageHeight" /><label value="units"/></row>' +
 				   '<row><checkbox id="dbmp_proportional" label="$DlgProportionalValues$" /></row>' +
 				   '<row><checkbox id="dbmp_scalecanvas" label="$DlgScaleCanvas$" checked="'+getConfigData("BMPEditor", "ScaleCanvas")+'" /></row>' +
+				   '<row>$DlgAlignImg$: '+
+				   '<hbox class="dbmp_imgAlign dlg-sel-icons">'+
+						'<vbox><box data-align-pos="01" class="icon-save icon-24"></box>'+
+							'<box data-align-pos="01" class="icon-save icon-24"></box>'+
+							'<box data-align-pos="02" class="icon-save icon-24"></box>'+
+						'</vbox>' +
+						'<vbox><box data-align-pos="10" class="icon-save icon-24"></box>'+
+							'<box data-align-pos="11" class="icon-save icon-24 dlg-selected-icon"></box>'+
+							'<box data-align-pos="12" class="icon-save icon-24"></box>'+
+						'</vbox>' +
+						'<vbox><box data-align-pos="20" class="icon-save icon-24"></box>'+
+							'<box data-align-pos="21" class="icon-save icon-24"></box>'+
+							'<box data-align-pos="22" class="icon-save icon-24"></box>'+
+						'</vbox>' +
+					'</hbox>'+
+				   '</row>' +
 				   '</rows></grid></hbox>');
 	dlg.show();
 	
 	$(dlg.element).find("#dbmp_newImageWidth").keypress(function(e) {
 		if(!e.ctrlKey)
 			if(e.which < 48 || e.which > 57)
-				if([8,9,13,37,38,39,40].indexOf(e.keyCode) == -1)
+				if([8,9,13,37,38,39,40,46].indexOf(e.keyCode) == -1)
 					return false;
 	}).on("input", function(e) {
 		if(_mainwindow.$("#dbmp_proportional").prop("checked")) {
@@ -903,6 +938,19 @@ function openScalingDialog() {
 			_mainwindow.$("#dbmp_newImageWidth").val(Math.floor(parseInt($(this).val())*p) || 1);
 		}
 	}).val(sceneMeta[CM_ACTIVEID].scene.height);
+	
+	$(dlg.element).find(".dbmp_imgAlign").click(function(e) {
+		_mainwindow.$(".dbmp_imgAlign").find(".dlg-selected-icon").removeClass("dlg-selected-icon")
+		
+		_mainwindow.$(e.target).addClass("dlg-selected-icon")
+	})
+	
+	$(dlg.element).find("#dbmp_scalecanvas").change(function() {
+		if(this.checked)
+			_mainwindow.$(".dbmp_imgAlign").css("display", "")
+		else
+			_mainwindow.$(".dbmp_imgAlign").css("display", "none")
+	})
 	
 	dlg = 0;
 }

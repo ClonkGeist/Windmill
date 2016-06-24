@@ -167,3 +167,17 @@
 	outline: 1px solid rgba(0, 165, 207, 0.3);
 	outline-offset: -1px;
 }
+
+/* Icon based selection */
+.dlg-sel-icons {
+
+	[class^="icon-"]:hover,
+	[class*=" icon-"]:hover {
+		@include hover-blue();
+	}
+	
+	
+	.dlg-selected-icon {
+		@include hover-blue-selected();
+	}
+}
