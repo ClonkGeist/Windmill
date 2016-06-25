@@ -131,16 +131,15 @@ class BMPScene {
 		this.texture_Worker = this.createTexture()
 		this.texture_Brush = this.createTexture()
 		
-		this._undoStacks = []
-		this.dirtyCounter = 0
-		this.actionCounter = 0
-		
 		this.selClrIndex = 0
 		this.selShape = Shape_Circle
 		
 		this.currentColorRGB = new Float32Array(3)
 		
-		this._stackHolder = {}
+		this._undoStack = []
+		this._tStacks = []
+		this.dirtyCounter = 0
+		this.currentActionId = -1
 	}
 	
 	set ptexture_Source (tex) {
@@ -623,7 +622,14 @@ class BMPScene {
 	}
 	
 	undo() {
+		if(!this.hasUndoStep())
+			return false
+		
+		
+		
 		dirtyCounter--
+		
+		return true
 	}
 	
 	redo() {
@@ -631,19 +637,48 @@ class BMPScene {
 	}
 	
 	hasUndoStep() {
+		if(this.currentActionId < 0)
+			return false
 		
+		return true
 	}
 	
 	hasRedoStep() {
+		if(this.currentActionId === this._undoStack.length - 1)
+			return false
 		
+		return true
 	}
 	
-	manifestUndoStep() {
+	manifestUndoStep(action) {
+		if(this._undoStack.length < MAX_UNDO_STACKSIZE) {
+			this.currentActionId++
+			this._undoStack.push(action)
+		}
+		else
+			this._undoStack.shift().push(action)
 		
+		dirtyCounter++
 	}
 	
 	onSave() {
 		dirtyCounter = 0
+	}
+	
+	getTextureStack() {
+		
+		let id = this.w + "x" + this.h
+		
+		if(!this._tStacks[id])
+			this._tStacks[id] = new TextureStack(
+				this.w,
+				this.h,
+				this.gl,
+				this.c,
+				this.createTexture()
+			)
+		
+		return this._tStacks[id]
 	}
 	
 	/** 
@@ -690,13 +725,59 @@ class BMPScene {
 	}
 }
 
-class UndoStack {
-	constructor(w, h, gl, tex) {
+class TextureStack {
+	constructor(w, h, gl, c, tex) {
 		this.gl = gl
+		this.c = c
 		this.w = w
 		this.h = h
 		
+		this.id = w + "x" + h
+		
 		this.userCount = 0
+		this.current = false
+		this.tex = tex
+		
+		this.offset = 0
+		
+		gl.bindTexture(gl.TEXTURE_2D, tex)
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, w, h*MAX_UNDO_STACKSIZE, 0, gl.RGB, gl.UNSIGNED_BYTE, null)
+	}
+	
+	saveState() {
+		gl.bindTexture(this.gl.TEXTURE_2D, this.tex)
+		gl.texSubImage2D(this.gl.TEXTURE_2D, 0, 0, this.offset * this.h, this.w, this.h, this.gl.RGB, this.gl.UNSIGNED_BYTE, this.c)
+		
+		let i = this.offset
+		
+		this.offset = (this.offset + 1) % MAX_UNDO_STACKSIZE
+		
+		return i
+	}
+	
+	drawState(i, scene) {
+		
+	}
+	
+	registerUser() {
+		this.userCount++
+	}
+	
+	// returning true marks as unused and is allowed to get deleted
+	unregisterUser() {
+		this.userCount--
+		
+		if(this.userCount < 1 && !this.current) {
+			this.die()
+			return true
+		}
+		
+		return false
+	}
+	
+	die() {
+		this.gl.deleteTexture(this.tex)
+		this.gl = null
 	}
 }
 

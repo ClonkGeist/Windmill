@@ -1,12 +1,3 @@
-/**
-	TODO:
-	
-	undo manager
-	selection behaviour
-	double image setup (for background and foreground setups)
-*/
-
-
 class ModeHandler {
 	constructor() {
 		
@@ -270,13 +261,23 @@ class Mode_Draw_Shape extends DefaultMode {
 		
 		this.lastX = x
 		this.lastY = y
-		
+		// drawTimeout = true
 		drawTimeout = setTimeout(function() { drawTimeout = false; }, 10)
 	}
 	
 	onMouseup(x = 0, y = 0, scene, modifier) {
 		this.onMousemove(x, y, scene, 0)
 		this.scene.combineIntoSource()
+		
+		let ts = scene.getTextureStack()
+		
+		let state = ts.saveState()
+		
+		let a = new Action(() => {
+			state = ts.drawState(state, this.scene)
+		})
+		
+		manifestUndoStep(a)
 	}
 }
 
@@ -507,6 +508,16 @@ class GenShape extends Shape {
 		for(let x = 0; x < diameter; x++)
 			for(let y = 0; y < diameter; y++)
 				this.data[x + y*diameter] = (Math.sqrt(x*x + y*y)) <= diameter? 255:0;
+	}
+}
+
+class Action {
+	constructor(fnPerform) {
+		this.fnPerf = fnPerform
+	}
+	
+	perform() {
+		this.fnPerf()
 	}
 }
 

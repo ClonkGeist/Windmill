@@ -945,7 +945,7 @@ function openScalingDialog() {
 		_mainwindow.$(e.target).addClass("dlg-selected-icon")
 	})
 	
-	$(dlg.element).find("#dbmp_scalecanvas").change(function() {
+	$(dlg.element).find("#dbmp_scalecanvas").change(function() {log("ever changed")
 		if(this.checked)
 			_mainwindow.$(".dbmp_imgAlign").css("display", "")
 		else
@@ -958,7 +958,7 @@ function openScalingDialog() {
 /*-- Infotoolbar --*/
 
 function updateInfotoolbar(x, y) {
-	var id = CM_ACTIVEID, zoom = sceneMeta[id].z;
+	var id = CM_ACTIVEID, zoom = sceneMeta[id].scene.zoomFactor;
 	if(x != undefined && y != undefined) {
 		x = Math.floor(x); y = Math.floor(y);
 		var rect = editlayer.getBoundingClientRect();
@@ -1287,6 +1287,7 @@ function saveTab(id) {
 	bstr.close();
 	fstr.close();
 	
+	scene.onSave()
 	EventInfo("$EI_Saved$", -1, true);
 	
 	//Verhalten zum Speichern der TexMaps:
