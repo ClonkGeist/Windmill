@@ -278,17 +278,13 @@ listitem:focus
 
 .infotooltip {
 	width: 16px;
-	color: white;
+	color: $ui-text-clr;
+	
 	.icon-info {
-		box-sizing: border-box;
 		height: 16px;
-		border: 1px solid black;
-		background: black;
-		border-radius: 9px;
-		transition: background 0.3s;
-		margin-left: 0.1em;
+		margin-left: 8px;
 		&:hover {
-			background: $chrome-ui-active;
+			color: $text-clr;
 		}
 	}
 }
