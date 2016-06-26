@@ -38,8 +38,8 @@ hook("load", function() {
 					let state = getConfigData("Modules", module.name+"_State");
 					if(state)
 						clone.addClass("deactivated"+(state==2?" forced":""));
-					let btn = $("<box class='modulectrl icon-togglestate icon-24'></box>");
-					btn.click(function(e) {
+					
+					$(clone).find(".module-state-toggle").click(function(e) {
 						e.stopPropagation();
 						if(getConfigData("Modules", module.name+"_State")) {
 							setConfigData("Modules", module.name+"_State", 0, true);
@@ -124,7 +124,6 @@ hook("load", function() {
 							//TODO: Handling of other modules.
 						}
 					});
-					btn.appendTo(clone.find(".modulecontrols"));
 				}
 
 				clone.appendTo($(target+" > .modulewrapper > description"));
@@ -140,7 +139,7 @@ hook("load", function() {
 					clone.addClass("configurable");
 					//If we want to add an addon interface some time, "true" shall be replaced by a check if the module is an addon
 					let allowscripts = true || module.settings.allowscripts;
-					clone.click(function() {
+					clone.find(".bg-stack").click(function() {
 						//Prepare subpage
 						let subpage = $($(this).parents("stack")[0]).find(".module-subpage");
 						subpage.css("display", "-moz-box").find(".module-subpage-caption").text(Locale(module.modulename, module.languageprefix));

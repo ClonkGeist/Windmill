@@ -9,7 +9,7 @@
 	
 
 	<hbox id="settings" flex="1">
-		<vbox id="settings-nav" flex="1">
+		<vbox id="settings-nav" width="200">
 			<!-- preference sections -->
 			<button class="active navigation" label="$General$" oncommand="togglePage('settings-page-general', 'settings-pages', this)" />
 			<button class="navigation" label="Open Clonk" oncommand="togglePage('settings-page-oc', 'settings-pages', this)" />
@@ -91,17 +91,14 @@
 						<caption class="big" label="$cide$" />
 						<hbox class="modulewrapper">
 							<description flex="1"> <!-- for line wrapping -->
-								<stack class="moduleentry draft">
-									<vbox class="modulebackground"></vbox>
-									<vbox class="modulebglayer"></vbox>
+								<vbox class="moduleentry draft">
+									<stack class="bg-stack" flex="1">
+										<vbox class="modulebackground"></vbox>
+										<vbox class="modulebglayer"></vbox>
+										<box class="module-forced icon-warning icon-16" height="16" width="16" top="5" left="5"></box>
+									</stack>
 									<vbox class="moduleentrycontent">
-										<spacer flex="1"/>
 										<hbox class="moduleinfo">
-											<vbox class="module-forced">
-												<spacer flex="7"/>
-												<box class="modulectrl icon-warning icon-16" height="16"></box>
-												<spacer flex="4"/>
-											</vbox>
 											<hbox class="moduletitle">Scripteditor</hbox>
 											<vbox class="infotooltip">
 												<spacer flex="7"/>
@@ -109,12 +106,21 @@
 												<spacer flex="4"/>
 											</vbox>
 											<spacer flex="1"/>
-											<hbox class="modulecontrols" flex="1">
+											<hbox class="modulecontrols" flex="1" align="center">
 												<spacer flex="1"/>
+												<hbox class="module-state-toggle enabled" height="16">
+													<vbox class="mst-left" align="center">
+														<box class=""><label value="Off" /></box>
+													</vbox>
+													<box class="mst-thumb" width="16" height="16"></box>
+													<vbox class="mst-right" align="center">
+														<box class=""><label value="On" /></box>
+													</vbox>
+												</hbox>
 											</hbox>
 										</hbox>
 									</vbox>
-								</stack>
+								</vbox>
 							</description>
 						</hbox>
 						<!--<caption label="Programs" class="toggle-contents" onclick="toggleContents(this)"/>
@@ -169,9 +175,9 @@
 						</vbox>
 					</vbox>
 				</stack>
-
+				
 				<!-- SUBPAGE: cBridge (Gamemode) -->
-
+				
 				<stack>
 					<vbox id="settings-page-cbridge" class="settings-page" top="0" bottom="0">
 						<caption class="big" label="$cBridge$" />
