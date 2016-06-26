@@ -26,9 +26,9 @@ function Locale(str, prefix, ...pars) {
 	return str;
 }
 
-function localizeModule(container) {
+function localizeModule(container, test) {
 	let rgx = /\$(::)?[a-zA-Z0-9_]+?\$/g;
-
+	
 	function getReplacement(lgreplace) {
 		let replacement = __l[MODULE_LPRE+"_"+lgreplace.replace(/\$/g, "")];
 		if(replacement)
@@ -41,9 +41,11 @@ function localizeModule(container) {
 		//Keine Lokalisierung
 		if($(obj).attr("data-no-localization"))
 			return;
+		//log(">> obj: " + $(obj).prop("tagName"));
 
 		//Attribute durchgehen
 		jQuery.each(obj.attributes, function(j, attr) {
+			//log(">> ATTR: " + attr.name + " / " + $(obj).attr(attr.name));
 			if(!$(obj).attr(attr.name))
 				return;
 
@@ -65,9 +67,9 @@ function localizeModule(container) {
 					if(match.search(/^\$::/) != -1) {
 						match = match.replace(/^\$::/, "$");
 						let new_nodes = jQuery.parseHTML(getReplacement(match));
-						for(let i = 0; i < new_nodes.length; i++) {
+						for(let i = 0; i < new_nodes.length; i++)
 							this.parentNode.insertBefore(new_nodes[i], this);
-						}
+
 						this.parentNode.removeChild(this);
 						return;
 					}

@@ -1,89 +1,39 @@
-<caption label="$acetheme$" class="toggle-contents" onclick="toggleContents(this)"/>
-<vbox>
-	<hbox>
-		<listbox id="editor-theme-list" flex="1">
-		</listbox>
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://windmill/content/modules/settings/settings.css" type="text/css"?>
+
+<window id="main" title="Settings" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+	<hbox flex="1" style="overflow:auto"> <!-- Wrapper for scrollbars -->
+		<vbox flex="1">
+			<caption label="$acetheme$" class="toggle-contents" onclick="toggleContents(this)"/>
+			<vbox>
+				<hbox>
+					<listbox id="editor-theme-list" flex="1">
+					</listbox>
+				</hbox>
+				<hbox>
+					<button label="$applytheme$" id="apply-ace-theme" />
+				</hbox>
+			</vbox>
+		</vbox>
+		<vbox flex="1">
+			<caption label="Scripteditor" class="toggle-contents" onclick="toggleContents(this)"/>
+			<vbox>
+				<hbox>
+					<label value="$selectcompleter$" flex="1" />
+					<menulist flex="1">
+						<menupopup id="completerSelection">
+							<menuitem label="$AceCmp_NoCompleters$" value="0" />
+							<menuitem label="$AceCmp_KeywordsOnly$" value="1" />
+							<menuitem label="$AceCmp_KeywordsAndFuncs$" value="2" />
+							<menuitem label="$AceCmp_Everything$" value="3" />
+						</menupopup>
+					</menulist>
+				</hbox>
+				<checkbox label="$ShowParameterList$" class="autoinit" flex="1" default-cfgsect="Scripteditor" default-cfgkey="ParameterList"/>
+			</vbox>
+		</vbox>
 	</hbox>
-	<hbox>
-		<button label="$applytheme$" id="apply-ace-theme" />
-	</hbox>
-</vbox>
-
-<caption label="Scripteditor" class="toggle-contents" onclick="toggleContents(this)"/>
-<vbox>
-	<hbox>
-		<label value="$selectcompleter$" flex="1" />
-		<select id="completerSelection" xmlns="http://www.w3.org/1999/xhtml">
-			<option value="0" xmlns="http://www.w3.org/1999/xhtml">$AceCmp_NoCompleters$</option>
-			<option value="1" xmlns="http://www.w3.org/1999/xhtml">$AceCmp_KeywordsOnly$</option>
-			<option value="2" xmlns="http://www.w3.org/1999/xhtml">$AceCmp_KeywordsAndFuncs$</option>
-			<option value="3" xmlns="http://www.w3.org/1999/xhtml">$AceCmp_Everything$</option>
-		</select>
-		<!--<menulist flex="1">
-			<menupopup id="completerSelection">
-				<menuitem label="$AceCmp_NoCompleters$" value="0" />
-				<menuitem label="$AceCmp_KeywordsOnly$" value="1" />
-				<menuitem label="$AceCmp_KeywordsAndFuncs$" value="2" />
-				<menuitem label="$AceCmp_Everything$" value="3" />
-			</menupopup>
-		</menulist>-->
-	</hbox>
-	<checkbox label="$ShowParameterList$" class="autoinit" flex="1" default-cfgsect="Scripteditor" default-cfgkey="ParameterList"/>
-</vbox>
-
-<script type="type/javascript" xmlns="http://www.w3.org/1999/xhtml"><![CDATA[
-	hook({ name: "onSubpageLoaded", throwaway: true }, function() {
-		let completers = getConfigData("Scripteditor", "Completers");
-		this.$("#completerSelection").parent().on("change", function(e) {
-			setConfigData("Scripteditor", "Completers", $(this)[0].value);
-			if(parseInt($(this)[0].value) != completers)
-				changeNeedsRestart = true;
-			else
-				changeNeedsRestart = false;
-		});
-
-		this.$("#completerSelection").val(completers);
-
-		let insertEditorTheme = (entry) => {
-			// cut it out
-			var name = entry.leafName.substr(6, entry.leafName.length - 9);
-
-			this.$('#editor-theme-list').append('<listitem label="'+name+'" class="list-acethemes" />');
-		}
-
-		function loadEditorThemes(path) {
-			//ace-Ordner
-			var f = _sc.file(path);
-			if(!f.exists() || !f.isDirectory())
-				return;
-
-			//Verzeichnisse einzelnd untersuchen
-			var entries = f.directoryEntries;
-
-			while(entries.hasMoreElements()) {
-				var entry = entries.getNext().QueryInterface(Ci.nsIFile);
-				if(entry.leafName.split("-")[0] == "theme") //überprüfen ob die Datei mit "theme-" beginnt
-					insertEditorTheme(entry);
-			}
-		}
-
-		this.$("#apply-ace-theme").click(function() {
-			var themename = $(".list-acethemes:selected").prop("label");
-			var modules = getModulesByName("scripteditor");
-
-			for(var i = 0; i < modules.length; i++) {
-				if(!modules[i] || !modules[i].contentWindow)
-					continue;
-
-				modules[i].contentWindow.applyTheme(themename);
-			}
-
-			setConfigData("CIDE", "EditorTheme", themename);
-			saveConfig();
-
-			return true;
-		});
-		
-		loadEditorThemes(_sc.chpath + "/content/modules/cide/editor/js/ace");
-	});]]>
-</script>
+	<script type="text/javascript" src="chrome://windmill/content/js/default_functionalities/inherit.js"></script>
+	<script type="text/javascript" src="js/modulesettings.js"></script>
+</window>

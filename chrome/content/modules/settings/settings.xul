@@ -163,15 +163,15 @@
 									</vbox>
 								</vbox>
 							</vbox>
-							<vbox class="module-subpage-loaded-content" flex="1">
+							<vbox flex="1" class="module-subpage-frame-wrapper">
 								
 							</vbox>
 						</vbox>
 					</vbox>
 				</stack>
-				
+
 				<!-- SUBPAGE: cBridge (Gamemode) -->
-				
+
 				<stack>
 					<vbox id="settings-page-cbridge" class="settings-page" top="0" bottom="0">
 						<caption class="big" label="$cBridge$" />

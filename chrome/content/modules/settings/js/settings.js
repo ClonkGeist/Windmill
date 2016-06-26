@@ -146,6 +146,9 @@ hook("load", function() {
 						subpage.css("display", "-moz-box").find(".module-subpage-caption").text(Locale(module.modulename, module.languageprefix));
 						$(target+"-subpage .extprogram-list .extprogram:not(.draft)").remove();
 
+						//Unload all frames
+						$(".module-subpage-frame-wrapper").empty();
+
 						//Show external program list for this module
 						if(module.cidemodule) {
 							let extprogids = [];
@@ -179,29 +182,59 @@ hook("load", function() {
 						//TODO: Maybe some kind of check if module X was added and the user "trusted" it? So scripts will not be executed until the user allows it.
 						//      Or an unexploitable script protection.. (that also includes XML Namespaces)
 						if(module.isconfigurable) {
-							let path = module.path.split("/");
-							path.pop();
-							path = path.join("/");
-							path += "/"+(module.settings.path?module.settings.path:"modulesettings.xul");
-							if(path.split(".").pop().toLowerCase() != "xul") {
+							let mode = "content";
+							//[TODO/ADDONS:] Warn if an addon asks for chrome access
+							if(module.settings.chromeaccess)
+								mode = "chrome";
+
+							let path;
+							if(mode == "chrome")
+								path = "chrome://windmill/content/"+module.relpath;
+							else {
+								//Use absolute paths for the file protocol in content mode
+								path = module.path.split("/");
+								path.pop();
+								path = path.join("/");
+							}
+							path += "/"+(module.settings.path?module.settings.path:"modulesettings.html");
+							//Use file protocol in content mode (This way the pages will have no chrome access and are as harmful as webpages)
+							if(mode == "content")
+								path = formatPath(path, {fileProtocol: true});
+
+							let fext = path.split(".").pop().toLowerCase();
+							//Due to the file-protocol, xul files are not supported in content mode. (Firefox blocks them)
+							if(mode == "content" && fext != "html") {
 								log(`An error occured while trying to load the settings of the ${module.modulename} module:`, "error");
-								log("The specified target file is not supported. (Currently supported formats: xul)", "error");
+								log(`The specified target file is not supported${(fext=="xul"?" in content mode":"")}. (Currently supported formats: html)`, "error");
+								if(fext == "xul")
+									log("For xul files, the file needs to be loaded in chrome mode.", "error");
+								return;
+							}
+							else if(mode == "chrome" && fext != "xul" && fext != "html") {
+								log(`An error occured while trying to load the settings of the ${module.modulename} module:`, "error");
+								log(`The specified target file is not supported. (Currently supported formats: html, xul)`, "error");
+								return;
 							}
 
-							$(target+"-subpage .module-subpage-loaded-content").empty();
-							OS.File.read(path, {encoding: "utf-8"}).then(function(content) {
-								//Parse XUL and add content to DOM
-								//TODO: If possible warn the user if the added content wants to execute scripts
-								$(target+"-subpage .module-subpage-loaded-content").append(content);
-								localizeModule($(target+"-subpage .module-subpage-loaded-content"));
-								//Because jQuery is in the mainwindow context, all scripts are executed in the mainwindow context.
-								//Maybe we need something selfmade for this task.
-								_mainwindow.execHook({ name: "onSubpageLoaded", caller: window });
-								autoInitialize($(target+"-subpage .module-subpage-loaded-content"));
-							}, function(reason) {
-								log(`An error occured while trying to load the settings of the ${module.modulename} module:`, "error");
-								log(reason, "error");
-							});
+							//Create new frame
+							$(target+"-subpage .module-subpage-frame-wrapper").append(`<iframe type="${mode}" class="module-subpage-frame module-subpage-frame-${mode}" flex="1" src="${path}"></iframe>`)
+							let frame = $(target+"-subpage .module-subpage-frame-"+mode)[0];
+
+							//The contentWindow needs some time to be changed
+							setTimeout(function() {
+								frame.contentWindow.addEventListener("load", function() {
+									let container, doc = this.document;
+									if(fext == "html")
+										container = $(doc).find("body > *");
+									else if(fext == "xul") {
+										doc = doc.documentElement;
+										container = $(doc).children("*");
+									}
+									//Localize and initialize configuration elements
+									localizeModule(container, true);
+									autoInitialize(doc);
+								});
+							},1);
 						}
 					});
 				}
@@ -421,7 +454,8 @@ function autoInitialize(container) {
 		let val = getConfigData(sect, key), event = "command";
 
 		//Wert und Event je nach Elementart setzen
-		switch($(this).prop("tagName").toLowerCase()) {
+		let tagName = $(this).prop("tagName").toLowerCase();
+		switch(tagName) {
 			case "checkbox":
 				$(this).attr("checked", val);
 				break;
@@ -431,15 +465,41 @@ function autoInitialize(container) {
 				$(this).val(val);
 				break;
 
+			case "input":
+				event = "change";
+				switch($(this).attr("type")) {
+					case "checkbox":
+						$(this).prop("checked", val);
+						break;
+
+					default:
+						$(this).val(val);
+						break;
+				}
+				break;
+
 			default:
 				$(this).val(val);
 				break;
 		}
+
 		//Bei Veraenderung diese in der Config temporaer speichern
 		$(this).on(event, function() {
-			switch($(this).prop("tagName").toLowerCase()) {
+			switch(tagName) {
 				case "checkbox":
 					val = $(this).attr("checked");
+					break;
+
+				case "input":
+					switch($(this).attr("type")) {
+						case "checkbox":
+							val = $(this).prop("checked");
+							break;
+
+						default:
+							val = $(this).val();
+							break;
+					}
 					break;
 
 				default:
@@ -633,7 +693,7 @@ function saveSettings() {
 		yield _mainwindow.saveKeyBindings();
 		keybinding_changes = false;
 	}).then(function() {
-		EventInfo("$EI_Saved$", -1);		
+		EventInfo("$EI_Saved$", -1);
 		if(changeNeedsRestart)
 			$("#restartBar").addClass("active");
 	});
