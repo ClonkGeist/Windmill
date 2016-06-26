@@ -46,10 +46,10 @@
 }
 
 .main-wdialog-head {
-	border-bottom: 1px solid rgb(220, 220, 220);
-	background-color: rgb(245, 245, 245);
+	border-bottom: 1px solid $clr-border;
+	background-color: $clr-base;
 	min-height: 30px;
-	color: rgb(100, 100, 100);
+	color: $ui-text-clr;
 	padding: 0.5em 1em;
 	cursor: default;
 }
