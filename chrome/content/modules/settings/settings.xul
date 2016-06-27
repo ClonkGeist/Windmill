@@ -100,11 +100,9 @@
 									<vbox class="moduleentrycontent">
 										<hbox class="moduleinfo">
 											<hbox class="moduletitle">Scripteditor</hbox>
-											<vbox class="infotooltip">
-												<spacer flex="7"/>
+											<hbox class="infotooltip" align="center">
 												<box class="modulectrl icon-info icon-16" height="16"></box>
-												<spacer flex="4"/>
-											</vbox>
+											</hbox>
 											<spacer flex="1"/>
 											<hbox class="modulecontrols" flex="1" align="center">
 												<spacer flex="1"/>

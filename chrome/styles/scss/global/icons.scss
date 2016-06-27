@@ -355,10 +355,8 @@
 	content: "L";
 }
 .icon-info:before {
-    @include -warning();
-	display: inline-block;
-	transform: rotate(180deg) translate(0, -1px);
+    @include -info();
 }
 .icon-external:before {
-    content: "E";
+    content: "E"; 
 }
