@@ -1,0 +1,85 @@
+window, body, html
+{
+	background-color: $clr-paper;
+	font-family: $font-stack;
+}
+
+caption
+{
+	margin: 0.7em 0;
+	background-color: inherit;
+	font-size: 1em;
+	color: $ui-text-clr;
+}
+
+caption.big
+{
+	font-size: 1.5em;
+	border-bottom: 1px solid gainsboro;
+	margin: 1em 0;
+}
+
+.toggle-contents + vbox {
+	padding-left: 1em;
+}
+
+/*-- Listbox --*/
+
+.draft { display: none; }
+
+listbox
+{
+	padding: 0;
+}
+
+listbox * {
+	-moz-appearance: none;
+	background-color: none;
+}
+
+listitem
+{
+	transition: background-color 0.3s;
+	margin: 0;
+	padding-left: 5px;
+	color: $text-clr;
+	-moz-appearance: none;
+}
+
+listitem * {
+	-moz-appearance: none;
+	background: none;
+}
+
+listitem:hover
+{
+	border: 1px solid rgba(84, 183, 255, 0.5);
+	background-color: rgba(84, 183, 255, 0.15);
+}
+
+listitem[selected],
+listitem[current],
+listitem[checked],
+listitem:focus
+{
+	-moz-appearance: none;
+	border: 1px solid rgb(84, 183, 255);
+	background-color: rgb(176, 214, 253);
+}
+
+/*-- Infotooltip --*/
+
+.infotooltip {
+	width: 16px;
+	color: $ui-text-clr;
+	
+	.icon-info {
+		height: 16px;
+		margin-left: 8px;
+		&:hover {
+			color: $text-clr;
+		}
+	}
+}
+
+/*	need some space	*/

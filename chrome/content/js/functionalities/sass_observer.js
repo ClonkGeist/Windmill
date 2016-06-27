@@ -2,6 +2,11 @@
 // stylesheet-definitionlist
 var ssDefs
 
+// Fonttypes
+let fonttype_map = {
+	"ttf": { format: "truetype", mime: "font/ttf" } 
+}
+
 function generateCssFile(index) {
 	reloadStylesheet(ssDefs[index].fScss, ssDefs[index])
 }
@@ -218,6 +223,67 @@ function reloadStylesheet(fScss, def, options = {}, __rec) {
 			log(fScss.path);
 		}
 		else {
+			/* Load fonts and append them to the end of the file (base64 encoded)
+			 * This is specifically needed for module subpages of the settings, because content frames (which have no chrome access) cannot resolve
+			 * "chrome://"-URIs. And loading fonts using the file protocol, the resource protocol (e.g. resource://wmstyles/icomoon.ttf) or using relative
+			 * paths wont work. 
+			 * (They need to be at the same level or deeper as the loaded html(!) file. This, however, seems to be only true for fonts, so loading image
+			 *  files using the resource protocol will still work (and is recommended))
+			 */
+			if(def.fonts) {
+				for(let font of def.fonts) {
+					let content;
+					//Check if a file is specified and if it is supported
+					if(!font.path) {
+						log("Sass error: No path to font file specified.", "sass");
+						continue;
+					}
+					let fext = font.path.split(".");
+					if(fext.length == 1) {
+						log("Sass error: No font file specified.", "sass");
+						continue;
+					}
+					fext = fext.pop().toLowerCase();
+					if(!fonttype_map[fext]) {
+						log("Sass error: The font file " + font.path + " could not be loaded, because the filetype (" + fext + ") is not supported.", "sass");
+						continue;
+					}
+
+					log("Sass: Encode font " + font.path + " into base64", "sass");
+					try {
+						content = yield OS.File.read(_sc.chpath + "/styles/" + font.path);
+					} catch(e) {
+						if(e.becauseNoSuchFile)
+							log("Sass error: The font file '" + font.path + "' was not found.", "sass");
+						else {
+							log("Sass error: The font file '" + font.path + "' could not be loaded:", "sass");
+							log(e, "sass");
+						}
+						continue;
+					}
+					//Convert the Array into a blob
+					let blob = "";
+					for(let i = 0; i < content.length; i++)
+						blob += String.fromCharCode(content[i]);
+
+					//Encode the blob and format as dataURI
+					let encoded = "data:" + fonttype_map[fext].mime + ";base64," + btoa(blob);
+					//Add the font-face rule
+					result.text += "\n@font-face{";
+					result.text += "src:url("+encoded+") format('"+fonttype_map[fext].format+"');";
+					//Further properties
+					for(let key in font)
+						if(key != "path") {
+							//Eventually add the property as a string
+							if(["font-family"].indexOf(key) != -1)
+								result.text += key+":'"+font[key]+"';";
+							else
+								result.text += key+":"+font[key]+";";
+						}
+					result.text += "}";
+				}
+			}
+			
 			log("Sass: Write file: " + _sc.chpath + "/" + def.cssTarget, false, "sass")
 			yield OS.File.writeAtomic(_sc.chpath + "/" + def.cssTarget, result.text, { encoding: "utf-8" })
 
