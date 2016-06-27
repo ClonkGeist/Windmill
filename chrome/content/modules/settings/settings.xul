@@ -90,12 +90,12 @@
 					<vbox id="settings-page-cide" class="settings-page" top="0" bottom="0">
 						<caption class="big" label="$cide$" />
 						<hbox class="modulewrapper">
-							<description flex="1"> <!-- for line wrapping -->
+							<description flex="1" style="text-align: center"> <!-- for line wrapping -->
 								<vbox class="moduleentry draft">
-									<stack class="bg-stack" flex="1">
+									<stack class="bg-stack" height="160">
 										<vbox class="modulebackground"></vbox>
 										<vbox class="modulebglayer"></vbox>
-										<box class="module-forced icon-warning icon-16" height="16" width="16" top="5" left="5"></box>
+										<box class="module-forced icon-warning icon-16" height="16" width="16"></box>
 									</stack>
 									<vbox class="moduleentrycontent">
 										<hbox class="moduleinfo">

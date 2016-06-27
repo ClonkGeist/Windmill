@@ -293,7 +293,6 @@ listitem:focus
 
 .moduleentry {
 	width: 260px;
-	height: 160px;
 	border: 1px solid $clr-border;
 	background: $clr-paper;
 	margin: 10px;
@@ -311,8 +310,10 @@ listitem:focus
 	
 	.icon-warning {
 		color: $interact-red;
-		margin: 0;
+		margin-left: 5px;
+		margin-top: 5px;
 		line-height: 16px;
+		position: absolute;
 	}
 	
 	&:not(.forced) {
