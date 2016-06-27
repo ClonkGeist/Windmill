@@ -1,19 +1,16 @@
-window, body, html
-{
+window, body, html {
 	background-color: $clr-paper;
 	font-family: $font-stack;
 }
 
-caption
-{
+caption {
 	margin: 0.7em 0;
 	background-color: inherit;
 	font-size: 1em;
 	color: $ui-text-clr;
 }
 
-caption.big
-{
+caption.big {
 	font-size: 1.5em;
 	border-bottom: 1px solid gainsboro;
 	margin: 1em 0;
@@ -27,8 +24,7 @@ caption.big
 
 .draft { display: none; }
 
-listbox
-{
+listbox {
 	padding: 0;
 }
 
@@ -37,8 +33,7 @@ listbox * {
 	background-color: none;
 }
 
-listitem
-{
+listitem {
 	transition: background-color 0.3s;
 	margin: 0;
 	padding-left: 5px;
@@ -51,20 +46,17 @@ listitem * {
 	background: none;
 }
 
-listitem:hover
-{
-	border: 1px solid rgba(84, 183, 255, 0.5);
-	background-color: rgba(84, 183, 255, 0.15);
+listitem:hover {
+	@include hover-blue();
 }
 
 listitem[selected],
+listitem[selected='true'],
 listitem[current],
 listitem[checked],
-listitem:focus
-{
+listitem:focus {
 	-moz-appearance: none;
-	border: 1px solid rgb(84, 183, 255);
-	background-color: rgb(176, 214, 253);
+	@include hover-blue-selected();
 }
 
 /*-- Infotooltip --*/
