@@ -274,7 +274,7 @@ class BMPScene {
 	setDimensions(w = 1, h = 1, align = -1) {
 		this.width = w
 		this.height = h
-		log(align)
+		log("image align: " + align)
 		this.canvas.width = w
 		this.canvas.height = h
 		
@@ -334,6 +334,16 @@ class BMPScene {
 	render() {
 		this.useShaderOfType(this.shaderType)
 		this.bindAttribBuffer()
+		this.setUniforms()
+		this.gl.drawArrays(this.gl.TRIANGLES, 0, 6)
+	}
+	
+	renderInput(r) {log(r)
+		this.useShaderOfType(SHADER_TYPE_INPUT)
+		this.setInputRect(r)
+					
+		this.updateInputRectUniform()
+		
 		this.setUniforms()
 		this.gl.drawArrays(this.gl.TRIANGLES, 0, 6)
 	}
@@ -614,8 +624,8 @@ class BMPScene {
 		Undo-Manager
 	*/
 	
-	isDirty() {
-		if(dirtyCounter !== 0)
+	isClean() {
+		if(this.dirtyCounter === 0)
 			return true
 		
 		return false
@@ -625,15 +635,17 @@ class BMPScene {
 		if(!this.hasUndoStep())
 			return false
 		
+		this.currentActionId
 		
+		this._undoStack[this.currentActionId--].perform()
 		
-		dirtyCounter--
+		this.dirtyCounter--
 		
 		return true
 	}
 	
 	redo() {
-		dirtyCounter++
+		this.dirtyCounter++
 	}
 	
 	hasUndoStep() {
@@ -655,24 +667,26 @@ class BMPScene {
 			this.currentActionId++
 			this._undoStack.push(action)
 		}
-		else
-			this._undoStack.shift().push(action)
+		else {
+			this._undoStack.shift()
+			this,_undoStack.push(action)
+		}
 		
-		dirtyCounter++
+		this.dirtyCounter++
 	}
 	
 	onSave() {
-		dirtyCounter = 0
+		this.dirtyCounter = 0
 	}
 	
 	getTextureStack() {
 		
-		let id = this.w + "x" + this.h
+		let id = this.width + "x" + this.height
 		
 		if(!this._tStacks[id])
 			this._tStacks[id] = new TextureStack(
-				this.w,
-				this.h,
+				this.width,
+				this.height,
 				this.gl,
 				this.c,
 				this.createTexture()
@@ -732,6 +746,8 @@ class TextureStack {
 		this.w = w
 		this.h = h
 		
+		this._r = new Rect(0, 0, w, h)
+		
 		this.id = w + "x" + h
 		
 		this.userCount = 0
@@ -745,8 +761,8 @@ class TextureStack {
 	}
 	
 	saveState() {
-		gl.bindTexture(this.gl.TEXTURE_2D, this.tex)
-		gl.texSubImage2D(this.gl.TEXTURE_2D, 0, 0, this.offset * this.h, this.w, this.h, this.gl.RGB, this.gl.UNSIGNED_BYTE, this.c)
+		this.gl.bindTexture(this.gl.TEXTURE_2D, this.tex)
+		this.gl.texSubImage2D(this.gl.TEXTURE_2D, 0, 0, this.offset * this.h, this.w, this.h, this.gl.RGB, this.gl.UNSIGNED_BYTE, this.c)
 		
 		let i = this.offset
 		
@@ -755,8 +771,12 @@ class TextureStack {
 		return i
 	}
 	
-	drawState(i, scene) {
+	drawState(i, scene) {		
+		this._r.y = i * this.h
 		
+		scene.renderInput(this._r)
+		log("draw state init")
+		log(i)
 	}
 	
 	registerUser() {

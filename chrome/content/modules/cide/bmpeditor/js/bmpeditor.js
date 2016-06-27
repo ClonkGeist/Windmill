@@ -567,8 +567,8 @@ hook("load", function() {
 	bindKeyToObj(new KeyBinding("ZoomIn", "Ctrl-+", function() { changeZoom(CM_ACTIVEID); }));
 	bindKeyToObj(new KeyBinding("ZoomOut", "Ctrl--", function() { changeZoom(CM_ACTIVEID, true); }));
 	//Undo/Redo
-	bindKeyToObj(new KeyBinding("Undo", "Ctrl-Z", function() { undoImageData(); }));
-	bindKeyToObj(new KeyBinding("Redo", "Ctrl-Y", function() { redoImageData(); }));
+	bindKeyToObj(new KeyBinding("Undo", "Ctrl-Z", function() { a_S.undo() }));
+	bindKeyToObj(new KeyBinding("Redo", "Ctrl-Y", function() { a_S.redo() }));
 	//Mirror H/V
 	bindKeyToObj(new KeyBinding("MirrorH", "Ctrl-Shift-H", function() { mirrorImage(); }));
 	bindKeyToObj(new KeyBinding("MirrorV", "Ctrl-Shift-V", function() { mirrorImage(true); }));

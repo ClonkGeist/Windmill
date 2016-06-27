@@ -271,13 +271,13 @@ class Mode_Draw_Shape extends DefaultMode {
 		
 		let ts = scene.getTextureStack()
 		
-		let state = ts.saveState()
+		var state = ts.saveState()
 		
 		let a = new Action(() => {
 			state = ts.drawState(state, this.scene)
 		})
 		
-		manifestUndoStep(a)
+		scene.manifestUndoStep(a)
 	}
 }
 
