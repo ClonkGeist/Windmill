@@ -10,22 +10,19 @@ c0.24-0.14,0.42-0.48,0.4-0.75l-0.18-2.73c-0.02-0.27,0.11-0.67,0.29-0.88c0,0,0.38
 c0.11-0.25,0.42-0.54,0.67-0.64l2.55-1c0.26-0.1,0.49-0.41,0.51-0.68L27.87,15.52z M16,22c-3.31,0-6-2.69-6-6s2.69-6,6-6
 s6,2.69,6,6S19.31,22,16,22z'></path></g></svg>");
 
-window, body, html
-{
+window, body, html {
 	background-color: $clr-paper;
 	font-family: $font-stack;
 }
 
-caption
-{
+caption {
 	margin: 0.7em 0;
 	background-color: inherit;
 	font-size: 1em;
 	color: $ui-text-clr;
 }
 
-caption.big
-{
+caption.big {
 	font-size: 1.5em;
 	border-bottom: 1px solid gainsboro;
 	margin: 1em 0;
@@ -38,8 +35,7 @@ caption.big
 /*		preferences		*/
 
 
-button.navigation
-{
+button.navigation {
 	-moz-appearance: none;
 	border: none;
 	
@@ -58,14 +54,12 @@ button.navigation
 	border-left: 5px solid transparent;
 }
 
-button.navigation:hover
-{
+button.navigation:hover {
 	background-color: rgb(245, 245, 245);
 }
 
 button *,
-button:focus *
-{
+button:focus * {
 	border: 0;
 }
 
@@ -84,14 +78,12 @@ button:focus *
 	width: 200px;
 	max-width: 200px;
 
-	spacer
-	{
+	spacer {
 		border-right: 1px solid $clr-border;
 		background-color: $clr-empty;
 	}
 
-	.active
-	{
+	.active {
 		border-left: 5px solid $ui-text-clr;
 	}
 }
@@ -103,20 +95,17 @@ button:focus *
 }
 
 #settings-deck button,
-listbox
-{
+listbox {
 	-moz-appearance: none;
 	border: 1px solid $clr-border;
 	transition: border 0.3s;
 }
 
-#settings-deck button > *
-{
+#settings-deck button > * {
 	background-color: inherit;
 }
 
-#settings-deck button
-{
+#settings-deck button {
 	background-color: rgb(250, 250, 250);
 }
 
@@ -166,8 +155,7 @@ listbox * {
 	background-color: none;
 }
 
-listitem
-{
+listitem {
 	transition: background-color 0.3s;
 	margin: 0;
 	padding-left: 5px;
@@ -180,20 +168,16 @@ listitem * {
 	background: none;
 }
 
-listitem:hover
-{
-	border: 1px solid rgba(84, 183, 255, 0.5);
-	background-color: rgba(84, 183, 255, 0.15);
+listitem:hover {
+	@include hover-blue();
 }
 
 listitem[selected],
 listitem[current],
 listitem[checked],
-listitem:focus
-{
+listitem:focus {
 	-moz-appearance: none;
-	border: 1px solid rgb(84, 183, 255);
-	background-color: rgb(176, 214, 253);
+	@include hover-blue-selected();
 }
 
 .pkb-list-subheader {
@@ -204,8 +188,7 @@ listitem:focus
 	color: rgb(80, 80, 80);
 }
 
-.view-directory-path
-{
+.view-directory-path {
 	font-style: italic;
 	background-color: rgb(250, 250, 250);
 	border: gainsboro;
@@ -225,15 +208,13 @@ listitem:focus
 
 /* page style */
  
-.settings-page
-{
+.settings-page {
 	padding: 2em 3em;
 	overflow-y: auto;
 	background-color: $clr-paper;
 }
 
-.settings-page > *:first-child
-{
+.settings-page > *:first-child {
 	margin-top: 0;
 }
 
@@ -387,6 +368,10 @@ listitem:focus
 	border: 1px solid $clr-border;
 	color: $ui-text-clr;
 	
+	&:hover {
+		border: 1px solid $clr-border-grey;
+	}
+	
 	&:hover .mst-thumb{
 		background: -moz-linear-gradient(top, white 0%, $clr-base 100%);
 	}
@@ -407,7 +392,7 @@ listitem:focus
 }
 
 .mst-left {
-	background-color: rgb(255, 230, 210);
+	background-color: rgb(255, 240, 200);
 	box-shadow: -3px 0 5px -5px grey inset;
 }
 
