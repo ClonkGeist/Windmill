@@ -203,13 +203,13 @@ else {
 	registerInheritableObject("ctypesWorker");
 }
 
-function initializeTooltips(container) {
+function initializeTooltips(container, options = {}) {
 	$("[data-tooltip!='']", container).each(function() {
 		let desc = $(this).attr("data-tooltip");
 		if(!desc)
 			return;
 		$(this).removeAttr("data-tooltip");
-		tooltip(this, desc);
+		tooltip(this, desc, options.lang, options.duration, options);
 	});
 }
 

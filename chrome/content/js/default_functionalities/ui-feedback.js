@@ -16,12 +16,15 @@ function tooltip(targetEl, desc, lang = MODULE_LANG, duration, options = {}) {
 		if(options.target)
 			target = options.target;
 		tooltipTimeout = setTimeout(() => {
-			var el = $('<'+(lang === "html"?'div':'panel noautofocus="true" noautohide="true"')+' class="windmill-tooltip"></'+(lang == "html"?'div':'panel')+'>')[0];
+			let wdw = window;
+			if(options.window)
+				wdw = options.window;
+			var el = $('<'+(lang === "html"?'div':'panel noautofocus="true" noautohide="true"')+' class="windmill-tooltip"></'+(lang == "html"?'div':'panel')+'>', wdw.document)[0];
 			
 			if(options.css)
 				$(el).css(options.css);
 
-			$(lang === "html"?"body":document.documentElement).append(el);
+			$(lang === "html"?"body":document.documentElement, wdw.document).append(el);
 			$(el).text(desc);
 
 			let {width, height, top, left} = target.getBoundingClientRect();
@@ -43,8 +46,8 @@ function tooltip(targetEl, desc, lang = MODULE_LANG, duration, options = {}) {
 				top -= $(el).height();
 
 			// center the x position relative to the original element and bound it in the window
-			left = Math.min(Math.max(0, left+(width/2 - $(el).width()/2)), $(window).width());
-			top += $(lang === "html"?"body":document.documentElement).scrollTop();
+			left = Math.min(Math.max(0, left+(width/2 - $(el).width()/2)), $(wdw).width());
+			top += $(lang === "html"?"body":wdw.document.documentElement, wdw.document).scrollTop();
 			if(lang == "html") {
 				$(el).css({
 					top: top + "px",
@@ -53,10 +56,10 @@ function tooltip(targetEl, desc, lang = MODULE_LANG, duration, options = {}) {
 				});
 			}
 			else
-				el.moveTo(left+document.documentElement.boxObject.screenX, top+document.documentElement.boxObject.screenY);
+				el.moveTo(left+wdw.document.documentElement.boxObject.screenX, top+wdw.document.documentElement.boxObject.screenY);
 
-			// store for remove
-			tooltipEl = el;
+			// store for remove (as weak reference, in case the object dies)
+			tooltipEl = Cu.getWeakReference(el);
 		}, duration);
 	});
 	
@@ -67,9 +70,14 @@ function tooltip(targetEl, desc, lang = MODULE_LANG, duration, options = {}) {
 
 function clearTooltip() {
 	clearTimeout(tooltipTimeout);
-	if(tooltipEl && tooltipEl.hidePopup)
-		tooltipEl.hidePopup();
-	$(tooltipEl).remove();
+	if(!tooltipEl)
+		return;
+
+	let elm = tooltipEl.get();
+	if(elm && elm.hidePopup)
+		elm.hidePopup();
+	$(elm).remove();
+	tooltipEl = undefined;
 }
 
 function setWindowTitle(title) {

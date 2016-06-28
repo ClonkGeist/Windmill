@@ -218,22 +218,32 @@ hook("load", function() {
 							//Create new frame
 							$(target+"-subpage .module-subpage-frame-wrapper").append(`<iframe type="${mode}" class="module-subpage-frame module-subpage-frame-${mode}" flex="1" src="${path}"></iframe>`)
 							let frame = $(target+"-subpage .module-subpage-frame-"+mode)[0];
+							let counter = 0;
 
-							//The contentWindow needs some time to be changed
-							setTimeout(function() {
-								frame.contentWindow.addEventListener("load", function() {
-									let container, doc = this.document;
-									if(fext == "html")
-										container = $(doc).find("body > *");
-									else if(fext == "xul") {
-										doc = doc.documentElement;
-										container = $(doc).children("*");
-									}
-									//Localize and initialize configuration elements
-									localizeModule(container, true);
-									autoInitialize(doc);
-								});
-							},1);
+							//Check all X frames if the docShell exists (that means, that it loads a document) because otherwise we cannot bind
+							//an event to the document/window. (Even though it may exist already, it will be changed by a new document/window if
+							//the document is loaded. And there seems to be no iframe.onload event, at least not for XUL iframes.)
+							function prepareDocument() {
+								if(!frame)
+									return;
+								if(frame.docShell) {
+									frame.contentWindow.document.addEventListener("DOMContentLoaded", function() {
+										let container, doc = this;
+										if(fext == "html")
+											container = $(doc).find("body > *");
+										else if(fext == "xul") {
+											doc = doc.documentElement;
+											container = $(doc).children("*");
+										}
+										//Localize and initialize configuration elements
+										localizeModule(container, true);
+										autoInitialize(doc, {tooltip: { lang: fext, window: this }});
+									});
+									return;
+								}
+								window.requestAnimationFrame(prepareDocument);
+							}
+							prepareDocument();
 						}
 					});
 				}
@@ -443,7 +453,7 @@ hook("load", function() {
 const TEMPORARY_DATA_PATH = _sc.profd+"/tmp";
 let clearTempDataTask;
 
-function autoInitialize(container) {
+function autoInitialize(container, options = {}) {
 	//Simplere Einstellungselemente automatisch initialisieren
 	$(".autoinit", container).each(function() {
 		let sect = $(this).attr("default-cfgsect");
@@ -509,7 +519,7 @@ function autoInitialize(container) {
 			setConfigData(sect, key, val);
 		});
 	});
-	initializeTooltips(container);
+	initializeTooltips(container, options.tooltip);
 }
 
 function showDeckItem() {
