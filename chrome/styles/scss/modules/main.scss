@@ -1,12 +1,38 @@
+$svg-url-the-mill: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><path fill='%23191e23' d='M29.48,24.609l-0.03-0.829l-0.229-5.47L29.2,17.859L28.77,17.74l-6.89-1.83l6.07-9.39l0.45-0.7L27.6,5.6
+	L22.32,4.13l-0.43-0.12l-0.24,0.38l-3.881,6L10.72,1.72L10.2,1.08L9.73,1.76L6.69,6.32L6.45,6.7l0.28,0.35l4.51,5.54L0.79,16.62
+	l-0.77,0.3l0.51,0.65l3.41,4.3l0.28,0.35l0.42-0.159l6.68-2.58l0.61,11.16l0.05,0.829l0.78-0.29l5.141-1.91l0.42-0.16L18.3,28.66
+	l-0.39-7.13L28.7,24.4L29.48,24.609z M17.757,14.982l0.088,2.175l-0.3,0.106l-2.052,0.761l-0.212-0.267l-1.326-1.679l0.212-0.319
+	l1.185-1.804l0.336,0.089l2.051,0.566L17.757,14.982z'/></svg>");
+
+@mixin the-mill() {
+	background-image: $svg-url-the-mill;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: auto 60%;
+}
+
 window {
 	background-color: $chrome-clr;
+	
 	font-family: $font-stack;
 	outline: 1px solid black;
 	outline-offset: -1px;
+	
+	&.maximized {
+		outline-width: 0;
+		
+		resizer {
+			display: none;
+		}
+	}
 }
 
-window.maximized resizer {
-	display: none;
+resizer {
+	-moz-appearance: none;
+	background-color: transparent;
+	height: 4px;
+	width: 4px;
+	border: 2px solid transparent;
 }
 
 window.maximized .maximize-window,
@@ -31,13 +57,20 @@ window.maximized .restore-window {
 }
 
 .window-button {
-	padding: 0 3px;
+	padding: 3px 3px;
 	color: rgb(150, 150, 150);
 	cursor: default;
-	padding: 0 initial;
+	font-size: 16px;
 	
 	&:hover {  
 		background-color: rgb(80, 80, 80);
+	}
+}
+
+.window-button.icon-x-small {
+	&:hover {
+		background-color: $interact-red;
+		color: $clr-base;
 	}
 }
 
@@ -45,17 +78,12 @@ window.maximized .restore-window {
 	filter: blur(0px);
 	transition: filter 0.8s;
 	transition-delay: 0.3s;
-}
-#modules-wrapper.startup-loading {
-	filter: blur(3px);
-}
-
-resizer {
-	-moz-appearance: none;
-	background-color: transparent;
-	height: 4px;
-	width: 4px;
-	border: 2px solid transparent;
+	
+	&.startup-loading {
+		filter: blur(3px);
+		transition: filter 0s;
+		transition-delay: 0s;
+	}
 }
 
 .icon-the-mill {
@@ -614,6 +642,8 @@ caption {
 	background-color: $chrome-clr;
 	font-size: 2.5em;
 	color: white;
+	
+	@include the-mill();
 }
 
 #modules-nav {

@@ -52,7 +52,7 @@ hook("load", function() {
 		//Falls keine generierten CSS-Dateien gefunden wurden: In speziellen Modus uebergehen
 		if(!sass_snapshot) {
 			//Sehr rudimentaeres Design anzeigen. (Alles verstecken, nur Statusinformation anzeigen)
-			$(".startup-nohide").css("background", "rgb(45, 45, 45)");
+			$(".startup-nohide").css("background", "rgb(35, 40, 45)");
 			$("window *:not(.startup-nohide)").css("display", "none");
 			$("#startup-loading").css({
 				color: "white",
@@ -821,7 +821,7 @@ function saveWindowInformation() {
 function triggerModeButtonIcon() {	
 	$(".mm-icon").css("opacity", "0");
 	setTimeout(function() {
-		$(".mm-icon").removeClass("icon-the-mill").css("display", "none"); //.addClass("icon-brackets").css("opacity", "1");
+		$(".mm-icon").removeClass("icon-the-mill").css("display", "none");
 		$(".main-mode-ui").addClass("loaded");
 	}, 1000);
 
