@@ -279,10 +279,37 @@ hook("load", function() {
 			"seperator",
 
 			//Open Clonk manager
-			["$NAVOCManager$", 0, function() {
-				log("[!TODO]");
-				toggleSidebar("clonkdirselection");
-			}, 0, { uicon: "icon-multisource", identifier: "showClonkDirs" }],
+			["$NAVOCManager$", 0, 0, new ContextMenu(function() {
+					this.clearEntries();
+					let workenvs = getWorkEnvironments();
+					//Iterate through all workenvironments and search for clonk directories
+					for(let env2 of workenvs) {
+						//Something broke all of a sudden let in for loops for me??
+						let env = env2;
+						if(env.type != WORKENV_TYPE_ClonkPath)
+							continue;
+						
+						let textpath = env.path;
+						let name = env.path.split("/").pop();
+						if(name.length > 30)
+							name = name.substr(0, 30) + "...";
+						//Craete an entry for switching the clonk path
+						this.addEntry(name, 0, function() {
+							setClonkPath(env.path);
+						}, 0, {
+							type: "radioitem",
+							isSelected: formatPath(_sc.clonkpath()) == env.path,
+							radiogroup: "ocdir",
+							tooltip: env.path
+						});
+					}
+					this.addSeperator();
+					//TODO: Add new clonk directory
+					this.addEntry("$AddClonkDirectory$", 0, function() {
+						log("[!]");
+					});
+				}, [], MODULE_LPRE, {}
+			), { uicon: "icon-multisource", identifier: "showClonkDirs" }],
 			//Git log
 			["$NAVGitLog$", 0, function() {
 				toggleSidebar("gitlog");
@@ -377,12 +404,10 @@ ${reason}
 ${reason.stack}`).parent().css("display", "");
 	});
 
-	hook("onWorkenvCreated", function(env) {
+	/*hook("onWorkenvCreated", function(env) {
 		if(!env)
 			return;
 
-		if(env.type != WORKENV_TYPE_ClonkPath)
-			return;
 
 		var clone = $("#page-clonkdirselection").find(".cds-listitem.draft").clone();
 		clone.removeClass("draft");
@@ -398,13 +423,7 @@ ${reason.stack}`).parent().css("display", "");
 			if(!exists)
 				return clone.find(".cds-lbl-directory").attr("value", "Error: "+ocexecname+" not found.");
 
-			//Mittleren Teil durch 3 Punkte ersetzen wenn zu lang
-			if(path.length > 40) {
-				textpath = path.replace(/(^\/*.+?\/).+(\/.+\/?$)/, function(str, a, b, c) { 
-					var middle = str.substr(0, str.length-b.length).substr(a.length); 
-					return a+("..."+middle.substr(middle.length-(Math.max(40-a.length-b.length, 0))))+b; 
-				});
-			}
+			
 			clone.find(".cds-lbl-directory").attr("value", textpath);
 			//tooltip(clone.find(".cds-lbl-directory"), path, 0, 600);
 
@@ -423,7 +442,7 @@ ${reason.stack}`).parent().css("display", "");
 	});
 	hook("onWorkenvUnloaded", function(env) {
 		$("#page-clonkdirselection").find('.cds-listitem[data-path="'+env.path+'"]').remove();
-	});
+	});*/
 });
 
 function toggleLogLimitation(elm) {

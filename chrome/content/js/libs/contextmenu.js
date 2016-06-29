@@ -225,7 +225,7 @@ class _ContextMenuEntry {
 	hideMenu() {
 		if(!this.subMenu)
 			return;
-		
+
 		this.subMenu.hideMenu();
 	}
 
@@ -293,7 +293,22 @@ class _ContextMenu {
 		if(this.submenu)
 			return false;
 
-		$(obj).mouseup((e) => {
+		let openDropDownMenu = false;
+		//For drop down menus: You need to perform a full click (mousedown and mouseup) to open it.
+		//That way it does not open itself again if you click on the click target with the intention to close the menu.
+		$(obj).mousedown(e => {
+			if(!options.dropdown)
+				return;
+
+			let lmb = options.leftmousebutton;
+			//Default to left mouse button for drop down menus. (For deactivation, set leftmousebutton to false)
+			if(options.dropdown && lmb === undefined)
+				lmb = true;
+
+			if(e.button == 2*!(lmb))
+				openDropDownMenu = true;
+		});
+		$(obj).mouseup(e => {
 			let lmb = options.leftmousebutton;
 			//Default to left mouse button for drop down menus. (For deactivation, set leftmousebutton to false)
 			if(options.dropdown && lmb === undefined)
@@ -301,6 +316,9 @@ class _ContextMenu {
 
 			//Open context menu on right click (or left click if specified)
 			if(e.button == 2*!(lmb)) {
+				if(options.dropdown && !openDropDownMenu)
+					return;
+				openDropDownMenu = false;
 				if(!options.classes)
 					options.classes = "";
 				let mx = e.clientX, my = e.clientY;

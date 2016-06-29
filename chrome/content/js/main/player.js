@@ -183,11 +183,15 @@ function initPlayerselection() {
 		let selected_plr = wrk.readStringValue("Participants");
 		wrk.close();
 
-		for(let plr of players) {
+		for(let fname in players) {
+			//Somehow the scope of let-declared variables inside of for-in loops seems to count for the whole loop??
+			let filename = fname;
+			if(typeof filename != "string" || filename.search(/\.ocp/) == -1)
+				continue;
+			plr = players[players[filename].index];
 			if(!plr)
 				continue;
 
-			let filename = plr[0];
 			let player = plr.Player || {};
 			let name = player.Name || Locale("$NewPlayerName$");
 			if(!players[filename])
@@ -206,7 +210,7 @@ function initPlayerselection() {
 				type: "radioitem", 
 				isSelected: (selected_plr == filename),
 				radiogroup: "playeritem",
-				tooltip: Locale("Score: %d in %d games. (%d won, %d lost)", -1, player.Score||0, player.Rounds||0, player.RoundsWon||0, player.RoundsLost||0),
+				tooltip: Locale("$PlayerInfo$", -1, player.Score||0, player.Rounds||0, player.RoundsWon||0, player.RoundsLost||0),
 				iconsrc: players[filename].imgstr
 			});
 		}
