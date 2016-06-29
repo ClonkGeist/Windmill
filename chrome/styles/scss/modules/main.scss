@@ -272,6 +272,22 @@ toolbarbutton:focus  *{
 
 /* player selection */
 
+.ctx-playerselect {
+	.ctx-menuitem {
+		font-size: 1em;
+		line-height: 2.4em;
+		height: 32px;
+		padding: 0.1em 0.3em;
+		cursor: default;
+		
+		transition: background-color 0.3s;
+		
+		.ctx-menuicon {
+			color: black !important;
+		}
+	}
+}
+
 .plr-page {
 	display: none;
 }

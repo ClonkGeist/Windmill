@@ -66,25 +66,26 @@ class _ContextMenuEntry {
 		var icon = "";
 		if(this.topMenu.getOption("allowIcons")) {
 			var icstr = "";
+			let size = this.topMenu.options.iconsize || 20;
 			if(this.options) {
 				if(this.options.iconsrc) {
 					if(MODULE_LANG == "xul")
-						icstr = `<image src="${this.options.iconsrc}" width="20" height="20"/>`;
+						icstr = `<image src="${this.options.iconsrc}" width="${size}" height="${size}"/>`;
 					else
 						icstr = `<img src="${this.options.iconsrc}" />`;
 				}
 				else if(this.options.uicon) {
 					if(MODULE_LANG == "xul")
-						icstr = `<box class="${this.options.uicon} icon-20"></box>`;
+						icstr = `<box class="${this.options.uicon} icon-${size}"></box>`;
 					else
-						icstr = `<div class="${this.options.uicon} icon-20"></div>`;
+						icstr = `<div class="${this.options.uicon} icon-${size}"></div>`;
 				}
 			}
 			
 			if(MODULE_LANG == "xul")
-				icon = `<vbox class="ctx-menuicon">${icstr}</vbox>`;
+				icon = `<vbox class="ctx-menuicon" width="${size}">${icstr}</vbox>`;
 			else
-				icon = `<div class="ctx-menuicon">${icstr}</div>`;
+				icon = `<div class="ctx-menuicon" style="width: ${size}px">${icstr}</div>`;
 		}
 
 		//Element erstellen
@@ -98,7 +99,39 @@ class _ContextMenuEntry {
 		//Ist Container bzw. hat Untermenue
 		if(this.subMenu)
 			$(this.element).addClass("ctx-container");
-		
+
+		//Further menu item types
+		if(this.options.type) {
+			switch(this.options.type.toLowerCase()) {
+				case "radioitem":
+					$(this.element).addClass("ctx-radioitem");
+					$(this.element).attr("data-radiogroup", this.options.radiogroup);
+					if(this.options.isSelected)
+						$(this.element).addClass("ctx-menutype-selected");
+					break;
+
+				case "checklistitem":
+					$(this.element).addClass("ctx-checklistitem");
+					if(this.options.isSelected)
+						$(this.element).addClass("ctx-menutype-selected");
+					break;
+
+				default:
+					log("Contextmenu: Unrecognized type " + this.options.type, "error");
+					break;
+			}
+		}
+
+		//Add tooltips
+		if(this.options.tooltip) {
+			if(typeof this.options.tooltip == "string")
+				tooltip(this.element, this.options.tooltip);
+			else {
+				let ttobj = this.options.tooltip;
+				tooltip(this.element, ttobj.desc, ttobj.lang, ttobj.duration, ttobj);
+			}
+		}
+
 		//ggf. deaktivieren
 		if(this.disabled)
 			$(this.element).addClass("ctx-disabled");
@@ -117,10 +150,36 @@ class _ContextMenuEntry {
 			}, function() {});
 
 			if(!this.subMenu) {
+				//Execute click handlers
 				$(this.element).click((e) => {
+					//Do nothing if the menu is locked
 					if($(e.target).hasClass("ctx-locked"))
 						return;
 
+					let preventMenuFromClosing = false;
+					if(this.options.type) {
+						switch(this.options.type.toLowerCase()) {
+							case "radioitem":
+								//Select this radioitem
+								this.options.isSelected = true;
+								//Remove selection classes on other menuitems and fire events
+								$(this.topMenu.element).find('.ctx-menuitem.ctx-menutype-selected[data-radiogroup="'+this.options.radiogroup+'"]').removeClass("ctx-menutype-selected").not(this.element).trigger("change command");
+								//Add selection class to this item and fire events
+								$(this.element).addClass("ctx-menutype-selected");
+								$(this.element).trigger("change command");
+								preventMenuFromClosing = true;
+								break;
+
+							case "checklistitem":
+								this.options.isSelected = !this.options.isSelected;
+								$(this.element)[this.options.isSelected?"removeClass":"addClass"]("ctx-menutype-selected");
+								$(this.element).trigger("change command");
+								preventMenuFromClosing = true;
+								break;
+						}
+					}
+
+					//If the handler is a generator, lock the menu until the task is fulfilled
 					if(this.clickHandler.isGenerator()) {
 						let _this = this;
 						Task.spawn(function*() {
@@ -128,18 +187,18 @@ class _ContextMenuEntry {
 							yield* _this.clickHandler(target, e.target, _this);
 						}).then(function() {
 							_this.unlock();
-							if($(".contextmenu").prop("contextmenu_obj"))
+							if($(".contextmenu").prop("contextmenu_obj") && !preventMenuFromClosing)
 								$(".contextmenu").prop("contextmenu_obj").hideMenu(_this.options.noFocusReset);
 						}, function(err) {
 							log(err);					
 							_this.unlock();
-							if($(".contextmenu").prop("contextmenu_obj"))
+							if($(".contextmenu").prop("contextmenu_obj") && !preventMenuFromClosing)
 								$(".contextmenu").prop("contextmenu_obj").hideMenu(_this.options.noFocusReset);
 						});	
 					}
 					else {
 						this.clickHandler(target, e.target, this);
-						if($(".contextmenu").prop("contextmenu_obj"))
+						if($(".contextmenu").prop("contextmenu_obj") && !preventMenuFromClosing)
 							$(".contextmenu").prop("contextmenu_obj").hideMenu(this.options.noFocusReset);
 					}
 				});

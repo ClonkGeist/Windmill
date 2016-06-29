@@ -92,11 +92,12 @@ hook("startLoadingRoutine", function() {
 		if(players[entry.name]) {
 			players[players[entry.name].index] = sects;
 			players[entry.name].time = time;
+			players[entry.name].imgstr = imgstr;
 			$(".ps-playerlistitem[data-playername='"+entry.name+"'].selected").click();
 		}
 		else {
 			players.push(sects);
-			players[entry.name] = { time: Date.now(), index: players.length-1 };
+			players[entry.name] = { time: Date.now(), index: players.length-1, imgstr, 0: entry.name };
 			addPlayerlistItem(players.length - 1, entry.name, imgstr);
 		}
 	}
@@ -160,10 +161,6 @@ hook("startLoadingRoutine", function() {
 		).then(function() {
 			iterator.close();
 			for(var i = 0; i < playernames.length; i++) {
-				let elm = $(".ps-playerlistitem[data-playername='"+playernames[i]+"']");
-				if(elm.hasClass("selected"))
-					$("#nav-playername").attr("value", "");
-				elm.remove();
 				delete players[players[playernames[i]].index];
 				delete players[playernames[i]];
 			}
@@ -177,8 +174,63 @@ function getCurrentlySelectedPlayer() {
 
 registerInheritableObject("getCurrentlySelectedPlayer");
 
-function addPlayerlistItem(id, filename, imgstr) {	
+function initPlayerselection() {
+	let playersel = new ContextMenu(function() {
+		this.clearEntries();
+
+		let wrk = _sc.wregkey();
+		wrk.open(wrk.ROOT_KEY_CURRENT_USER, "Software\\OpenClonk Project\\OpenClonk\\General", wrk.ACCESS_READ);
+		let selected_plr = wrk.readStringValue("Participants");
+		wrk.close();
+
+		for(let plr of players) {
+			if(!plr)
+				continue;
+
+			let filename = plr[0];
+			let player = plr.Player || {};
+			let name = player.Name || Locale("$NewPlayerName$");
+			if(!players[filename])
+				continue;
+			this.addEntry(name, 0, function(target, menuitemelm, menuitem) {
+				//Speichern
+				if(menuitem.options.isSelected) {
+					wrk.open(wrk.ROOT_KEY_CURRENT_USER, "Software\\OpenClonk Project\\OpenClonk\\General", wrk.ACCESS_WRITE);
+					wrk.writeStringValue("Participants", filename);
+					wrk.close();
+				}
+
+				$("#nav-playername").attr("value", name);
+				execHook("playerselection", plr);
+			}, 0, {
+				type: "radioitem", 
+				isSelected: (selected_plr == filename),
+				radiogroup: "playeritem",
+				tooltip: Locale("Score: %d in %d games. (%d won, %d lost)", -1, player.Score||0, player.Rounds||0, player.RoundsWon||0, player.RoundsLost||0),
+				iconsrc: players[filename].imgstr
+			});
+		}
+		this.addSeperator();
+		this.addEntry("$CreatePlayer$", 0, function(target, menuitemelm, menuitem) {
+			//Open a Dialog for Player creation
+			log("[!TODO]");
+		}, 0, {uicon: "icon-add-player"});
+	}, [], MODULE_LPRE, { allowIcons: true, iconsize: 32 });
+	playersel.bindToObj($("#showPlayerSelect"), {dropdown: true, classes: "ctx-playerselect"});
+}
+
+function addPlayerlistItem(id, filename, imgstr) {
 	players[id][0] = filename;
+	let wrk = _sc.wregkey();
+	wrk.open(wrk.ROOT_KEY_CURRENT_USER, "Software\\OpenClonk Project\\OpenClonk\\General", wrk.ACCESS_READ);
+	if(wrk.readStringValue("Participants") == filename) {
+		let player = players[id].Player || {};
+		let name = player.Name || Locale("$NewPlayerName$");
+		$("#nav-playername").attr("value", name);
+	}
+	wrk.close();
+	
+	/*players[id][0] = filename;
 	
 	var name = players[id].Player.Name || Locale("$NewPlayerName$");
 	
@@ -200,7 +252,6 @@ function addPlayerlistItem(id, filename, imgstr) {
 		$("#ps-playerdetails").css("display", "-moz-box");
 		
 		$("#ps-pdname").text(name);
-		$("#nav-playername").attr("value", name);
 		$("#ps-pdscore").attr("value", player["Score"]);
 		$("#ps-pdcomment").attr("value", player["Comment"]);
 		$("#ps-pdrounds").attr("value", Locale("$PDRoundsLbl$", -1, player["Rounds"]||0, player["RoundsWon"]||0, player["RoundsLost"]||0));
@@ -222,24 +273,10 @@ function addPlayerlistItem(id, filename, imgstr) {
 			date.setTime(lastround["Date"]*1000)
 			$("#ps-pdlr-date").attr("value", sprintf(Locale("$PD_LRDateLbl$"), date.getDate(), date.getMonth()+1, date.getFullYear(), date.getHours(), date.getMinutes()));
 		}
-		
-		//Speichern
-		if(!wasSelected) {
-			var wrk = _sc.wregkey();
-			wrk.open(wrk.ROOT_KEY_CURRENT_USER, "Software\\OpenClonk Project\\OpenClonk\\General", wrk.ACCESS_WRITE);
-			wrk.writeStringValue("Participants", filename);
-			wrk.close();
-		}
-		execHook("playerselection", plr);
 	});
 
 	clone.appendTo($("#ps-playerlist"));
-	
-	var wrk = _sc.wregkey();
-	wrk.open(wrk.ROOT_KEY_CURRENT_USER, "Software\\OpenClonk Project\\OpenClonk\\General", wrk.ACCESS_READ);
-	var fn = wrk.readStringValue("Participants");
-	wrk.close();
-	
+
 	if(fn == filename)
 		$(clone).trigger("click");
 	
@@ -265,10 +302,10 @@ function addPlayerlistItem(id, filename, imgstr) {
 		switchPlrPage('page-addplayer');
 		insertPlayerIntoEditPage(id);
 		
-		e.stopPropagation();*/
-	});
+		e.stopPropagation();
+	});*/
 	
-	return clone;
+	return;
 }
 
 function initNewPlayer() {
