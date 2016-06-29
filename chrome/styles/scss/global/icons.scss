@@ -306,7 +306,7 @@
     @include -documentation();
 }
 .icon-screenshots:before {
-    @include -polaroids();
+    @include -gallery-2();
 }
 .icon-error:before {
     content: "\e90c";
@@ -364,4 +364,7 @@
 }
 .icon-external:before {
     content: "E"; 
+}
+.icon-hamburger:before {
+	@include -hamburger();
 }

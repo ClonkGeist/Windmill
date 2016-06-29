@@ -85,7 +85,7 @@
 									</hbox>
 									<box class="nav-image icon-console icon-32" height="32" width="32" id="showLog" data-sidebarid="developerlog"></box>
 									<box class="nav-image icon-reload icon-32 devmode-elm" height="32" width="32" id="restartWindmill"></box> <!-- DEVMODE -->
-									<box class="nav-image icon-bars-ref-1-3 icon-32" height="32" width="32" id="showOptions"></box>
+									<box class="nav-image icon-hamburger icon-32" height="32" width="32" id="showOptions"></box>
 								</toolbar>
 							</toolbox>
 						</hbox>
