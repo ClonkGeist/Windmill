@@ -66,11 +66,19 @@ class _ContextMenuEntry {
 		var icon = "";
 		if(this.topMenu.getOption("allowIcons")) {
 			var icstr = "";
-			if(this.options && this.options.iconsrc) {
-				if(MODULE_LANG == "xul")
-					icstr = `<image src="${this.options.iconsrc}" width="20" height="20"/>`;
-				else
-					icstr = `<img src="${this.options.iconsrc}" />`;
+			if(this.options) {
+				if(this.options.iconsrc) {
+					if(MODULE_LANG == "xul")
+						icstr = `<image src="${this.options.iconsrc}" width="20" height="20"/>`;
+					else
+						icstr = `<img src="${this.options.iconsrc}" />`;
+				}
+				else if(this.options.uicon) {
+					if(MODULE_LANG == "xul")
+						icstr = `<box class="${this.options.uicon} icon-20"></box>`;
+					else
+						icstr = `<div class="${this.options.uicon} icon-20"></div>`;
+				}
 			}
 			
 			if(MODULE_LANG == "xul")
@@ -222,20 +230,41 @@ class _ContextMenu {
 	getEntryByIndex(index) {
 		return this.entries[index];
 	}
-	bindToObj(obj, forced) {
+	bindToObj(obj, options = {}) {
 		if(this.submenu)
 			return false;
 
 		$(obj).mouseup((e) => {
-			if(e.button == 2) {
-				this.showMenu(e.clientX, e.clientY, e.currentTarget, e.screenX, e.screenY);
-				return !forced;
+			let lmb = options.leftmousebutton;
+			//Default to left mouse button for drop down menus. (For deactivation, set leftmousebutton to false)
+			if(options.dropdown && lmb === undefined)
+				lmb = true;
+
+			//Open context menu on right click (or left click if specified)
+			if(e.button == 2*!(lmb)) {
+				if(!options.classes)
+					options.classes = "";
+				let mx = e.clientX, my = e.clientY;
+				let scx = e.screenX, scy = e.screenY;
+				//For dropdown menus: spawn the menu below the element
+				if(options.dropdown) {
+					let offset = $(obj).offset();
+					mx = offset.left;
+					my = offset.top+$(obj).height();
+					if(MODULE_LANG = "xul") {
+						scx = $(obj)[0].ownerDocument.documentElement.boxObject.screenX+mx;
+						scy = $(obj)[0].ownerDocument.documentElement.boxObject.screenY+my;
+					}
+					options.classes += " ctx-dropdown";
+			 	}
+				this.showMenu(mx, my, e.currentTarget, scx, scy, undefined, undefined, options.classes);
+				return !options.forced;
 			}
 
 			return true;
 		});
 	}
-	showMenu(x, y, obj_by, screenX, screenY, menuitem, menuitemobj) { // Kontextmenü anzeigen
+	showMenu(x, y, obj_by, screenX, screenY, menuitem, menuitemobj, classes) { // Kontextmenü anzeigen
 		this.opened_by = obj_by;
 		if(!this.submenu)
 			if($(".contextmenu").prop("contextmenu_obj"))
@@ -248,11 +277,11 @@ class _ContextMenu {
 			this.topMenu = menuitemobj.topMenu;
 
 		if(MODULE_LANG == "xul") {
-			this.element = $("<panel class='contextmenu' noautofocus='true'></panel>")[0];
+			this.element = $('<panel class="contextmenu'+(classes?" "+classes:"")+'" noautofocus="true"></panel>')[0];
 			$(this.element).appendTo($(document.documentElement));
 			this.element.openPopup();
 
-			this.body = $("<vbox class='ctx-wrapper'></vbox>")[0];
+			this.body = $('<vbox class="ctx-wrapper"></vbox>')[0];
 			$(this.element).append(this.body);
 			var last_element_seperator = false;
 
@@ -291,7 +320,7 @@ class _ContextMenu {
 				this.element.moveTo(x, y+$(this.element).outerHeight());
 		}
 		else {
-			this.element = $('<div class="contextmenu" tabindex="-1"></div>')[0];
+			this.element = $('<div class="contextmenu'+(classes?" "+classes:"")+'" tabindex="-1"></div>')[0];
 			$(this.element).appendTo($("body"));
 			$(this.element).css("left", x+"px").css("top", y+"px");
 			$(this.element).css("position", "absolute");

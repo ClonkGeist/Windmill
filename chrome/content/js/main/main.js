@@ -213,25 +213,6 @@ hook("load", function() {
 			$(this).toggleClass("activated");
 			//todo: cbridge deaktivieren
 		});
-
-		//Einstellungen
-		$("#showSettings").click(function() {
-			if(mainDeck.selectedId == mainDeck.getModuleId("settings")) {
-				togglePage(mainDeck.id, mainDeck.previd);
-				return;
-			}
-
-			togglePage(mainDeck.id, mainDeck.getModuleId("settings"));
-		});
-		//Modulemanager
-		$("#showModManager").click(function() {
-			if(mainDeck.selectedId == mainDeck.getModuleId("modmanager")) {
-				togglePage(mainDeck.id, mainDeck.previd);
-				return;
-			}
-
-			togglePage(mainDeck.id, mainDeck.getModuleId("modmanager"));
-		});
 		//Ressourcensparender Modus
 		$("#showResSaveMode").click(function() {
 			var dlg = new WDialog("$DlgTitleResSaveMode$", "", { modal: true, css: { "width": "450px" }, btnright: [{ preset: "accept",
@@ -275,44 +256,67 @@ hook("load", function() {
 				}
 			}
 		}
-		//Playerselection
-		$("#showPlayerSelect").click(function() {
-			toggleSidebar("playerselect");
-			switchPlrPage("page-playerselection");
-		});
-		//Clonk Directory Selection
-		$("#showClonkDirs").click(function() {
-			toggleSidebar("clonkdirselection");
-		});
-		//Log
-		$("#showLog").click(function() {
-			toggleSidebar("developerlog");
-		});
-		//Git Log
-		$("#showGitLog").click(function() {
-			toggleSidebar("gitlog");
-		});
+
 		let frame = $('<iframe src="resource://docs/build/de/_home/__head_de.html" flex="1" id="docFrame"></iframe>');
 		frame.appendTo($(mainDeck.element));
 		let docFrameID = mainDeck.add(frame[0], 0, false, false, true);
-		//Docs
-		$("#showDocs").click(function() {
-			togglePage(mainDeck.id, docFrameID);
-		});
-		$("#showScreenshots").click(function() {
-			let path = "";
-			if(OS_TARGET == "WINNT")
-				path = _sc.env.get("APPDATA")+"\\OpenClonk\\Screenshots";
+		let dropdownMenu = new ContextMenu(0, [
+			//Module manager
+			["$NAVModManager$", 0, function() {
+				togglePage(mainDeck.id, mainDeck.getModuleId("modmanager"));
+			}, 0, { uicon: "icon-heartbeat", identifier: "showModManager" }],
+			//Documentation
+			["$NAVDocumentation$", 0, function() {
+				togglePage(mainDeck.id, docFrameID);
+			}, 0, { uicon: "icon-documentation", identifier: "showDocs" }],
 
-			let promise = OS.File.exists(path);
-			promise.then(function(exists) {
-				if(exists)
-					openInFilemanager(path);
-				else
-					warn("No screenshots folder found.");
-			}, function(e) {
-				log(e);
-			});
+			"seperator",
+
+			//Open Clonk manager
+			["$NAVOCManager$", 0, function() {
+				log("[!TODO]");
+				toggleSidebar("clonkdirselection");
+			}, 0, { uicon: "icon-multisource", identifier: "showClonkDirs" }],
+			//Git log
+			["$NAVGitLog$", 0, function() {
+				toggleSidebar("gitlog");
+			}, 0, { uicon: "icon-git", identifier: "showGitLog" }],
+			//Screenshot folder
+			["$NAVScreenshots$", 0, function() {
+				let path = "";
+				if(OS_TARGET == "WINNT")
+					path = _sc.env.get("APPDATA")+"\\OpenClonk\\Screenshots";
+
+				let promise = OS.File.exists(path);
+				promise.then(function(exists) {
+					if(exists)
+						openInFilemanager(path);
+					else
+						warn("No screenshots folder found.");
+				}, function(e) {
+					log(e);
+				});
+			}, 0, { uicon: "icon-screenshots", identifier: "showScreenshots" }],
+
+			"seperator",
+
+			//Settings
+			["$NAVSettings$", 0, function() {
+				togglePage(mainDeck.id, mainDeck.getModuleId("settings"));
+			}, 0, { uicon: "icon-gear", identifier: "showSettings" }]
+		], MODULE_LPRE, { fnCheckVisibility: function(by_obj, id) {
+			//Hide devmode options
+			if(!getConfigData("Global", "DevMode") && ["showModManager", "showDocs"].indexOf(id) != -1)
+				return 2;
+			//Hide Gitlog if git is not available
+			if(id == "showGitLog" && !getAppByID("git").isAvailable())
+				return 2;
+			return 0;
+		}, allowIcons: true });
+		dropdownMenu.bindToObj($("#showOptions"), {dropdown: true});
+		//Log
+		$("#showLog").click(function() {
+			toggleSidebar("developerlog");
 		});
 
 		//Neustart
@@ -357,8 +361,6 @@ hook("load", function() {
 				EventInfo("DevMode activated");
 			}
 		});
-		if(!getAppByID("git").isAvailable())
-			$("#showGitLog").css("display", "none");
 	}, function(reason) {
 		$("#startup-loading").remove();
 		$("#startup-errorlog > vbox").append(`
@@ -807,4 +809,4 @@ function triggerModeButtonIcon() {
 window.addEventListener("focus", function(event) {
 	if(domwu)
 		domwu.redraw();
-}, false);
+}, false)

@@ -220,15 +220,15 @@ hook("load", function() {
 							let frame = $(target+"-subpage .module-subpage-frame-"+mode)[0];
 							let counter = 0;
 
-							//Check all X frames if the docShell exists (that means, that it loads a document) because otherwise we cannot bind
-							//an event to the document/window. (Even though it may exist already, it will be changed by a new document/window if
-							//the document is loaded. And there seems to be no iframe.onload event, at least not for XUL iframes.)
+							//Check all X frames if the document URI is not about:blank (that means, that it loads a document) because otherwise we 
+							//cannot bind an event to the document/window. (Even though it may exist already, it will be changed by a new 
+							//document/window if the document is loaded. And there seems to be no iframe.onload event, at least not for XUL iframes.)
 							function prepareDocument() {
 								if(!frame)
 									return;
-								if(frame.docShell) {
-									frame.contentWindow.document.addEventListener("DOMContentLoaded", function() {
-										let container, doc = this;
+								if(frame.contentWindow && frame.contentWindow.document.documentURI != "about:blank") {
+									function prepareDocumentCore(doc) {
+										let container;
 										if(fext == "html")
 											container = $(doc).find("body > *");
 										else if(fext == "xul") {
@@ -238,7 +238,13 @@ hook("load", function() {
 										//Localize and initialize configuration elements
 										localizeModule(container, true);
 										autoInitialize(doc, {tooltip: { lang: fext, window: this }});
-									});
+									}
+									if(frame.docShell.busyFlags)
+										frame.contentWindow.document.addEventListener("DOMContentLoaded", function() {
+											prepareDocumentCore(this);
+										});
+									else
+										prepareDocumentCore(frame.contentWindow.document);
 									return;
 								}
 								window.requestAnimationFrame(prepareDocument);

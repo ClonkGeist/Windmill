@@ -80,19 +80,12 @@
 									<spacer />
 									<hbox>
 										<label value="" id="nav-playername" />
-										<box class="nav-image icon-players icon-32" height="32" width="32" id="showPlayerSelect" data-sidebarid="playerselect"></box>
+										<box class="nav-image icon-players icon-32" height="32" width="32" id="showPlayerSelect"></box>
 										<spacer />
 									</hbox>
-									<box class="nav-image icon-heartbeat icon-32 devmode-elm" height="32" width="32" id="showModManager"></box> <!-- DEVMODE -->
-									<!--<box class="nav-image icon-update icon-32" height="32" width="32" id="showUpdate"></box>-->
-									<box class="nav-image icon-resource-saviour icon-32" height="32" width="32" id="showResSaveMode"></box>
-									<box class="nav-image icon-multisource icon-32" height="32" width="32" id="showClonkDirs" data-sidebarid="clonkdirselection"></box>
-									<box class="nav-image icon-git icon-32" height="32" width="32" id="showGitLog" data-sidebarid="gitlog"></box>
 									<box class="nav-image icon-console icon-32" height="32" width="32" id="showLog" data-sidebarid="developerlog"></box>
 									<box class="nav-image icon-reload icon-32 devmode-elm" height="32" width="32" id="restartWindmill"></box> <!-- DEVMODE -->
-									<box class="nav-image icon-documentation icon-32 devmode-elm" height="32" width="32" id="showDocs"></box> <!-- DEVMODE -->
-									<box class="nav-image icon-screenshots icon-32" height="32" width="32" id="showScreenshots"></box>
-									<box class="nav-image icon-gear icon-32" height="32" width="32" id="showSettings"></box>
+									<box class="nav-image icon-bars-ref-1-3 icon-32" height="32" width="32" id="showOptions"></box>
 								</toolbar>
 							</toolbox>
 						</hbox>
