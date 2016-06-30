@@ -1,0 +1,40 @@
+window {
+	font-family: $font-stack;
+	background-color: $clr-empty;
+}
+
+.draft { display: none; }
+
+/*-- Module navigation --*/
+
+#modules-nav {
+	width: 80px;
+	max-width: 80px;
+	background: $clr-empty;
+}
+
+.modules-nav-entry {
+	&:hover, &.selected {
+		background: $clr-paper;
+	}
+	padding: 0.6em 0;
+}
+
+.modules-nav-info {
+	background: $interact-blue;
+	width: 16px;
+	height: 16px;
+	border-radius: 8px;
+	line-height: 16px;
+	overflow: hidden;
+	font-size: 0.5em;
+	color: white;
+	opacity: 0.8;
+}
+
+.modules-nav-label {
+	font-size: 0.7em;
+	max-width: 80px;
+	width: 80px;
+	text-align: center;
+}

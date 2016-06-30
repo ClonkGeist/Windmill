@@ -131,6 +131,13 @@
 	"require": "global|icons"
 },
 {
+	"name": "cbridge",
+	"scss": "modules/cbridge.scss",
+	"cssTarget": "content/modules/cbridge/main/cbridge.css",
+	"observe": "cbridge",
+	"require": "global|icons"
+},
+{
 	"name": "cfgWizard",
 	"scss": "modules/cfgWizard.scss",
 	"cssTarget": "content/modules/configurationwizard/cfgwizard.css",

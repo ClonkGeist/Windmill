@@ -4,12 +4,30 @@
 <?xml-stylesheet href="chrome://windmill/skin/default_module.css" type="text/css"?>
 
 <window id="main" title="cIDE" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-
 	<script type="application/javascript" src="chrome://windmill/content/js/default_module.js"/>
 	<script type="application/javascript" src="chrome://windmill/content/js/libs/deck.js"/>
 	<script type="application/javascript" src="chrome://windmill/content/modules/cbridge/main/js/cbridge.js"/>
-	
-	<hbox flex="1" id="modules-wrapper">
-		
+
+	<hbox flex="1" id="wrapper">
+		<vbox id="modules-nav" width="80">
+			<vbox class="modules-nav-entry draft" width="80">
+				<stack>
+					<vbox class="modules-nav-mainwrapper" align="center" pack="center">
+						<vbox class="modules-nav-icon">
+							<box class="icon-hamburger icon-48"></box>
+						</vbox>
+						<hbox>
+							<label class="modules-nav-label" value="MODUL" crop="end" />
+						</hbox>
+					</vbox>
+					<box class="modules-nav-info" bottom="5" right="5" align="center" pack="center">
+						<label class="modules-nav-info-lbl" value="1"/>
+					</box>
+				</stack>
+			</vbox>
+		</vbox>
+		<hbox flex="1" id="modules-wrapper">
+			
+		</hbox>
 	</hbox>
 </window>
