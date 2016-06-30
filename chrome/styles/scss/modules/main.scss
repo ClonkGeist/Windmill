@@ -308,17 +308,17 @@ caption {
 .sidebar {
 	background-color: rgb(245, 245, 245);
 	height: 100%;
-	width: 300px;
-	max-width: 300px;
 	overflow: hidden;
-	transition: width 0.3s;
+	transition: opacity 0.3s;
+	opacity: 1;
 	color: rgb(60, 60, 60);
 	border-left: 1px solid gainsboro;
 	box-sizing: border-box;
 }
 
 .sidebar.invisible {
-	width: 0px !important;
+	opacity: 0;
+	pointer-events: none;
 	border-left-width: 0px;
 }
 
@@ -543,12 +543,10 @@ caption {
 
 
 #developerlog, #gitlog {
-	width: 800px;
-	max-width: 800px;
 	-moz-user-focus: normal;
 }
-#developerlog .ps-h {background-color: $chrome-clr;}
-#gitlog .ps-h {background-color: rgb(241, 72, 33);}
+#developerlog .ps-h, #gitlog .ps-h {background-color: $chrome-clr;}
+/*#gitlog .ps-h {background-color: rgb(241, 72, 33);}*/
 
 #log-entrylist { overflow-y: scroll; }
 #log-entrylist.show-hidden-logs > .log-listitem.hidden { display: -moz-box; }

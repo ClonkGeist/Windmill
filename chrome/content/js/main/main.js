@@ -225,36 +225,11 @@ hook("load", function() {
 		});
 
 		function toggleSidebar(id) {
-			$("#"+id).toggleClass("invisible");
-			/*if($("#"+id).hasClass("invisible"))
-				$('[data-sidebarid="'+id+'"]').css("color", "");
-			else
-				$('[data-sidebarid="'+id+'"]').css("color", $("#"+id).find(".sidebar-header").css("background-color"));*/
-			let wdt = 0;
-			$(".sidebar").not(".invisible").each(function() {
-				wdt += parseInt($(this).css("max-width"));
-			});
-			if(wdt > $(window).width()) {
-				let widths = [];
-				$(".sidebar").not("#"+id+",.invisible").each(function() {
-					//Subtract width from 10000 to make sorting easier (we want to close the sidebar which is taking the most space first)
-					let sb_wdt = 10000-parseInt($(this).css("max-width"));
-					if(!widths[sb_wdt])
-						widths[sb_wdt] = [];
-					widths[sb_wdt].push(this);
-				});
-				//Closing sidebars which would overflow the window
-				for(let sb_wdt in widths) {
-					if(wdt < $(window).width())
-						continue;
-					while(widths[sb_wdt].length && wdt > $(window).width()) {
-						let sb = widths[sb_wdt].shift();
-						$(sb).addClass("invisible");
-						//$('[data-sidebarid="'+$(sb).attr("id")+'"]').css("color", "");
-						wdt -= 10000-sb_wdt;
-					}
-				}
-			}
+			let closed = $("#"+id).hasClass("invisible");
+			$(".sidebar").addClass("invisible");
+			if(!closed)
+				return;
+			$("#"+id).removeClass("invisible");
 		}
 
 		//Generate player selection
@@ -288,7 +263,7 @@ hook("load", function() {
 						let env = env2;
 						if(env.type != WORKENV_TYPE_ClonkPath)
 							continue;
-						
+
 						let textpath = env.path;
 						let name = env.path.split("/").pop();
 						if(name.length > 30)
