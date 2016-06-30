@@ -185,6 +185,9 @@
 .icon-x:before {
     @include -x();
 }
+.icon-x-small:before {
+    @include -x-s();
+}
 .icon-maximize:before {
     @include -maximize();
 }
@@ -262,9 +265,6 @@
 }
 .icon-players:before {
     @include -players();
-}
-.icon-resource-saviour:before {
-    @include -resource-saviour();
 }
 .icon-runtimejoin:before {
     @include -runtimejoin();

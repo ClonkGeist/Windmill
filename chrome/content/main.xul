@@ -49,7 +49,7 @@
 				<box class="window-button icon-minimize" onclick="window.minimize();"/>
 				<box class="maximize-window window-button icon-maximize" onclick="maximizeWindow();"/>
 				<box class="restore-window window-button icon-restore" onclick="restoreWindow();"/>
-				<box class="window-button icon-x" onclick="window.close()"/>
+				<box class="window-button icon-x-small" onclick="window.close()"/>
 			</hbox>
 			<vbox flex="1" id="showgames-container"></vbox>
 		</vbox>
@@ -67,7 +67,7 @@
 							<box class="window-button icon-minimize" onclick="window.minimize()"/>
 							<box class="maximize-window window-button icon-maximize" onclick="maximizeWindow()"/>
 							<box class="restore-window window-button icon-restore" onclick="restoreWindow()"/>
-							<box class="window-button icon-x" onclick="window.close()"/>
+							<box class="window-button icon-x-small" onclick="window.close()"/>
 						</hbox>
 						<hbox>
 							<toolbox flex="1">
