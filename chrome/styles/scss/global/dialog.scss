@@ -19,12 +19,14 @@
 .main-wdialog {	-moz-user-focus: normal; pointer-events: none; }
 
 .main-wdialog-wrapper {
-	background-color: #fff;
+	background-color: $clr-paper;
 	min-height: 60px;
 	min-width: 100px;
-	color: rgb(60, 60, 60);
-	box-shadow: 0 0 15px 0 rgb(180, 180, 180);
+	color: $text-clr;
+	box-shadow: 0 0 10px -5px rgba(0, 0, 0, 0.3);
 	pointer-events: initial;
+	border-top: 1px solid $clr-paper;
+	border-bottom: 1px solid rgb(150, 150, 150);
 	
 	radiogroup {
 		display: flex;
@@ -60,17 +62,23 @@
 }
 
 .main-wdialog-footer {
-	padding: 5px 5px;
+	padding: 5px;
 }
 
 .main-wdialog-button {
-	background-color: gainsboro;
-	cursor: pointer;
-	color: grey;
-}
-
-.main-wdialog-button:hover {
-	background-color: rgb(215, 215, 215);
+	border: 1px solid $clr-border;
+	color: $ui-text-clr;
+	background: $clr-base;
+	
+	&:hover {
+		border: 1px solid $clr-border-grey;
+		background-color: $clr-empty;
+	}
+	
+	&:active {
+		background-color: $clr-border;
+		border: 1px solid $clr-border-grey;
+	}
 }
 
 .main-wdialog-wrapper  textbox {

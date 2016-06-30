@@ -1,10 +1,10 @@
 @font-face {
     font-family: 'icomoon';
-    src:    url('fonts/icomoon.eot?myaeli');
-    src:    url('fonts/icomoon.eot?myaeli#iefix') format('embedded-opentype'),
-        url('fonts/icomoon.ttf?myaeli') format('truetype'),
-        url('fonts/icomoon.woff?myaeli') format('woff'),
-        url('fonts/icomoon.svg?myaeli#icomoon') format('svg');
+    src:    url('fonts/icomoon.eot?f66p5c');
+    src:    url('fonts/icomoon.eot?f66p5c#iefix') format('embedded-opentype'),
+        url('fonts/icomoon.ttf?f66p5c') format('truetype'),
+        url('fonts/icomoon.woff?f66p5c') format('woff'),
+        url('fonts/icomoon.svg?f66p5c#icomoon') format('svg');
     font-weight: normal;
     font-style: normal;
 }
@@ -24,14 +24,14 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-hamburger:before {
+    content: "\e936";
+}
 .icon-x-s:before {
     content: "\e937";
 }
 .icon-x:before {
     content: "\e935";
-}
-.icon-hamburger:before {
-    content: "\e936";
 }
 .icon-module-heartbeat:before {
     content: "\e927";
