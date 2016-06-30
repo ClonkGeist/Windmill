@@ -2,23 +2,19 @@ let maindeck = {}, deck;
 
 window.addEventListener("load", function(){
 	deck = addDeck($("#modules-wrapper")[0], 0);
-	/*var modules = [createModule("showgames", deck.element),
-				   createModule("cbexplorer", deck.element)];
-
-	var deckitems = [deck.add(getModule(modules[0], true), 0),
-					 deck.add(getModule(modules[1], true), 0, false, false, true)];*/
-	/*_mainwindow.addNavigationItem(Locale("$NavNetworkGames$"), "cbridge", true, 0, function() {
-		if(maindeck.deckid !== undefined)
-			_mainwindow.togglePage(maindeck.deckid, maindeck.tabid);
-		togglePage(deck.id, deckitems[0]);
-	});
-	_mainwindow.addNavigationItem(Locale("$NavHostGame$"), "cbridge", 0, 0, function() {
-		if(maindeck.deckid !== undefined)
-			_mainwindow.togglePage(maindeck.deckid, maindeck.tabid);
-		togglePage(deck.id, deckitems[1]);
-	});*/
 	createNavigation();
 });
+
+//removes navigation entry of this module
+function detachModule(moduleelm, module) {
+	$('.modules-nav-entry[data-name="'+module.name+'"]').remove();
+	deck.detachItem(deck.getModuleId(module.name));
+}
+
+//reload module navigation
+function attachModule(module) {
+	createNavigation();
+}
 
 function createNavigation() {
 	//Iterate through modules
@@ -53,10 +49,14 @@ function createNavigation() {
 	$(".modules-nav-entry:not(.draft)").remove();
 
 	//Create navigation items
-	for(let i = 0; i < cbridgemodules.length; i++) {
+	for(let i = 0, first = true; i < cbridgemodules.length; i++) {
 		let module = cbridgemodules[i];
+		if(getConfigData("Modules", module.name+"_State"))
+			continue;
+
 		let clone = $(".modules-nav-entry.draft").clone();
 		clone.removeClass("draft");
+		clone.attr("data-name", module.name)
 		clone.find(".modules-nav-label").attr("value", Locale(module.navigationlabel || module.modulename, module.languageprefix));
 		clone.click(function() {
 			$(".modules-nav-entry.selected").removeClass("selected");
@@ -66,11 +66,13 @@ function createNavigation() {
 				index = deck.add(getModule(createModule(module.name, deck.element), true), 0, false, false, true);
 			togglePage(deck.id, index);
 		});
-		if(!module.isAddon)
+		if(!module.isAddon && deck.getModuleId(module.name) == -1)
 			deck.add(getModule(createModule(module.name, deck.element), true), 0, false, false, true);
 		clone.appendTo($("#modules-nav"));
-		if(!i)
+		if(first && !module.isAddon) {
 			clone.click();
+			first = false;
+		}
 	}
 }
 

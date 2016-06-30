@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link href="resource://windmill/modules/settings/settingsPage.css" rel="stylesheet" />
+	</head>
+	<body>
+		<div>
+			<label>
+				<input type="checkbox" class="autoinit" flex="1" default-cfgsect="ShowGame" default-cfgkey="PortScan">
+				$ActivatePortScanner$
+			</label>
+		</div>
+		<div>
+			<label>
+				<input type="checkbox" class="autoinit" default-cfgsect="ShowGame" default-cfgkey="NotificationsShowEmpty">
+				$ShowNotificationsForEmptyGames$
+			</label>
+		</div>
+		<div>
+			<label>
+				$GamePort$
+				<span class="infotooltip" data-tooltip="$TooltipSGGamePort$">
+					<span class="modulectrl icon-info icon-16"></span>
+				</span>
+				<input type="text" class="autoinit" default-cfgsect="StartGame" default-cfgkey="GamePort">
+			</label>
+		</div>
+	</body>
+</html>

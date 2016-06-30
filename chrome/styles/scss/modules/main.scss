@@ -136,29 +136,6 @@ toolbox, toolbarbutton, toolbar, button, #header {
 	padding-top: 3px;
 }
 
-#inner-navigation button {
-	color: whitesmoke;
-	border: none;
-	margin: 0;
-	height: 32px;
-	line-height: 40px;
-	background-color: inherit;
-	
-	transition: background-color 0.1s;
-	
-	font-weight: bold;
-	padding-left: 1em;
-	padding-right: 1em;
-}
-
-#inner-navigation button:hover {
-	background: $chrome-ui-active;
-}
-
-#inner-navigation button.nav-active {
-	background: $chrome-ui-active;
-}
-
 caption {
 	background-color: inherit;
 }

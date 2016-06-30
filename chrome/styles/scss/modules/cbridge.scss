@@ -5,6 +5,11 @@ window {
 
 .draft { display: none; }
 
+#modules-fallback {
+	color: $ui-text-clr;
+	font-size: 1.6em;
+}
+
 /*-- Module navigation --*/
 
 #modules-nav {

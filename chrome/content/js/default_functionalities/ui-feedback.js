@@ -19,8 +19,8 @@ function tooltip(targetEl, desc, lang = MODULE_LANG, duration, options = {}) {
 			let wdw = window;
 			if(options.window)
 				wdw = options.window;
-			var el = $('<'+(lang === "html"?'div':'panel noautofocus="true" noautohide="true"')+' class="windmill-tooltip"></'+(lang == "html"?'div':'panel')+'>', wdw.document)[0];
-			
+			let el = $('<'+(lang === "html"?'div':'panel noautofocus="true" noautohide="true"')+' class="windmill-tooltip"></'+(lang == "html"?'div':'panel')+'>', wdw.document)[0];
+
 			if(options.css)
 				$(el).css(options.css);
 

@@ -26,8 +26,13 @@
 				</stack>
 			</vbox>
 		</vbox>
-		<hbox flex="1" id="modules-wrapper">
-			
-		</hbox>
+		<stack flex="1">
+			<hbox flex="1" id="modules-fallback" align="center" pack="center">
+				<description>$ModulesFallback$</description>
+			</hbox>
+			<hbox flex="1" id="modules-wrapper">
+				
+			</hbox>
+		</stack>
 	</hbox>
 </window>

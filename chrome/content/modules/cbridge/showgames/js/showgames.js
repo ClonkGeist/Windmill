@@ -73,13 +73,6 @@ window.addEventListener("load", function(){
 	loadNotification();
 });
 
-function setResSaveMode() {
-	$("*").addClass("ressavemode");
-	$("#ressavemode-btn").click(function() {
-		_mainwindow.deactivateResSaveMode();
-	});
-}
-
 function pauseMSRefresh() {
 	clearInterval(refreshID);
 }

@@ -121,26 +121,6 @@
 								</vbox>
 							</description>
 						</hbox>
-						<!--<caption label="Programs" class="toggle-contents" onclick="toggleContents(this)"/>
-						<vbox>
-							<grid>
-								<columns>
-									<column flex="1"/>
-									<column flex="5"/>
-									<column flex="1"/>
-									<column flex="1"/>
-								</columns>
-								<rows id="extprogram-list">
-									<row class="extprogram draft">
-										<label class="extprogram-label"/>
-										<description class="view-directory-path">$pathempty$</description>
-										<button label="$browse$" oncommand="openProgramDialog(this)"/>
-										<checkbox class="extprogram-always-use"/>
-										<box class="extprogram-clear nav-image icon-trashbin icon-32" height="32" width="32"></box>
-									</row>
-								</rows>
-							</grid>	
-						</vbox>-->
 					</vbox>
 					<vbox id="settings-page-cide-subpage" class="settings-page module-subpage" top="0" bottom="0">
 						<hbox class="module-subpage-header">
@@ -176,26 +156,29 @@
 				
 				<!-- SUBPAGE: cBridge (Gamemode) -->
 				
+				<!-- LALALA COPY PASTE -->
 				<stack>
 					<vbox id="settings-page-cbridge" class="settings-page" top="0" bottom="0">
 						<caption class="big" label="$cBridge$" />
-
-						<caption label="$MasterserverView$" class="toggle-contents" onclick="toggleContents(this)"/>
-						<vbox>
-							<checkbox label="$ActivatePortScanner$" class="autoinit" flex="1" default-cfgsect="ShowGame" default-cfgkey="PortScan"/>
-							<checkbox label="$ShowNotificationsForEmptyGames$" class="autoinit" flex="1" default-cfgsect="ShowGame" default-cfgkey="NotificationsShowEmpty"/>
-							<hbox id="cbridge-gameport">
-								<hbox flex="1">
-									<label value="$GamePort$" control="cbridge-gameport-textbox"/>
-									<vbox class="infotooltip" data-tooltip="$TooltipSGGamePort$">
-										<spacer flex="2"/>
-										<box class="modulectrl icon-info icon-16" height="16"></box>
-										<spacer flex="7"/>
-									</vbox>
-									<spacer flex="1"/>
-								</hbox>
-								<textbox id="cbridge-gameport-textbox" class="autoinit" flex="3" default-cfgsect="StartGame" default-cfgkey="GamePort"/>
-							</hbox>
+						<hbox class="modulewrapper">
+							<description flex="1" style="text-align: center"> <!-- for line wrapping -->
+								<!-- See the cide page for module entry draft -->
+							</description>
+						</hbox>
+					</vbox>
+					<vbox id="settings-page-cbridge-subpage" class="settings-page module-subpage" top="0" bottom="0">
+						<hbox class="module-subpage-header">
+							<caption class="module-subpage-caption" label="Modulename" />
+							<spacer flex="1"/>
+							<button class="module-subpage-button module-subpage-back" label="$Back$"/>
+						</hbox>
+						<vbox class="module-subpage-content" flex="1">
+							<vbox class="module-subpage-content-header">
+								
+							</vbox>
+							<vbox flex="1" class="module-subpage-frame-wrapper">
+								
+							</vbox>
 						</vbox>
 					</vbox>
 				</stack>

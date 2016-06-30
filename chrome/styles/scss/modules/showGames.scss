@@ -478,36 +478,4 @@ h2 {
 	transition: height 0.4s;
 }
 
-/* button */
-
-#ressavemode-btn {
-	display: none;
-
-	&.ressavemode {
-		display: block;
-		position: absolute;
-		top: 4px;
-		right: 4px;
-
-		width: 32px;
-		height: 32px;
-
-		background-color: $clr-empty;
-		z-index: 1;
-		
-		border-bottom: 2px solid $clr-border;
-		border-radius: 3px;
-		color: $ui-text-clr;
-		
-		background-color: $interact-red;
-		color: whitesmoke;
-		border-bottom: 3px solid $interact-red-dark;
-	}
-
-	&:hover {
-		background-color: $interact-red-dark;
-		text-shadow: 0 0 3px whitesmoke;
-	}
-}
-
 /*	need some space	*/

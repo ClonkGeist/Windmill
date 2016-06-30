@@ -76,8 +76,6 @@
 									<spacer id="cide-spacer" />
 									<hbox id="cide-toolbar" align="start"></hbox>
 									<spacer flex="1"/>
-									<hbox id="inner-navigation" align="start"></hbox>
-									<spacer />
 									<hbox>
 										<label value="" id="nav-playername" />
 										<box class="nav-image icon-players icon-32" height="32" width="32" id="showPlayerSelect"></box>

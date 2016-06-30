@@ -13,7 +13,7 @@ hook("load", function() {
 		let modules = getModuleDefs();
 		for(let mname in modules) {
 			let module = modules[mname];
-			if(!module.cidemodule || !module.matchinggroup)
+			if((!module.cidemodule || !module.matchinggroup) && !module.cbridgemodule)
 				continue;
 
 			//Create module overview
@@ -44,6 +44,8 @@ hook("load", function() {
 						if(getConfigData("Modules", module.name+"_State")) {
 							setConfigData("Modules", module.name+"_State", 0, true);
 							clone.removeClass("deactivated forced");
+							if(module.cbridgemodule)
+								getModuleByName("cbridge").contentWindow.attachModule(module);
 							return;
 						}
 
@@ -56,7 +58,7 @@ hook("load", function() {
 								let modules = getModulesByName(module.name);
 								for(let module of modules) {
 									if(forced_mode || module.contentWindow.parent.MODULE_NAME == "cide") {
-										getModuleByName("cide").contentWindow.detachModule(module);
+										getModuleByName("cide").contentWindow.detachModule(module, getModuleDef($(module).attr("name")));
 										$(module).remove();
 									}
 								}
@@ -120,8 +122,27 @@ hook("load", function() {
 								return;
 							}
 						}
-						else {
-							//TODO: Handling of other modules.
+						else if(module.cbridgemodule) {
+							function cleanUnusedModules() {
+								let modules = getModulesByName(module.name);
+								for(let module of modules) {
+									if(forced_mode || module.contentWindow.parent.MODULE_NAME == "cbridge") {
+										getModuleByName("cbridge").contentWindow.detachModule(module, getModuleDef($(module).attr("name")));
+										$(module).remove();
+									}
+								}
+								setConfigData("Modules", module.name+"_State", 1+forced_mode, true);
+								clone.addClass("deactivated"+(forced_mode?" forced":""));
+							}
+
+							//create confirmation dialog
+							dlg = new WDialog("$DlgConfirmModuleDeactivation$", MODULE_LPRE, { modal: true, css: { "width": "450px" },
+								btnright: [{preset: "accept", onclick: function(e, btn, _self) {
+									//remove iframes
+									cleanUnusedModules();
+								}}, "cancel"]});
+							dlg.setContent(Locale("<description>$DlgConfirmModuleDeactivationDesc"+(forced_mode?"Forced":"")+"$</description>"));
+							dlg.show();
 						}
 					});
 				}
@@ -227,7 +248,7 @@ hook("load", function() {
 								if(!frame)
 									return;
 								if(frame.contentWindow && frame.contentWindow.document.documentURI != "about:blank") {
-									function prepareDocumentCore(doc) {
+									function prepareDocumentCore(doc, window) {
 										let container;
 										if(fext == "html")
 											container = $(doc).find("body > *");
@@ -237,14 +258,14 @@ hook("load", function() {
 										}
 										//Localize and initialize configuration elements
 										localizeModule(container, true);
-										autoInitialize(doc, {tooltip: { lang: fext, window: this }});
+										autoInitialize(doc, {tooltip: { lang: fext, window }});
 									}
 									if(frame.docShell.busyFlags)
 										frame.contentWindow.document.addEventListener("DOMContentLoaded", function() {
-											prepareDocumentCore(this);
+											prepareDocumentCore(this, frame.contentWindow);
 										});
 									else
-										prepareDocumentCore(frame.contentWindow.document);
+										prepareDocumentCore(frame.contentWindow.document, frame.contentWindow);
 									return;
 								}
 								window.requestAnimationFrame(prepareDocument);
