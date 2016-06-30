@@ -368,3 +368,9 @@
 .icon-hamburger:before {
 	@include -hamburger();
 }
+.icon-hamburger-small:before {
+	@include -hamburger-small();
+}
+.icon-small-settings:before {
+	@include -small-settings();
+}
