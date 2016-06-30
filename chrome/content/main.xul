@@ -165,14 +165,8 @@ s0.42,6.38-0.29,7.92s-2.79,1.69-2.79,1.69l-0.08,2.77l0.02-6.2"/></svg>
 									<label value="$pickstyle$"/>
 									<spacer flex="1"/>
 								</hbox>
-								<hbox>
-									<spacer flex="1"/>
-									<vbox>
-										<spacer flex="1"/>
-										<image width="64" height="64" class="img-apclonkstyle" src="chrome://windmill/content/img/playerselection/ClonkSkin0.png" />
-										<spacer flex="1"/>
-									</vbox>
-									<spacer flex="1"/>
+								<hbox align="center" pack="center" flex="1">
+									<image width="64" height="64" class="img-apclonkstyle" src="chrome://windmill/content/img/playerselection/ClonkSkin0.png" />
 								</hbox>
 							</vbox>
 						</hbox>
