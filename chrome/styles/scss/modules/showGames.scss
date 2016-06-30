@@ -170,7 +170,6 @@ html, body, #wrapper {
 
 .alt-info {
 	display: none;
-	flex: 1;
 	
 	p {
 		text-align: center;
@@ -180,6 +179,9 @@ html, body, #wrapper {
 #reference-list-wrapper {
 	flex: 1;
 	overflow-y: auto;
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
 	
 	&.no-games-found .no-games-found {
 		display: initial;

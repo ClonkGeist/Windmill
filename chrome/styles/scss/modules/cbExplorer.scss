@@ -156,14 +156,13 @@ textbox.deactivated {
 }
 
 #hostsettings {
-	padding: 15px 20px;
 	width: 190px;
 	display: flex;
 	flex-direction: column;
 	flex-wrap: wrap-reverse;
 	justify-content: space-around;
 	background: white;
-	border-left: 2px solid gainsboro;
+	border-left: 1px solid $clr-border;
 	cursor: default;
 	-moz-user-select: none;
 }
