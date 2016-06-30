@@ -144,11 +144,14 @@ function showMasterServerGames(info) {
 		$("#game-info-motd").html(obj["Clonk Rage"][0].MOTD + " <a href='"+obj["Clonk Rage"][0].MOTDURL+"'>" +
 								  obj["Clonk Rage"][0].MOTDURL + " </a>");
 	}
-
-	if(!obj["Reference"]) {
+	
+	if(!obj || !obj["Reference"]) {
 		//Keine Spiele offen
+		$("#reference-list-wrapper").addClass("no-games-found");
 		return;
 	}
+	else
+		$("#reference-list-wrapper").removeClass("no-games-found");
 
 	obj["Reference"].items.sort(function(a, b) {
 		var state1 = getRefState(a), state2 = getRefState(b);
