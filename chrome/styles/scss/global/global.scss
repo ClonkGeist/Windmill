@@ -159,6 +159,7 @@ button:-moz-focusring > .button-box {
   border: 0px dotted ThreeDDarkShadow;
 }
 
+menulist:-moz-focusring > .menulist-label-box,
 checkbox:-moz-focusring > .checkbox-label-box {
   border: 1px solid transparent;
 }
