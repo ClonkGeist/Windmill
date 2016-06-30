@@ -118,7 +118,7 @@
 
 	<vbox id="wrapper" flex="1">
 		<hbox class="toolbar">
-			<box id="ce-popup-btn" class="icon-bars-ref-1-3 icon-16" height="16" width="16"></box>
+			<box id="ce-popup-btn" class="icon-hamburger icon-16" height="16" width="16"></box>
 			<spacer flex="1" />
 			<vbox class="toolbar-option" id="importWorkEnvironment">$WEToolbarImport$</vbox>
 			<vbox class="toolbar-option" id="newWorkEnvironment">$WEToolbarNew$</vbox>
