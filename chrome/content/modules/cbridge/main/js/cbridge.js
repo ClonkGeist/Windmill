@@ -56,18 +56,50 @@ function createNavigation() {
 
 		let clone = $(".modules-nav-entry.draft").clone();
 		clone.removeClass("draft");
+
+		//Load navigation icon (search for navigationicon.svg in rootdir of module by default)
+		let navicon = module.navigationicon || "navigationicon.svg";
+		if(navicon.split(".").length > 1) {
+			let fext = navicon.split(".").pop().toLowerCase();
+			let supported_formats = ["png", "jpg", "jpeg", "svg"];
+
+			//Check if the file format is supported
+			if(supported_formats.indexOf(fext) != -1) {
+				//Check if it exists
+				OS.File.exists(module.dir+"/"+navicon).then(function(exists) {
+					if(exists) {
+						let elm, path = "chrome://windmill/content/"+module.relpath+"/"+navicon;
+						elm = $("<image />");
+						elm.attr("src", path);
+						clone.find(".modules-nav-icon").html("").append(elm);
+					}
+					else if(navicon != "navigationicon.svg")
+						log(`CBridge Module Error (${module.name}): The specified navigation icon was not found.`, "error");
+				});
+			}
+			else
+				log(`CBridge Module Error (${module.name}): Navigation icon format is not supported. (Supported formats: ${supported_formats})`, "error");
+		}
+		//Set name of module
 		clone.attr("data-name", module.name)
 		clone.find(".modules-nav-label").attr("value", Locale(module.navigationlabel || module.modulename, module.languageprefix));
+
+		//Show module page if selected
 		clone.click(function() {
 			$(".modules-nav-entry.selected").removeClass("selected");
 			$(this).addClass("selected");
 			let index = deck.getModuleId(module.name);
+			//If the module does not exist, create it
 			if(index == -1)
 				index = deck.add(getModule(createModule(module.name, deck.element), true), 0, false, false, true);
 			togglePage(deck.id, index);
 		});
+
+		//If the module is not an addon, create it immediately
 		if(!module.isAddon && deck.getModuleId(module.name) == -1)
 			deck.add(getModule(createModule(module.name, deck.element), true), 0, false, false, true);
+
+		//Add the entry to the navigation
 		clone.appendTo($("#modules-nav"));
 		if(first && !module.isAddon) {
 			clone.click();
