@@ -125,112 +125,69 @@ s0.42,6.38-0.29,7.92s-2.79,1.69-2.79,1.69l-0.08,2.77l0.02-6.2"/></svg>
 					</box>
 					<vbox id="startup-loading" flex="1" top="0" bottom="0" class="startup-nohide">
 					</vbox>
-					<hbox id="startup-errorlog" flex="1" top="0" bottom="0" style="background-color: #333; display: none">
+					<hbox id="startup-errorlog" flex="1" top="0" bottom="0" style="background-color: rgb(35,40,45); display: none">
 						<vbox flex="1" style="margin: 50px; background: white; overflow-y: scroll;" class="log-listitem-content">
 						</vbox>
 					</hbox>
-					<vbox id="playerselect" class="sidebar invisible" flex="1">
-						<!-- Spielerauswahl -->
-						<vbox id="page-playerselection" class="plr-page" flex="1">
-							<hbox class="ps-h sidebar-header">
-								<caption>$Playerselect$</caption>
-								<spacer flex="1" />
-								<box class="icon-32 icon-add-player ps-h-icon" onclick="initNewPlayer();"></box>
-							</hbox>
-							<vbox flex="1">
-								<!-- Player selection list -->
-								<vbox id="ps-playerlist" flex="1">
-									<hbox class="ps-playerlistitem draft">
-										<vbox class="box-psbigicon">
-											<box>
-												<image width="64" height="64" class="img-psbigicon" align="center"
-													src="chrome://windmill/content/img/icon-hgopt-record.png" />
-											</box>
-										</vbox>
-										<vbox flex="1">
-											<hbox><label class="lbl-psplayername" value="" flex="1"/></hbox>
-											<spacer flex="1" />
-											<hbox class="ps-iconlist">					
-												<spacer flex="1" />
-												<box class="icon-24 icon-gear ps-edit-player"></box>
-												<box class="icon-24 icon-trashbin ps-remove-player"></box>
-											</hbox>
-										</vbox>
+					<windmilldialog id="dlg-createplayer">
+						<hbox>
+							<textbox flex="1" class="ap-plrname" placeholder="$enterplrname$" maxlength="64" data-default="$NewPlayerName$" />
+						</hbox>
+						<hbox>
+							<textbox flex="1" class="ap-plrcomment" placeholder="$enterplrcomment$" maxlength="255" multiline="true" data-default="$NewPlayerComment$"/>
+						</hbox>
+
+						<!-- color picker -->
+						<hbox>
+							<vbox flex="2">
+								<hbox class="dlg-aplabelwrapper">
+									<spacer flex="1"/>
+									<label value="$pickcolor$"/>
+									<spacer flex="1"/>
+								</hbox>
+								<hbox>
+									<vbox>
+										<spacer flex="1"/>
+										<html:canvas class="cnv-apbigicon" />
+										<spacer flex="1"/>
+									</vbox>
+									<spacer flex="1"/>
+									<hbox flex="1">
+										<spacer flex="1"/>
+										<vbox class="ap-clrpckr" height="100" width="80"></vbox>
+										<spacer flex="1"/>
 									</hbox>
-								</vbox>
-								<!-- Detaillierte Spielervorschau -->
-								<vbox class="ps-b" id="ps-playerdetails">
-									<hbox><caption id="ps-pdname"></caption></hbox>
-									<hbox><label value="$PDScore$"/><spacer flex="1"/><label id="ps-pdscore" value="" /></hbox>
-									<hbox><label value="$PDRounds$"/><spacer flex="1"/><label id="ps-pdrounds" value="" /></hbox>
-									<hbox><label value="$PDPlayingTime$"/><spacer flex="1"/><label id="ps-pdtime" value="" /></hbox>
-									 <!-- Comment überarbeiten: Sollte auch mehrzeilig angezeigt werden. Alternativ: Rausschmeißen-->
-									<hbox><label value="$PDComment$"/><spacer flex="1"/><label id="ps-pdcomment" value="" /></hbox>
-									
-									<hbox></hbox>
-									<hbox class="lastround"><caption id="ps-pdlastround">$PDLastRound$</caption></hbox>
-									<hbox class="lastround"><label value="$PD_LRTitle$"/><spacer flex="1"/><label id="ps-pdlr-title" value="" /></hbox>
-									<hbox class="lastround"><label value="$PD_LRDate$"/><spacer flex="1"/><label id="ps-pdlr-date" value="" /></hbox>
-									<hbox class="lastround"><label value="$PD_LRDuration$"/><spacer flex="1"/><label id="ps-pdlr-duration" value="" /></hbox>
-									<hbox class="lastround"><label value="$PD_LRScore$"/><spacer flex="1"/><label id="ps-pdlr-score" value="" /></hbox>
-								</vbox>
+								</hbox>
 							</vbox>
-						</vbox>
-						
-						<!-- Spieler erstellen -->
-						
-						<vbox id="page-addplayer" class="plr-page" flex="1">
-							<hbox class="ps-h sidebar-header">
-								<box class="icon-32 icon-backwards ps-h-icon" onclick="switchPlrPage('page-playerselection');"></box>
-								<caption id="ap-player-caption">$AddPlayer$</caption>
-								<spacer flex="1" />
-								<box class="icon-32 icon-checked ps-h-icon" onclick="addNewPlayer()"></box>
-							</hbox>
-							<vbox class="ps-b">
-								<hbox>
-									<textbox flex="1" id="ap-plrname" placeholder="$enterplrname$" maxlength="64" data-default="$NewPlayerName$" />
+							<vbox flex="1">
+								<hbox class="dlg-aplabelwrapper">
+									<spacer flex="1"/>
+									<label value="$pickstyle$"/>
+									<spacer flex="1"/>
 								</hbox>
 								<hbox>
-									<textbox flex="1" id="ap-plrcomment" placeholder="$enterplrcomment$" maxlength="255" multiline="true" data-default="$NewPlayerComment$"/>
-								</hbox>
-								
-								<!-- Farbwahl -->
-								<hbox align="center">
-									<box>
-										<html:canvas id="cnv-apbigicon" />
-									</box>
 									<spacer flex="1"/>
 									<vbox>
-										<label value="$pickcolor$"/>
-										<vbox id="ap-clrpckr" height="100" width="80"></vbox>
+										<spacer flex="1"/>
+										<image width="64" height="64" class="img-apclonkstyle" src="chrome://windmill/content/img/playerselection/ClonkSkin0.png" />
+										<spacer flex="1"/>
 									</vbox>
+									<spacer flex="1"/>
 								</hbox>
-							
-								<hbox>
-									<label value="$pickstyle$"/><spacer flex="1"/>
-									<box>
-										<image width="64" height="64" id="img-apclonkstyle" src="chrome://windmill/content/img/playerselection/ClonkSkin0.png" />
-									</box>
-								</hbox>
-								
-								<!--<hbox>
-									<label value="$pickcontrol$"/><spacer flex="1"/>
-									<label value="$ctrl_keyboard$" id="ap-setcontrol" />
-								</hbox>-->
 							</vbox>
-						</vbox>
-					</vbox>
-						
+						</hbox>
+					</windmilldialog>
+
 					<!-- Gitlog -->
 
 					<vbox id="gitlog" class="sidebar invisible" top="0" bottom="0" tabindex="-1">
-						<vbox id="page-gitlog" class="cds-page" flex="1">
-							<hbox class="ps-h cds-h sidebar-header">
+						<vbox id="page-gitlog" class="sidebar-page" flex="1">
+							<hbox class="sidebar-h sidebar-header">
 								<caption>Git Log</caption>
 								<spacer flex="1" />
 								<box class="icon-32 icon-clear-log ps-h-icon" onclick="clearLog('gitlog');"></box>
 							</hbox>
-							<vbox class="ps-b cds-b" flex="1">
+							<vbox class="sidebar-b" flex="1">
 								<vbox id="gitlog-entrylist" flex="1">
 									<hbox class="log-listitem draft">
 										<vbox class="log-listitem-type"></vbox>
@@ -244,15 +201,15 @@ s0.42,6.38-0.29,7.92s-2.79,1.69-2.79,1.69l-0.08,2.77l0.02-6.2"/></svg>
 					<!-- Log -->
 
 					<vbox id="developerlog" class="sidebar invisible" top="0" bottom="0" tabindex="-1">
-						<vbox id="page-log" class="cds-page" flex="1">
-							<hbox class="ps-h cds-h sidebar-header">
+						<vbox id="page-log" class="sidebar-page" flex="1">
+							<hbox class="sidebar-h sidebar-header">
 								<caption>Log</caption>
 								<spacer flex="1" />
-								<box class="icon-32 icon-eye ps-h-icon" onclick="toggleHiddenLogEntries();"></box>
-								<box class="icon-32 icon-limiter ps-h-icon" onclick="toggleLogLimitation(this);"></box>
-								<box class="icon-32 icon-trashbin ps-h-icon" onclick="clearLog('log');"></box>
+								<box class="icon-32 icon-eye sidebar-icon" onclick="toggleHiddenLogEntries();"></box>
+								<box class="icon-32 icon-limiter sidebar-icon" onclick="toggleLogLimitation(this);"></box>
+								<box class="icon-32 icon-trashbin sidebar-icon" onclick="clearLog('log');"></box>
 							</hbox>
-							<vbox class="ps-b cds-b" flex="1">
+							<vbox class="sidebar-b" flex="1">
 								<vbox id="log-entrylist" flex="1">
 									<hbox class="log-listitem draft">
 										<vbox class="log-listitem-type"></vbox>

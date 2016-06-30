@@ -27,6 +27,8 @@ window {
 	}
 }
 
+windmilldialog { display: none; }
+
 resizer {
 	-moz-appearance: none;
 	background-color: transparent;
@@ -316,22 +318,13 @@ toolbarbutton:focus  *{
 	}
 }
 
-.plr-page {
-	display: none;
+.dlg-aplabelwrapper {
+	font-size: 1.2em;
+	padding: 2px 4px;
+	color: $ui-text-clr;
 }
 
-caption {
-	font-size: 16pt;
-	font-weight: bold;
-}
-
-#pd-lastround {
-	font-size: 14pt;
-}
-
-#ps-playerlist {
-	overflow: auto;
-}
+/* sidebar */
 
 .sidebar {
 	background-color: rgb(245, 245, 245);
@@ -350,80 +343,7 @@ caption {
 	border-left-width: 0px;
 }
 
-#ps-playerdetails {
-	display: none;
-}
-
-.ps-playerlistitem,
-.cds-listitem {
-	height: 50px;
-	padding: 10px;
-	cursor: default;
-	transition: border-color 0.3s;
-	border-left: 3px solid transparent;
-}
-
-.ps-playerlistitem:hover,
-.cds-listitem:hover {
-	border-left-color: grey;
-}
-
-.ps-playerlistitem.selected  {
-	border-left-color: $interact-red;
-}
-
-.cds-listitem.selected {
-	border-left-color: #0A4163;
-}
-
-.cds-lbl-directory { font-size: 10pt; }
-
-.lastround {
-	display: none !important;
-}
-
-#ps-pdname {
-	margin-left: 0;
-	font-weight: normal;
-}
-
-.img-psbutton {
-	cursor: pointer;
-	color: white;
-	padding: 0;
-	background-position: center;
-	background-repeat: no-repeat;
-}
-
-.img-psbigicon {
-	/*background-color: rgb(55, 85, 205);*/
-}
-
-.ps-iconlist {
-	color: rgb(180, 180, 180);
-}
-
-.ps-iconlist .icon-24:hover {
-	color: grey;
-}
-
-.lbl-psplayername {
-	text-align: right;
-}
-
-.ps-lblbutton {
-	background-color: rgb(95, 135, 255);
-	text-align: center;
-	cursor: pointer;
-	padding: 2px 5px;
-	margin: 2px 5px;
-	display: none;
-}
-.plrpage-selected {
-	display: -moz-box;
-}
-
-.ps-h {
+.sidebar-h {
 	background: $interact-red;
 	color: white;
 	margin: 0;
@@ -431,47 +351,27 @@ caption {
 	padding: 0.3em;
 	padding-top: 0.2em;
 	margin-bottom: 1em;
-}
-
-.cds-h {
 	background: #0A4163;
-}
 
-.ps-h caption{
-	font-weight: normal;
-	font-size: 14pt;
-	line-height: 20pt;
-}
+	caption {
+		font-weight: normal;
+		font-size: 14pt;
+		line-height: 20pt;
+	}
+	image {
+		vertical-align: baseline;
+		cursor: pointer;
+	}
+} 
 
-.ps-h image{
-	vertical-align: baseline;
-	cursor: pointer;
-}
-
-.ps-h-icon {
+.sidebar-h-icon {
 	&:hover,&.active{
 		background-color: #C13A2B;
 	}
 }
 
-.ps-b {
+.sidebar-b {
 	padding: 0.5em;
-}
-
-.plr-page textbox,
-.plr-page textbox  * {
-	-moz-appearance: none;
-	background-color: inherit;
-	color: rgb(60, 60, 60);
-}
-
-#ap-plrname {
-	border: none;
-	border-bottom: 1px solid grey;
-}
-
-#ap-plrcomment {
-	border: 1px solid rgba(0, 0, 0, 0.2);
 }
 
 /*-- notification panel --*/
@@ -573,7 +473,7 @@ caption {
 #developerlog, #gitlog {
 	-moz-user-focus: normal;
 }
-#developerlog .ps-h, #gitlog .ps-h {background-color: $chrome-clr;}
+#developerlog .sidebar-h, #gitlog .sidebar-h {background-color: $chrome-clr;}
 /*#gitlog .ps-h {background-color: rgb(241, 72, 33);}*/
 
 #log-entrylist { overflow-y: scroll; }
