@@ -144,6 +144,23 @@ caption {
 	display: none;
 }
 
+/* main nav dropdown menu */
+
+.ctx-mainnavigation {
+	border: 1px solid $chrome-clr-sub;
+	.ctx-wrapper {
+		background: $chrome-clr;
+		color: white;
+	}
+	
+	.ctx-menuitem {
+		&:hover, &.selected  {
+			background-color: $chrome-ui-active;
+		}
+	}
+}
+
+
 /* main mode */
 
 .mm-buttons {
@@ -283,14 +300,14 @@ toolbarbutton:focus  *{
 	.ctx-menuitem {
 		font-size: 1em;
 		line-height: 2.4em;
-		height: 32px;
+		height: 32px !important;
 		padding: 0.1em 0.3em;
 		cursor: default;
 		
 		transition: background-color 0.3s;
-		
-		.ctx-menuicon {
-			color: black !important;
+
+		.ctx-submenuindicator:before {
+			color: $ui-light-clr;
 		}
 	}
 }

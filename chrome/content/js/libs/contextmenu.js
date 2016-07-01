@@ -47,7 +47,7 @@ class _ContextMenuEntry {
 		this.visible = true;
 	}
 
-	addEntryToObject(obj, target) {
+	addEntryToObject(obj, target, inheritable_classes) {
 		if(this.topMenu.getOption("fnCheckVisibility")) {
 			var state = this.topMenu.getOption("fnCheckVisibility")(target, this.options.identifier);
 			if(!state) {
@@ -83,16 +83,54 @@ class _ContextMenuEntry {
 			}
 			
 			if(MODULE_LANG == "xul")
-				icon = `<vbox class="ctx-menuicon" width="${size}">${icstr}</vbox>`;
+				icon = `<hbox class="ctx-menuicon" width="${size}">${icstr}</hbox>`;
 			else
 				icon = `<div class="ctx-menuicon" style="width: ${size}px">${icstr}</div>`;
+		}
+		let other = "";
+		//Check for further menu item information
+		//(If only one item of the containing menu uses a specific option, all menuitems need to reserve space for it)
+		if(this.topMenu.hasKeyBindings) {
+			let keybinding = this.options.keybinding || "", keybind, kbid, keys;
+
+			if(typeof keybinding == "object") {
+				if(keybinding instanceof _KeyBinding) {
+					kbid = keybinding.getIdentifier();
+					keybind = keybinding;
+				}
+				else if(keybinding.id)
+					kbid = keybinding.lpre+"_"+keybinding.id;
+				else if(keybinding.label)
+					keys = keybinding.label;
+			}
+			else
+				kbid = this.options.langpre + "_" + keybinding;
+
+			if(!keybind)
+				keybind = getKeyBindingObjById(kbid);
+			if(!keys)
+				keys = _keybinderGetKeysByIdentifier(kbid);
+			if(!keys)
+				keys = keybind.defaultKeys;
+
+			if(MODULE_LANG == "xul")
+				other += `<vbox class="ctx-keybinding" width="90">${localizeKeyString(keys)}</vbox>`;
+			else
+				other += `<div class="ctx-keybinding">${localizeKeyString(keys)}</div>`;
+		}
+		if(this.topMenu.hasSubMenus) {
+			let indicatorclasses = this.subMenu?" icon-16 icon-arrow-right":"";
+			if(MODULE_LANG == "xul")
+				other += `<vbox class="ctx-submenuindicator${indicatorclasses}"></vbox>`;
+			else
+				other += `<div class="ctx-submenuindicator${indicatorclasses}"></div>`;
 		}
 
 		//Element erstellen
 		if(MODULE_LANG == "xul")
-			this.element = $(`<hbox class="ctx-menuitem" id="context-${this.id}">${icon}<vbox>${this.label}</vbox></hbox>`)[0];
+			this.element = $(`<hbox class="ctx-menuitem" id="context-${this.id}"><hbox class="ctx-prepend"></hbox>${icon}<vbox class="ctx-label">${this.label}</vbox><spacer flex="1"/>${other}</hbox>`)[0];
 		else
-			this.element = $(`<div class="ctx-menuitem" id="context-${this.id}">${icon}${this.label}</div>`)[0];
+			this.element = $(`<div class="ctx-menuitem" id="context-${this.id}"><div class="ctx-prepend"></div>${icon}${this.label}<div class="ctx-other">${other}</div></div>`)[0];
 
 		$(this.element).appendTo($(obj));
 		
@@ -205,18 +243,20 @@ class _ContextMenuEntry {
 			}
 			if(this.subMenu) {
 				$(this.element).hover((e) => {
-					if($(e.target).hasClass("ctx-locked"))
+					if($(this.element).hasClass("ctx-locked"))
 						return;
 					if(jQuery.contains(document, this.subMenu.element))
 						return;
 
 					//Untermenue öffnen
-					$(e.target).addClass("selected");
+					$(this.element).addClass("selected");
 
+					let nx = window.screenX+$(this.element).offset().left+$(this.element).outerWidth();
+					let ny = window.screenY+$(this.element).offset().top;
 					if(MODULE_LANG == "xul")
-						this.subMenu.showMenu(0, 0, target, window.screenX+$(e.target).offset().left+$(e.target).outerWidth(), window.screenY+$(e.target).offset().top, e.target, this);
+						this.subMenu.showMenu(0, 0, target, nx, ny, this.element, this, inheritable_classes);
 					else
-						this.subMenu.showMenu($(e.target).offset().left+$(e.target).outerWidth(), $(e.target).offset().top, target, 0, 0, e.target, this);
+						this.subMenu.showMenu($(this.element).offset().left+$(this.element).outerWidth(), $(this.element).offset().top, target, 0, 0, this.element, this, inheritable_classes);
 				}, function() {});
 			}
 		}
@@ -341,7 +381,13 @@ class _ContextMenu {
 			return true;
 		});
 	}
-	showMenu(x, y, obj_by, screenX, screenY, menuitem, menuitemobj, classes) { // Kontextmenü anzeigen
+	showMenu(x, y, obj_by, screenX, screenY, menuitem, menuitemobj, inheritable_classes) { // Kontextmenü anzeigen
+		let classes = " ";
+		if(this.options.classes)
+			classes += this.options.classes + " ";
+		if(inheritable_classes)
+			classes += inheritable_classes;
+
 		this.opened_by = obj_by;
 		if(!this.submenu)
 			if($(".contextmenu").prop("contextmenu_obj"))
@@ -354,7 +400,7 @@ class _ContextMenu {
 			this.topMenu = menuitemobj.topMenu;
 
 		if(MODULE_LANG == "xul") {
-			this.element = $('<panel class="contextmenu'+(classes?" "+classes:"")+'" noautofocus="true"></panel>')[0];
+			this.element = $('<panel class="contextmenu'+classes+'" noautofocus="true"></panel>')[0];
 			$(this.element).appendTo($(document.documentElement));
 			this.element.openPopup();
 
@@ -368,7 +414,7 @@ class _ContextMenu {
 						$(this.body).append('<hbox class="ctx-menuseperator"></hbox>');
 				}
 				else if(this.entries[entry])
-					this.entries[entry].addEntryToObject(this.body, obj_by);
+					this.entries[entry].addEntryToObject(this.body, obj_by, inheritable_classes);
 				if(this.entries[entry].seperator || this.entries[entry].visible)
 					last_element_seperator = this.entries[entry].seperator;
 			}
@@ -397,7 +443,7 @@ class _ContextMenu {
 				this.element.moveTo(x, y+$(this.element).outerHeight());
 		}
 		else {
-			this.element = $('<div class="contextmenu'+(classes?" "+classes:"")+'" tabindex="-1"></div>')[0];
+			this.element = $('<div class="contextmenu'+classes+'" tabindex="-1"></div>')[0];
 			$(this.element).appendTo($("body"));
 			$(this.element).css("left", x+"px").css("top", y+"px");
 			$(this.element).css("position", "absolute");
@@ -409,7 +455,7 @@ class _ContextMenu {
 						$(this.element).append('<hr class="ctx-menuseperator"></hr>');
 				}
 				else if(this.entries[entry])
-					this.entries[entry].addEntryToObject(this.element, obj_by);
+					this.entries[entry].addEntryToObject(this.element, obj_by, inheritable_classes);
 				if(this.entries[entry].seperator || this.entries[entry].visible)
 					last_element_seperator = this.entries[entry].seperator;
 			}
@@ -469,6 +515,30 @@ class _ContextMenu {
 		if(!this.element)
 			return;
 		return this._topMenu;
+	}
+
+	/*-- For reserving space in the menuitems --*/
+	get hasKeyBindings() {
+		for(let entry of this.entries) {
+			if(typeof entry != "object")
+				continue;
+			if(!entry.visible)
+				continue;
+			if(entry.options.keybinding)
+				return true;
+		}
+		return false;
+	}
+	get hasSubMenus() {
+		for(let entry of this.entries) {
+			if(typeof entry != "object")
+				continue;
+			if(!entry.visible)
+				continue;
+			if(entry.subMenu)
+				return true;
+		}
+		return false;
 	}
 }
 

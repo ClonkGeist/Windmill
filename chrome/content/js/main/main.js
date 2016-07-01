@@ -1,4 +1,4 @@
-var mainDeck;
+var mainDeck, startupReady;
 var modmanager,modmanagerID,cide,cideID,cbridge,cbridgeID,settings,settingsID;
 
 window.onerror = function(msg, url, line, col, e) {
@@ -108,6 +108,7 @@ hook("load", function() {
 	}).then(function(result) {
 		if(result == -2)
 			return;
+		startupReady = true;
 		localizeModule();
 
 		$("#startup-loading").text("Creating and Initializing Modules");
@@ -306,7 +307,7 @@ hook("load", function() {
 				return 2;
 			return 0;
 		}, allowIcons: true });
-		dropdownMenu.bindToObj($("#showOptions"), {dropdown: true});
+		dropdownMenu.bindToObj($("#showOptions"), {dropdown: true, classes: "ctx-mainnavigation"});
 		//Log
 		$("#showLog").click(function() {
 			toggleSidebar("developerlog");

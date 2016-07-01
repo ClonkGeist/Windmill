@@ -254,9 +254,9 @@ function initPlayerselection() {
 					$(this).attr("src", "chrome://windmill/content/img/playerselection/ClonkSkin"+id+".png").attr("data-skinid", id);
 				});
 			});
-		}, 0, {uicon: "icon-add-player"});
-	}, [], MODULE_LPRE, { allowIcons: true, iconsize: 32 });
-	playersel.bindToObj($("#showPlayerSelect"), {dropdown: true, classes: "ctx-playerselect"});
+		}, 0, {uicon: "icon-add-player", classes: "ctx-playerselect"});
+	}, [], MODULE_LPRE, {allowIcons: true, iconsize: 32, classes: "ctx-playerselect"});
+	playersel.bindToObj($("#showPlayerSelect"), {dropdown: true, classes: "ctx-mainnavigation"});
 }
 
 function addPlayerlistItem(id, filename, imgstr) {

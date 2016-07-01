@@ -26,6 +26,21 @@ function Locale(str, prefix, ...pars) {
 	return str;
 }
 
+//For keybindings
+function localizeKeyString(keys) {
+	if(!keys)
+		return "";
+
+	let core = keys.replace(/-?(Ctrl|Shift|Alt)-?/g, "");
+	let modifier = (keys.replace(/-.+$/, "")+"-").replace(/(Ctrl|Alt|Shift)-/g, "$KEYCODE_$1$-");
+	if(Locale("$KEYCODE_"+core+"$", -1)[0] != "$")
+		core = Locale("$KEYCODE_"+core+"$", -1);
+	//Search for position of "-"; if < 1 then there is no modifier active. (Because "-" is a valid keybinding..)
+	if(keys.search(/-/) < 1)
+		modifier = "";
+	return Locale(modifier+core, -1);
+}
+
 function localizeModule(container) {
 	let rgx = /\$(::)?[a-zA-Z0-9_]+?\$/g;
 	

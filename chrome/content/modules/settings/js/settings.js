@@ -346,15 +346,7 @@ hook("load", function() {
 			clone.attr("keyname", key);
 			clone.attr("lprefix", prefix);
 			clone.find(".pkb-list-entry-desc").text(Locale("$KEYB_"+key_corename+"$", prefix));
-			var lkeyw = Locale("$KEYCODE_"+val.replace(/-?(Ctrl|Shift|Alt)-?/g, "")+"$", -1);
-			if(lkeyw[0] != "$") {
-				if(val.search(/(Ctrl|Shift|Alt)/) != -1)
-					clone.find(".pkb-list-entry-keys").text(val.replace(/-([^-]*-?)$/, "")+"-"+lkeyw);
-				else
-					clone.find(".pkb-list-entry-keys").text(lkeyw);
-			}
-			else
-				clone.find(".pkb-list-entry-keys").text(val);
+			clone.find(".pkb-list-entry-keys").text(localizeKeyString(val));
 			clone.appendTo($("#pkb-keybindings-list"));
 
 			//Neue Taste zuweisen
@@ -379,7 +371,7 @@ hook("load", function() {
 					keystr += getKeyCodeIdentifier(e.keyCode);
 
 					let applyKeyBinding = (key, val) => {
-						$(this).find(".pkb-list-entry-keys").text(val);
+						$(this).find(".pkb-list-entry-keys").text(localizeKeyString(val));
 						_mainwindow.customKeyBindings[key] = val;
 						keybinding_changes = true;
 					}

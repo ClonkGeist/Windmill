@@ -22,8 +22,11 @@ function log(str, hidden, type) {
 	let clone = _mainwindow.$("#developerlog .log-listitem.draft").clone();
 	clone.removeClass("draft");
 	clone.appendTo(_mainwindow.$("#log-entrylist"));
-	let errorbox = _mainwindow.$("#startup-errorlog > vbox");
-	errorbox.text(errorbox.text() + str+"\n");
+	
+	if(!_mainwindow.startupReady) {
+		let errorbox = _mainwindow.$("#startup-errorlog > vbox");
+		errorbox.text(errorbox.text() + str+"\n");
+	}
 
 	//Ggf. nur loggen wenn mans wirklich will.
 	if(type == -1 && !getConfigData("Global", "ShowHiddenLogs"))

@@ -30,7 +30,7 @@
 }
 .ctx-menuitem {
 	&.ctx-checklistitem, &.ctx-radioitem {
-		&:before {
+		.ctx-prepend:before {
 			@include -checked();
 			color: transparent;
 			letter-spacing: 0;
@@ -42,9 +42,30 @@
 			cursor: default;
 		}
 
-		&.ctx-menutype-selected:before {
+		&.ctx-menutype-selected .ctx-prepend:before {
 			color: $interact-blue;
 		}
+	}
+	.ctx-submenuindicator:before {
+		width: 16px;
+		height: 16px;
+		color: $ui-text-clr;
+	}
+	.ctx-submenuindicator:not(.icon-arrow-right):before {
+		display: block;
+		content: " ";
+	}
+	.ctx-keybinding {
+		display: block;
+		max-width: 90px;
+		color: $ui-light-clr;
+		overflow: hidden;
+		text-align: right;
+	}
+	
+	/*-- HTML only --*/
+	.ctx-other {
+		float: right;
 	}
 }
 
