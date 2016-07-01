@@ -80,6 +80,22 @@ $hover-blue-bg: rgba(0, 165, 207, 0.15);
 		$clr $spacing+$thickness);
 }
 
+@mixin std-button() {
+	-moz-appearance: none;
+	background-color: $clr-base;
+	background: -moz-linear-gradient(top, $clr-paper 0%, $clr-empty 100%);
+	border: 1px solid $clr-border;
+	color: $ui-text-clr;
+	
+	&:hover {
+		border: 1px solid $clr-border-grey;
+	}
+	
+	&:active {
+		background: -moz-linear-gradient(top, $clr-empty 0%, $clr-border 100%);
+	}
+}
+
 a {
 	color: #36F;
 }
@@ -155,6 +171,7 @@ xul|checkbox:-moz-focusring > xul|*.checkbox-label-box {
   outline: 0;
 }*/
 
+/* xul */
 button:-moz-focusring > .button-box {
   border: 0px dotted ThreeDDarkShadow;
 }
@@ -163,6 +180,13 @@ menulist:-moz-focusring > .menulist-label-box,
 checkbox:-moz-focusring > .checkbox-label-box {
   border: 1px solid transparent;
 }
+
+/* for html */
+button::-moz-focus-inner {
+  border: 0;
+}
+
+
 
 $bg-dark: #636363;
 

@@ -75,6 +75,7 @@ window.addEventListener("load", function(){
 
 function pauseMSRefresh() {
 	clearInterval(refreshID);
+	$("#refresh-toggle").removeClass("enabled");
 }
 
 function startMSRefresh() {
@@ -82,6 +83,7 @@ function startMSRefresh() {
 		$("#reference-list").addClass("refresh");
 		getMasterServerInformation(showMasterServerGames);
 	}, 20000);
+	$("#refresh-toggle").addClass("enabled");
 }
 
 function getRefClients(reference) {
@@ -147,11 +149,12 @@ function showMasterServerGames(info) {
 	
 	if(!obj || !obj["Reference"]) {
 		//Keine Spiele offen
-		$("#reference-list-wrapper").addClass("no-games-found");
+		$("#reference-list-wrapper").find(".shown").removeClass("shown");
+		$("#reference-list-wrapper").find(".no-games-found").addClass("shown");
 		return;
 	}
 	else
-		$("#reference-list-wrapper").removeClass("no-games-found");
+		$("#reference-list-wrapper").find(".shown").removeClass("shown");
 
 	obj["Reference"].items.sort(function(a, b) {
 		var state1 = getRefState(a), state2 = getRefState(b);
@@ -526,8 +529,6 @@ hook("load", function() {
 			pauseMSRefresh();
 		else
 			startMSRefresh();
-
-		$(this).toggleClass("enabled");
 	});
 
 	$("#ref-layout-list").click(function() {
@@ -646,8 +647,7 @@ function getMasterServerInformation(call) {
 		url: ms_url,
 		type: "GET",
 		timeout: 5000,
-		success: function(response) { 
-			$("#information-bar").removeClass("visible");
+		success: function(response) {
 			$("#wrapper").removeClass("ajax-request-failed");
 			mservcache = response;
 			mservtime = (new Date()).getTime();
@@ -657,11 +657,14 @@ function getMasterServerInformation(call) {
 			$(".reference:not(.reference-draft").remove();
 			$("#wrapper").addClass("ajax-request-failed");
 			log(`An error has occured while trying to load the masterserver data. (${textStatus}: ${errorThrown})`);
-			$("#information-bar").addClass("visible");
-			if(textStatus === "timeout") {  
-				$("#information-bar").text(Locale("$MSRequestTimeout$"));
+			if(textStatus === "timeout") {
+				$("#reference-list-wrapper").find(".shown").removeClass("shown");
+				$("#reference-list-wrapper").find(".request-timeout").addClass("shown").
+					find(".desc").text(sprintf(Locale("$requestTimeout$"), ms_url));
 			} else {
-				$("#information-bar").text(Locale("$MSUnknownError$"));
+				$("#reference-list-wrapper").find(".shown").removeClass("shown");
+				$("#reference-list-wrapper").find(".unknown-error").addClass("shown").
+					find(".desc").text(sprintf(Locale("$unknownErrorOccuredDesc$"), ms_url));
 			}
 		}
 	});
