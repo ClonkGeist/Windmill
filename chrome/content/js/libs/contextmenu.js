@@ -132,7 +132,14 @@ class _ContextMenuEntry {
 		else
 			this.element = $(`<div class="ctx-menuitem" id="context-${this.id}"><div class="ctx-prepend"></div>${icon}${this.label}<div class="ctx-other">${other}</div></div>`)[0];
 
+		if(this.options.classes)
+			$(this.element).addClass(this.options.classes);
+
+		if(this.options.onPreAppend)
+			this.options.onPreAppend.call(this, this.element);
+
 		$(this.element).appendTo($(obj));
+		$(this.element).prop("ctx-menuitem-obj", this);
 		
 		//Ist Container bzw. hat Untermenue
 		if(this.subMenu)
@@ -210,7 +217,7 @@ class _ContextMenuEntry {
 
 							case "checklistitem":
 								this.options.isSelected = !this.options.isSelected;
-								$(this.element)[this.options.isSelected?"removeClass":"addClass"]("ctx-menutype-selected");
+								$(this.element)[this.options.isSelected?"addClass":"removeClass"]("ctx-menutype-selected");
 								$(this.element).trigger("change command");
 								preventMenuFromClosing = true;
 								break;
@@ -222,7 +229,7 @@ class _ContextMenuEntry {
 						let _this = this;
 						Task.spawn(function*() {
 							_this.lock();
-							yield* _this.clickHandler(target, e.target, _this);
+							yield* _this.clickHandler(target, e, _this);
 						}).then(function() {
 							_this.unlock();
 							if($(".contextmenu").prop("contextmenu_obj") && !preventMenuFromClosing)
@@ -235,7 +242,7 @@ class _ContextMenuEntry {
 						});	
 					}
 					else {
-						this.clickHandler(target, e.target, this);
+						this.clickHandler(target, e, this);
 						if($(".contextmenu").prop("contextmenu_obj") && !preventMenuFromClosing)
 							$(".contextmenu").prop("contextmenu_obj").hideMenu(this.options.noFocusReset);
 					}
@@ -250,11 +257,8 @@ class _ContextMenuEntry {
 
 					//Untermenue öffnen
 					$(this.element).addClass("selected");
-
-					let nx = window.screenX+$(this.element).offset().left+$(this.element).outerWidth();
-					let ny = window.screenY+$(this.element).offset().top;
 					if(MODULE_LANG == "xul")
-						this.subMenu.showMenu(0, 0, target, nx, ny, this.element, this, inheritable_classes);
+						this.subMenu.showMenu(0, 0, target, window.screenX+$(this.element).offset().left+$(this.element).outerWidth(), window.screenY+$(this.element).offset().top, this.element, this, inheritable_classes);
 					else
 						this.subMenu.showMenu($(this.element).offset().left+$(this.element).outerWidth(), $(this.element).offset().top, target, 0, 0, this.element, this, inheritable_classes);
 				}, function() {});

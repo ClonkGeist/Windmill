@@ -119,8 +119,35 @@ hook("startLoadingRoutine", function() {
 	refreshPlayerInfo();
 });
 
+function showOtherPlayers(participants) {
+	$("#nav-otherplayers").empty();
+
+	//Show other players using a tooltip
+	if(participants.split(";").length > 1) {
+		//Create new label (for tooltip binding)
+		let label = $('<label value="…" />');
+		let plrlist = "";
+		//Generate player list
+		for(let fname of participants.split(";")) {
+			if(plrlist.length > 0)
+				plrlist += ", ";
+			plrlist += getPlayerName(fname);
+		}
+
+		tooltip(label[0], plrlist);
+		$("#nav-otherplayers").append(label);
+	}
+}
+
 function getCurrentlySelectedPlayer() {
 	return players[$(".ps-playerlistitem.selected").attr("data-playerid")];
+}
+
+function getPlayerName(filename) {
+	if(!players[filename] || !players[players[filename].index])
+		return "";
+	let Player = players[players[filename].index].Player || {};
+	return Player.Name || Locale("$NewPlayerName$");
 }
 
 registerInheritableObject("getCurrentlySelectedPlayer");
@@ -148,15 +175,37 @@ function initPlayerselection() {
 			let name = player.Name || Locale("$NewPlayerName$");
 			if(!players[filename])
 				continue;
-			this.addEntry(name, 0, function(target, menuitemelm, menuitem) {
+			this.addEntry(name, 0, function(target, event, menuitem) {
+				let participants = filename;
+				//Multiselect on Ctrl
+				if(event.ctrlKey) {
+					participants = "";
+					$(menuitem.element).parent().find(".ctx-playeritem.ctx-menutype-selected").each(function() {
+						if(participants.length)
+							participants += ";";
+						participants += $(this).attr("data-filename");
+					});
+				}
+				else {
+					//Simulate radio functionality (because if the ctrl key is pressed, switch to checklist functionality)
+					$(menuitem.element).parent().find(".ctx-playeritem").each(function() {
+						$(this).prop("ctx-menuitem-obj").options.isSelected = false;
+						$(this).removeClass("ctx-menutype-selected");
+					});
+					menuitem.options.isSelected = true;
+					$(menuitem.element).addClass("ctx-menutype-selected");
+				}
 				//Speichern
 				if(menuitem.options.isSelected) {
 					wrk.open(wrk.ROOT_KEY_CURRENT_USER, "Software\\OpenClonk Project\\OpenClonk\\General", wrk.ACCESS_WRITE);
-					wrk.writeStringValue("Participants", filename);
+					wrk.writeStringValue("Participants", participants);
 					wrk.close();
 				}
 
-				$("#nav-playername").attr("value", name);
+				$("#nav-playername").attr("value", getPlayerName(participants.split(";").shift()));
+				//Show other players
+				showOtherPlayers(participants);
+
 				execHook("playerselection", plr);
 			}, new ContextMenu(0, [ // Submenu
 				//Edit player
@@ -181,11 +230,14 @@ function initPlayerselection() {
 					dlg.show();
 				}, 0, { uicon: "icon-trashbin" }]
 			], MODULE_LPRE, {allowIcons: true}), {
-				type: "radioitem", 
-				isSelected: (selected_plr == filename),
-				radiogroup: "playeritem",
+				type: "checklistitem", 
+				isSelected: (selected_plr.split(";").indexOf(filename) != -1),
+				classes: "ctx-playeritem",
 				tooltip: Locale("$PlayerInfo$", -1, player.Score||0, player.Rounds||0, player.RoundsWon||0, player.RoundsLost||0),
-				iconsrc: players[filename].imgstr
+				iconsrc: players[filename].imgstr,
+				onPreAppend: function(elm) {
+					$(elm).attr("data-filename", filename);
+				}
 			});
 		}
 		this.addSeperator();
@@ -261,14 +313,16 @@ function initPlayerselection() {
 
 function addPlayerlistItem(id, filename, imgstr) {
 	players[id][0] = filename;
+
+	//Show player list after startup
 	let wrk = _sc.wregkey();
 	wrk.open(wrk.ROOT_KEY_CURRENT_USER, "Software\\OpenClonk Project\\OpenClonk\\General", wrk.ACCESS_READ);
-	if(wrk.readStringValue("Participants") == filename) {
-		let player = players[id].Player || {};
-		let name = player.Name || Locale("$NewPlayerName$");
-		$("#nav-playername").attr("value", name);
-	}
+	let participants = wrk.readStringValue("Participants");
 	wrk.close();
+
+	$("#nav-playername").attr("value", getPlayerName(participants.split(";").shift()));
+	//Show other players
+	showOtherPlayers(participants);
 
 	return;
 }

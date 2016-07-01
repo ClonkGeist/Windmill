@@ -78,6 +78,7 @@
 									<spacer flex="1"/>
 									<hbox>
 										<label value="" id="nav-playername" />
+										<vbox id="nav-otherplayers"></vbox>
 										<box class="nav-image icon-players icon-32" height="32" width="32" id="showPlayerSelect"></box>
 										<spacer />
 									</hbox>

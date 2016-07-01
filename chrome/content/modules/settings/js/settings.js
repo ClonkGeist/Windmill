@@ -21,12 +21,12 @@ hook("load", function() {
 				let target = module.cidemodule?"#settings-page-cide":"#settings-page-cbridge";
 				let clone = $(".moduleentry.draft").clone();
 				clone.removeClass("draft");
-				
+
 				//Title and description
 				clone.find(".moduletitle").text(Locale(module.modulename, module.languageprefix));
 				tooltip(clone.find(".icon-info")[0], module.description, "xul", 150, { target: clone.find(".moduleinfo")[0], lpre: module.languageprefix, css: {"max-width": "260px", "width": "260px"} });
 				tooltip(clone.find(".icon-warning")[0], "$ForcedModuleDeactivation$", "xul", 150);
-				
+
 				let gradient = "linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 48%, rgba(255, 255, 255, 0.8) 90%),";
 				if(!module.settings.previewimage)
 					clone.find(".modulebackground").css("background-image", gradient+"url(chrome://windmill/content/"+formatPath(module.relpath)+"/previewimage.png)");
