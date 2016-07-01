@@ -610,29 +610,6 @@ hook("load", function() {
 	setInterval(updateTimeDisplay, 1000);
 });
 
-var asdid = 0;
-
-function showObj(obj, indent, notRecursive) {
-	var text = "";
-	if(!indent)
-		indent = "";
-	for(var data in obj) {
-		if(data == "top" || data == "plainstr")
-			continue;
-
-		if(typeof obj[data] == "function")
-			continue;
-
-		text += indent + data + ": " + obj[data] + "\n";
-		if(typeof obj[data] == "object" && !notRecursive) {
-			asdid++;
-			text += showObj(obj[data], indent + "  ");
-		}
-	}
-
-	return text;
-}
-
 var mservcache, mservtime, deactivateRequests;
 
 function getMasterServerInformation(call) {
