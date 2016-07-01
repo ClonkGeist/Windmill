@@ -111,26 +111,22 @@ button:focus * {
 	font-size: 0.8em;
 }
 
-#settings-deck button,
+#settings-deck button {
+	@include std-button();
+}
+
 listbox {
 	-moz-appearance: none;
 	border: 1px solid $clr-border;
 	transition: border 0.3s;
+	
+	&:focus {
+		border: 1px solid #54B7FF;
+	}
 }
 
 #settings-deck button > * {
 	background-color: inherit;
-}
-
-#settings-deck button {
-	background-color: rgb(250, 250, 250);
-}
-
-#settings-deck button:hover ,
-#settings-deck button:focus,
-#listbox:focus
-{
-	border: 1px solid #54B7FF;
 }
 
 /*-- Restartbar --*/
