@@ -28,9 +28,7 @@ function tooltip(targetEl, desc, lang = MODULE_LANG, duration, options = {}) {
 			$(el).text(desc);
 
 			let {width, height, top, left} = target.getBoundingClientRect();
-			// something is positioning all tooltips 5px too far to the bottom right (though its position absolute in html or relies on screen coordinates in xul)
-			top -= 5;
-			left -= 5;
+
 			// panels need to be opened, so the size values are set
 			if(lang != "html")
 				el.openPopup();
@@ -40,13 +38,13 @@ function tooltip(targetEl, desc, lang = MODULE_LANG, duration, options = {}) {
 				left += options.offset.left || 0;
 			}
 			// if its too near to the upper border
-			if(top-$(el).height() < 0)
-				top += $(target).height();
+			if(top-$(el).outerHeight() < 0)
+				top += $(target).outerHeight();
 			else // otherwise lift it so the original element is still visible
-				top -= $(el).height();
+				top -= $(el).outerHeight();
 
 			// center the x position relative to the original element and bound it in the window
-			left = Math.min(Math.max(0, left+(width/2 - $(el).width()/2)), $(wdw).width());
+			left = Math.min(Math.max(0, left+(width/2 - $(el).outerWidth()/2)), $(wdw).width());
 			top += $(lang === "html"?"body":wdw.document.documentElement, wdw.document).scrollTop();
 			if(lang == "html") {
 				$(el).css({
@@ -55,8 +53,27 @@ function tooltip(targetEl, desc, lang = MODULE_LANG, duration, options = {}) {
 					position: "absolute"
 				});
 			}
-			else
-				el.moveTo(left+wdw.document.documentElement.boxObject.screenX, top+wdw.document.documentElement.boxObject.screenY);
+			else {
+				//Get screen information
+				let screenX = left+wdw.document.documentElement.boxObject.screenX,
+					screenY = top+wdw.document.documentElement.boxObject.screenY;
+				let pscr = _sc.screenmgr().screenForRect(screenX, screenY, 1, 1);
+				let scx = {}, scy = {}, scwdt = {}, schgt = {};
+				pscr.GetAvailRect(scx,scy,scwdt,schgt);
+
+				//Bound the tooltip to the screen boundaries
+				if(screenX < scx.value)
+					screenX = scx.value;
+				else if(screenX+$(el).outerWidth() > scx.value+scwdt.value)
+					screenX = scx.value+scwdt.value-$(el).outerWidth();
+				if(screenY < scy.value)
+					screenY = scy.value;
+				else if(screenY+$(el).outerHeight() > scy.value+schgt.value)
+					screenY = scy.value+schgt.value-$(el).outerHeight();
+
+				//Set tooltip position
+				el.moveTo(screenX, screenY);
+			}
 
 			// store for remove (as weak reference, in case the object dies)
 			tooltipEl = Cu.getWeakReference(el);

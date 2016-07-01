@@ -130,8 +130,13 @@ toolbox, toolbarbutton, toolbar, button, #header {
 #nav-playername {
 	font-weight: 600;
 	font-size: 18px;
-	color: white;
 	padding-left: 1em;
+	padding-right: 0.2em;
+	padding-top: 3px;
+}
+
+#nav-otherplayers > label {
+	font-size: 18px;
 	padding-right: 0.2em;
 	padding-top: 3px;
 }

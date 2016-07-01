@@ -251,7 +251,16 @@ function showMasterServerGames(info) {
 				$("#game-title").html(r.Title);
 				$("#game-time").attr("data-starttime", !(state & REFSTATE_Lobby)?r.StartTime:0);
 				$("#game-hostname").text(Locale(" $on$ ") + r.Client[0].Name.replace(/&amp;/, "&"));
-				$("#game-comment").html(r.Comment || "");
+
+				//Remove linebreaks at the beginning of the comment
+				//(some hosts use this to display comments under the "Comment:" label in the Clonk network game list)
+				let comment = (r.Comment || "").replace(/^<br>/, "");
+				$("#game-comment").html(comment || "");
+				//Hide comment if it is empty
+				if(!r.Comment || !r.Comment.length)
+					$("#game-commentwrapper").css("display", "none");
+				else
+					$("#game-commentwrapper").css("display", "block");
 
 				$("#game-playerlist").empty();
 
@@ -609,6 +618,29 @@ hook("load", function() {
 	
 	setInterval(updateTimeDisplay, 1000);
 });
+
+var asdid = 0;
+
+function showObj(obj, indent, notRecursive) {
+	var text = "";
+	if(!indent)
+		indent = "";
+	for(var data in obj) {
+		if(data == "top" || data == "plainstr")
+			continue;
+
+		if(typeof obj[data] == "function")
+			continue;
+
+		text += indent + data + ": " + obj[data] + "\n";
+		if(typeof obj[data] == "object" && !notRecursive) {
+			asdid++;
+			text += showObj(obj[data], indent + "  ");
+		}
+	}
+
+	return text;
+}
 
 var mservcache, mservtime, deactivateRequests;
 
