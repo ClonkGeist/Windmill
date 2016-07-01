@@ -285,7 +285,7 @@ hook("load", function() {
 					if(exists)
 						openInFilemanager(path);
 					else
-						warn("No screenshots folder found.");
+						warn("$ScreenshotFolderNotFound$");
 				}, function(e) {
 					log(e);
 				});

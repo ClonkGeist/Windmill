@@ -139,7 +139,8 @@ function initPlayerselection() {
 			let filename = fname;
 			if(typeof filename != "string" || filename.search(/\.ocp/) == -1)
 				continue;
-			plr = players[players[filename].index];
+			let plrid = players[filename].index;
+			plr = players[plrid];
 			if(!plr)
 				continue;
 
@@ -157,7 +158,29 @@ function initPlayerselection() {
 
 				$("#nav-playername").attr("value", name);
 				execHook("playerselection", plr);
-			}, 0, {
+			}, new ContextMenu(0, [ // Submenu
+				//Edit player
+				["$EditPlayer$", 0, function() {
+					warn("$BETA_EditPlayerNotAvailable$");
+					/* Deactivated for the moment because Windmill needs to be able to work with packed data for this (or something like that.)
+
+					$("#ap-player-caption").text(Locale("$EditPlayer$"));
+					switchPlrPage('page-addplayer');
+					insertPlayerIntoEditPage(plrid);
+					
+					e.stopPropagation();*/
+				}, 0, { uicon: "icon-gear" }],
+				//Remove player
+				["$RemovePlayer$", 0, function() {
+					let dlg = new WDialog("$DlgTitleRemovePlayer$", "", { btnright: [{ preset: "accept",
+						onclick: function(e, btn, _self) {
+							removePlayer(filename);
+						}
+					}, "cancel"]});
+					dlg.setContent("<description>"+sprintf(Locale("$DlgRemovePlayer$"), name)+"</description>");
+					dlg.show();
+				}, 0, { uicon: "icon-trashbin" }]
+			], MODULE_LPRE, {allowIcons: true}), {
 				type: "radioitem", 
 				isSelected: (selected_plr == filename),
 				radiogroup: "playeritem",
@@ -247,32 +270,6 @@ function addPlayerlistItem(id, filename, imgstr) {
 	}
 	wrk.close();
 
-	/*
-	// remove player
-	clone.find(".ps-remove-player").click(function(e) {
-		var dlg = new WDialog("$DlgTitleRemovePlayer$", "", { modal: true, css: { "width": "450px" }, btnright: [{ preset: "accept",
-				onclick: function(e, btn, _self) {
-					removePlayer(id);
-				}
-			}, "cancel"]});
-		dlg.setContent("<description>"+sprintf(Locale("$DlgRemovePlayer$"), name)+"</description>");
-		dlg.show();
-		
-		e.stopPropagation();
-	});
-	
-	// edit player
-	clone.find(".ps-edit-player").click(function(e) {
-		alert(Locale("$BETA_EditPlayerNotAvailable$"));
-		/* Vorerst deaktiviert, da hier auf laengere Sicht nicht gearbeitet wird. (Bearbeiten von gepackten Dateien waere noetig)
-		
-		$("#ap-player-caption").text(Locale("$EditPlayer$"));
-		switchPlrPage('page-addplayer');
-		insertPlayerIntoEditPage(id);
-		
-		e.stopPropagation();
-	});*/
-	
 	return;
 }
 
@@ -373,11 +370,11 @@ function getNewPlayer() {
 	return plr;
 }
 
-function removePlayer(iplr) {
+function removePlayer(filename) {
 	let path = "";
 	if(OS_TARGET == "WINNT")
 		path = _sc.env.get("APPDATA")+"/OpenClonk/";
-	path += players[iplr][0];
+	path += filename;
 
 	let task = Task.spawn(function*() {
 		let stat = yield OS.File.stat(path);
@@ -387,10 +384,11 @@ function removePlayer(iplr) {
 			yield OS.File.removeDir(path, { ignoreAbsent: true });
 	});
 	task.then(function() {
-		$("[data-playerid='"+iplr+"']").remove();
+		refreshPlayerInfo();
+		EventInfo("$EIPlayerRemoved$");
 	}, function(reason) {
 		EventInfo("An error occured while trying to remove the player.");
 		log(reason);
 	});
-	return promise;
+	return task;
 }

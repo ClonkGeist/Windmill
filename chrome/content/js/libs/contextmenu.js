@@ -149,7 +149,7 @@ class _ContextMenuEntry {
 				$(this.topMenu.element).find(".ctx-menuitem.selected").removeClass("selected");
 			}, function() {});
 
-			if(!this.subMenu) {
+			if(!this.subMenu || this.clickHandler) {
 				//Execute click handlers
 				$(this.element).click((e) => {
 					//Do nothing if the menu is locked
@@ -203,7 +203,7 @@ class _ContextMenuEntry {
 					}
 				});
 			}
-			else {
+			if(this.subMenu) {
 				$(this.element).hover((e) => {
 					if($(e.target).hasClass("ctx-locked"))
 						return;

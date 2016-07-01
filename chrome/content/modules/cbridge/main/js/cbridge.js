@@ -80,6 +80,11 @@ function createNavigation() {
 			else
 				log(`CBridge Module Error (${module.name}): Navigation icon format is not supported. (Supported formats: ${supported_formats})`, "error");
 		}
+		//Support for unicode icons as navigation icon
+		else if(/^icon-[a-zA-Z0-9\-]+$/.test(navicon))
+			clone.find(".modules-nav-icon > box").attr("class", "icon-48 " + navicon);
+		else
+			log(`CBridge Module Error (${module.name}): Invalid navigation icon value.`, "error");
 		//Set name of module
 		clone.attr("data-name", module.name)
 		clone.find(".modules-nav-label").attr("value", Locale(module.navigationlabel || module.modulename, module.languageprefix));
