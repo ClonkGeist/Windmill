@@ -157,6 +157,13 @@ html, body, #wrapper {
 	
 	input {
 		flex: 1;
+		&.error {
+			border: 1px solid red;
+		}
+	}
+
+	.input-error {
+		color: $interact-red;
 	}
 	
 	button {

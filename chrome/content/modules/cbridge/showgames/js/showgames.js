@@ -478,31 +478,6 @@ function checkIfPortsForwarded(ref) {
 		}, function(reason) {
 			log("An error occured while trying to scan ports: " + reason);
 		});
-		/*let last = (i == addr_obj.length-1);
-		var img = new Image();
-		var timeoutid = setTimeout(function() {
-			if(ports_checked[getRefIdentifier(ref)][port])
-				return;
-			if(ports_checked[getRefIdentifier(ref)]["status"] == SG_PORTS_Open)
-				return;
-			
-			ports_checked[getRefIdentifier(ref)][port] = SG_PORTS_Closed;
-			setPortForwardingInformation(ref);
-		}, 1000);
-		
-		img.onerror = function() {
-			if(ports_checked[getRefIdentifier(ref)][port])
-				return;
-
-			ports_checked[getRefIdentifier(ref)][port] = SG_PORTS_Open;
-			ports_checked[getRefIdentifier(ref)]["status"] = SG_PORTS_Open;
-			setPortForwardingInformation(ref);
-			
-			clearTimeout(timeoutid);
-		};
-		img.onload = img.onerror;
-		
-		img.src = 'http://'+ipaddr+':'+port;*/
 	}
 }
 
@@ -616,7 +591,79 @@ hook("load", function() {
 			//Objektauswahl öffnen
 		}]
 	], MODULE_LPRE)));
-	
+
+	//Join by ip address
+	$("#join-input").find("button").click(function() {
+		$("#join-input").find(".input-error").remove();
+		$("#join-input").find('input[type="text"]').removeClass("error");
+
+		//Show error message
+		function err(msg) {
+			let icon = $('<div class="input-error icon-16 icon-warning"></div>')[0];
+			$("#join-input").find('input[type="text"]').addClass("error").after(icon);
+			tooltip(icon, msg);
+			return;
+		}
+
+		let address = $(this).siblings('input[type="text"]').val();
+		if(!address || !address.length) {
+			err("$ErrNoAddress$");
+			return;
+		}
+		let valid = false;
+		if(/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:?\d*$/.test(address))
+			valid = true;
+		else if(/^localhost\:?\d*$/.test(address))
+			valid = true;
+		//deactivated because OC does not support ipv6 at the moment...
+		else if(getConfigData("ShowGame", "JoinByIPv6")) {
+			let addr = address.match(/\[?([0-9a-f:]+)\]?/i);
+			if(addr) {
+				//Split the address
+				let splitted = addr.split(":");
+				//Check if there are enough blocks (2-7 colons)
+				if(splitted.length > 1 && splitted.length < 8) {
+					let emptyblock = false, valid = true;
+					//Iterate through all blocks of the address
+					for(let block of splitted) {
+						if(!block.length) {
+							//There can be only one empty block
+							if(emptyblock) {
+								valid = false;
+								break;
+							}
+							emptyblock = true;
+						}
+						if(!/[0-9a-f]+/i.test(block)) {
+							valid = false;
+							break;
+						}
+					}
+				}
+				else
+					valid = false;
+			}
+			else
+				valid = false;
+				
+		}
+		if(!valid) {
+			err("$ErrAddressNotValid$");
+			return;
+		}
+
+		let f = _sc.file(getClonkExecutablePath());
+		if(!f.exists())
+			return warn("$err_ocexecutable_not_found$");
+
+		//Join the game...
+		let process = _ws.pr(f), args = ["--network", "clonk://"+address+"/", "--fullscreen"];
+		if(getConfigData("StartGame", "Record"))
+			args.push("--record");
+
+		process.create(args);
+	});
+
 	setInterval(updateTimeDisplay, 1000);
 });
 
