@@ -153,6 +153,11 @@ caption {
 
 .ctx-mainnavigation {
 	border: 1px solid $chrome-clr-sub;
+	
+	&:hover {
+		border-color: $chrome-clr-sub;
+	}
+	
 	.ctx-wrapper {
 		background: $chrome-clr;
 		color: white;
@@ -160,6 +165,7 @@ caption {
 	
 	.ctx-menuitem {
 		&:hover, &.selected  {
+			outline: 0;
 			background-color: $chrome-ui-active;
 		}
 	}

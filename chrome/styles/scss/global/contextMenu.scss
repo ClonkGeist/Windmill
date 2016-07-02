@@ -2,12 +2,16 @@
 
 .contextmenu {
 	background-color: transparent;
-	border: 1px solid gainsboro;
+	border: 1px solid $clr-border;
 	min-width: 180px;
 	max-width: 600px;
 	-moz-user-focus: normal;
 	-moz-user-select: none;
 	color: rgb(40, 40, 40);
+	
+	&:hover {
+		border-color: $clr-border-grey;
+	}
 }
 
 .ctx-wrapper {
@@ -20,14 +24,8 @@
 	height: 20px;
 	padding: 1px 4px;
 	cursor: default;
-	
-	transition: background-color 0.3s;
 }
 
-.ctx-menuitem:hover,
-.ctx-menuitem.selected  {
-	background-color: rgba(0, 165, 207, 0.5);
-}
 .ctx-menuitem {
 	&.ctx-checklistitem, &.ctx-radioitem {
 		.ctx-prepend:before {
@@ -58,9 +56,18 @@
 	.ctx-keybinding {
 		display: block;
 		max-width: 90px;
-		color: $ui-light-clr;
+		color: grey;
 		overflow: hidden;
 		text-align: right;
+	}
+	
+	&:hover,
+	&.selected  {
+		@include hover-blue();
+	}
+	
+	&:hover > .ctx-keybinding{
+		color: $ui-text-clr;
 	}
 	
 	/*-- HTML only --*/
