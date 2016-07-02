@@ -119,7 +119,7 @@ class _ContextMenuEntry {
 				other += `<div class="ctx-keybinding">${localizeKeyString(keys)}</div>`;
 		}
 		if(this.topMenu.hasSubMenus) {
-			let indicatorclasses = (this.subMenu && !this.options.hideSubMenuIcon)?" icon-16 icon-arrow-right":"";
+			let indicatorclasses = (this.subMenu && !this.options.hideSubMenuIcon)?" icon-16 icon-has-ctx-sub":"";
 			if(this.subMenu && this.options.hideSubMenuIcon !== 2)
 				indicatorclasses += " has-submenu";
 			if(MODULE_LANG == "xul")
