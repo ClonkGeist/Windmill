@@ -239,7 +239,10 @@ function initPlayerselection() {
 					//Open submenu on click
 					$(elm).attr("data-filename", filename);
 					$(elm).find(".ctx-submenuindicator").addClass("icon-24 icon-small-settings").click(e => {
-						this.openSubMenu(this.topMenu.opened_by);
+						if(this.subMenu.element)
+							this.subMenu.hideMenu();
+						else
+							this.openSubMenu(this.topMenu.opened_by);
 						e.stopPropagation();
 					});
 				},
