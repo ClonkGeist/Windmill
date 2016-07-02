@@ -378,3 +378,6 @@
 .icon-small-settings:before {
 	@include -small-settings();
 }
+.icon-ctx-has-sub {
+	@include -ctx-submenu-indicator();
+}
