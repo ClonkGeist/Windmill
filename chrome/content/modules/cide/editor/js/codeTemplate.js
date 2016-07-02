@@ -63,7 +63,7 @@ function showSnippetDialog(scope) {
 					"<box style=\"display: none\" class=\"edit-snippet icon-16 icon-bars-ref-1-3\" data-snippet-index=\""+i+"\"></box></hbox>";
 	
 	// add snippet button
-	content += "<hbox class=\"dlg-snippet-btn dlg-add-snippet\" pack=\"center\"><box class=\"icon-arrow-right icon-16\"></box></hbox>";
+	content += "<hbox class=\"dlg-snippet-btn dlg-add-snippet\" pack=\"center\"><box class=\"icon-plus icon-16\"></box></hbox>";
 	
 	// snippet edit page
 	content += "</vbox><vbox class=\"dlg-snippet-page\" style=\"display: none\">"+

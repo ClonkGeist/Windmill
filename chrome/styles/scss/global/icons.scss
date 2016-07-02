@@ -381,3 +381,9 @@
 .icon-has-ctx-sub:before {
 	@include -ctx-submenu-indicator();
 }
+.icon-plus:before {
+	@include -plus();
+}
+.icon-minus:before {
+	@include -minus();
+}
