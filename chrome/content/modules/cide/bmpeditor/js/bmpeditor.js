@@ -422,8 +422,6 @@ hook("load", function() {
 		$("#ruler-top").css("top", $(this).scrollTop()+"px");
 	});
 	
-	var brushX = 0, brushY = 0;
-	
 	document.addEventListener("mousemove", function(e) {
 		if($(".color-matching-wizard.visible2").get(0))
 			return;
@@ -436,18 +434,15 @@ hook("load", function() {
 			return;
 		
 		$(".rulerdisplay.hidden").removeClass("hidden");
-		
-		brushX = e.clientX
-		brushY = e.clientY
 	});
 	
 	let brushFn = () => {
 		let $el = $(".brush-indicator")
-		$el.css("left", brushX+"px")
-		$el.css("top", brushY+"px")
+		$el.css("left", mouse_x+"px")
+		$el.css("top", mouse_y+"px")
 		
-		rulerData.top.css("left", brushX+"px")
-		rulerData.left.css("top", brushY+"px")
+		rulerData.top.css("left", mouse_x+"px")
+		rulerData.left.css("top", mouse_y+"px")
 		
 		requestAnimationFrame(brushFn)
 	}
