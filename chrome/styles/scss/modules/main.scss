@@ -168,14 +168,26 @@ caption {
 			outline: 0;
 			background-color: $chrome-ui-active;
 		}
-	}
-	
-	.icon-small-settings {
-		color: rgb(80, 80, 80);
 		
-		&:hover {
+		&:hover .icon-has-ctx-sub:before {
 			color: white;
 		}
+		
+		&:hover .icon-small-settings:before {
+			color: $chrome-clr;
+		}
+		
+		&:hover .icon-small-settings:hover:before {
+			color: white;
+		}
+	}
+	
+	.icon-has-ctx-sub:before {
+		color: rgba(255, 255, 255, 0.5);
+	}
+	
+	.icon-small-settings:before {
+			color: rgb(60, 60, 60);
 	}
 }
 
