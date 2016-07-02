@@ -172,7 +172,8 @@ hook("load", function() {
 						//Show external program list for this module
 						if(module.cidemodule) {
 							let extprogids = [];
-							for(let {externalprogramid} of module.matchinggroup)
+							for(let asd of module.matchinggroup) {
+								let {externalprogramid} = asd;
 								if(externalprogramid && extprogids.indexOf(externalprogramid) == -1) {
 									let clone = $(".extprogram.draft").clone();
 									clone.removeClass("draft");
@@ -196,6 +197,7 @@ hook("load", function() {
 									//Dont show the same programid multiple times
 									extprogids.push(externalprogramid);
 								}
+							}
 						}
 
 						//Load settings content from module
