@@ -218,6 +218,10 @@ html, body, #wrapper {
 	.reference.runtimejoin {
 		color: rgb(40, 40, 40);
 	}
+	
+	&:empty {
+		display: none;
+	}
 }
 
 .reference {

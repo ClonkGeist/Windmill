@@ -170,6 +170,7 @@ function showMasterServerGames(info) {
 		if(obj["Reference"][i]) {
 			let ref = obj["Reference"][i], state = getRefState(ref);
 			let clone = $(".reference-draft").clone(true);
+			$("#reference-list").append(clone)
 			clone.removeClass("reference-draft");
 			if(ref.GameId)
 				clone.attr("id", "game"+ref.GameId);
@@ -663,7 +664,7 @@ function getMasterServerInformation(call) {
 			call(response);
 		},
 		error: function(jqXHR, textStatus, errorThrown) {
-			$(".reference:not(.reference-draft").remove();
+			$("#reference-wrapper").find(".reference").remove();
 			$("#wrapper").addClass("ajax-request-failed");
 			log(`An error has occured while trying to load the masterserver data. (${textStatus}: ${errorThrown})`);
 			if(textStatus === "timeout") {
