@@ -267,7 +267,100 @@ hook("load", function() {
 					this.addSeperator();
 					//TODO: Add new clonk directory
 					this.addEntry("$AddClonkDirectory$", 0, function() {
-						log("[!]");
+						let dlg = new WDialog("$DlgNewWorkEnvironment$", "DEX", { modal: true, css: { "width": "600px" }, btnright: [{ preset: "accept",
+							onclick: function*(e, btn, _self) {
+								let error = (str) => { return $(_self.element).find("#dex-dlg-workenv-errorbox").text(Locale(str, "DEX")); }
+								//Definitely not copy & pasted from cideexplorer.js!!
+								let path = $(_self.element).find("#dex-dlg-workenv-ocpath").text(), info;
+								try { info = yield OS.File.stat(path); }
+								catch(err) {
+									if(err.becauseNoSuchFile) {
+										error("$DlgErrWEPathDoesNotExist$");
+										return -1;
+									}
+									else {
+										error("<hbox>The following error occured while trying to create the work environment:</hbox><hbox>"+err+"</hbox>");
+										return -1;
+									}
+								}
+								if(!info.isDir) {						
+									error("$DlgErrWEPathDoesNotExist$");
+									return -1;
+								}
+
+								let cdirs = getConfigData("Global", "ClonkDirectories") || [];
+
+								//Check if the path already exists
+								for(let i  = 0; i < cdirs.length; i++)
+									if(cdirs[i] && cdirs[i].path == path) {
+										error("$DlgErrWEAlreadyLoaded$");
+										return -1;
+									}
+
+								//Otherwise add it to the list and save it
+								cdirs.push({path, active: false});
+								setConfigData("Global", "ClonkDirectories", cdirs, true);
+
+								let workenv = createWorkEnvironment(path, WORKENV_TYPE_ClonkPath);
+								workenv.alwaysexplode = $(_self.element).find("#dex-dlg-workenv-explodecdir").attr("checked") || false;
+								workenv.saveHeader();
+
+								//Reload explorer if there was no clonk directory in before.
+								if(cdirs.length == 1) {
+									if(getModuleByName("cide-explorer") && getModuleByName("cide-explorer").contentWindow)
+										getModuleByName("cide-explorer").contentWindow.location.reload();
+
+									//Reload iframe of the hostgame module aswell
+									if(getModuleByName("cbexplorer") && getModuleByName("cbexplorer").contentWindow)
+										getModuleByName("cbexplorer").contentWindow.location.replace(getModuleByName("cbexplorer").contentWindow.location.pathname);
+								}
+								//Otherwise add the clonk directory to the workenvironment list in the explorer
+								else if(getModuleByName("cide-explorer") && getModuleByName("cide-explorer").contentWindow)
+									getModuleByName("cide-explorer").contentWindow.createWorkEnvironmentEntry(workenv);
+
+								return true;
+						}}, "cancel"]});
+						dlg.setContent(`
+							<hbox class="dlg-infobox error" id="dex-dlg-workenv-errorbox">
+								<description></description>
+							</hbox>
+							<hbox>
+								<label value="$DlgWETypeClonkDir$:" style="font-weight: bold"/>
+							</hbox>
+							<hbox class="dlg-infobox">
+								<description flex="1">$DlgWETypeClonkDirDesc$</description>
+							</hbox>
+							<hbox>
+								<description flex="1" id="dex-dlg-workenv-ocpath" class="view-directory-path">$DlgWEPathEmpty$</description>
+								<button id="dex-dlg-workenv-ocpath-button" label="$DlgWEBrowse$" />
+							</hbox>
+							<hbox>
+								<checkbox label="$DlgWEExplodeClonkDir$" id="dex-dlg-workenv-explodecdir" />
+							</hbox>`);
+						dlg.show();
+						$(dlg.element).find("#dex-dlg-workenv-ocpath-button").on("command", function() {
+							//Open file picker
+							let fp = _sc.filepicker();
+							fp.init(window, Locale("$DlgWEChooseOCDir$", "DEX"), Ci.nsIFilePicker.modeGetFolder);
+
+							let current_path = getConfigData("Global", "ClonkDirectories");
+							if(current_path && current_path[0]) {
+								let dir = new _sc.file(current_path[0].path);
+								if(dir.exists())
+									fp.displayDirectory = dir;
+							}
+
+							let rv = fp.show();
+							if(rv == Ci.nsIFilePicker.returnOK) {
+								let ocexec = new _sc.file(fp.file.path+"/"+getClonkExecutablePath(true));
+								if(!ocexec.exists()) {
+									warn("$err_ocexecutable_not_found$", "STG");
+									return $(this).trigger("command");
+								}
+
+								$(dlg.element).find("#dex-dlg-workenv-ocpath").text(fp.file.path);
+							}
+						});
 					});
 				}, [], MODULE_LPRE, {}
 			), { uicon: "icon-multisource", identifier: "showClonkDirs" }],

@@ -446,7 +446,7 @@ function checkIfPortsForwarded(ref) {
 		if(skip)
 			continue;
 
-		addr_obj[i] = obj;
+		addr_obj.push(obj);
 	}
 
 	ports_checked[getRefIdentifier(ref)] = [];
