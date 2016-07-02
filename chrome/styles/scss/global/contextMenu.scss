@@ -51,7 +51,7 @@
 		height: 16px;
 		color: $ui-text-clr;
 	}
-	.ctx-submenuindicator:not(.icon-arrow-right):before {
+	.ctx-submenuindicator:not(.has-submenu):before {
 		display: block;
 		content: " ";
 	}

@@ -119,18 +119,20 @@ class _ContextMenuEntry {
 				other += `<div class="ctx-keybinding">${localizeKeyString(keys)}</div>`;
 		}
 		if(this.topMenu.hasSubMenus) {
-			let indicatorclasses = this.subMenu?" icon-16 icon-arrow-right":"";
+			let indicatorclasses = (this.subMenu && !this.options.hideSubMenuIcon)?" icon-16 icon-arrow-right":"";
+			if(this.subMenu && this.options.hideSubMenuIcon !== 2)
+				indicatorclasses += " has-submenu";
 			if(MODULE_LANG == "xul")
-				other += `<vbox class="ctx-submenuindicator${indicatorclasses}"></vbox>`;
+				other += `<hbox align="center"><vbox class="ctx-submenuindicator${indicatorclasses}"></vbox></hbox>`;
 			else
 				other += `<div class="ctx-submenuindicator${indicatorclasses}"></div>`;
 		}
 
 		//Element erstellen
 		if(MODULE_LANG == "xul")
-			this.element = $(`<hbox class="ctx-menuitem" id="context-${this.id}"><hbox class="ctx-prepend"></hbox>${icon}<vbox class="ctx-label">${this.label}</vbox><spacer flex="1"/>${other}</hbox>`)[0];
+			this.element = $(`<hbox class="ctx-menuitem" id="context-${this.id}"><hbox class="ctx-prepend"></hbox>${icon}<vbox class="ctx-label">${this.label}</vbox><spacer flex="1"/><hbox class="ctx-special"></hbox>${other}</hbox>`)[0];
 		else
-			this.element = $(`<div class="ctx-menuitem" id="context-${this.id}"><div class="ctx-prepend"></div>${icon}${this.label}<div class="ctx-other">${other}</div></div>`)[0];
+			this.element = $(`<div class="ctx-menuitem" id="context-${this.id}"><div class="ctx-prepend"></div>${icon}${this.label}<div class="ctx-special"></div><div class="ctx-other">${other}</div></div>`)[0];
 
 		if(this.options.classes)
 			$(this.element).addClass(this.options.classes);
@@ -248,24 +250,29 @@ class _ContextMenuEntry {
 					}
 				});
 			}
-			if(this.subMenu) {
+			this.inheritable_classes = inheritable_classes;
+			if(this.subMenu && !this.options.preventSubMenuOnHover) {
 				$(this.element).hover((e) => {
-					if($(this.element).hasClass("ctx-locked"))
-						return;
-					if(jQuery.contains(document, this.subMenu.element))
-						return;
-
-					//Untermenue öffnen
-					$(this.element).addClass("selected");
-					if(MODULE_LANG == "xul")
-						this.subMenu.showMenu(0, 0, target, window.screenX+$(this.element).offset().left+$(this.element).outerWidth(), window.screenY+$(this.element).offset().top, this.element, this, inheritable_classes);
-					else
-						this.subMenu.showMenu($(this.element).offset().left+$(this.element).outerWidth(), $(this.element).offset().top, target, 0, 0, this.element, this, inheritable_classes);
+					this.openSubMenu(target);
 				}, function() {});
 			}
 		}
 	}
-	
+
+	openSubMenu(target, inheritable_classes = this.inheritable_classes) {
+		if($(this.element).hasClass("ctx-locked"))
+			return;
+		if(jQuery.contains(document, this.subMenu.element))
+			return;
+
+		//Untermenue öffnen
+		$(this.element).addClass("selected");
+		if(MODULE_LANG == "xul")
+			this.subMenu.showMenu(0, 0, target, window.screenX+$(this.element).offset().left+$(this.element).outerWidth(), window.screenY+$(this.element).offset().top, this.element, this, inheritable_classes);
+		else
+			this.subMenu.showMenu($(this.element).offset().left+$(this.element).outerWidth(), $(this.element).offset().top, target, 0, 0, this.element, this, inheritable_classes);
+	}
+
 	hideMenu() {
 		if(!this.subMenu)
 			return;
