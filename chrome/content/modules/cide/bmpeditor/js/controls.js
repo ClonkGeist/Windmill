@@ -254,7 +254,7 @@ class Mode_Draw_Shape extends DefaultMode {
 				
 		this.scene.shaderType = SHADER_TYPE_BACKBUFFER
 		
-		this.scene.renderInputLineIntoWorker(SHADER_TYPE_INPUT, this.lastX, this.lastY, x, y, this.shape)
+		this.scene.renderInputLineIntoWorker(SHADER_TYPE_COLORED_SHAPE, this.lastX, this.lastY, x, y, this.shape)
 		
 		this.scene.shaderType = SHADER_TYPE_COMBINED_BACKBUFFER
 		this.scene.render()
@@ -273,7 +273,7 @@ class Mode_Draw_Shape extends DefaultMode {
 		
 		var state = ts.saveState()
 		
-		let a = new Action(() => {
+		let a = new Action(() => {log("state: " + state)
 			state = ts.drawState(state, this.scene)
 		})
 		

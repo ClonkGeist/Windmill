@@ -579,6 +579,11 @@ class BMPScene {
 		this.render()
 	}
 	
+	setInputTex(tex) {
+		this.gl.activeTexture(this.gl.TEXTURE2)
+		this.gl.bindTexture(this.gl.TEXTURE_2D, tex)
+	}
+	
 	setInputRect(rect) {
 		var [x, y, w, h] = this.rectToClipspaceFormat(rect.x, rect.y, rect.w, rect.h)
 		
@@ -771,9 +776,10 @@ class TextureStack {
 		return i
 	}
 	
-	drawState(i, scene) {		
+	drawState(i, scene) {log("h: " + this.h)	
 		this._r.y = i * this.h
 		
+		scene.setInputTex(this.tex)
 		scene.renderInput(this._r)
 		log("draw state init")
 		log(i)
