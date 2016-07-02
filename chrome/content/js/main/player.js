@@ -236,8 +236,15 @@ function initPlayerselection() {
 				tooltip: Locale("$PlayerInfo$", -1, player.Score||0, player.Rounds||0, player.RoundsWon||0, player.RoundsLost||0),
 				iconsrc: players[filename].imgstr,
 				onPreAppend: function(elm) {
+					//Open submenu on click
 					$(elm).attr("data-filename", filename);
-				}
+					$(elm).find(".ctx-submenuindicator").addClass("icon-32 icon-small-settings").click(e => {
+						this.openSubMenu(this.topMenu.opened_by);
+						e.stopPropagation();
+					});
+				},
+				preventSubMenuOnHover: true,
+				hideSubMenuIcon: true
 			});
 		}
 		this.addSeperator();
