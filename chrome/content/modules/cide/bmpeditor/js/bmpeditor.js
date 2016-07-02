@@ -1,5 +1,5 @@
 
-var editlayer, editObj = { mode: 0 }, rulerData = {};
+var editObj = { mode: 0 }, rulerData = {};
 
 var sceneMeta = new Array();
 
@@ -958,10 +958,12 @@ function openScalingDialog() {
 /*-- Infotoolbar --*/
 
 function updateInfotoolbar(x, y) {
-	var id = CM_ACTIVEID, zoom = sceneMeta[id].scene.zoomFactor;
+	var id = CM_ACTIVEID,
+		zoom = sceneMeta[id].scene.zoomFactor;
+	
 	if(x != undefined && y != undefined) {
 		x = Math.floor(x); y = Math.floor(y);
-		var rect = editlayer.getBoundingClientRect();
+		var rect = document.getElementById("draw-canvas").getBoundingClientRect();
 		if(!editObj.active) {
 			if(x < 0 || y < 0 || x > (rect.width)/zoom || y > (rect.height)/zoom)
 				$("#info-coordinates").text("");
