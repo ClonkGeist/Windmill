@@ -238,7 +238,7 @@ function initPlayerselection() {
 				onPreAppend: function(elm) {
 					//Open submenu on click
 					$(elm).attr("data-filename", filename);
-					$(elm).find(".ctx-submenuindicator").addClass("icon-32 icon-small-settings").click(e => {
+					$(elm).find(".ctx-submenuindicator").addClass("icon-24 icon-small-settings").click(e => {
 						this.openSubMenu(this.topMenu.opened_by);
 						e.stopPropagation();
 					});

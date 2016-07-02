@@ -203,8 +203,9 @@ listitem:focus {
 
 .view-directory-path {
 	font-style: italic;
-	background-color: rgb(250, 250, 250);
-	border: gainsboro;
+	background-color: $clr-empty;;
+	border-top: 1px solid $clr-border;
+	border-bottom: 1px solid white;
 	padding-left: 1em;
 	padding-right: 1em;
 	-moz-user-select: text;
@@ -231,19 +232,27 @@ listitem:focus {
 	margin-top: 0;
 }
 
-.nav-image {
-	color: black;
-}
-
-.nav-image:hover {
-	color: #999;
+.applist-browse {
+	@include std-button();
 }
 
 /* external programs */
 
 .extprogram {
-	background: #dadada;
-	padding: 0.6em;
+	padding: 0.6em 15px;
+	
+	margin: 15px 0;
+	
+	background: white;
+	border: 1px solid $clr-border;
+}
+
+.extprogram-clear {
+	color: grey;
+		
+	&:hover {
+		color: $ui-text-clr;
+	}
 }
 
 /* external applications */

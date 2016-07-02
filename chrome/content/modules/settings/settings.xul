@@ -126,7 +126,9 @@
 						<hbox class="module-subpage-header">
 							<caption class="module-subpage-caption" label="Modulename" />
 							<spacer flex="1"/>
-							<button class="module-subpage-button module-subpage-back" label="$Back$"/>
+							<vbox pack="center">
+								<button class="module-subpage-button module-subpage-back" label="$Back$"/>
+							</vbox>
 						</hbox>
 						<vbox class="module-subpage-content" flex="1">
 							<vbox class="module-subpage-content-header">
@@ -139,10 +141,10 @@
 										</hbox>
 										<hbox>
 											<checkbox class="extprogram-always-use" label="$AlwaysUseExternalProgram$" />
-											<hbox flex="1">
-												<spacer flex="1"/>
-												<box class="extprogram-clear nav-image icon-trashbin icon-32" height="32" width="32"></box>
-											</hbox>
+											<spacer flex="1" />
+											<vbox pack="center">
+												<box class="extprogram-clear icon-trashbin icon-24" height="24" width="24"></box>
+											</vbox>
 										</hbox>
 									</vbox>
 								</vbox>
@@ -226,7 +228,7 @@
 								</vbox>
 								<vbox class="applist-status"></vbox>
 								<vbox class="applist-controls">
-									<box class="applist-browse nav-image icon-update icon-32" height="32" width="32"></box>
+									<box class="applist-browse icon-update icon-32" height="32" width="32"></box>
 								</vbox>
 							</hbox>
 						</vbox>

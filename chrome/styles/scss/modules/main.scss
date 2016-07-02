@@ -169,6 +169,14 @@ caption {
 			background-color: $chrome-ui-active;
 		}
 	}
+	
+	.icon-small-settings {
+		color: rgb(80, 80, 80);
+		
+		&:hover {
+			color: white;
+		}
+	}
 }
 
 
