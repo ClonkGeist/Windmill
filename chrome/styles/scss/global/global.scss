@@ -161,16 +161,6 @@ a {
 
 /* kill it with fire! */
 
-/* disable until it is evident, that this is needed
-xul|*.inline-link:-moz-focusring,
-xul|button:-moz-focusring > xul|*.button-box,
-xul|menulist:-moz-focusring > xul|*.menulist-label-box,
-xul|radio[focused="true"] > xul|*.radio-label-box,
-html|input[type="checkbox"]:-moz-focusring + html|label:before,
-xul|checkbox:-moz-focusring > xul|*.checkbox-label-box {
-  outline: 0;
-}*/
-
 /* xul */
 button:-moz-focusring > .button-box {
   border: 0px dotted ThreeDDarkShadow;
@@ -184,6 +174,59 @@ checkbox:-moz-focusring > .checkbox-label-box {
 /* for html */
 button::-moz-focus-inner {
   border: 0;
+}
+
+html|label {
+	-moz-user-select: none;
+}
+
+input[type=checkbox].custom {
+	-moz-appearance: none;
+	opacity: 0;
+	position: absolute;	
+	
+	& + .cbox-button::before {
+		background-repeat: no-repeat;
+		background-size: 16px 16px;
+		background-position: center;
+		background-image: url("chrome://windmill/skin/overrides/checkbox/cbox.svg");
+		height: 16px;
+		width: 16px;
+		display: inline-block;
+		opacity: 1;
+		content: " ";
+		vertical-align: middle;
+		margin-right: 5px;
+		margin-top: -1px;
+	}
+	
+	& + .cbox-button:hover::before {
+		background-image: url("chrome://windmill/skin/overrides/checkbox/cbox-h.svg");
+	}
+	
+	&:active + .cbox-button::before {
+		background-image: url("chrome://windmill/skin/overrides/checkbox/cbox-a.svg");
+	}
+	
+	&:checked + .cbox-button::before {
+		background-image: url("chrome://windmill/skin/overrides/checkbox/cbox-c.svg");
+	}
+	
+	&:checked + .cbox-button::hover:before {
+		background-image: url("chrome://windmill/skin/overrides/checkbox/cbox-c.svg");
+	}
+	
+	&:checked:active + .cbox-button::before {
+		background-image: url("chrome://windmill/skin/overrides/checkbox/cbox-ca.svg");
+	}
+	
+	&[disabled="true"] + .cbox-button::before {
+		background-image: url("chrome://windmill/skin/overrides/checkbox/cbox-d.svg");
+	}
+	
+	&[disabled="true"]:checked .cbox-button::before {
+		background-image: url("chrome://windmill/skin/overrides/checkbox/cbox-cd.svg");
+	}
 }
 
 
