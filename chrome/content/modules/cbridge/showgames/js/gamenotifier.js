@@ -19,8 +19,17 @@ function AddNotificationCondition(type, value, exception, gameid) {
 	if(!ntf_settings[type] && type < 50)
 		ntf_settings[type] = [];
 
-	if(type < 50)
-		ntf_settings[type].push({v: value, ex: exception});
+	if(type < 50) {
+		let found = false;
+		//Search for duplicates and overwrite them
+		for(let i = 0; i < ntf_settings[type].length; i++)
+			if(ntf_settings[type][i].v == value) {
+				ntf_settings[type][i].ex = exception;
+				found = true;
+			}
+		if(!found)
+			ntf_settings[type].push({v: value, ex: exception});
+	}
 	else
 		ntf_settings[type] = {v: value, ex: exception};
 
@@ -34,7 +43,7 @@ function CheckReference(ref) {
 	if(ntf_gameids.indexOf(ref.GameId) != -1)
 		return false;
 
-	//Nur laufende Runden
+	//Only lobby games
 	if(ref.State != "Lobby")
 		return false;
 	var found = false;
@@ -178,7 +187,7 @@ function ShowReferenceNotification(ref) {
 
 function loadNotification() {
 	ntf_settings = getConfigData("ShowGame", "Notifications");
-	if(!(ntf_settings instanceof Array))
+	if(!ntf_settings)
 		ntf_settings = [];
 
 	return true;

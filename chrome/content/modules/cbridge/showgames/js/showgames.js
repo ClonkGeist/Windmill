@@ -345,7 +345,7 @@ function showMasterServerGames(info) {
 			else
 				clone.addClass("portsopen");
 
-			ctx_references.bindToObj(clone);
+			bindContextmenu(ref, clone);
 
 			//Benachrichtigung
 			if(CheckReference(ref))
@@ -498,14 +498,76 @@ function setPortForwardingInformation(ref) {
 
 var layout = getConfigData("ShowGame", "RefLayout") || "shortinfo";
 
-var ctx_references = new ContextMenu(0, 0, MODULE_LPRE);
-
 function getChildIndex(e) {
     var i = 0;
     while((e = e.previousSibling)!=null)
 		++i;
 	
     return i;
+}
+
+function bindContextmenu(ref, refobj) {
+	let ctx_references = new ContextMenu(0, 0, MODULE_LPRE);
+	ctx_references.addEntry("$Notifications$", 0, 0, (new ContextMenu(0, [
+		["$AddHostNotification$", 0, function(target) {
+			if(!ref.Client)
+				return;
+
+			AddNotificationCondition(NTYPE_HOSTNAME, ref.Client[0].Name, 0, ref.GameId);
+		}],
+		["$AddScenarioNotification$", 0, function(target) {
+			if(!ref.Resource)
+				return;
+
+			AddNotificationCondition(NTYPE_RESOURCE, ref.Resource[0].Filename, 0, ref.GameId);
+		}],
+		["$AddObjectNotification$", 0, function(target) {
+			if(!ref.Resource)
+				return;
+
+			//Objektauswahl öffnen
+			let dlg = new WDialog("$ChooseObject$", MODULE_LPRE, { modal: true, css: { "width": "450px" }, btnright: [{ preset: "accept",
+				onclick: function(e, btn, _self) {
+					if(!_mainwindow.$("#sgdlgObjList")[0].selectedItem)
+						return;
+				
+					let name = _mainwindow.$("#sgdlgObjList")[0].selectedItem.label;
+					AddNotificationCondition(NTYPE_RESOURCE, name, 0, ref.GameId);
+				}
+			}, "cancel"]});
+			let content = '<description>$ChooseObjectFromList$</description><listbox id="sgdlgObjList">';
+
+			//Objekte auflisten
+			for(let i = 0; i < ref.Resource.length; i++) {
+				let res = ref.Resource[i];
+				let leaf = res.Filename.split('.').pop();
+				if(res.Type == "Definitions" && (leaf === "c4d" || leaf === "ocd"))
+					content += '<listitem label="'+res.Filename+'" class="sgdlg-objectlistitem"/>';
+			}
+
+			dlg.setContent(content+'</listbox>');
+			dlg.show();
+			dlg = 0;
+		}],
+		"seperator",
+		["$IgnoreHostNotification$", 0, function(target) {
+			if(!ref.Client)
+				return;
+
+			AddNotificationCondition(NTYPE_HOSTNAME, ref.Client[0].Name, true, ref.GameId);
+		}],
+		["$IgnoreScenarioNotification$", 0, function(target) {
+			if(!ref.Resource)
+				return;
+
+			AddNotificationCondition(NTYPE_RESOURCE, ref.Resource[0].Filename, true, ref.GameId);
+		}],
+		["$IgnoreObjectNotification$", 0, function() {
+			//Objektauswahl öffnen
+		}]
+	], MODULE_LPRE)));
+	ctx_references.bindToObj(refobj);
+	return ctx_references;
 }
 
 hook("load", function() {
@@ -527,70 +589,6 @@ hook("load", function() {
 	$("#reference-list").addClass("ref-layout-" + layout);
 	while($("#ref-layout-list").children()[0].id != layout && $("#ref-layout-list").children("#"+layout)[0])
 		$($("#ref-layout-list").children()[0]).appendTo($("#ref-layout-list"));
-
-	ctx_references.addEntry("$Notifications$", 0, 0, (new ContextMenu(0, [
-		["$AddHostNotification$", 0, function(target) {
-			var ref = getReferenceById(parseInt($(target).attr("id").substr(4)));
-			if(!ref.Client)
-				return;
-
-			AddNotificationCondition(NTYPE_HOSTNAME, ref.Client[0].Name, 0, ref.GameId);
-		}],
-		["$AddScenarioNotification$", 0, function(target) {
-			var ref = getReferenceById(parseInt($(target).attr("id").substr(4)));
-			if(!ref.Resource)
-				return;
-
-			AddNotificationCondition(NTYPE_RESOURCE, ref.Resource[0].Filename, 0, ref.GameId);
-		}],
-		["$AddObjectNotification$", 0, function(target) {
-			var ref = getReferenceById(parseInt($(target).attr("id").substr(4)));
-			if(!ref.Resource)
-				return;
-
-			//Objektauswahl öffnen
-			var dlg = new WDialog("$ChooseObject$", MODULE_LPRE, { modal: true, css: { "width": "450px" }, btnright: [{ preset: "accept",
-				onclick: function(e, btn, _self) {
-					if(!_mainwindow.$("#sgdlgObjList")[0].selectedItem)
-						return;
-				
-					var name = _mainwindow.$("#sgdlgObjList")[0].selectedItem.label;
-					AddNotificationCondition(NTYPE_RESOURCE, name, 0, ref.GameId);
-				}
-			}, "cancel"]});
-			var content = '<description>$ChooseObjectFromList$</description><listbox id="sgdlgObjList">';
-
-			//Objekte auflisten
-			for(var i = 0; i < ref.Resource.length; i++) {
-				var res = ref.Resource[i];
-				let leaf = res.Filename.split('.').pop();
-				if(res.Type == "Definitions" && (leaf === "c4d" || leaf === "ocd"))
-					content += '<listitem label="'+res.Filename+'" class="sgdlg-objectlistitem"/>';
-			}
-
-			dlg.setContent(content+'</listbox>');
-			dlg.show();
-			dlg = 0;
-		}],
-		"seperator",
-		["$IgnoreHostNotification$", 0, function(target) {
-			var ref = getReferenceById(parseInt($(target).attr("id").substr(4)));
-			if(!ref.Client)
-				return;
-
-			AddNotificationCondition(NTYPE_HOSTNAME, ref.Client[0].Name, true, ref.GameId);
-		}],
-		["$IgnoreScenarioNotification$", 0, function(target) {
-			var ref = getReferenceById(parseInt($(target).attr("id").substr(4)));
-			if(!ref.Resource)
-				return;
-
-			AddNotificationCondition(NTYPE_RESOURCE, ref.Resource[0].Filename, true, ref.GameId);
-		}],
-		["$IgnoreObjectNotification$", 0, function() {
-			//Objektauswahl öffnen
-		}]
-	], MODULE_LPRE)));
 
 	//Join by ip address
 	$("#join-input").find("button").click(function() {
