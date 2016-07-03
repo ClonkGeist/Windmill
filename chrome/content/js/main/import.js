@@ -24,13 +24,18 @@ var OS_TARGET = XULRuntime.OS;
 
 log(window.navigator.userAgent + " (" +OS_TARGET+")");
 
-function formatPath(path) {
+function formatPath(path, options = {}) {
 	if(!path)
 		return path;
 
 	if(OS_TARGET == "WINNT") {
 		path = path.replace(/\\/g, "/");
 		path = path.replace(/(^[A-Z]:\/)\//i, "$1");
+	}
+	if(options.fileProtocol) {
+		if(!/^file\:\/\//.test(path))
+			path = "file://"+path;
+		path = encodeURI(path).replace(/#/g, "%23");
 	}
 	
 	return path;

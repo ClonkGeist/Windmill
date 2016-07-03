@@ -199,8 +199,10 @@ function initiliazePlayer(player, id) {
 	$("#close-volume-overlay").click(function() {
 		$("#volume-overlay").removeClass("visible");
 	});
+	//Mute the player by click on #toggle-volume
 	$("#toggle-volume").click(function() {
 		$(".volumn-btn").toggleClass("muted");
+		audioobj.muted = $(this).hasClass("muted");
 	});
 
 	//Loopen

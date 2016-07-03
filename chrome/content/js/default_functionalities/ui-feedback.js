@@ -4,33 +4,48 @@
 
 var tooltipTimeout, tooltipEl;
 
-function tooltip(targetEl, desc, lang = MODULE_LANG, duration) {
-	desc = Locale(desc);
+function tooltip(targetEl, desc, lang = MODULE_LANG, duration, options = {}) {
+	desc = Locale(desc, options.lpre);
 	if(!duration)
 		duration = 600; // ms
 
 	$(targetEl).mouseenter(function() {
 		clearTooltip();
 		
+		let target = this;
+		if(options.target)
+			target = options.target;
 		tooltipTimeout = setTimeout(() => {
-			var el = $('<'+(lang === "html"?'div':'panel noautofocus="true"')+' class="windmill-tooltip"></'+(lang == "html"?'div':'panel')+'>')[0];
+			let wdw = window;
+			if(options.window)
+				wdw = options.window;
+			let el = $('<'+(lang === "html"?'div':'panel noautofocus="true" noautohide="true"')+' class="windmill-tooltip"></'+(lang == "html"?'div':'panel')+'>', wdw.document)[0];
 
-			$(lang === "html"?"body":document.documentElement).append(el);
+			if(options.css)
+				$(el).css(options.css);
+
+			$(lang === "html"?"body":document.documentElement, wdw.document).append(el);
 			$(el).text(desc);
 
-			let {width, height, top, left} = this.getBoundingClientRect();
+			let {width, height, top, left} = target.getBoundingClientRect();
+
 			// panels need to be opened, so the size values are set
 			if(lang != "html")
 				el.openPopup();
+			
+			if(options.offset) {
+				top += options.offset.top || 0;
+				left += options.offset.left || 0;
+			}
 			// if its too near to the upper border
-			if(top-$(el).height() < 0)
-				top += $(this).height();
+			if(top-$(el).outerHeight() < 0)
+				top += $(target).outerHeight();
 			else // otherwise lift it so the original element is still visible
-				top -= $(el).height();
+				top -= $(el).outerHeight();
 
 			// center the x position relative to the original element and bound it in the window
-			left = Math.min(Math.max(0, left+(width/2 - $(el).width()/2)), $(window).width());
-			top += $(lang === "html"?"body":document.documentElement).scrollTop();
+			left = Math.min(Math.max(0, left+(width/2 - $(el).outerWidth()/2)), $(wdw).width());
+			top += $(lang === "html"?"body":wdw.document.documentElement, wdw.document).scrollTop();
 			if(lang == "html") {
 				$(el).css({
 					top: top + "px",
@@ -38,11 +53,30 @@ function tooltip(targetEl, desc, lang = MODULE_LANG, duration) {
 					position: "absolute"
 				});
 			}
-			else
-				el.moveTo(left+document.documentElement.boxObject.screenX, top+document.documentElement.boxObject.screenY);
+			else {
+				//Get screen information
+				let screenX = left+wdw.document.documentElement.boxObject.screenX,
+					screenY = top+wdw.document.documentElement.boxObject.screenY;
+				let pscr = _sc.screenmgr().screenForRect(screenX, screenY, 1, 1);
+				let scx = {}, scy = {}, scwdt = {}, schgt = {};
+				pscr.GetAvailRect(scx,scy,scwdt,schgt);
 
-			// store for remove
-			tooltipEl = el;
+				//Bound the tooltip to the screen boundaries
+				if(screenX < scx.value)
+					screenX = scx.value;
+				else if(screenX+$(el).outerWidth() > scx.value+scwdt.value)
+					screenX = scx.value+scwdt.value-$(el).outerWidth();
+				if(screenY < scy.value)
+					screenY = scy.value;
+				else if(screenY+$(el).outerHeight() > scy.value+schgt.value)
+					screenY = scy.value+schgt.value-$(el).outerHeight();
+
+				//Set tooltip position
+				el.moveTo(screenX, screenY);
+			}
+
+			// store for remove (as weak reference, in case the object dies)
+			tooltipEl = Cu.getWeakReference(el);
 		}, duration);
 	});
 	
@@ -53,9 +87,14 @@ function tooltip(targetEl, desc, lang = MODULE_LANG, duration) {
 
 function clearTooltip() {
 	clearTimeout(tooltipTimeout);
-	if(tooltipEl && tooltipEl.hidePopup)
-		tooltipEl.hidePopup();
-	$(tooltipEl).remove();
+	if(!tooltipEl)
+		return;
+
+	let elm = tooltipEl.get();
+	if(elm && elm.hidePopup)
+		elm.hidePopup();
+	$(elm).remove();
+	tooltipEl = undefined;
 }
 
 function setWindowTitle(title) {

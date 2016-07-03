@@ -26,9 +26,24 @@ function Locale(str, prefix, ...pars) {
 	return str;
 }
 
-function localizeModule() {
-	let rgx = /\$(::)?[a-zA-Z0-9_]+?\$/g;
+//For keybindings
+function localizeKeyString(keys) {
+	if(!keys)
+		return "";
 
+	let core = keys.replace(/-?(Ctrl|Shift|Alt)-?/g, "");
+	let modifier = (keys.replace(/-.+$/, "")+"-").replace(/(Ctrl|Alt|Shift)-/g, "$KEYCODE_$1$-");
+	if(Locale("$KEYCODE_"+core+"$", -1)[0] != "$")
+		core = Locale("$KEYCODE_"+core+"$", -1);
+	//Search for position of "-"; if < 1 then there is no modifier active. (Because "-" is a valid keybinding..)
+	if(keys.search(/-/) < 1)
+		modifier = "";
+	return Locale(modifier+core, -1);
+}
+
+function localizeModule(container) {
+	let rgx = /\$(::)?[a-zA-Z0-9_]+?\$/g;
+	
 	function getReplacement(lgreplace) {
 		let replacement = __l[MODULE_LPRE+"_"+lgreplace.replace(/\$/g, "")];
 		if(replacement)
@@ -53,7 +68,7 @@ function localizeModule() {
 					if(getReplacement(match))
 						return getReplacement(match);
 					else
-						return match;//$(obj).attr(attr.name, getReplacement(match[0]));
+						return match;
 				}));
 			}
 		});
@@ -65,9 +80,9 @@ function localizeModule() {
 					if(match.search(/^\$::/) != -1) {
 						match = match.replace(/^\$::/, "$");
 						let new_nodes = jQuery.parseHTML(getReplacement(match));
-						for(let i = 0; i < new_nodes.length; i++) {
+						for(let i = 0; i < new_nodes.length; i++)
 							this.parentNode.insertBefore(new_nodes[i], this);
-						}
+
 						this.parentNode.removeChild(this);
 						return;
 					}
@@ -82,8 +97,11 @@ function localizeModule() {
 		jQuery.each($(obj).children("*"), fnLocale);
 	}
 
-	if(MODULE_LANG == "html")
-		jQuery.each($("body > *"), fnLocale);
-	else if(MODULE_LANG == "xul")
-		jQuery.each($(document.documentElement).children("*"), fnLocale);
+	if(!container) {
+		if(MODULE_LANG == "html")
+			container = $("body > *");
+		else if(MODULE_LANG == "xul")
+			container = $(document.documentElement).children("*");
+	}
+	jQuery.each(container, fnLocale);
 }

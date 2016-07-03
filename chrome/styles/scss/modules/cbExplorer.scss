@@ -156,14 +156,13 @@ textbox.deactivated {
 }
 
 #hostsettings {
-	padding: 15px 20px;
 	width: 190px;
 	display: flex;
 	flex-direction: column;
 	flex-wrap: wrap-reverse;
 	justify-content: space-around;
 	background: white;
-	border-left: 2px solid gainsboro;
+	border-left: 1px solid $clr-border;
 	cursor: default;
 	-moz-user-select: none;
 }
@@ -261,7 +260,7 @@ textbox.deactivated {
 		display: none;
 	}
 	.achievement {
-		background-image: url('chrome://windmill/content/img/hostgame/icon_not_found.png');
+		background-image: url('resource://windmill/img/hostgame/icon_not_found.png');
 	}
 }
 

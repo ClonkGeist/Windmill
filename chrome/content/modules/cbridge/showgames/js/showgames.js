@@ -73,15 +73,9 @@ window.addEventListener("load", function(){
 	loadNotification();
 });
 
-function setResSaveMode() {
-	$("*").addClass("ressavemode");
-	$("#ressavemode-btn").click(function() {
-		_mainwindow.deactivateResSaveMode();
-	});
-}
-
 function pauseMSRefresh() {
 	clearInterval(refreshID);
+	$("#refresh-toggle").removeClass("enabled");
 }
 
 function startMSRefresh() {
@@ -89,6 +83,7 @@ function startMSRefresh() {
 		$("#reference-list").addClass("refresh");
 		getMasterServerInformation(showMasterServerGames);
 	}, 20000);
+	$("#refresh-toggle").addClass("enabled");
 }
 
 function getRefClients(reference) {
@@ -147,15 +142,26 @@ function showMasterServerGames(info) {
 	let currentref = $(".reference.ref-selected").attr("id");
 	$(".reference:not(.reference-draft").remove();
 	$("#game-info-motd").html("");
-	if(obj["Clonk Rage"]) { // <--- Bei MS-Wechsel auf Open Clonk wechseln
-		$("#game-info-motd").html(obj["Clonk Rage"][0].MOTD + " <a href='"+obj["Clonk Rage"][0].MOTDURL+"'>" +
-								  obj["Clonk Rage"][0].MOTDURL + " </a>");
+	let msheader = obj["Clonk Rage"] || obj["OpenClonk"];
+	if(msheader && msheader[0].MOTD) {
+		let url = "";
+		if(msheader[0].MOTDURL)
+			url = `<a href="${msheader[0].MOTDURL}">${msheader[0].MOTDURL}</a>`;
+		$("#game-info-motd").html(`${msheader[0].MOTD} ${url}`); 
 	}
-
-	if(!obj["Reference"]) {
+		
+	if(!obj || !obj["Reference"]) {
 		//Keine Spiele offen
+		$("#reference-list-wrapper").find(".shown").removeClass("shown");
+		$("#reference-list-wrapper").find(".no-games-found").addClass("shown");
+		if(isModuleActive("cbexplorer"))
+			$(".host-game").css("display", "");
+		else
+			$(".host-game").css("display", "none");
 		return;
 	}
+	else
+		$("#reference-list-wrapper").find(".shown").removeClass("shown");
 
 	obj["Reference"].items.sort(function(a, b) {
 		var state1 = getRefState(a), state2 = getRefState(b);
@@ -171,6 +177,7 @@ function showMasterServerGames(info) {
 		if(obj["Reference"][i]) {
 			let ref = obj["Reference"][i], state = getRefState(ref);
 			let clone = $(".reference-draft").clone(true);
+			$("#reference-list").append(clone)
 			clone.removeClass("reference-draft");
 			if(ref.GameId)
 				clone.attr("id", "game"+ref.GameId);
@@ -205,7 +212,14 @@ function showMasterServerGames(info) {
 			else
 				clone.find(".ref-icons").append('<img src="chrome://windmill/content/img/showgames/showgames-lobby.png" />');
 
-			clone.find(".ref-titleimage").attr("src", "https://clonkspot.org/images/games/Title.png/"+ref.Scenario[0].Filename.replace(/\\/g, "/")+"?hash="+ref.Scenario[0].FileCRC);
+			clone.find(".ref-titleimage").attr("src", "https://clonkspot.org/images/games/Title.png/"+ref.Scenario[0].Filename.replace(/\\/g, "/")+"?hash="+ref.Scenario[0].FileCRC).on("error", function() {
+				//Don't execute when the image is loaded locally
+				if(/^(file|chrome|resource):\//.test($(this).attr("src")))
+					return;
+
+				//Fallback to no-title.png
+				$(this).attr("src", "chrome://windmill/content/img/showgames/no-title.png");
+			});
 			clone.find(".ref-title").html(ref.Title);
 			clone.find(".ref-hostname").text(ref.Client[0].Name.replace(/&amp;/, "&"));
 
@@ -252,7 +266,16 @@ function showMasterServerGames(info) {
 				$("#game-title").html(r.Title);
 				$("#game-time").attr("data-starttime", !(state & REFSTATE_Lobby)?r.StartTime:0);
 				$("#game-hostname").text(Locale(" $on$ ") + r.Client[0].Name.replace(/&amp;/, "&"));
-				$("#game-comment").html(r.Comment || "");
+
+				//Remove linebreaks at the beginning of the comment
+				//(some hosts use this to display comments under the "Comment:" label in the Clonk network game list)
+				let comment = (r.Comment || "").replace(/^<br>/, "");
+				$("#game-comment").html(comment || "");
+				//Hide comment if it is empty
+				if(!r.Comment || !r.Comment.length)
+					$("#game-commentwrapper").css("display", "none");
+				else
+					$("#game-commentwrapper").css("display", "block");
 
 				$("#game-playerlist").empty();
 
@@ -336,7 +359,7 @@ function showMasterServerGames(info) {
 			else
 				clone.addClass("portsopen");
 
-			ctx_references.bindToObj(clone);
+			bindContextmenu(ref, clone);
 
 			//Benachrichtigung
 			if(CheckReference(ref))
@@ -437,7 +460,7 @@ function checkIfPortsForwarded(ref) {
 		if(skip)
 			continue;
 
-		addr_obj[i] = obj;
+		addr_obj.push(obj);
 	}
 
 	ports_checked[getRefIdentifier(ref)] = [];
@@ -469,31 +492,6 @@ function checkIfPortsForwarded(ref) {
 		}, function(reason) {
 			log("An error occured while trying to scan ports: " + reason);
 		});
-		/*let last = (i == addr_obj.length-1);
-		var img = new Image();
-		var timeoutid = setTimeout(function() {
-			if(ports_checked[getRefIdentifier(ref)][port])
-				return;
-			if(ports_checked[getRefIdentifier(ref)]["status"] == SG_PORTS_Open)
-				return;
-			
-			ports_checked[getRefIdentifier(ref)][port] = SG_PORTS_Closed;
-			setPortForwardingInformation(ref);
-		}, 1000);
-		
-		img.onerror = function() {
-			if(ports_checked[getRefIdentifier(ref)][port])
-				return;
-
-			ports_checked[getRefIdentifier(ref)][port] = SG_PORTS_Open;
-			ports_checked[getRefIdentifier(ref)]["status"] = SG_PORTS_Open;
-			setPortForwardingInformation(ref);
-			
-			clearTimeout(timeoutid);
-		};
-		img.onload = img.onerror;
-		
-		img.src = 'http://'+ipaddr+':'+port;*/
 	}
 }
 
@@ -514,8 +512,6 @@ function setPortForwardingInformation(ref) {
 
 var layout = getConfigData("ShowGame", "RefLayout") || "shortinfo";
 
-var ctx_references = new ContextMenu(0, 0, MODULE_LPRE);
-
 function getChildIndex(e) {
     var i = 0;
     while((e = e.previousSibling)!=null)
@@ -524,14 +520,76 @@ function getChildIndex(e) {
     return i;
 }
 
+function bindContextmenu(ref, refobj) {
+	let ctx_references = new ContextMenu(0, 0, MODULE_LPRE);
+	ctx_references.addEntry("$Notifications$", 0, 0, (new ContextMenu(0, [
+		["$AddHostNotification$", 0, function(target) {
+			if(!ref.Client)
+				return;
+
+			AddNotificationCondition(NTYPE_HOSTNAME, ref.Client[0].Name, 0, ref.GameId);
+		}],
+		["$AddScenarioNotification$", 0, function(target) {
+			if(!ref.Resource)
+				return;
+
+			AddNotificationCondition(NTYPE_RESOURCE, ref.Resource[0].Filename, 0, ref.GameId);
+		}],
+		["$AddObjectNotification$", 0, function(target) {
+			if(!ref.Resource)
+				return;
+
+			//Objektauswahl öffnen
+			let dlg = new WDialog("$ChooseObject$", MODULE_LPRE, { modal: true, css: { "width": "450px" }, btnright: [{ preset: "accept",
+				onclick: function(e, btn, _self) {
+					if(!_mainwindow.$("#sgdlgObjList")[0].selectedItem)
+						return;
+				
+					let name = _mainwindow.$("#sgdlgObjList")[0].selectedItem.label;
+					AddNotificationCondition(NTYPE_RESOURCE, name, 0, ref.GameId);
+				}
+			}, "cancel"]});
+			let content = '<description>$ChooseObjectFromList$</description><listbox id="sgdlgObjList">';
+
+			//Objekte auflisten
+			for(let i = 0; i < ref.Resource.length; i++) {
+				let res = ref.Resource[i];
+				let leaf = res.Filename.split('.').pop();
+				if(res.Type == "Definitions" && (leaf === "c4d" || leaf === "ocd"))
+					content += '<listitem label="'+res.Filename+'" class="sgdlg-objectlistitem"/>';
+			}
+
+			dlg.setContent(content+'</listbox>');
+			dlg.show();
+			dlg = 0;
+		}],
+		"seperator",
+		["$IgnoreHostNotification$", 0, function(target) {
+			if(!ref.Client)
+				return;
+
+			AddNotificationCondition(NTYPE_HOSTNAME, ref.Client[0].Name, true, ref.GameId);
+		}],
+		["$IgnoreScenarioNotification$", 0, function(target) {
+			if(!ref.Resource)
+				return;
+
+			AddNotificationCondition(NTYPE_RESOURCE, ref.Resource[0].Filename, true, ref.GameId);
+		}],
+		["$IgnoreObjectNotification$", 0, function() {
+			//Objektauswahl öffnen
+		}]
+	], MODULE_LPRE)));
+	ctx_references.bindToObj(refobj);
+	return ctx_references;
+}
+
 hook("load", function() {
 	$("#refresh-toggle").click(function() {
 		if($(this).hasClass("enabled"))
 			pauseMSRefresh();
 		else
 			startMSRefresh();
-
-		$(this).toggleClass("enabled");
 	});
 
 	$("#ref-layout-list").click(function() {
@@ -546,70 +604,82 @@ hook("load", function() {
 	while($("#ref-layout-list").children()[0].id != layout && $("#ref-layout-list").children("#"+layout)[0])
 		$($("#ref-layout-list").children()[0]).appendTo($("#ref-layout-list"));
 
-	ctx_references.addEntry("$Notifications$", 0, 0, (new ContextMenu(0, [
-		["$AddHostNotification$", 0, function(target) {
-			var ref = getReferenceById(parseInt($(target).attr("id").substr(4)));
-			if(!ref.Client)
-				return;
+	//Join by ip address
+	$("#join-input").find("button").click(function() {
+		$("#join-input").find(".input-error").remove();
+		$("#join-input").find('input[type="text"]').removeClass("error");
 
-			AddNotificationCondition(NTYPE_HOSTNAME, ref.Client[0].Name, 0, ref.GameId);
-		}],
-		["$AddScenarioNotification$", 0, function(target) {
-			var ref = getReferenceById(parseInt($(target).attr("id").substr(4)));
-			if(!ref.Resource)
-				return;
+		//Show error message
+		function err(msg) {
+			let icon = $('<div class="input-error icon-16 icon-warning"></div>')[0];
+			$("#join-input").find('input[type="text"]').addClass("error").after(icon);
+			tooltip(icon, msg);
+			return;
+		}
 
-			AddNotificationCondition(NTYPE_RESOURCE, ref.Resource[0].Filename, 0, ref.GameId);
-		}],
-		["$AddObjectNotification$", 0, function(target) {
-			var ref = getReferenceById(parseInt($(target).attr("id").substr(4)));
-			if(!ref.Resource)
-				return;
-
-			//Objektauswahl öffnen
-			var dlg = new WDialog("$ChooseObject$", MODULE_LPRE, { modal: true, css: { "width": "450px" }, btnright: [{ preset: "accept",
-				onclick: function(e, btn, _self) {
-					if(!_mainwindow.$("#sgdlgObjList")[0].selectedItem)
-						return;
-				
-					var name = _mainwindow.$("#sgdlgObjList")[0].selectedItem.label;
-					AddNotificationCondition(NTYPE_RESOURCE, name, 0, ref.GameId);
+		let address = $(this).siblings('input[type="text"]').val();
+		if(!address || !address.length) {
+			err("$ErrNoAddress$");
+			return;
+		}
+		let valid = false;
+		if(/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:?\d*$/.test(address))
+			valid = true;
+		else if(/^localhost\:?\d*$/.test(address))
+			valid = true;
+		//deactivated because OC does not support ipv6 at the moment...
+		else if(getConfigData("ShowGame", "JoinByIPv6")) {
+			let addr = address.match(/\[?([0-9a-f:]+)\]?/i);
+			if(addr) {
+				//Split the address
+				let splitted = addr.split(":");
+				//Check if there are enough blocks (2-7 colons)
+				if(splitted.length > 1 && splitted.length < 8) {
+					let emptyblock = false, valid = true;
+					//Iterate through all blocks of the address
+					for(let block of splitted) {
+						if(!block.length) {
+							//There can be only one empty block
+							if(emptyblock) {
+								valid = false;
+								break;
+							}
+							emptyblock = true;
+						}
+						if(!/[0-9a-f]+/i.test(block)) {
+							valid = false;
+							break;
+						}
+					}
 				}
-			}, "cancel"]});
-			var content = '<description>$ChooseObjectFromList$</description><listbox id="sgdlgObjList">';
-
-			//Objekte auflisten
-			for(var i = 0; i < ref.Resource.length; i++) {
-				var res = ref.Resource[i];
-				let leaf = res.Filename.split('.').pop();
-				if(res.Type == "Definitions" && (leaf === "c4d" || leaf === "ocd"))
-					content += '<listitem label="'+res.Filename+'" class="sgdlg-objectlistitem"/>';
+				else
+					valid = false;
 			}
+			else
+				valid = false;
+				
+		}
+		if(!valid) {
+			err("$ErrAddressNotValid$");
+			return;
+		}
 
-			dlg.setContent(content+'</listbox>');
-			dlg.show();
-			dlg = 0;
-		}],
-		"seperator",
-		["$IgnoreHostNotification$", 0, function(target) {
-			var ref = getReferenceById(parseInt($(target).attr("id").substr(4)));
-			if(!ref.Client)
-				return;
+		let f = _sc.file(getClonkExecutablePath());
+		if(!f.exists())
+			return warn("$err_ocexecutable_not_found$");
 
-			AddNotificationCondition(NTYPE_HOSTNAME, ref.Client[0].Name, true, ref.GameId);
-		}],
-		["$IgnoreScenarioNotification$", 0, function(target) {
-			var ref = getReferenceById(parseInt($(target).attr("id").substr(4)));
-			if(!ref.Resource)
-				return;
+		//Join the game...
+		let process = _ws.pr(f), args = ["--network", "clonk://"+address+"/", "--fullscreen"];
+		if(getConfigData("StartGame", "Record"))
+			args.push("--record");
 
-			AddNotificationCondition(NTYPE_RESOURCE, ref.Resource[0].Filename, true, ref.GameId);
-		}],
-		["$IgnoreObjectNotification$", 0, function() {
-			//Objektauswahl öffnen
-		}]
-	], MODULE_LPRE)));
-	
+		process.create(args);
+	});
+
+	$("#alt-host-game").click(function() {
+		getModuleByName("cbridge").contentWindow.showModule("cbexplorer");
+	});
+
 	setInterval(updateTimeDisplay, 1000);
 });
 
@@ -641,8 +711,7 @@ var mservcache, mservtime, deactivateRequests;
 function getMasterServerInformation(call) {
 	var ms_url = getConfigData("ShowGame", "MasterserverURL"); //Aus Config laden
 	if(!ms_url)
-		ms_url = "http://league.clonkspot.org/";
-	//var ms_url = "http://league.openclonk.org/league.php";
+		ms_url = "http://league.openclonk.org/league.php";
 	if((mservcache && (new Date()).getTime() < mservtime + 15000) || deactivateRequests)
 		return call(mservcache);
 
@@ -650,22 +719,24 @@ function getMasterServerInformation(call) {
 		url: ms_url,
 		type: "GET",
 		timeout: 5000,
-		success: function(response) { 
-			$("#information-bar").removeClass("visible");
+		success: function(response) {
 			$("#wrapper").removeClass("ajax-request-failed");
 			mservcache = response;
 			mservtime = (new Date()).getTime();
 			call(response);
 		},
 		error: function(jqXHR, textStatus, errorThrown) {
-			$(".reference:not(.reference-draft").remove();
+			$("#reference-wrapper").find(".reference").remove();
 			$("#wrapper").addClass("ajax-request-failed");
 			log(`An error has occured while trying to load the masterserver data. (${textStatus}: ${errorThrown})`);
-			$("#information-bar").addClass("visible");
-			if(textStatus === "timeout") {  
-				$("#information-bar").text(Locale("$MSRequestTimeout$"));
+			if(textStatus === "timeout") {
+				$("#reference-list-wrapper").find(".shown").removeClass("shown");
+				$("#reference-list-wrapper").find(".request-timeout").addClass("shown").
+					find(".desc").text(sprintf(Locale("$requestTimeout$"), ms_url));
 			} else {
-				$("#information-bar").text(Locale("$MSUnknownError$"));
+				$("#reference-list-wrapper").find(".shown").removeClass("shown");
+				$("#reference-list-wrapper").find(".unknown-error").addClass("shown").
+					find(".desc").text(sprintf(Locale("$unknownErrorOccuredDesc$"), ms_url));
 			}
 		}
 	});

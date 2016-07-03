@@ -629,11 +629,11 @@ function initializeContextMenu() {
 		loadDirectory(parentpath.join("/"), cnt);
 	}, 0, { identifier: 'ctxDuplicate' });
 	//Kopieren
-	treeContextMenu.addEntry("$ctxcopy$", 0, function() { copyTreeEntry(getCurrentTreeSelection()); }, 0, { identifier: 'ctxCopy' });
+	treeContextMenu.addEntry("$ctxcopy$", 0, function() { copyTreeEntry(getCurrentTreeSelection()); }, 0, { identifier: 'ctxCopy', keybinding: {label: "Ctrl-C"} });
 	//Einfügen
-	treeContextMenu.addEntry("$ctxpaste$", 0, function() { pasteFile(getCurrentTreeSelection()); }, 0, { identifier: 'ctxPaste' });
+	treeContextMenu.addEntry("$ctxpaste$", 0, function() { pasteFile(getCurrentTreeSelection()); }, 0, { identifier: 'ctxPaste', keybinding: {label: "Ctrl-V"} });
 	//Ausschneiden
-	treeContextMenu.addEntry("$ctxcut$", 0, function() {}, 0, { identifier: 'ctxCut' });
+	//treeContextMenu.addEntry("$ctxcut$", 0, function() {}, 0, { identifier: 'ctxCut', keybinding: {label: "Ctrl-X"} });
 	//Umbenennen
 	treeContextMenu.addEntry("$ctxrename$", 0, function() {
 		renameTreeObj($(getCurrentTreeSelection()));
@@ -641,7 +641,7 @@ function initializeContextMenu() {
 	//Löschen
 	treeContextMenu.addEntry("$ctxdelete$", 0, function() {
 		removeTreeEntry($(getCurrentTreeSelection()));
-	}, 0, { identifier: 'ctxDelete' });
+	}, 0, { identifier: 'ctxDelete', keybinding: {label: "DELETE"} });
 	//Aktualisieren
 	treeContextMenu.addEntry("$ctxreload$", 0, function() {
 		var sel = getCurrentTreeSelection();

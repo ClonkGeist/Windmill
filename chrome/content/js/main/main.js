@@ -1,5 +1,4 @@
-var mainDeck;
-var navigation;
+var mainDeck, startupReady;
 var modmanager,modmanagerID,cide,cideID,cbridge,cbridgeID,settings,settingsID;
 
 window.onerror = function(msg, url, line, col, e) {
@@ -52,7 +51,7 @@ hook("load", function() {
 		//Falls keine generierten CSS-Dateien gefunden wurden: In speziellen Modus uebergehen
 		if(!sass_snapshot) {
 			//Sehr rudimentaeres Design anzeigen. (Alles verstecken, nur Statusinformation anzeigen)
-			$(".startup-nohide").css("background", "rgb(45, 45, 45)");
+			$(".startup-nohide").css("background", "rgb(35, 40, 45)");
 			$("window *:not(.startup-nohide)").css("display", "none");
 			$("#startup-loading").css({
 				color: "white",
@@ -109,6 +108,7 @@ hook("load", function() {
 	}).then(function(result) {
 		if(result == -2)
 			return;
+		startupReady = true;
 		localizeModule();
 
 		$("#startup-loading").text("Creating and Initializing Modules");
@@ -120,8 +120,6 @@ hook("load", function() {
 			return;
 		}
 
-		//Navigation
-		navigation = new Navigation($("#inner-navigation"));
 		initializeModules();
 		mainDeck.hook("showItem", function(deck, itemId) {
 			if(itemId != cideID) {
@@ -164,7 +162,6 @@ hook("load", function() {
 			if($(this).hasClass("mm-dev-wrapper")) {
 				if(mainDeck.selectedId != mainDeck.getModuleId("cide")) {
 					$(".main-mode-ui").removeClass("cBridge");
-					navigation.hideGroups();
 					_mmToDevelopIcon();
 					togglePage(mainDeck.id, mainDeck.getModuleId("cide"));
 				}
@@ -175,7 +172,6 @@ hook("load", function() {
 			else if($(this).hasClass("mm-play-wrapper")) {
 				if(mainDeck.selectedId != mainDeck.getModuleId("cbridge")) {
 					$(".main-mode-ui").addClass("cBridge");
-					navigation.showGroup("cbridge");
 					_mmToPlayIcon();
 					togglePage(mainDeck.id, mainDeck.getModuleId("cbridge"));
 				}
@@ -214,105 +210,200 @@ hook("load", function() {
 			//todo: cbridge deaktivieren
 		});
 
-		//Einstellungen
-		$("#showSettings").click(function() {
-			if(mainDeck.selectedId == mainDeck.getModuleId("settings")) {
-				togglePage(mainDeck.id, mainDeck.previd);
-				return;
-			}
-
-			togglePage(mainDeck.id, mainDeck.getModuleId("settings"));
-		});
-		//Modulemanager
-		$("#showModManager").click(function() {
-			if(mainDeck.selectedId == mainDeck.getModuleId("modmanager")) {
-				togglePage(mainDeck.id, mainDeck.previd);
-				return;
-			}
-
-			togglePage(mainDeck.id, mainDeck.getModuleId("modmanager"));
-		});
-		//Ressourcensparender Modus
-		$("#showResSaveMode").click(function() {
-			var dlg = new WDialog("$DlgTitleResSaveMode$", "", { modal: true, css: { "width": "450px" }, btnright: [{ preset: "accept",
-					onclick: function(e, btn, _self) {
-						activateResSaveMode();
-					}
-				}, "cancel"]});
-			dlg.setContent("<description>$DlgResSaveFileWarning$</description>");
-			dlg.show();
-		});
-
 		function toggleSidebar(id) {
-			$("#"+id).toggleClass("invisible");
-			/*if($("#"+id).hasClass("invisible"))
-				$('[data-sidebarid="'+id+'"]').css("color", "");
-			else
-				$('[data-sidebarid="'+id+'"]').css("color", $("#"+id).find(".sidebar-header").css("background-color"));*/
-			let wdt = 0;
-			$(".sidebar").not(".invisible").each(function() {
-				wdt += parseInt($(this).css("max-width"));
-			});
-			if(wdt > $(window).width()) {
-				let widths = [];
-				$(".sidebar").not("#"+id+",.invisible").each(function() {
-					//Subtract width from 10000 to make sorting easier (we want to close the sidebar which is taking the most space first)
-					let sb_wdt = 10000-parseInt($(this).css("max-width"));
-					if(!widths[sb_wdt])
-						widths[sb_wdt] = [];
-					widths[sb_wdt].push(this);
-				});
-				//Closing sidebars which would overflow the window
-				for(let sb_wdt in widths) {
-					if(wdt < $(window).width())
-						continue;
-					while(widths[sb_wdt].length && wdt > $(window).width()) {
-						let sb = widths[sb_wdt].shift();
-						$(sb).addClass("invisible");
-						//$('[data-sidebarid="'+$(sb).attr("id")+'"]').css("color", "");
-						wdt -= 10000-sb_wdt;
-					}
-				}
-			}
+			let closed = $("#"+id).hasClass("invisible");
+			$(".sidebar").addClass("invisible");
+			if(!closed)
+				return;
+			$("#"+id).removeClass("invisible");
 		}
-		//Playerselection
-		$("#showPlayerSelect").click(function() {
-			toggleSidebar("playerselect");
-			switchPlrPage("page-playerselection");
-		});
-		//Clonk Directory Selection
-		$("#showClonkDirs").click(function() {
-			toggleSidebar("clonkdirselection");
-		});
-		//Log
-		$("#showLog").click(function() {
-			toggleSidebar("developerlog");
-		});
-		//Git Log
-		$("#showGitLog").click(function() {
-			toggleSidebar("gitlog");
-		});
+
+		//Generate player selection
+		initPlayerselection();
+
+		//Documentation
 		let frame = $('<iframe src="resource://docs/build/de/_home/__head_de.html" flex="1" id="docFrame"></iframe>');
 		frame.appendTo($(mainDeck.element));
 		let docFrameID = mainDeck.add(frame[0], 0, false, false, true);
-		//Docs
-		$("#showDocs").click(function() {
-			togglePage(mainDeck.id, docFrameID);
-		});
-		$("#showScreenshots").click(function() {
-			let path = "";
-			if(OS_TARGET == "WINNT")
-				path = _sc.env.get("APPDATA")+"\\OpenClonk\\Screenshots";
 
-			let promise = OS.File.exists(path);
-			promise.then(function(exists) {
-				if(exists)
-					openInFilemanager(path);
-				else
-					warn("No screenshots folder found.");
-			}, function(e) {
-				log(e);
-			});
+		//Dropdown menu for the hamburger
+		let dropdownMenu = new ContextMenu(0, [
+			//Module manager
+			["$NAVModManager$", 0, function() {
+				togglePage(mainDeck.id, mainDeck.getModuleId("modmanager"));
+			}, 0, { uicon: "icon-heartbeat", identifier: "showModManager" }],
+			//Documentation
+			["$NAVDocumentation$", 0, function() {
+				togglePage(mainDeck.id, docFrameID);
+			}, 0, { uicon: "icon-documentation", identifier: "showDocs" }],
+
+			"seperator",
+
+			//Open Clonk manager
+			["$NAVOCManager$", 0, 0, new ContextMenu(function() {
+					this.clearEntries();
+					let workenvs = getWorkEnvironments();
+					//Iterate through all workenvironments and search for clonk directories
+					for(let env2 of workenvs) {
+						//Something broke all of a sudden let in for loops for me??
+						let env = env2;
+						if(env.type != WORKENV_TYPE_ClonkPath)
+							continue;
+
+						let textpath = env.path;
+						let name = env.path.split("/").pop();
+						if(name.length > 30)
+							name = name.substr(0, 30) + "...";
+						//Craete an entry for switching the clonk path
+						this.addEntry(name, 0, function() {
+							setClonkPath(env.path);
+						}, 0, {
+							type: "radioitem",
+							isSelected: formatPath(_sc.clonkpath()) == env.path,
+							radiogroup: "ocdir",
+							tooltip: env.path
+						});
+					}
+					this.addSeperator();
+					//TODO: Add new clonk directory
+					this.addEntry("$AddClonkDirectory$", 0, function() {
+						let dlg = new WDialog("$DlgNewWorkEnvironment$", "DEX", { modal: true, css: { "width": "600px" }, btnright: [{ preset: "accept",
+							onclick: function*(e, btn, _self) {
+								let error = (str) => { return $(_self.element).find("#dex-dlg-workenv-errorbox").text(Locale(str, "DEX")); }
+								//Definitely not copy & pasted from cideexplorer.js!!
+								let path = $(_self.element).find("#dex-dlg-workenv-ocpath").text(), info;
+								try { info = yield OS.File.stat(path); }
+								catch(err) {
+									if(err.becauseNoSuchFile) {
+										error("$DlgErrWEPathDoesNotExist$");
+										return -1;
+									}
+									else {
+										error("<hbox>The following error occured while trying to create the work environment:</hbox><hbox>"+err+"</hbox>");
+										return -1;
+									}
+								}
+								if(!info.isDir) {						
+									error("$DlgErrWEPathDoesNotExist$");
+									return -1;
+								}
+
+								let cdirs = getConfigData("Global", "ClonkDirectories") || [];
+
+								//Check if the path already exists
+								for(let i  = 0; i < cdirs.length; i++)
+									if(cdirs[i] && cdirs[i].path == path) {
+										error("$DlgErrWEAlreadyLoaded$");
+										return -1;
+									}
+
+								//Otherwise add it to the list and save it
+								cdirs.push({path, active: false});
+								setConfigData("Global", "ClonkDirectories", cdirs, true);
+
+								let workenv = createWorkEnvironment(path, WORKENV_TYPE_ClonkPath);
+								workenv.alwaysexplode = $(_self.element).find("#dex-dlg-workenv-explodecdir").attr("checked") || false;
+								workenv.saveHeader();
+
+								//Reload explorer if there was no clonk directory in before.
+								if(cdirs.length == 1) {
+									if(getModuleByName("cide-explorer") && getModuleByName("cide-explorer").contentWindow)
+										getModuleByName("cide-explorer").contentWindow.location.reload();
+
+									//Reload iframe of the hostgame module aswell
+									if(getModuleByName("cbexplorer") && getModuleByName("cbexplorer").contentWindow)
+										getModuleByName("cbexplorer").contentWindow.location.replace(getModuleByName("cbexplorer").contentWindow.location.pathname);
+								}
+								//Otherwise add the clonk directory to the workenvironment list in the explorer
+								else if(getModuleByName("cide-explorer") && getModuleByName("cide-explorer").contentWindow)
+									getModuleByName("cide-explorer").contentWindow.createWorkEnvironmentEntry(workenv);
+
+								return true;
+						}}, "cancel"]});
+						dlg.setContent(`
+							<hbox class="dlg-infobox error" id="dex-dlg-workenv-errorbox">
+								<description></description>
+							</hbox>
+							<hbox>
+								<label value="$DlgWETypeClonkDir$:" style="font-weight: bold"/>
+							</hbox>
+							<hbox class="dlg-infobox">
+								<description flex="1">$DlgWETypeClonkDirDesc$</description>
+							</hbox>
+							<hbox>
+								<description flex="1" id="dex-dlg-workenv-ocpath" class="view-directory-path">$DlgWEPathEmpty$</description>
+								<button id="dex-dlg-workenv-ocpath-button" label="$DlgWEBrowse$" />
+							</hbox>
+							<hbox>
+								<checkbox label="$DlgWEExplodeClonkDir$" id="dex-dlg-workenv-explodecdir" />
+							</hbox>`);
+						dlg.show();
+						$(dlg.element).find("#dex-dlg-workenv-ocpath-button").on("command", function() {
+							//Open file picker
+							let fp = _sc.filepicker();
+							fp.init(window, Locale("$DlgWEChooseOCDir$", "DEX"), Ci.nsIFilePicker.modeGetFolder);
+
+							let current_path = getConfigData("Global", "ClonkDirectories");
+							if(current_path && current_path[0]) {
+								let dir = new _sc.file(current_path[0].path);
+								if(dir.exists())
+									fp.displayDirectory = dir;
+							}
+
+							let rv = fp.show();
+							if(rv == Ci.nsIFilePicker.returnOK) {
+								let ocexec = new _sc.file(fp.file.path+"/"+getClonkExecutablePath(true));
+								if(!ocexec.exists()) {
+									warn("$err_ocexecutable_not_found$", "STG");
+									return $(this).trigger("command");
+								}
+
+								$(dlg.element).find("#dex-dlg-workenv-ocpath").text(fp.file.path);
+							}
+						});
+					});
+				}, [], MODULE_LPRE, { useWindowBoundings: true }
+			), { uicon: "icon-multisource", identifier: "showClonkDirs" }],
+			//Git log
+			["$NAVGitLog$", 0, function() {
+				toggleSidebar("gitlog");
+			}, 0, { uicon: "icon-git", identifier: "showGitLog" }],
+			//Screenshot folder
+			["$NAVScreenshots$", 0, function() {
+				let path = "";
+				if(OS_TARGET == "WINNT")
+					path = _sc.env.get("APPDATA")+"\\OpenClonk\\Screenshots";
+
+				let promise = OS.File.exists(path);
+				promise.then(function(exists) {
+					if(exists)
+						openInFilemanager(path);
+					else
+						warn("$ScreenshotFolderNotFound$");
+				}, function(e) {
+					log(e);
+				});
+			}, 0, { uicon: "icon-screenshots", identifier: "showScreenshots" }],
+
+			"seperator",
+
+			//Settings
+			["$NAVSettings$", 0, function() {
+				togglePage(mainDeck.id, mainDeck.getModuleId("settings"));
+			}, 0, { uicon: "icon-gear", identifier: "showSettings" }]
+		], MODULE_LPRE, { fnCheckVisibility: function(by_obj, id) {
+			//Hide devmode options
+			if(!getConfigData("Global", "DevMode") && ["showModManager", "showDocs"].indexOf(id) != -1)
+				return 2;
+			//Hide Gitlog if git is not available
+			if(id == "showGitLog" && !getAppByID("git").isAvailable())
+				return 2;
+			return 0;
+		}, allowIcons: true, useWindowBoundings: true });
+		dropdownMenu.bindToObj($("#showOptions"), {dropdown: true, classes: "ctx-mainnavigation"});
+		//Log
+		$("#showLog").click(function() {
+			toggleSidebar("developerlog");
 		});
 
 		//Neustart
@@ -357,8 +448,6 @@ hook("load", function() {
 				EventInfo("DevMode activated");
 			}
 		});
-		if(!getAppByID("git").isAvailable())
-			$("#showGitLog").css("display", "none");
 	}, function(reason) {
 		$("#startup-loading").remove();
 		$("#startup-errorlog > vbox").append(`
@@ -367,54 +456,6 @@ An error occurred while loading the application:
 ${reason}
 ------------------------------------------------
 ${reason.stack}`).parent().css("display", "");
-	});
-
-	hook("onWorkenvCreated", function(env) {
-		if(!env)
-			return;
-
-		if(env.type != WORKENV_TYPE_ClonkPath)
-			return;
-
-		var clone = $("#page-clonkdirselection").find(".cds-listitem.draft").clone();
-		clone.removeClass("draft");
-
-		var path = env.path, textpath = path;
-		clone.attr("data-path", path);
-
-		var ocexecname = "openclonk";
-		if(OS_TARGET == "WINNT")
-			ocexecname = "openclonk.exe";
-
-		OS.File.exists(path+"/"+ocexecname).then(function(exists) {
-			if(!exists)
-				return clone.find(".cds-lbl-directory").attr("value", "Error: "+ocexecname+" not found.");
-
-			//Mittleren Teil durch 3 Punkte ersetzen wenn zu lang
-			if(path.length > 40) {
-				textpath = path.replace(/(^\/*.+?\/).+(\/.+\/?$)/, function(str, a, b, c) { 
-					var middle = str.substr(0, str.length-b.length).substr(a.length); 
-					return a+("..."+middle.substr(middle.length-(Math.max(40-a.length-b.length, 0))))+b; 
-				});
-			}
-			clone.find(".cds-lbl-directory").attr("value", textpath);
-			//tooltip(clone.find(".cds-lbl-directory"), path, 0, 600);
-
-			//TODO: Tags (Standard/Snapshot X/Nightly X/Ggf. eigene Benennung)
-			clone.find(".cds-lbl-type").attr("value", "Standard");
-			clone.click(function() {
-				$("#cds-clonkdirlist").find(".cds-listitem").removeClass("selected");
-				$(this).addClass("selected");
-				setClonkPath(env.path);
-			});
-
-			if(formatPath(_sc.clonkpath()) == env.path)
-				clone.addClass("selected");
-			clone.appendTo($("#cds-clonkdirlist"));
-		});
-	});
-	hook("onWorkenvUnloaded", function(env) {
-		$("#page-clonkdirselection").find('.cds-listitem[data-path="'+env.path+'"]').remove();
 	});
 });
 
@@ -440,31 +481,6 @@ function clearLog(listid) { $("#"+listid+"-entrylist").children(".log-listitem:n
 
 function restartWindmill() {
 	window.location.reload();
-}
-
-function activateResSaveMode() {
-	removeSubFrames();
-	$("#modules-wrapper").empty();
-	$("#mainstack").fadeOut(400, function() { 
-		$("#showgames-wrapper").css("display", "-moz-box"); 
-		navigation.empty(); 
-		if($(".mm-icon").hasClass("cBridge")) {
-			$(".mm-icon").removeClass("cBridge");
-			$(".mm-icon").attr("src", "chrome://windmill/content/img/mode-code.png");
-			navigation.hideGroups();
-		}
-	});
-	var sg = createModule("showgames", $("#showgames-container"));
-	setTimeout(function() { getModule(sg, true).contentWindow.setResSaveMode(); }, 1000);
-}
-
-function deactivateResSaveMode() {
-	$("#showgames-container").fadeOut(400, function() { 
-		$("#showgames-container").empty(); 
-		$("#showgames-wrapper").css("display", "none");
-		$("#mainstack").css("display", "-moz-stack");
-	});
-	initializeModules();
 }
 
 function parseINI(text) {
@@ -529,118 +545,6 @@ function addCideToolbarButton(icon, callback, context) {
 	showCideToolbar();
 	
 	return btn;
-}
-
-/*-*/
-
-function Navigation(obj) {
-	this.obj = obj;
-	this.navgroups = {};
-	this.add = function(item, group, active) {
-		if(!this.get(group)) {
-			this.navgroups[group] = [];
-			this.get(group).selectedID = -1;
-			if(active)
-				this.get(group).selectedID = item.id;
-		}
-
-		item.top_navigation = this;
-		item.group = group;
-		this.get(group).push(item);
-	}
-	this.get = function(group) {
-		return this.navgroups[group];
-	}
-	this.showGroup = function(group) {
-		if(!this.obj || !this.get(group))
-			return;
-
-		$(this.obj).empty();
-		this.selectedGroup = group;
-		for(var i = 0; i < this.get(group).length; i++) {
-			if(this.get(group)[i]) {
-				this.get(group)[i].apply();
-			}
-		}
-	}
-	this.hideGroups = function() {
-		$(this.obj).empty();
-		this.selectedGroup = 0;
-	}
-	this.empty = function() {
-		for(var str in this.navgroups) {
-			for(var i = 0; i < this.get(str).length; i++) {
-				this.get(str)[i] = 0;
-			}
-			this.navgroups[str] = 0;
-		}
-		this.navgroups = {};
-	}
-}
-
-var NAV_ID_Counter = 0;
-
-function NavItem() {
-	this.id = NAV_ID_Counter++;
-	this.obj = null;
-	this.label = "";
-	this.code = "";
-	this.active = false;
-	
-	this.apply = function() {
-		if(!this.obj || !this.obj.parent().html()) {
-			var topnav = this.top_navigation;
-			if(!topnav || topnav.selectedGroup != this.group)
-				return;
-
-			if(!this.code || this.code == "") {
-				if(topnav.get(this.group).selectedID == this.id)
-					$(topnav.obj).append("<button id='navitem-"+this.id+"' label='"+this.label+"' class='nav-item nav-active'/>");
-				else
-					$(topnav.obj).append("<button id='navitem-"+this.id+"' label='"+this.label+"' class='nav-item'/>");
-			} else
-				$(topnav.obj).append(this.code);
-
-			this.obj = $("#navitem-"+this.id);
-			var _self = this;
-			
-			if(typeof this.callfn == "function") {
-				$(this.obj).click(function() { 
-					$(".nav-item.nav-active").removeClass("nav-active");
-					$(this).addClass("nav-active");
-					topnav.get(_self.group).selectedID = _self.id;
-					_self.callfn();
-				});
-			}
-			else {
-				$(this.obj).click(function() {
-					$(".nav-item.nav-active").removeClass("nav-active");
-					$(this).addClass("nav-active");
-					_self.top_navigation.get(_self.group).selectedID = _self.id;
-				});
-			}
-		}
-		else {
-			if(!this.code || this.code == "")
-				$(this.obj).attr("label", this.label);
-		}
-	}
-}
-
-function addNavigationItem(label, group, active, fCode, callfn) {
-	var navitem = new NavItem();
-	
-	if(!fCode)
-		navitem.label = label;
-	else
-		navitem.code = label;
-	
-	navitem.callfn = callfn;
-
-	navigation.add(navitem, group, active);
-	navitem.apply();
-	//$("#inner-navigation");
-	return navitem;
 }
 
 
@@ -794,7 +698,7 @@ function saveWindowInformation() {
 function triggerModeButtonIcon() {	
 	$(".mm-icon").css("opacity", "0");
 	setTimeout(function() {
-		$(".mm-icon").removeClass("icon-the-mill").css("display", "none"); //.addClass("icon-brackets").css("opacity", "1");
+		$(".mm-icon").removeClass("icon-the-mill").css("display", "none");
 		$(".main-mode-ui").addClass("loaded");
 	}, 1000);
 
@@ -807,4 +711,4 @@ function triggerModeButtonIcon() {
 window.addEventListener("focus", function(event) {
 	if(domwu)
 		domwu.redraw();
-}, false);
+}, false)

@@ -63,7 +63,7 @@ function showSnippetDialog(scope) {
 					"<box style=\"display: none\" class=\"edit-snippet icon-16 icon-bars-ref-1-3\" data-snippet-index=\""+i+"\"></box></hbox>";
 	
 	// add snippet button
-	content += "<hbox class=\"dlg-snippet-btn dlg-add-snippet\" pack=\"center\"><box class=\"icon-plus icon-16\" style=\"font-size: 24px\"></box></hbox>";
+	content += "<hbox class=\"dlg-snippet-btn dlg-add-snippet\" pack=\"center\"><box class=\"icon-plus icon-16\"></box></hbox>";
 	
 	// snippet edit page
 	content += "</vbox><vbox class=\"dlg-snippet-page\" style=\"display: none\">"+
@@ -76,10 +76,10 @@ function showSnippetDialog(scope) {
 					"<checkbox label=\"$DlgSuggestInAutoCompletionDlg$\" id=\"dlg-snippet-isInline\" />"+
 					"<hbox>"+
 						"<vbox flex=\"1\" class=\"dlg-snippet-btn dlg-snippet-back\" align=\"center\">"+
-							"<box flex=\"1\" class=\"icon-16 icon-backwards\" style=\"font-size: 24px\"></box>"+
+							"<box flex=\"1\" class=\"icon-16 icon-backwards\"></box>"+
 						"</vbox>"+
 						"<vbox flex=\"1\" class=\"dlg-snippet-btn dlg-snippet-save\" align=\"center\">"+
-							"<box class=\"icon-16 icon-save\" style=\"font-size: 24px\"></box>"+
+							"<box class=\"icon-16 icon-save\"></box>"+
 						"</vbox>"+
 					"</hbox>"+
 				"</vbox>";

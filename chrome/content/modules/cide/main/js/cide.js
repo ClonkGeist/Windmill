@@ -602,7 +602,7 @@ function fileLoadedInModule(modulename, filepath, fShow) {
 		if(fShow)
 			maindeck.show(index, true);
 
-		return index+1;
+		return { index, deck: maindeck };
 	}
 
 	module = deckGetModule(sidedeck, modulename);
@@ -610,7 +610,7 @@ function fileLoadedInModule(modulename, filepath, fShow) {
 		if(fShow)
 			sidedeck.show(index, true);
 
-		return index+1;
+		return { index, deck: sidedeck };
 	}
 
 	return false;
@@ -635,6 +635,21 @@ function getUnsavedFiles(deck) {
 	return ret;
 }
 
+//removes all tabs of this module
+function detachModule(module) {
+	if(!module.contentWindow || !module.contentWindow.getTabFileList)
+		return;
+
+	let files = module.contentWindow.getTabFileList();
+	for(let file of files) {
+		let deckinfo = fileLoadedInModule(module.contentWindow.MODULE_NAME, file.filepath);
+		if(!deckinfo)
+			return;
+
+		deckinfo.deck.detachItem(deckinfo.index);
+	}
+}
+
 /** Einzelne Bearbeitugnsfenster und -module starten/öffnen **/
 
 function openFileInDeck(path, fSideDeck) {
@@ -650,17 +665,20 @@ function openFileInDeck(path, fSideDeck) {
 	//Iterate through modules and their matching groups
 	for(let mname in _mainwindow.MODULE_DEF_LIST) {
 		let module = _mainwindow.MODULE_DEF_LIST[mname];
-		//Currently hardcoded for scenario settings..
-		if(module.name == "scenario-settings" && !getConfigData("ScenarioSettings", "AlwaysUseScenarioSettings"))
-			continue;
 
 		if(module.cidemodule && module.matchinggroup) {
 			for(let group of module.matchinggroup) {
+				let priority = parseInt(group.priority);
+				if(!priority || isNaN(priority))
+					priority = 0;
+				//Use deactivated modules as reference for external programs. If an activated module is found (priority > -∞) then use it instead as usual.
+				if(!isModuleActive(module.name))
+					priority = -Infinity;
 				let pattern = new RegExp(group.filepattern, group.filepatternmodifier || "i");
-				if(!pattern.test(filename) || (matched_module && matched_module.priority > parseInt(group.priority)))
+				if(!pattern.test(filename) || (matched_module && matched_module.priority > priority))
 					continue;
 
-				matched_module = { module, group, priority: parseInt(group.priority) };
+				matched_module = { module, group, priority };
 			}
 		}
 	}
@@ -668,7 +686,15 @@ function openFileInDeck(path, fSideDeck) {
 	//If an appropriate module was found, open the file in this module
 	if(matched_module) {
 		let {module, group} = matched_module;
+		let extprgid = group.externalprogramid;
 
+		//Check for an external program if the module is deactivated
+		if(!isModuleActive(module.name)) {
+			if(extprgid && getConfigData("CIDE", "ExtProg_"+extprgid))
+				return OpenFileWithProgram(path, getConfigData("CIDE", "ExtProg_"+extprgid));
+			return;
+		}
+			
 		//Special handling for the audioplayer
 		if(module.name == "audioplayer")
 			return addAudioplayer(path);
@@ -685,8 +711,7 @@ function openFileInDeck(path, fSideDeck) {
 				return;
 			}
 		}
-
-		let extprgid = group.externalprogramid;
+		
 		//Eventually use external program to open the file with
 		if(extprgid && getConfigData("CIDE", "AU_"+extprgid))
 			return OpenFileWithProgram(path, getConfigData("CIDE", "ExtProg_"+extprgid));

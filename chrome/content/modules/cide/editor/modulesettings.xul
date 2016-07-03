@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://windmill/content/modules/settings/settings.css" type="text/css"?>
+
+<window id="main" title="Settings" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+	<hbox flex="1" style="overflow:auto"> <!-- Wrapper for scrollbars -->
+		<vbox flex="1">
+			<caption label="$acetheme$" class="toggle-contents" onclick="toggleContents(this)"/>
+			<vbox>
+				<hbox>
+					<listbox id="editor-theme-list" flex="1">
+					</listbox>
+				</hbox>
+				<hbox>
+					<button label="$applytheme$" id="apply-ace-theme" />
+				</hbox>
+			</vbox>
+		</vbox>
+		<vbox flex="1">
+			<caption label="Scripteditor" class="toggle-contents" onclick="toggleContents(this)"/>
+			<vbox>
+				<hbox>
+					<label value="$selectcompleter$" flex="1" />
+					<menulist flex="1">
+						<menupopup id="completerSelection">
+							<menuitem label="$AceCmp_NoCompleters$" value="0" />
+							<menuitem label="$AceCmp_KeywordsOnly$" value="1" />
+							<menuitem label="$AceCmp_KeywordsAndFuncs$" value="2" />
+							<menuitem label="$AceCmp_Everything$" value="3" />
+						</menupopup>
+					</menulist>
+				</hbox>
+				<checkbox label="$ShowParameterList$" class="autoinit" flex="1" default-cfgsect="Scripteditor" default-cfgkey="ParameterList"/>
+			</vbox>
+		</vbox>
+	</hbox>
+	<script type="text/javascript" src="chrome://windmill/content/js/default_functionalities/inherit.js"></script>
+	<script type="text/javascript" src="js/modulesettings.js"></script>
+</window>

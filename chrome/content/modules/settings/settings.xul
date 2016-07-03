@@ -9,7 +9,7 @@
 	
 
 	<hbox id="settings" flex="1">
-		<vbox id="settings-nav" flex="1">
+		<vbox id="settings-nav" width="200">
 			<!-- preference sections -->
 			<button class="active navigation" label="$General$" oncommand="togglePage('settings-page-general', 'settings-pages', this)" />
 			<button class="navigation" label="Open Clonk" oncommand="togglePage('settings-page-oc', 'settings-pages', this)" />
@@ -89,91 +89,98 @@
 				<stack>
 					<vbox id="settings-page-cide" class="settings-page" top="0" bottom="0">
 						<caption class="big" label="$cide$" />
-						<vbox>
-							<checkbox label="$ActivateFileProtection$" id="cide-fileprotection" class="autoinit" flex="1" default-cfgsect="CIDE" default-cfgkey="FileProtection"/>
-						</vbox>
-						
-						<caption label="Programs" class="toggle-contents" onclick="toggleContents(this)"/>
-						<vbox>
-							<grid>
-								<columns>
-									<column flex="1"/>
-									<column flex="5"/>
-									<column flex="1"/>
-									<column flex="1"/>
-								</columns>
-								<rows id="extprogram-list">
-									<row class="extprogram draft">
-										<label class="extprogram-label"/>
-										<description class="view-directory-path">$pathempty$</description>
-										<button label="$browse$" oncommand="openProgramDialog(this)"/>
-										<checkbox class="extprogram-always-use"/>
-										<box class="extprogram-clear nav-image icon-trashbin icon-32" height="32" width="32"></box>
-									</row>
-								</rows>
-							</grid>	
-						</vbox>
-						<caption label="$acetheme$" class="toggle-contents" onclick="toggleContents(this)"/>
-						<vbox>
-							<!-- ace theme selection -->
-							<hbox>
-								<listbox id="editor-theme-list" flex="1">
-								</listbox>
-							</hbox>
-							<hbox>
-								<button label="$applytheme$" oncommand="setAceTheme()" />
-							</hbox>
-							<!-- font size of explorer -->
-							<!--
-							<hbox>
-								<label value="Explorer Font Size" control="explorer-font-size"/>
-								<textbox id="explorer-font-size" type="number" />px
-							</hbox>-->
-						</vbox>
-						<caption label="Scripteditor" class="toggle-contents" onclick="toggleContents(this)"/>
-						<vbox>
-							<hbox>
-								<label value="$selectcompleter$" flex="1" />
-								<menulist flex="1">
-									<menupopup id="completerSelection">
-										<menuitem label="$AceCmp_NoCompleters$" value="0" />
-										<menuitem label="$AceCmp_KeywordsOnly$" value="1" />
-										<menuitem label="$AceCmp_KeywordsAndFuncs$" value="2" />
-										<menuitem label="$AceCmp_Everything$" value="3" />
-									</menupopup>
-								</menulist>
-							</hbox>
-							<checkbox label="$ShowParameterList$" class="autoinit" flex="1" default-cfgsect="Scripteditor" default-cfgkey="ParameterList"/>
-							
-						</vbox>
-						<caption label="Explorer" class="toggle-contents" onclick="toggleContents(this)"/>
-						<vbox>
-							<checkbox label="$CopyOnDragDrop$" id="explorer-copy-on-drag-drop" class="autoinit" flex="1" default-cfgsect="Explorer" default-cfgkey="CopyOnDragDrop"/>
-							<checkbox label="$HideUnsupportedFiles$" id="explorer-hide-unsupported-files" class="autoinit" flex="1" default-cfgsect="CIDE" default-cfgkey="HideUnsupportedFiles"/>
-							<checkbox label="$ScenarioDefinitionPolyfill$" id="explorer-scendef-polyfill" class="autoinit" flex="1" default-cfgsect="CIDE" default-cfgkey="RejectScenarioBackup"/>
-						</vbox>
-						<caption label="Scenario Settings" class="toggle-contents" onclick="toggleContents(this)"/>
-						<vbox>
-							<checkbox label="$AlwaysUseScenarioSettings$" id="scenariosettings-always-use" class="autoinit" flex="1" default-cfgsect="ScenarioSettings" default-cfgkey="AlwaysUseScenarioSettings"/>
-							<checkbox label="$UseModuleCache$" id="scenariosettings-module-cache" class="autoinit" flex="1" default-cfgsect="ScenarioSettings" default-cfgkey="UseModuleCache"/>
+						<hbox class="modulewrapper">
+							<description flex="1" style="text-align: center"> <!-- for line wrapping -->
+								<vbox class="moduleentry draft">
+									<stack class="bg-stack" height="160">
+										<vbox class="modulebackground"></vbox>
+										<vbox class="modulebglayer"></vbox>
+										<box class="module-forced icon-warning icon-16" height="16" width="16"></box>
+									</stack>
+									<vbox class="moduleentrycontent">
+										<hbox class="moduleinfo">
+											<hbox class="moduletitle">Scripteditor</hbox>
+											<hbox class="infotooltip" align="center">
+												<box class="modulectrl icon-info icon-16" height="16"></box>
+											</hbox>
+											<spacer flex="1"/>
+											<hbox class="modulecontrols" flex="1" align="center">
+												<spacer flex="1"/>
+												<hbox class="module-state-toggle enabled" height="16">
+													<vbox class="mst-left" align="center">
+														<box class=""><label value="Off" /></box>
+													</vbox>
+													<box class="mst-thumb" width="16" height="16"></box>
+													<vbox class="mst-right" align="center">
+														<box class=""><label value="On" /></box>
+													</vbox>
+												</hbox>
+											</hbox>
+										</hbox>
+									</vbox>
+								</vbox>
+							</description>
+						</hbox>
+					</vbox>
+					<vbox id="settings-page-cide-subpage" class="settings-page module-subpage" top="0" bottom="0">
+						<hbox class="module-subpage-header">
+							<caption class="module-subpage-caption" label="Modulename" />
+							<spacer flex="1"/>
+							<vbox pack="center">
+								<button class="module-subpage-button module-subpage-back" label="$Back$"/>
+							</vbox>
+						</hbox>
+						<vbox class="module-subpage-content" flex="1">
+							<vbox class="module-subpage-content-header">
+								<vbox class="extprogram-list">
+									<vbox class="extprogram draft">
+										<hbox>
+											<label class="extprogram-label" flex="1"/>
+											<description class="view-directory-path" flex="8">$pathempty$</description>
+											<button label="$browse$" class="extprogram-browse" />
+										</hbox>
+										<hbox>
+											<checkbox class="extprogram-always-use" label="$AlwaysUseExternalProgram$" />
+											<spacer flex="1" />
+											<vbox pack="center">
+												<box class="extprogram-clear icon-trashbin icon-24" height="24" width="24"></box>
+											</vbox>
+										</hbox>
+									</vbox>
+								</vbox>
+							</vbox>
+							<vbox flex="1" class="module-subpage-frame-wrapper">
+								
+							</vbox>
 						</vbox>
 					</vbox>
 				</stack>
 				
 				<!-- SUBPAGE: cBridge (Gamemode) -->
 				
+				<!-- LALALA COPY PASTE -->
 				<stack>
 					<vbox id="settings-page-cbridge" class="settings-page" top="0" bottom="0">
 						<caption class="big" label="$cBridge$" />
-
-						<caption label="$MasterserverView$" class="toggle-contents" onclick="toggleContents(this)"/>
-						<vbox>
-							<checkbox label="$ActivatePortScanner$" class="autoinit" flex="1" default-cfgsect="ShowGame" default-cfgkey="PortScan"/>
-							<checkbox label="$ShowNotificationsForEmptyGames$" class="autoinit" flex="1" default-cfgsect="ShowGame" default-cfgkey="NotificationsShowEmpty"/>
-							<hbox id="cbridge-gameport">
-								<label value="$GamePort$" control="cbridge-gameport-textbox" flex="1"/>
-								<textbox class="autoinit" flex="3" default-cfgsect="StartGame" default-cfgkey="GamePort"/>
-							</hbox>
+						<hbox class="modulewrapper">
+							<description flex="1" style="text-align: center"> <!-- for line wrapping -->
+								<!-- See the cide page for module entry draft -->
+							</description>
+						</hbox>
+					</vbox>
+					<vbox id="settings-page-cbridge-subpage" class="settings-page module-subpage" top="0" bottom="0">
+						<hbox class="module-subpage-header">
+							<caption class="module-subpage-caption" label="Modulename" />
+							<spacer flex="1"/>
+							<button class="module-subpage-button module-subpage-back" label="$Back$"/>
+						</hbox>
+						<vbox class="module-subpage-content" flex="1">
+							<vbox class="module-subpage-content-header">
+								
+							</vbox>
+							<vbox flex="1" class="module-subpage-frame-wrapper">
+								
+							</vbox>
 						</vbox>
 					</vbox>
 				</stack>
@@ -221,7 +228,7 @@
 								</vbox>
 								<vbox class="applist-status"></vbox>
 								<vbox class="applist-controls">
-									<box class="applist-browse nav-image icon-update icon-32" height="32" width="32"></box>
+									<box class="applist-browse icon-update icon-32" height="32" width="32"></box>
 								</vbox>
 							</hbox>
 						</vbox>

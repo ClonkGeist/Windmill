@@ -111,10 +111,30 @@
 	"require": "global|icons"
 },
 {
+	"name": "settingsPage",
+	"scss": "modules/settingsPage.scss",
+	"cssTarget": "content/modules/settings/settingsPage.css",
+	"observe": "settings",
+	"require": "global|icons",
+	"fonts": [{
+		"path": "icomoon.ttf",
+		"font-family": "icomoon",
+		"font-weight": "normal",
+		"font-style": "normal"
+	}]
+},
+{
 	"name": "cide",
 	"scss": "modules/cide.scss",
 	"cssTarget": "content/modules/cide/main/cide.css",
 	"observe": "cide",
+	"require": "global|icons"
+},
+{
+	"name": "cbridge",
+	"scss": "modules/cbridge.scss",
+	"cssTarget": "content/modules/cbridge/main/cbridge.css",
+	"observe": "cbridge",
 	"require": "global|icons"
 },
 {

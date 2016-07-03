@@ -18,6 +18,8 @@ $interact-red-darker: rgb(140, 20, 10);
 $interact-blue: rgb(0, 165, 210);
 $interact-orange: rgba(250,169, 0, 0.7);
 
+$clr-on-state: rgb(200, 255, 200);
+
 $clr-paper: rgb(250, 250, 250);
 $clr-base: rgb(245, 245, 245);
 $clr-empty: rgb(235, 235, 235);
@@ -68,6 +70,30 @@ $hover-blue-bg: rgba(0, 165, 207, 0.15);
 	display: flex;
 	align-items: center;
 	justify-content: center;
+}
+
+@mixin scanlines($clr, $spacing, $thickness) {
+	background-image: repeating-linear-gradient(-45deg, 
+		transparent, 
+		transparent $spacing,
+		$clr $spacing, 
+		$clr $spacing+$thickness);
+}
+
+@mixin std-button() {
+	-moz-appearance: none;
+	background-color: $clr-base;
+	background: -moz-linear-gradient(top, $clr-paper 0%, $clr-empty 100%);
+	border: 1px solid $clr-border;
+	color: $ui-text-clr;
+	
+	&:hover {
+		border: 1px solid $clr-border-grey;
+	}
+	
+	&:active {
+		background: -moz-linear-gradient(top, $clr-empty 0%, $clr-border 100%);
+	}
 }
 
 a {
@@ -132,6 +158,78 @@ a {
 	pointer-events: none;
 	border: none;
 }
+
+/* kill it with fire! */
+
+/* xul */
+button:-moz-focusring > .button-box {
+  border: 0px dotted ThreeDDarkShadow;
+}
+
+menulist:-moz-focusring > .menulist-label-box,
+checkbox:-moz-focusring > .checkbox-label-box {
+  border: 1px solid transparent;
+}
+
+/* for html */
+button::-moz-focus-inner {
+  border: 0;
+}
+
+label {
+	-moz-user-select: none;
+}
+
+input[type=checkbox].custom {
+	-moz-appearance: none;
+	opacity: 0;
+	position: absolute;	
+	
+	& + .cbox-button::before {
+		background-repeat: no-repeat;
+		background-size: 16px 16px;
+		background-position: center;
+		background-image: url("chrome://windmill/skin/overrides/checkbox/cbox.svg");
+		height: 16px;
+		width: 16px;
+		display: inline-block;
+		opacity: 1;
+		content: " ";
+		vertical-align: middle;
+		margin-right: 5px;
+		margin-top: -1px;
+	}
+	
+	& + .cbox-button:hover::before {
+		background-image: url("chrome://windmill/skin/overrides/checkbox/cbox-h.svg");
+	}
+	
+	&:active + .cbox-button::before {
+		background-image: url("chrome://windmill/skin/overrides/checkbox/cbox-a.svg");
+	}
+	
+	&:checked + .cbox-button::before {
+		background-image: url("chrome://windmill/skin/overrides/checkbox/cbox-c.svg");
+	}
+	
+	&:checked + .cbox-button::hover:before {
+		background-image: url("chrome://windmill/skin/overrides/checkbox/cbox-c.svg");
+	}
+	
+	&:checked:active + .cbox-button::before {
+		background-image: url("chrome://windmill/skin/overrides/checkbox/cbox-ca.svg");
+	}
+	
+	&[disabled="true"] + .cbox-button::before {
+		background-image: url("chrome://windmill/skin/overrides/checkbox/cbox-d.svg");
+	}
+	
+	&[disabled="true"]:checked .cbox-button::before {
+		background-image: url("chrome://windmill/skin/overrides/checkbox/cbox-cd.svg");
+	}
+}
+
+
 
 $bg-dark: #636363;
 

@@ -1,12 +1,40 @@
+$svg-url-the-mill: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><path fill='%23191e23' d='M29.48,24.609l-0.03-0.829l-0.229-5.47L29.2,17.859L28.77,17.74l-6.89-1.83l6.07-9.39l0.45-0.7L27.6,5.6
+	L22.32,4.13l-0.43-0.12l-0.24,0.38l-3.881,6L10.72,1.72L10.2,1.08L9.73,1.76L6.69,6.32L6.45,6.7l0.28,0.35l4.51,5.54L0.79,16.62
+	l-0.77,0.3l0.51,0.65l3.41,4.3l0.28,0.35l0.42-0.159l6.68-2.58l0.61,11.16l0.05,0.829l0.78-0.29l5.141-1.91l0.42-0.16L18.3,28.66
+	l-0.39-7.13L28.7,24.4L29.48,24.609z M17.757,14.982l0.088,2.175l-0.3,0.106l-2.052,0.761l-0.212-0.267l-1.326-1.679l0.212-0.319
+	l1.185-1.804l0.336,0.089l2.051,0.566L17.757,14.982z'/></svg>");
+
+@mixin the-mill() {
+	background-image: $svg-url-the-mill;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: auto 60%;
+}
+
 window {
 	background-color: $chrome-clr;
+	
 	font-family: $font-stack;
 	outline: 1px solid black;
 	outline-offset: -1px;
+	
+	&.maximized {
+		outline-width: 0;
+		
+		resizer {
+			display: none;
+		}
+	}
 }
 
-window.maximized resizer {
-	display: none;
+windmilldialog { display: none; }
+
+resizer {
+	-moz-appearance: none;
+	background-color: transparent;
+	height: 4px;
+	width: 4px;
+	border: 2px solid transparent;
 }
 
 window.maximized .maximize-window,
@@ -31,13 +59,20 @@ window.maximized .restore-window {
 }
 
 .window-button {
-	padding: 0 3px;
+	padding: 3px 3px;
 	color: rgb(150, 150, 150);
 	cursor: default;
-	padding: 0 initial;
+	font-size: 16px;
 	
 	&:hover {  
 		background-color: rgb(80, 80, 80);
+	}
+}
+
+.window-button.icon-x-small {
+	&:hover {
+		background-color: $interact-red;
+		color: $clr-base;
 	}
 }
 
@@ -45,17 +80,12 @@ window.maximized .restore-window {
 	filter: blur(0px);
 	transition: filter 0.8s;
 	transition-delay: 0.3s;
-}
-#modules-wrapper.startup-loading {
-	filter: blur(3px);
-}
-
-resizer {
-	-moz-appearance: none;
-	background-color: transparent;
-	height: 4px;
-	width: 4px;
-	border: 2px solid transparent;
+	
+	&.startup-loading {
+		filter: blur(3px);
+		transition: filter 0s;
+		transition-delay: 0s;
+	}
 }
 
 .icon-the-mill {
@@ -100,33 +130,15 @@ toolbox, toolbarbutton, toolbar, button, #header {
 #nav-playername {
 	font-weight: 600;
 	font-size: 18px;
-	color: white;
 	padding-left: 1em;
 	padding-right: 0.2em;
 	padding-top: 3px;
 }
 
-#inner-navigation button {
-	color: whitesmoke;
-	border: none;
-	margin: 0;
-	height: 32px;
-	line-height: 40px;
-	background-color: inherit;
-	
-	transition: background-color 0.1s;
-	
-	font-weight: bold;
-	padding-left: 1em;
-	padding-right: 1em;
-}
-
-#inner-navigation button:hover {
-	background: $chrome-ui-active;
-}
-
-#inner-navigation button.nav-active {
-	background: $chrome-ui-active;
+#nav-otherplayers > label {
+	font-size: 18px;
+	padding-right: 0.2em;
+	padding-top: 3px;
 }
 
 caption {
@@ -136,6 +148,49 @@ caption {
 .draft {
 	display: none;
 }
+
+/* main nav dropdown menu */
+
+.ctx-mainnavigation {
+	border: 1px solid $chrome-clr-sub;
+	
+	&:hover {
+		border-color: $chrome-clr-sub;
+	}
+	
+	.ctx-wrapper {
+		background: $chrome-clr;
+		color: white;
+	}
+	
+	.ctx-menuitem {
+		&:hover, &.selected  {
+			outline: 0;
+			background-color: $chrome-ui-active;
+		}
+		
+		&:hover .icon-has-ctx-sub:before {
+			color: white;
+		}
+		
+		&:hover .icon-small-settings:before {
+			color: $chrome-clr;
+		}
+		
+		&:hover .icon-small-settings:hover:before {
+			color: white;
+		}
+	}
+	
+	.icon-has-ctx-sub:before {
+		color: rgba(255, 255, 255, 0.5);
+	}
+	
+	.icon-small-settings:before {
+			color: rgb(60, 60, 60);
+	}
+}
+
 
 /* main mode */
 
@@ -272,114 +327,47 @@ toolbarbutton:focus  *{
 
 /* player selection */
 
-.plr-page {
-	display: none;
+.ctx-playerselect {
+	.ctx-menuitem {
+		font-size: 1em;
+		line-height: 2.4em;
+		height: 32px !important;
+		padding: 0.1em 0.3em;
+		cursor: default;
+		
+		transition: background-color 0.3s;
+
+		.ctx-submenuindicator:before {
+			color: $ui-light-clr;
+		}
+	}
 }
 
-caption {
-	font-size: 16pt;
-	font-weight: bold;
+.dlg-aplabelwrapper {
+	font-size: 1.2em;
+	padding: 2px 4px;
+	color: $ui-text-clr;
 }
 
-#pd-lastround {
-	font-size: 14pt;
-}
-
-#ps-playerlist {
-	overflow: auto;
-}
+/* sidebar */
 
 .sidebar {
 	background-color: rgb(245, 245, 245);
 	height: 100%;
-	width: 300px;
-	max-width: 300px;
 	overflow: hidden;
-	transition: width 0.3s;
+	transition: opacity 0.3s;
+	opacity: 1;
 	color: rgb(60, 60, 60);
-	border-left: 1px solid gainsboro;
 	box-sizing: border-box;
 }
 
 .sidebar.invisible {
-	width: 0px !important;
+	opacity: 0;
+	pointer-events: none;
 	border-left-width: 0px;
 }
 
-#ps-playerdetails {
-	display: none;
-}
-
-.ps-playerlistitem,
-.cds-listitem {
-	height: 50px;
-	padding: 10px;
-	cursor: default;
-	transition: border-color 0.3s;
-	border-left: 3px solid transparent;
-}
-
-.ps-playerlistitem:hover,
-.cds-listitem:hover {
-	border-left-color: grey;
-}
-
-.ps-playerlistitem.selected  {
-	border-left-color: $interact-red;
-}
-
-.cds-listitem.selected {
-	border-left-color: #0A4163;
-}
-
-.cds-lbl-directory { font-size: 10pt; }
-
-.lastround {
-	display: none !important;
-}
-
-#ps-pdname {
-	margin-left: 0;
-	font-weight: normal;
-}
-
-.img-psbutton {
-	cursor: pointer;
-	color: white;
-	padding: 0;
-	background-position: center;
-	background-repeat: no-repeat;
-}
-
-.img-psbigicon {
-	/*background-color: rgb(55, 85, 205);*/
-}
-
-.ps-iconlist {
-	color: rgb(180, 180, 180);
-}
-
-.ps-iconlist .icon-24:hover {
-	color: grey;
-}
-
-.lbl-psplayername {
-	text-align: right;
-}
-
-.ps-lblbutton {
-	background-color: rgb(95, 135, 255);
-	text-align: center;
-	cursor: pointer;
-	padding: 2px 5px;
-	margin: 2px 5px;
-	display: none;
-}
-.plrpage-selected {
-	display: -moz-box;
-}
-
-.ps-h {
+.sidebar-h {
 	background: $interact-red;
 	color: white;
 	margin: 0;
@@ -387,47 +375,27 @@ caption {
 	padding: 0.3em;
 	padding-top: 0.2em;
 	margin-bottom: 1em;
-}
-
-.cds-h {
 	background: #0A4163;
-}
 
-.ps-h caption{
-	font-weight: normal;
-	font-size: 14pt;
-	line-height: 20pt;
-}
+	caption {
+		font-weight: normal;
+		font-size: 14pt;
+		line-height: 20pt;
+	}
+	image {
+		vertical-align: baseline;
+		cursor: pointer;
+	}
+} 
 
-.ps-h image{
-	vertical-align: baseline;
-	cursor: pointer;
-}
-
-.ps-h-icon {
+.sidebar-h-icon {
 	&:hover,&.active{
 		background-color: #C13A2B;
 	}
 }
 
-.ps-b {
+.sidebar-b {
 	padding: 0.5em;
-}
-
-.plr-page textbox,
-.plr-page textbox  * {
-	-moz-appearance: none;
-	background-color: inherit;
-	color: rgb(60, 60, 60);
-}
-
-#ap-plrname {
-	border: none;
-	border-bottom: 1px solid grey;
-}
-
-#ap-plrcomment {
-	border: 1px solid rgba(0, 0, 0, 0.2);
 }
 
 /*-- notification panel --*/
@@ -527,12 +495,10 @@ caption {
 
 
 #developerlog, #gitlog {
-	width: 800px;
-	max-width: 800px;
 	-moz-user-focus: normal;
 }
-#developerlog .ps-h {background-color: $chrome-clr;}
-#gitlog .ps-h {background-color: rgb(241, 72, 33);}
+#developerlog .sidebar-h, #gitlog .sidebar-h {background-color: $chrome-clr;}
+/*#gitlog .ps-h {background-color: rgb(241, 72, 33);}*/
 
 #log-entrylist { overflow-y: scroll; }
 #log-entrylist.show-hidden-logs > .log-listitem.hidden { display: -moz-box; }
@@ -598,10 +564,13 @@ caption {
 	background-color: $chrome-clr;
 	font-size: 2.5em;
 	color: white;
+	
+	@include the-mill();
 }
 
 #modules-nav {
 	transition: opacity 1s;
+	color: white;
 }
 
 #modules-nav.startup-loading {

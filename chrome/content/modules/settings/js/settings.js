@@ -10,27 +10,276 @@ hook("load", function() {
 			$(this).text(getConfigData(options.cfgsect, options.cfgkey));
 		});
 
-		loadEditorThemes(_sc.chpath + "/content/modules/cide/editor/js/ace");
-
-		let modules = getModuleDefs(), extprogids = [];
+		let modules = getModuleDefs();
 		for(let mname in modules) {
 			let module = modules[mname];
-			if(!module.cidemodule || !module.matchinggroup)
+			if((!module.cidemodule || !module.matchinggroup) && !module.cbridgemodule)
 				continue;
 
-			for(let group of module.matchinggroup)
-				if(group.externalprogramid && extprogids.indexOf(group.externalprogramid) == -1)
-					extprogids.push(group.externalprogramid);
-		}
-		for(let extprogid of extprogids) {
-			let clone = $(".extprogram.draft").clone();
-			clone.removeClass("draft");
-			clone.find(".extprogram-label").attr("value", Locale("$ExtProg_"+extprogid+"Lbl$"));
-			if(getConfigData("CIDE", "ExtProg_"+extprogid))
-				clone.find(".view-directory-path").text(getConfigData("CIDE", "ExtProg_"+extprogid));
-			if(getConfigData("CIDE", "AU_"+extprogid))
-				clone.find(".extprogram-always-use").prop("checked", true);
-			clone.appendTo($("#extprogram-list"));
+			//Create module overview
+			if(module.cidemodule || module.cbridgemodule) {
+				let target = module.cidemodule?"#settings-page-cide":"#settings-page-cbridge";
+				let clone = $(".moduleentry.draft").clone();
+				clone.removeClass("draft");
+
+				//Title and description
+				clone.find(".moduletitle").text(Locale(module.modulename, module.languageprefix));
+				tooltip(clone.find(".icon-info")[0], module.description, "xul", 150, { target: clone.find(".moduleinfo")[0], lpre: module.languageprefix, css: {"max-width": "260px", "width": "260px"} });
+				tooltip(clone.find(".icon-warning")[0], "$ForcedModuleDeactivation$", "xul", 150);
+
+				let gradient = "linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 48%, rgba(255, 255, 255, 0.8) 90%),";
+				if(!module.settings.previewimage)
+					clone.find(".modulebackground").css("background-image", gradient+"url(chrome://windmill/content/"+formatPath(module.relpath)+"/previewimage.png)");
+				else
+					clone.find(".modulebackground").css("background-image", gradient+"url(chrome://windmill/content/"+formatPath(module.relpath)+"/"+module.settings.previewimage+")");
+
+				//[TODO/ADDONS:] Addons should not be able to use this option
+				if(!module.isnotdeactivatable) {
+					let state = getConfigData("Modules", module.name+"_State");
+					if(state)
+						clone.addClass("deactivated"+(state==2?" forced":""));
+					
+					$(clone).find(".module-state-toggle").click(function(e) {
+						e.stopPropagation();
+						if(getConfigData("Modules", module.name+"_State")) {
+							setConfigData("Modules", module.name+"_State", 0, true);
+							clone.removeClass("deactivated forced");
+							if(module.cbridgemodule)
+								getModuleByName("cbridge").contentWindow.attachModule(module);
+							return;
+						}
+
+						let forced_mode = false;
+						if(e.ctrlKey)
+							forced_mode = true;
+						//For CIDE modules: show warning about unsaved changes.
+						if(module.cidemodule) {
+							function cleanUnusedModules() {
+								let modules = getModulesByName(module.name);
+								for(let module of modules) {
+									if(forced_mode || module.contentWindow.parent.MODULE_NAME == "cide") {
+										getModuleByName("cide").contentWindow.detachModule(module, getModuleDef($(module).attr("name")));
+										$(module).remove();
+									}
+								}
+								setConfigData("Modules", module.name+"_State", 1+forced_mode, true);
+								clone.addClass("deactivated"+(forced_mode?" forced":""));
+							}
+
+							//Get list of all unsaved changes
+							let files;
+							files = getModuleByName("cide").contentWindow.getUnsavedFiles();
+
+							if(!files || !files.length) {
+								//create confirmation dialog
+								dlg = new WDialog("$DlgConfirmModuleDeactivation$", MODULE_LPRE, { modal: true, css: { "width": "450px" },
+									btnright: [{preset: "accept", onclick: function(e, btn, _self) {
+										//remove iframes
+										cleanUnusedModules();
+									}}, "cancel"]});
+								dlg.setContent(Locale("<description>$DlgConfirmModuleDeactivationDesc"+(forced_mode?"Forced":"")+"$</description>"));
+								dlg.show();
+							}
+							else {
+								//create dialog
+								dlg = new WDialog("$DlgUnsavedChanges$", MODULE_LPRE, { modal: true, css: { "width": "450px" },
+									btnright: [{preset: "accept", onclick: function(e, btn, _self) {
+										$(_self.element).find(".dlg-checklistitem.selected").each(function() {
+											let index = parseInt($(this).attr("data-fileindex"));
+
+											//Save tab
+											if(files[index].module.saveFileByPath)
+												files[index].module.saveFileByPath(files[index].filepath);
+										});
+										//switch back to settings
+										_mainwindow.mainDeck.show(_mainwindow.mainDeck.getModuleId("settings"));
+										//remove iframes
+										cleanUnusedModules();
+									}}, {preset:"cancel", onclick: function() {
+										//switch back to settings
+										_mainwindow.mainDeck.show(_mainwindow.mainDeck.getModuleId("settings"));
+									}}]});
+
+								//Generate list of unsaved files
+								let liststr = '<vbox id="dex-dlg-gffiles" class="dlg-checklistbox">';
+								for(let i = 0; i < files.length; i++)
+									if(files[i].module.MODULE_NAME == module.name)
+										liststr += '<hbox class="dlg-checklistitem" data-fileindex="'+i+'">'+files[i].filepath.replace(_sc.workpath(files[i])+"/", "")+'</hbox>';
+
+								liststr += "</vbox>"
+
+								dlg.setContent('<description>$DlgUnsavedChangesDesc$</description>'+liststr+
+											   '<description>$DlgUnsavedChangesDesc3$</description>'+
+											   (forced_mode?"<hbox class=\"dlg-infobox\"><description>$DlgUnsavedChangesDesc3Forced$</description></hbox>":""));
+								dlg.show();
+
+								$(dlg.element).find(".dlg-checklistitem").click(function() {
+									let index = parseInt($(this).attr("data-fileindex"));
+									_mainwindow.mainDeck.show(_mainwindow.mainDeck.getModuleId("cide"));
+									getModuleByName("cide").contentWindow.fileLoadedInModule($(files[index].module).attr("name"), files[index].filepath, true);
+								});
+
+								return;
+							}
+						}
+						else if(module.cbridgemodule) {
+							function cleanUnusedModules() {
+								let modules = getModulesByName(module.name);
+								for(let module of modules) {
+									if(forced_mode || module.contentWindow.parent.MODULE_NAME == "cbridge") {
+										getModuleByName("cbridge").contentWindow.detachModule(module, getModuleDef($(module).attr("name")));
+										$(module).remove();
+									}
+								}
+								setConfigData("Modules", module.name+"_State", 1+forced_mode, true);
+								clone.addClass("deactivated"+(forced_mode?" forced":""));
+							}
+
+							//create confirmation dialog
+							dlg = new WDialog("$DlgConfirmModuleDeactivation$", MODULE_LPRE, { modal: true, css: { "width": "450px" },
+								btnright: [{preset: "accept", onclick: function(e, btn, _self) {
+									//remove iframes
+									cleanUnusedModules();
+								}}, "cancel"]});
+							dlg.setContent(Locale("<description>$DlgConfirmModuleDeactivationDesc"+(forced_mode?"Forced":"")+"$</description>"));
+							dlg.show();
+						}
+					});
+				}
+
+				clone.appendTo($(target+" > .modulewrapper > description"));
+				let showconfig = module.isconfigurable;
+				if(module.cidemodule)
+					for(let {externalprogramid} of module.matchinggroup)
+						if(externalprogramid) {
+							showconfig = true;
+							break;
+						}
+
+				if(showconfig) {
+					clone.addClass("configurable");
+					//If we want to add an addon interface some time, "true" shall be replaced by a check if the module is an addon
+					let allowscripts = true || module.settings.allowscripts;
+					clone.find(".bg-stack").click(function() {
+						//Prepare subpage
+						let subpage = $($(this).parents("stack")[0]).find(".module-subpage");
+						subpage.css("display", "-moz-box").find(".module-subpage-caption").text(Locale(module.modulename, module.languageprefix));
+						$(target+"-subpage .extprogram-list .extprogram:not(.draft)").remove();
+
+						//Unload all frames
+						$(".module-subpage-frame-wrapper").empty();
+
+						//Show external program list for this module
+						if(module.cidemodule) {
+							let extprogids = [];
+							for(let asd of module.matchinggroup) {
+								let {externalprogramid} = asd;
+								if(externalprogramid && extprogids.indexOf(externalprogramid) == -1) {
+									let clone = $(".extprogram.draft").clone();
+									clone.removeClass("draft");
+									clone.find(".extprogram-label").attr("value", Locale("$ExtProg_"+externalprogramid+"Lbl$"));
+									if(getConfigData("CIDE", "ExtProg_"+externalprogramid))
+										clone.find(".view-directory-path").text(getConfigData("CIDE", "ExtProg_"+externalprogramid));
+									if(getConfigData("CIDE", "AU_"+externalprogramid))
+										clone.find(".extprogram-always-use").prop("checked", true);
+									clone.find(".extprogram-browse").on("command", function() {
+										openProgramDialog(this, undefined, externalprogramid);
+									});
+									clone.find(".extprogram-always-use").on("command", function() {
+										setConfigData("CIDE", "AU_"+externalprogramid, $(this).prop("checked"));
+									});
+									clone.find(".extprogram-clear").click(function() {
+										setConfigData("CIDE", "ExtProg_"+externalprogramid, "");
+										clone.find(".view-directory-path").text(Locale("$pathempty$"));
+									});
+									clone.appendTo($(target+"-subpage .extprogram-list"));
+
+									//Dont show the same programid multiple times
+									extprogids.push(externalprogramid);
+								}
+							}
+						}
+
+						//Load settings content from module
+						//TODO: Maybe some kind of check if module X was added and the user "trusted" it? So scripts will not be executed until the user allows it.
+						//      Or an unexploitable script protection.. (that also includes XML Namespaces)
+						if(module.isconfigurable) {
+							let mode = "content";
+							//[TODO/ADDONS:] Warn if an addon asks for chrome access
+							if(module.settings.chromeaccess)
+								mode = "chrome";
+
+							let path;
+							if(mode == "chrome")
+								path = "chrome://windmill/content/"+module.relpath;
+							else {
+								//Use absolute paths for the file protocol in content mode
+								path = module.path.split("/");
+								path.pop();
+								path = path.join("/");
+							}
+							path += "/"+(module.settings.path?module.settings.path:"modulesettings.html");
+							//Use file protocol in content mode (This way the pages will have no chrome access and are as harmful as webpages)
+							if(mode == "content")
+								path = formatPath(path, {fileProtocol: true});
+
+							let fext = path.split(".").pop().toLowerCase();
+							//Due to the file-protocol, xul files are not supported in content mode. (Firefox blocks them)
+							if(mode == "content" && fext != "html") {
+								log(`An error occured while trying to load the settings of the ${module.modulename} module:`, "error");
+								log(`The specified target file is not supported${(fext=="xul"?" in content mode":"")}. (Currently supported formats: html)`, "error");
+								if(fext == "xul")
+									log("For xul files, the file needs to be loaded in chrome mode.", "error");
+								return;
+							}
+							else if(mode == "chrome" && fext != "xul" && fext != "html") {
+								log(`An error occured while trying to load the settings of the ${module.modulename} module:`, "error");
+								log(`The specified target file is not supported. (Currently supported formats: html, xul)`, "error");
+								return;
+							}
+
+							//Create new frame
+							$(target+"-subpage .module-subpage-frame-wrapper").append(`<iframe type="${mode}" class="module-subpage-frame module-subpage-frame-${mode}" flex="1" src="${path}"></iframe>`)
+							let frame = $(target+"-subpage .module-subpage-frame-"+mode)[0];
+							let counter = 0;
+
+							//Check all X frames if the document URI is not about:blank (that means, that it loads a document) because otherwise we 
+							//cannot bind an event to the document/window. (Even though it may exist already, it will be changed by a new 
+							//document/window if the document is loaded. And there seems to be no iframe.onload event, at least not for XUL iframes.)
+							function prepareDocument() {
+								if(!frame)
+									return;
+								if(frame.contentWindow && frame.contentWindow.document.documentURI != "about:blank") {
+									function prepareDocumentCore(doc, window) {
+										let container;
+										if(fext == "html")
+											container = $(doc).find("body > *");
+										else if(fext == "xul") {
+											doc = doc.documentElement;
+											container = $(doc).children("*");
+										}
+										//Localize and initialize configuration elements
+										localizeModule(container, true);
+										autoInitialize(doc, {tooltip: { lang: fext, window }});
+									}
+									if(frame.docShell.busyFlags)
+										frame.contentWindow.document.addEventListener("DOMContentLoaded", function() {
+											prepareDocumentCore(this, frame.contentWindow);
+										});
+									else
+										prepareDocumentCore(frame.contentWindow.document, frame.contentWindow);
+									return;
+								}
+								window.requestAnimationFrame(prepareDocument);
+							}
+							prepareDocument();
+						}
+					});
+				}
+			}
+			$(".module-subpage-button.module-subpage-back").click(function() {
+				$($(this).parents(".module-subpage")[0]).css("display", "none");
+			}).click();
 		}
 
 		let iterator;
@@ -55,16 +304,6 @@ hook("load", function() {
 			if(reason != StopIteration)
 				throw reason;
 		});
-		
-		let completers = getConfigData("Scripteditor", "Completers");
-		$("#completerSelection").parent().on("command", function(e) {
-			setConfigData("Scripteditor", "Completers", $(this)[0].selectedItem.value);
-			if(parseInt($(this)[0].selectedItem.value) != completers)
-				changeNeedsRestart = true;
-			else
-				changeNeedsRestart = false;
-		});
-		$("#completerSelection").parent()[0].selectedItem = $("#completerSelection").find('menuitem[value="'+completers+'"]')[0];
 
 		//KeyBindings auflisten
 		var keybindings = _mainwindow.customKeyBindings, current_prefix;
@@ -109,15 +348,7 @@ hook("load", function() {
 			clone.attr("keyname", key);
 			clone.attr("lprefix", prefix);
 			clone.find(".pkb-list-entry-desc").text(Locale("$KEYB_"+key_corename+"$", prefix));
-			var lkeyw = Locale("$KEYCODE_"+val.replace(/-?(Ctrl|Shift|Alt)-?/g, "")+"$", -1);
-			if(lkeyw[0] != "$") {
-				if(val.search(/(Ctrl|Shift|Alt)/) != -1)
-					clone.find(".pkb-list-entry-keys").text(val.replace(/-([^-]*-?)$/, "")+"-"+lkeyw);
-				else
-					clone.find(".pkb-list-entry-keys").text(lkeyw);
-			}
-			else
-				clone.find(".pkb-list-entry-keys").text(val);
+			clone.find(".pkb-list-entry-keys").text(localizeKeyString(val));
 			clone.appendTo($("#pkb-keybindings-list"));
 
 			//Neue Taste zuweisen
@@ -142,7 +373,7 @@ hook("load", function() {
 					keystr += getKeyCodeIdentifier(e.keyCode);
 
 					let applyKeyBinding = (key, val) => {
-						$(this).find(".pkb-list-entry-keys").text(val);
+						$(this).find(".pkb-list-entry-keys").text(localizeKeyString(val));
 						_mainwindow.customKeyBindings[key] = val;
 						keybinding_changes = true;
 					}
@@ -194,23 +425,23 @@ hook("load", function() {
 
 						_mainwindow.restartWindmill();
 					}}, "cancel"]});
-				
+
 				var liststr = '<vbox id="dex-dlg-gffiles" class="dlg-checklistbox">';
 				for(var i = 0; i < files.length; i++)
 					liststr += '<hbox class="dlg-checklistitem" data-fileindex="'+i+'">'+files[i].filepath.replace(_sc.workpath(files[i])+"/", "")+'</hbox>';
-				
+
 				liststr += "</vbox>"
 
 				dlg.setContent('<description>$DlgUnsavedChangesDesc$</description>'+liststr+
 							   '<description>$DlgUnsavedChangesDesc2$</description>');
 				dlg.show();
-				
+
 				$(dlg.element).find(".dlg-checklistitem").click(function() {
 					var index = parseInt($(this).attr("data-fileindex"));
 					_mainwindow.mainDeck.show(_mainwindow.mainDeck.getModuleId("cide"));
 					getModuleByName("cide").contentWindow.fileLoadedInModule($(files[index].module).attr("name"), files[index].filepath, true);
 				});
-				
+
 				return;
 			}
 			else
@@ -236,62 +467,81 @@ hook("load", function() {
 			});
 		}
 
-		//Simplere Einstellungselemente automatisch initialisieren
-		$(".autoinit").each(function() {
-			let sect = $(this).attr("default-cfgsect");
-			let key = $(this).attr("default-cfgkey");
-			if(!sect || !key)
-				throw "No section or key for auto initialized settings element defined.";
-			let val = getConfigData(sect, key), event = "command";
-
-			//Wert und Event je nach Elementart setzen
-			switch($(this).prop("tagName").toLowerCase()) {
-				case "checkbox":
-					$(this).attr("checked", val);
-					break;
-
-				case "textbox":
-					event = "input";
-					$(this).val(val);
-					break;
-
-				default:
-					$(this).val(val);
-					break;
-			}
-			//Bei Veraenderung diese in der Config temporaer speichern
-			$(this).on(event, function() {
-				switch($(this).prop("tagName").toLowerCase()) {
-					case "checkbox":
-						val = $(this).attr("checked");
-						break;
-
-					default:
-						val = $(this).val();
-						break;
-				}
-
-				setConfigData(sect, key, val);
-			});
-		});
-
-		$(".extprogram-always-use").on("command", function() {
-			let id = $(this).parent().attr("id").replace(/row-/, "");
-			setConfigData("CIDE", "AU_"+id, $(this).prop("checked"));
-		});
-		$(".extprogram-clear").click(function() {
-			let id = $(this).parent().attr("id").replace(/row-/, "");
-			setConfigData("CIDE", "ExtProg_"+id, "");
-			$(this).parent().find(".view-directory-path").text(Locale("$pathempty$"));
-		});
-		tooltip($("#explorer-scendef-polyfill")[0], "$TooltipDEXScendefPolyfill$");
-		tooltip($("#scenariosettings-module-cache")[0], "$TooltipSCEModuleCache$");
-		tooltip($("#cbridge-gameport")[0], "$TooltipSGGamePort$");
+		autoInitialize();
 	}, 1);
 });
 
 const TEMPORARY_DATA_PATH = _sc.profd+"/tmp";
 let clearTempDataTask;
+
+function autoInitialize(container, options = {}) {
+	//Simplere Einstellungselemente automatisch initialisieren
+	$(".autoinit", container).each(function() {
+		let sect = $(this).attr("default-cfgsect");
+		let key = $(this).attr("default-cfgkey");
+		if(!sect || !key)
+			throw "No section or key for auto initialized settings element defined.";
+		let val = getConfigData(sect, key), event = "command";
+
+		//Wert und Event je nach Elementart setzen
+		let tagName = $(this).prop("tagName").toLowerCase();
+		switch(tagName) {
+			case "checkbox":
+				$(this).attr("checked", val);
+				break;
+
+			case "textbox":
+				event = "input";
+				$(this).val(val);
+				break;
+
+			case "input":
+				event = "change";
+				switch($(this).attr("type")) {
+					case "checkbox":
+						$(this).prop("checked", val);
+						break;
+
+					default:
+						$(this).val(val);
+						break;
+				}
+				break;
+
+			default:
+				$(this).val(val);
+				break;
+		}
+
+		//Bei Veraenderung diese in der Config temporaer speichern
+		$(this).on(event, function() {
+			switch(tagName) {
+				case "checkbox":
+					val = $(this).attr("checked");
+					break;
+
+				case "input":
+					switch($(this).attr("type")) {
+						case "checkbox":
+							val = $(this).prop("checked");
+							break;
+
+						default:
+							val = $(this).val();
+							break;
+					}
+					break;
+
+				default:
+					val = $(this).val();
+					break;
+			}
+
+			setConfigData(sect, key, val);
+		});
+	});
+	initializeTooltips(container, options.tooltip);
+}
 
 function showDeckItem() {
 	if(clearTempDataTask)
@@ -343,7 +593,7 @@ function showDeckItem() {
 		if(val != -1)
 			clearTempDataTask = false;
 	}, function(reason) {
-		log("Temp Data calculation failed: " + reason);
+		log("Temp Data calculation failed: " + reason, "error");
 		clearTempDataTask = false;
 		$("#clear-temp-data").attr("data-additional", Locale("$Failed$"));
 	});
@@ -365,7 +615,7 @@ function clearTemporaryData() {
 		EventInfo("$EI_TempCleared$");
 		clearTempDataTask = false;
 	}).then(null, function(reason) {
-		log("Clearing temporary data failed: " + reason);
+		log("Clearing temporary data failed: " + reason, "error");
 		EventInfo("An error occured while trying to clear temporary data.");
 	});
 }
@@ -473,7 +723,7 @@ function saveSettings() {
 		yield _mainwindow.saveKeyBindings();
 		keybinding_changes = false;
 	}).then(function() {
-		EventInfo("$EI_Saved$", -1);		
+		EventInfo("$EI_Saved$", -1);
 		if(changeNeedsRestart)
 			$("#restartBar").addClass("active");
 	});
@@ -559,10 +809,7 @@ function openPathDialog(id) {
 	return true;
 }
 
-function openProgramDialog(obj, extApp) {
-	var type = $(obj).parent().attr("id");
-	type = type.replace(/row-/, "");
-
+function openProgramDialog(obj, extApp, type) {
 	//Filepicker öffnen
 	var fp = _sc.filepicker();
 	fp.init(window, Locale("$choose_program$"), Ci.nsIFilePicker.modeOpen);
@@ -597,46 +844,6 @@ function openProgramDialog(obj, extApp) {
 		else
 			$(obj).parent().find(".view-directory-path").text(path);
 	}
-
-	return true;
-}
-
-function loadEditorThemes(path) {
-	//ace-Ordner
-	var f = _sc.file(path);
-	if(!f.exists() || !f.isDirectory())
-		return;
-
-	//Verzeichnisse einzelnd untersuchen
-	var entries = f.directoryEntries;
-
-	while(entries.hasMoreElements()) {
-		var entry = entries.getNext().QueryInterface(Ci.nsIFile);
-		if(entry.leafName.split("-")[0] == "theme") //überprüfen ob die Datei mit "theme-" beginnt
-			insertEditorTheme(entry);
-	}
-}
-
-function insertEditorTheme(entry) {
-	// cut it out
-	var name = entry.leafName.substr(6, entry.leafName.length - 9);
-
-	$('#editor-theme-list').append('<listitem label="'+name+'" class="list-acethemes" />');
-}
-
-function setAceTheme() {
-	var themename = $(".list-acethemes:selected").prop("label");
-	var modules = getModulesByName("scripteditor");
-
-	for(var i = 0; i < modules.length; i++) {
-		if(!modules[i] || !modules[i].contentWindow)
-			continue;
-
-		modules[i].contentWindow.applyTheme(themename);
-	}
-
-	setConfigData("CIDE", "EditorTheme", themename);
-	saveConfig();
 
 	return true;
 }

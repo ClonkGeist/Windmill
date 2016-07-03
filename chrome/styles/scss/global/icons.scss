@@ -1,6 +1,6 @@
 @font-face {
 	font-family: 'icomoon';
-	src:url('chrome://windmill/skin/icomoon.ttf?-icmbrc') format('truetype');
+	src:url('resource://wmstyles/icomoon.ttf?-icmbrc') format('truetype');
 	font-weight: normal;
 	font-style: normal;
 }
@@ -16,8 +16,10 @@
 	-moz-osx-font-smoothing: grayscale;
 }
 
+.icon-48,
 .icon-32,
 .icon-24,
+.icon-20,
 .icon-16 {
 	cursor: default;
 }
@@ -26,13 +28,20 @@
 	font-size: 16px;
 }
 
+.icon-20 {
+	font-size: 20px;
+}
+
 .icon-24 {
 	font-size: 24px;
 }
 
 .icon-32 {
 	font-size: 32px;
-	color: white;
+}
+
+.icon-48 {
+	font-size: 48px;
 }
 
 .icon-clonkpath:before {
@@ -45,7 +54,7 @@
     @include -eye();
 }
 .icon-reload:before {
-    @include -reload-2();
+    @include -reload-3();
 }
 .icon-workspace:before {
     @include -workspace();
@@ -180,6 +189,9 @@
 .icon-x:before {
     @include -x();
 }
+.icon-x-small:before {
+    @include -x-s();
+}
 .icon-maximize:before {
     @include -maximize();
 }
@@ -258,9 +270,6 @@
 .icon-players:before {
     @include -players();
 }
-.icon-resource-saviour:before {
-    @include -resource-saviour();
-}
 .icon-runtimejoin:before {
     @include -runtimejoin();
 }
@@ -301,7 +310,7 @@
     @include -documentation();
 }
 .icon-screenshots:before {
-    @include -polaroids();
+    @include -gallery-2();
 }
 .icon-error:before {
     content: "\e90c";
@@ -336,21 +345,6 @@
 .icon-liquidlevel:before {
 	@include -liquidlevel();
 }
-.icon-borders:before {
-	content: "B";
-}
-.icon-border-top:before {
-	content: "BT";
-}
-.icon-border-right:before {
-	content: "BR";
-}
-.icon-border-bottom:before {
-	content: "BB";
-}
-.icon-border-left:before {
-	content: "BL";
-}
 .icon-auto-scan-side:before { 
 	content: "AutoS";
 }
@@ -369,12 +363,27 @@
 .icon-limiter:before { 
 	content: "L";
 }
-
-/* needs to be renamed */ 
-.icon-minus:before {
-	@include -mines();
+.icon-info:before {
+    @include -info();
 }
-
+.icon-external:before {
+    content: "E"; 
+}
+.icon-hamburger:before {
+	@include -hamburger();
+}
+.icon-hamburger-small:before {
+	@include -hamburger-small();
+}
+.icon-small-settings:before {
+	@include -small-settings();
+}
+.icon-has-ctx-sub:before {
+	@include -ctx-submenu-indicator();
+}
 .icon-plus:before {
 	@include -plus();
+}
+.icon-minus:before {
+	@include -minus();
 }

@@ -269,11 +269,8 @@ class Session {
 				resolve(session)
 			})
 		})
-		
-		if(OS_TARGET == "WINNT")
-			imageElement.src = encodeURI("file://"+path.replace(/\\/gi, "/")).replace(/#/g, "%23");
-		else
-			imageElement.src = encodeURI("file://"+path).replace(/#/g, "%23");
+
+		imageElement.src = formatPath(path, {fileProtocol: true});
 
 		$(imageElement).mousemove(function(e) {
 			var rect = this.getBoundingClientRect()

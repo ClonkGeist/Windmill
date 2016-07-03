@@ -2,12 +2,16 @@
 
 .contextmenu {
 	background-color: transparent;
-	border: 1px solid gainsboro;
+	border: 1px solid $clr-border;
 	min-width: 180px;
 	max-width: 600px;
 	-moz-user-focus: normal;
 	-moz-user-select: none;
 	color: rgb(40, 40, 40);
+	
+	&:hover {
+		border-color: $clr-border-grey;
+	}
 }
 
 .ctx-wrapper {
@@ -20,13 +24,56 @@
 	height: 20px;
 	padding: 1px 4px;
 	cursor: default;
-	
-	transition: background-color 0.3s;
 }
 
-.ctx-menuitem:hover,
-.ctx-menuitem.selected  {
-	background-color: rgba(0, 165, 207, 0.5);
+.ctx-menuitem {
+	&.ctx-checklistitem, &.ctx-radioitem {
+		.ctx-prepend:before {
+			@include -checked();
+			color: transparent;
+			letter-spacing: 0;
+			font-family: 'icomoon';
+			font-size: 16px;
+			line-height: 16px;
+			height: 1em;
+			padding-top: 5px;
+			cursor: default;
+		}
+
+		&.ctx-menutype-selected .ctx-prepend:before {
+			color: $interact-blue;
+		}
+	}
+	.ctx-submenuindicator:before {
+		width: 16px;
+		height: 16px;
+		color: $ui-text-clr;
+	}
+	.ctx-submenuindicator:not(.has-submenu):before {
+		display: block;
+		content: " ";
+	}
+	.ctx-keybinding {
+		display: block;
+		max-width: 90px;
+		color: grey;
+		overflow: hidden;
+		text-align: right;
+	}
+	
+	&:hover,
+	&.selected  {
+		@include hover-blue();
+	}
+	
+	&:hover > .ctx-keybinding{
+		color: $ui-text-clr;
+	}
+	
+	/*-- HTML only --*/
+	.ctx-other {
+		float: right;
+	}
 }
 
 .ctx-disabled {
@@ -44,12 +91,12 @@
 }
 
 .ctx-container {
-	background-image: url("chrome://windmill/content/img/ctx-container.png");
+	background-image: url("resource://windmill/img/ctx-container.png");
 	background-position: right center;
 	background-repeat: no-repeat;
 }
 
 .ctx-menuicon {
-	width: 20px;
 	margin-right: 10px;
+	-moz-box-align: center;
 }

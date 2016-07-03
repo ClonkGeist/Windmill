@@ -42,6 +42,7 @@ function readModuleInfo(path) {
 	return Task.spawn(function*() {
 		let text = yield OS.File.read(path, {encoding: "utf-8"});
 		let moduleini = parseINI2(text, { matchEmptyValues: true }), elm, config = [], keybindings = [], matchinggroup = [];
+		module.settings = {};
 		while(elm = moduleini.next().value) {
 			if(typeof elm != "string") {
 				if(elm.sect == "Module") 
@@ -54,6 +55,8 @@ function readModuleInfo(path) {
 					keybindings.push([elm.key, elm.val]);
 				else if(/^MatchingGroup/.test(elm.sect))
 					matchinggroup[matchinggroup.length-1][elm.key.toLowerCase()] = elm.val;
+				else if(elm.sect = "Settings")
+					module.settings[elm.key.toLowerCase()] = elm.val;
 			}
 			else if(/^MatchingGroup/.test(elm))
 				matchinggroup.push({priority: 0});
@@ -63,6 +66,7 @@ function readModuleInfo(path) {
 		if(!sect)
 			return log(`Module Loading Error (${path}): No name was specified.`, "error");
 		else {
+			addConfigString("Modules", module.name+"_State", 0);
 			for(let item of config) {
 				let type = "string", key = item[0], val = item[1];
 				type = val.match(/^[a-zA-Z]+(?=\:)/)
@@ -147,9 +151,16 @@ var MODULE_CNT = 0;
 
 function createModule(name, obj, fClearParent, fHide, options = {}) {
 	var mod = getModuleDef(name);
-	
-	if(!mod)
-		return alert("Could not load module " + name + ": Module does not exist");
+
+	if(!mod) {
+		log("Module Creation Error: Module does not exist.", "error");
+		return alert("Could not load module " + name + ": Module does not exist.");
+	}
+
+	if(!isModuleActive(name, true)) {
+		log("Module Creation Error: Module is deactivated.", "error");
+		return alert("Could not load module " + name + ": Module is deactivated.");
+	}
 
 	/* container aufräumen? 
 		TODO: Not so fine, weil nav Element bestehen bleiben - 
@@ -177,6 +188,13 @@ function createModule(name, obj, fClearParent, fHide, options = {}) {
 	 
 	// module id zurückgeben
 	return MODULE_CNT - 1;
+}
+
+function isModuleActive(modulename, forced) {
+	let state = getConfigData("Modules", modulename+"_State");
+	if((state == 1 && !forced) || state == 2)
+		return false;
+	return true;
 }
 
 function getModuleDefByPrefix(prefix) {
@@ -252,3 +270,4 @@ function getModule(id, fElement) {
 function getModuleDefs() { return MODULE_DEF_LIST; }
 
 registerInheritableObject("getModuleDefs");
+registerInheritableObject("isModuleActive");

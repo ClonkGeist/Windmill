@@ -26,81 +26,81 @@
 
 
 var cPkr,
-	players = [];
-hook("startLoadingRoutine", function() {
-	cPkr = createColorPicker(document.getElementById("ap-clrpckr"));
-	
-	var image = new Image();
-	image.addEventListener("load", function() {
-		var canvas = document.getElementById("cnv-apbigicon");
-		var ctx = canvas.getContext("2d");
-		canvas.width = 64;
-		canvas.height = 64;
-		ctx.drawImage(image, 0, 0, 64, 64);
+	players = [],
+	playerinfoTimeoutID;
 
-		var px = ctx.getImageData(0, 0, canvas.width, canvas.height);
-		
-		cPkr.onchange = function(clr) {
-			var canvas = document.getElementById("cnv-apbigicon");
-			var ctx = canvas.getContext("2d");
-		
-			ctx.putImageData(px, 0, 0);
-			var pxdata = ctx.getImageData(0, 0, canvas.width, canvas.height);
-			
-			var data = pxdata.data;
-			for(var i = 0; i < data.length; i+=4) {
-				var [r,g,b,a] = [data[i], data[i+1], data[i+2], data[i+3]];
-				
-				if(ClrByOwner(r,g,b)) {
-					var nclr = ModulateClr([b,b,b,a], clr);
-					[data[i], data[i+1], data[i+2]] = [...nclr];
-					data[i+3] = a;
-				}
-			}
+/*-- Check each 7.5s for updated player files and update player info --*/
 
-			ctx.putImageData(pxdata, 0, 0);
-		};
-	});
-	image.src="chrome://windmill/content/img/playerselection/img-defaultplr.png";
-	
-	var canvas = document.getElementById("cnv-apbigicon");
-	var ctx = canvas.getContext("2d");
-	var image = new Image();
-	image.addEventListener("load", function() {
-		canvas.width = 64;
-		canvas.height = 64;
-		ctx.drawImage(image, 0, 0, 64, 64);
-	});
-	image.src="chrome://windmill/content/img/playerselection/img-defaultplr.png";
-	
-	
-	function* loadPlayerFile(entry, time) {
-		let text, img, imgstr = "chrome://windmill/content/img/playerselection/DefaultPlayer.png";
-		if(!entry.isDir) {
-			let group = yield readC4GroupFile(_sc.file(entry.path));
-			text = group.getEntryByName("Player.txt").data.byte2str();
-			img = group.getEntryByName("BigIcon.png");
-			if(img)
-				imgstr = "data:image/png;base64,"+btoa(img.data.byte2str(true));
-		}
-		else {
-			text = yield OS.File.read(entry.path+"/Player.txt", {encoding: "utf-8"});
-			if(yield OS.File.exists(entry.path+"/BigIcon.png"))
-				imgstr = encodeURI("file://"+formatPath(entry.path)+"/BigIcon.png").replace(/#/g, "%23");
-		}
-		let sects = parseINI(text);
-		if(players[entry.name]) {
-			players[players[entry.name].index] = sects;
-			players[entry.name].time = time;
-			$(".ps-playerlistitem[data-playername='"+entry.name+"'].selected").click();
-		}
-		else {
-			players.push(sects);
-			players[entry.name] = { time: Date.now(), index: players.length-1 };
-			addPlayerlistItem(players.length - 1, entry.name, imgstr);
-		}
+function refreshPlayerInfo() {
+	let userdatapath = _sc.env.get("APPDATA")+"/OpenClonk";
+	if(playerinfoTimeoutID !== undefined)
+		clearTimeout(playerinfoTimeoutID);
+	let iterator = new OS.File.DirectoryIterator(userdatapath);
+	let playernames = [];
+	for(var key in players) {
+		if(key.search(/\D/) != -1)
+			playernames.push(key);
 	}
-	
+	iterator.forEach(
+		function onEntry(entry) {
+			if(entry.name.split('.').pop() != "ocp")
+				return;
+
+			if(playernames.indexOf(entry.name) != -1)
+				playernames.splice(playernames.indexOf(entry.name), 1);
+
+			let path = entry.path;
+			if(entry.isDir)
+				path += "/Player.txt";
+
+			OS.File.stat(path).then(function(stat) {
+				let time = stat.lastModificationDate.getTime();
+				if(!players[entry.name] || time > players[entry.name].time) {
+					Task.spawn(function*() {
+						yield* loadPlayerFile(entry, time);
+					});
+				}
+			});
+		}
+	).then(function() {
+		iterator.close();
+		for(var i = 0; i < playernames.length; i++) {
+			delete players[players[playernames[i]].index];
+			delete players[playernames[i]];
+		}
+	}, function() { iterator.close(); });
+	playerinfoTimeoutID = setTimeout(refreshPlayerInfo, 7500);
+}
+
+function* loadPlayerFile(entry, time) {
+	let text, img, imgstr = "chrome://windmill/content/img/playerselection/DefaultPlayer.png";
+	if(!entry.isDir) {
+		let group = yield readC4GroupFile(_sc.file(entry.path));
+		text = group.getEntryByName("Player.txt").data.byte2str();
+		img = group.getEntryByName("BigIcon.png");
+		if(img)
+			imgstr = "data:image/png;base64,"+btoa(img.data.byte2str(true));
+	}
+	else {
+		text = yield OS.File.read(entry.path+"/Player.txt", {encoding: "utf-8"});
+		if(yield OS.File.exists(entry.path+"/BigIcon.png"))
+			imgstr = encodeURI("file://"+formatPath(entry.path)+"/BigIcon.png").replace(/#/g, "%23");
+	}
+	let sects = parseINI(text);
+	if(players[entry.name]) {
+		players[players[entry.name].index] = sects;
+		players[entry.name].time = time;
+		players[entry.name].imgstr = imgstr;
+		$(".ps-playerlistitem[data-playername='"+entry.name+"'].selected").click();
+	}
+	else {
+		players.push(sects);
+		players[entry.name] = { time: Date.now(), index: players.length-1, imgstr, 0: entry.name };
+		addPlayerlistItem(players.length - 1, entry.name, imgstr);
+	}
+}
+
+hook("startLoadingRoutine", function() {	
 	//Spielerdatei aus Benutzerpfad rauslesen und in Liste eintragen
 	let iterator, userdatapath = _sc.env.get("APPDATA")+"/OpenClonk";
 	Task.spawn(function*() {
@@ -116,200 +116,253 @@ hook("startLoadingRoutine", function() {
 		}
 	});
 
-	$("#img-apclonkstyle").click(function() {
-		let id = parseInt($(this).attr("data-skinid"));
-		if(isNaN(id))
-			id = 0;
-		id++;
-		OS.File.exists(_sc.chpath+"/content/img/playerselection/ClonkSkin"+id+".png").then((exists) => {
-			if(!exists)
-				id = 0;
-			$(this).attr("src", "chrome://windmill/content/img/playerselection/ClonkSkin"+id+".png").attr("data-skinid", id);
-		});
-	});
-	
-	//Spielerdateien ueberpruefen und ggf. aktualisieren
-	setInterval(function() {
-		let iterator = new OS.File.DirectoryIterator(userdatapath);
-		let playernames = [];
-		for(var key in players) {
-			if(key.search(/\D/) != -1)
-				playernames.push(key);
-		}
-		iterator.forEach(
-			function onEntry(entry) {
-				if(entry.name.split('.').pop() != "ocp")
-					return;
-
-				if(playernames.indexOf(entry.name) != -1)
-					playernames.splice(playernames.indexOf(entry.name), 1);
-
-				let path = entry.path;
-				if(entry.isDir)
-					path += "/Player.txt";
-
-				OS.File.stat(path).then(function(stat) {
-					let time = stat.lastModificationDate.getTime();
-					if(!players[entry.name] || time > players[entry.name].time) {
-						Task.spawn(function*() {
-							yield* loadPlayerFile(entry, time);
-						});
-					}
-				});
-			}
-		).then(function() {
-			iterator.close();
-			for(var i = 0; i < playernames.length; i++) {
-				let elm = $(".ps-playerlistitem[data-playername='"+playernames[i]+"']");
-				if(elm.hasClass("selected"))
-					$("#nav-playername").attr("value", "");
-				elm.remove();
-				delete players[players[playernames[i]].index];
-				delete players[playernames[i]];
-			}
-		}, function() { iterator.close(); });
-	}, 7500);
+	refreshPlayerInfo();
 });
+
+function showOtherPlayers(participants) {
+	$("#nav-otherplayers").empty();
+
+	//Show other players using a tooltip
+	if(participants.split(";").length > 1) {
+		//Create new label (for tooltip binding)
+		let label = $('<label value="…" />');
+		let plrlist = "";
+		//Generate player list
+		for(let fname of participants.split(";")) {
+			if(plrlist.length > 0)
+				plrlist += ", ";
+			plrlist += getPlayerName(fname);
+		}
+
+		tooltip(label[0], plrlist);
+		$("#nav-otherplayers").append(label);
+	}
+}
 
 function getCurrentlySelectedPlayer() {
 	return players[$(".ps-playerlistitem.selected").attr("data-playerid")];
 }
 
+function getPlayerName(filename) {
+	if(!players[filename] || !players[players[filename].index])
+		return "";
+	let Player = players[players[filename].index].Player || {};
+	return Player.Name || Locale("$NewPlayerName$");
+}
+
 registerInheritableObject("getCurrentlySelectedPlayer");
 
-function addPlayerlistItem(id, filename, imgstr) {	
-	players[id][0] = filename;
-	
-	var name = players[id].Player.Name || Locale("$NewPlayerName$");
-	
-	var clone = $(".ps-playerlistitem.draft").clone(true);
-	clone.removeClass("draft");
-	clone.attr("data-playerid", id);
-	clone.attr("data-playername", filename);
-	clone.find(".lbl-psplayername").attr("value", name);
-	clone.find(".img-psbigicon").attr("src", imgstr);
-	
-	clone.click(function() {
-		let plr = players[id],
-			player = plr["Player"],
-			lastround = plr["LastRound"],
-			wasSelected = $(this).hasClass("selected");
-		$(".ps-playerlistitem.selected").removeClass("selected");
-		$(this).addClass("selected");
-	
-		$("#ps-playerdetails").css("display", "-moz-box");
-		
-		$("#ps-pdname").text(name);
-		$("#nav-playername").attr("value", name);
-		$("#ps-pdscore").attr("value", player["Score"]);
-		$("#ps-pdcomment").attr("value", player["Comment"]);
-		$("#ps-pdrounds").attr("value", Locale("$PDRoundsLbl$", -1, player["Rounds"]||0, player["RoundsWon"]||0, player["RoundsLost"]||0));
-		
-		var secs = player["TotalPlayingTime"]||0;
-		var mins = Math.round(secs/60)%60;
-		$("#ps-pdtime").attr("value", Math.round(secs/3600)+":"+(mins<10?"0":"")+mins+":"+(secs<10?"0":"")+secs%60);
+function initPlayerselection() {
+	let playersel = new ContextMenu(function() {
+		this.clearEntries();
 
-		if(!lastround)
-			$(".lastround").css("display", "none");
-		else {
-			$(".lastround").css("display", "-moz-box");
-		
-			$("#ps-pdlr-title").attr("value", lastround["Title"]);
-			$("#ps-pdlr-duration").attr("value", Math.round(lastround["Duration"]/3600)+":"+Math.round(lastround["Duration"]/60)%60+":"+lastround["Duration"]%60);
-			$("#ps-pdlr-score").attr("value", lastround["TotalScore"]);
+		let wrk = _sc.wregkey();
+		wrk.open(wrk.ROOT_KEY_CURRENT_USER, "Software\\OpenClonk Project\\OpenClonk\\General", wrk.ACCESS_READ);
+		let selected_plr = wrk.readStringValue("Participants");
+		wrk.close();
 
-			var date = new Date();
-			date.setTime(lastround["Date"]*1000)
-			$("#ps-pdlr-date").attr("value", sprintf(Locale("$PD_LRDateLbl$"), date.getDate(), date.getMonth()+1, date.getFullYear(), date.getHours(), date.getMinutes()));
+		for(let fname in players) {
+			//Somehow the scope of let-declared variables inside of for-in loops seems to count for the whole loop??
+			let filename = fname;
+			if(typeof filename != "string" || filename.search(/\.ocp/) == -1)
+				continue;
+			let plrid = players[filename].index;
+			plr = players[plrid];
+			if(!plr)
+				continue;
+
+			let player = plr.Player || {};
+			let name = player.Name || Locale("$NewPlayerName$");
+			if(!players[filename])
+				continue;
+			this.addEntry(name, 0, function(target, event, menuitem) {
+				let participants = filename;
+				//Multiselect on Ctrl
+				if(event.ctrlKey) {
+					participants = "";
+					$(menuitem.element).parent().find(".ctx-playeritem.ctx-menutype-selected").each(function() {
+						if(participants.length)
+							participants += ";";
+						participants += $(this).attr("data-filename");
+					});
+				}
+				else {
+					//Simulate radio functionality (because if the ctrl key is pressed, switch to checklist functionality)
+					$(menuitem.element).parent().find(".ctx-playeritem").each(function() {
+						$(this).prop("ctx-menuitem-obj").options.isSelected = false;
+						$(this).removeClass("ctx-menutype-selected");
+					});
+					menuitem.options.isSelected = true;
+					$(menuitem.element).addClass("ctx-menutype-selected");
+				}
+				//Speichern
+				if(menuitem.options.isSelected) {
+					wrk.open(wrk.ROOT_KEY_CURRENT_USER, "Software\\OpenClonk Project\\OpenClonk\\General", wrk.ACCESS_WRITE);
+					wrk.writeStringValue("Participants", participants);
+					wrk.close();
+				}
+
+				$("#nav-playername").attr("value", getPlayerName(participants.split(";").shift()));
+				//Show other players
+				showOtherPlayers(participants);
+
+				execHook("playerselection", plr);
+			}, new ContextMenu(0, [ // Submenu
+				//Edit player
+				["$EditPlayer$", 0, function() {
+					warn("$BETA_EditPlayerNotAvailable$");
+					/* Deactivated for the moment because Windmill needs to be able to work with packed data for this (or something like that.)
+
+					$("#ap-player-caption").text(Locale("$EditPlayer$"));
+					switchPlrPage('page-addplayer');
+					insertPlayerIntoEditPage(plrid);
+					
+					e.stopPropagation();*/
+				}, 0, { uicon: "icon-gear" }],
+				//Remove player
+				["$RemovePlayer$", 0, function() {
+					let dlg = new WDialog("$DlgTitleRemovePlayer$", "", { btnright: [{ preset: "accept",
+						onclick: function(e, btn, _self) {
+							removePlayer(filename);
+						}
+					}, "cancel"]});
+					dlg.setContent("<description>"+sprintf(Locale("$DlgRemovePlayer$"), name)+"</description>");
+					dlg.show();
+				}, 0, { uicon: "icon-trashbin" }]
+			], MODULE_LPRE, { allowIcons: true, useWindowBoundings: true }), {
+				type: "checklistitem", 
+				isSelected: (selected_plr.split(";").indexOf(filename) != -1),
+				classes: "ctx-playeritem",
+				tooltip: Locale("$PlayerInfo$", -1, player.Score||0, player.Rounds||0, player.RoundsWon||0, player.RoundsLost||0),
+				iconsrc: players[filename].imgstr,
+				onPreAppend: function(elm) {
+					//Open submenu on click
+					$(elm).attr("data-filename", filename);
+					$(elm).find(".ctx-submenuindicator").addClass("icon-24 icon-small-settings").click(e => {
+						if(this.subMenu.element)
+							this.subMenu.hideMenu();
+						else
+							this.openSubMenu(this.topMenu.opened_by);
+						e.stopPropagation();
+					});
+				},
+				preventSubMenuOnHover: true,
+				hideSubMenuIcon: true
+			});
 		}
-		
-		//Speichern
-		if(!wasSelected) {
-			var wrk = _sc.wregkey();
-			wrk.open(wrk.ROOT_KEY_CURRENT_USER, "Software\\OpenClonk Project\\OpenClonk\\General", wrk.ACCESS_WRITE);
-			wrk.writeStringValue("Participants", filename);
-			wrk.close();
-		}
-		execHook("playerselection", plr);
-	});
-
-	clone.appendTo($("#ps-playerlist"));
-	
-	var wrk = _sc.wregkey();
-	wrk.open(wrk.ROOT_KEY_CURRENT_USER, "Software\\OpenClonk Project\\OpenClonk\\General", wrk.ACCESS_READ);
-	var fn = wrk.readStringValue("Participants");
-	wrk.close();
-	
-	if(fn == filename)
-		$(clone).trigger("click");
-	
-	// remove player
-	clone.find(".ps-remove-player").click(function(e) {
-		var dlg = new WDialog("$DlgTitleRemovePlayer$", "", { modal: true, css: { "width": "450px" }, btnright: [{ preset: "accept",
-				onclick: function(e, btn, _self) {
-					removePlayer(id);
+		this.addSeperator();
+		this.addEntry("$CreatePlayer$", 0, function(target, menuitemelm, menuitem) {
+			//Open a Dialog for Player creation
+			let dlg = new WDialog("$DlgCreatePlayer$", "", { css: {width: "340px"}, btnright: [{ preset: "accept",
+				onclick: function*(e, btn, _self) {
+					yield addNewPlayer(_self.element);
 				}
 			}, "cancel"]});
-		dlg.setContent("<description>"+sprintf(Locale("$DlgRemovePlayer$"), name)+"</description>");
-		dlg.show();
-		
-		e.stopPropagation();
-	});
-	
-	// edit player
-	clone.find(".ps-edit-player").click(function(e) {
-		alert(Locale("$BETA_EditPlayerNotAvailable$"));
-		/* Vorerst deaktiviert, da hier auf laengere Sicht nicht gearbeitet wird. (Bearbeiten von gepackten Dateien waere noetig)
-		
-		$("#ap-player-caption").text(Locale("$EditPlayer$"));
-		switchPlrPage('page-addplayer');
-		insertPlayerIntoEditPage(id);
-		
-		e.stopPropagation();*/
-	});
-	
-	return clone;
+			dlg.setContent($("#dlg-createplayer").html());
+			dlg.show();
+
+			//Create color picker
+			cPkr = createColorPicker($(dlg.element).find(".ap-clrpckr")[0]);
+
+			var image = new Image();
+			image.addEventListener("load", function() {
+				//Load image for colorization into the canvas
+				var canvas = $(dlg.element).find(".cnv-apbigicon")[0];
+				var ctx = canvas.getContext("2d");
+				canvas.width = 64;
+				canvas.height = 64;
+				ctx.drawImage(image, 0, 0, 64, 64);
+
+				//Grab pixel data
+				let px = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+				//Change color of color by owner areas when a color is picked
+				cPkr.onchange = function(clr) {
+					//Put the previous pixel data and grab it again, so we dont overwrite the default data
+					ctx.putImageData(px, 0, 0);
+					let pxdata = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+					//Iterate through each pixel
+					let data = pxdata.data;
+					for(let i = 0; i < data.length; i+=4) {
+						let [r,g,b,a] = [data[i], data[i+1], data[i+2], data[i+3]];
+
+						//Check if the pixel should be colored (blueish colors)
+						if(ClrByOwner(r,g,b)) {
+							//Modulate the color to the picked color
+							let nclr = ModulateClr([b,b,b,a], clr);
+							[data[i], data[i+1], data[i+2]] = [...nclr];
+							data[i+3] = a;
+						}
+					}
+
+					//Save the changed colors
+					ctx.putImageData(pxdata, 0, 0);
+				};
+			});
+			image.src = "chrome://windmill/content/img/playerselection/img-defaultplr.png";
+
+			//Pick clonk style
+			$(dlg.element).find(".img-apclonkstyle").click(function() {
+				let id = parseInt($(this).attr("data-skinid"));
+				if(isNaN(id))
+					id = 0;
+				id++;
+				//Check if another image file with the given id exists "ClonkSkin%d.png"
+				OS.File.exists(_sc.chpath+"/content/img/playerselection/ClonkSkin"+id+".png").then((exists) => {
+					//If not, then go back to 0
+					if(!exists)
+						id = 0;
+					$(this).attr("src", "chrome://windmill/content/img/playerselection/ClonkSkin"+id+".png").attr("data-skinid", id);
+				});
+			});
+		}, 0, {uicon: "icon-add-player", classes: "ctx-playerselect"});
+	}, [], MODULE_LPRE, {allowIcons: true, iconsize: 32, classes: "ctx-playerselect", useWindowBoundings: true });
+	playersel.bindToObj($("#showPlayerSelect"), {dropdown: true, classes: "ctx-mainnavigation"});
 }
 
-function initNewPlayer() {
-	$("#ap-player-caption").text(Locale("$AddPlayer$"));
-	
-	switchPlrPage('page-addplayer');
+function addPlayerlistItem(id, filename, imgstr) {
+	players[id][0] = filename;
+
+	//Show player list after startup
+	let wrk = _sc.wregkey();
+	wrk.open(wrk.ROOT_KEY_CURRENT_USER, "Software\\OpenClonk Project\\OpenClonk\\General", wrk.ACCESS_READ);
+	let participants = wrk.readStringValue("Participants");
+	wrk.close();
+
+	$("#nav-playername").attr("value", getPlayerName(participants.split(";").shift()));
+	//Show other players
+	showOtherPlayers(participants);
+
+	return;
 }
 
-function switchPlrPage(pageid) {
-	$(".plr-page").removeClass("plrpage-selected");
-	$("#"+pageid).addClass("plrpage-selected");
-	
-	return true;
-}
+function addNewPlayer(dlg) {
+	let plr = getNewPlayer();
+	if($(dlg).find(".ap-plrname").val())
+		plr["Player"]["Name"] = $(dlg).find(".ap-plrname").val();
+	if($(dlg).find(".ap-plrcomment").val())
+		plr["Player"]["Comment"] = $(dlg).find(".ap-plrcomment").val();
 
-function addNewPlayer() {
-	var plr = getNewPlayer();
-	if($("#ap-plrname").val())
-		plr["Player"]["Name"] = $("#ap-plrname").val();
-	if($("#ap-plrcomment").val())
-		plr["Player"]["Comment"] = $("#ap-plrcomment").val();
-
-	var clr = cPkr.getColor();
+	let clr = cPkr.getColor();
 	plr["Player"]["ColorDw"] = ((clr[0] << 16)|(clr[1] << 8)|clr[2]).toString();
-	let skin = parseInt($("#img-apclonkstyle").attr("data-skinid"));
+	let skin = parseInt($(dlg).find(".img-apclonkstyle").attr("data-skinid"));
 	if(skin && !isNaN(skin))
 		plr["Preferences"]["ClonkSkin"] = skin;
 	
-	Task.spawn(function*() {
+	return Task.spawn(function*() {
 		let plrleafname = plr["Player"]["Name"].replace(/[^a-zA-Z0-9_-]/, "_")+".ocp";
 		let plrpath = _sc.env.get("APPDATA")+"/OpenClonk/"+plrleafname;
 		yield OS.File.makeDir(plrpath);
 
 		let text = "";
 
-		for(var sect in plr) {
+		for(let sect in plr) {
 			if(!plr[sect])
 				continue;
 
 			text += "["+sect+"]\r\n";
-			for(var key in plr[sect]) {
+			for(let key in plr[sect]) {
 				if(plr[sect][key] === undefined)
 					continue;
 
@@ -321,19 +374,18 @@ function addNewPlayer() {
 
 		yield OS.File.writeAtomic(plrpath+"/Player.txt", text, {encoding: "utf-8"});
 
-		//Mittels C4Group packen
-		var filename = "c4group";
-		if(OS_TARGET == "WINNT")
-			filename = "c4group.exe";
+		let process = _ws.pr(_sc.file(getC4GroupPath()));
+		let args = [plrpath, "-p"];
 
-		var process = _ws.pr(_sc.file(_sc.clonkpath() + "/" + filename));
-		var args = [plrpath, "-p"];
-
-		process.create(args, 0x1, function() {
-			players.push(plr);
-			addPlayerlistItem(players.length-1, plrleafname, "chrome://windmill/content/img/playerselection/DefaultPlayer.png");
-			switchPlrPage('page-playerselection');
+		let promise = new Promise(function(success, reject) {
+			process.create(args, 0x1, function() {
+				players.push(plr);
+				EventInfo("$EIPlayerCreated$");
+				success();
+				refreshPlayerInfo();
+			});
 		});
+		yield promise;
 	});
 }
 
@@ -382,11 +434,11 @@ function getNewPlayer() {
 	return plr;
 }
 
-function removePlayer(iplr) {
+function removePlayer(filename) {
 	let path = "";
 	if(OS_TARGET == "WINNT")
 		path = _sc.env.get("APPDATA")+"/OpenClonk/";
-	path += players[iplr][0];
+	path += filename;
 
 	let task = Task.spawn(function*() {
 		let stat = yield OS.File.stat(path);
@@ -396,10 +448,11 @@ function removePlayer(iplr) {
 			yield OS.File.removeDir(path, { ignoreAbsent: true });
 	});
 	task.then(function() {
-		$("[data-playerid='"+iplr+"']").remove();
+		refreshPlayerInfo();
+		EventInfo("$EIPlayerRemoved$");
 	}, function(reason) {
 		EventInfo("An error occured while trying to remove the player.");
 		log(reason);
 	});
-	return promise;
+	return task;
 }

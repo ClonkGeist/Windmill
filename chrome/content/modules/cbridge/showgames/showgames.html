@@ -11,9 +11,6 @@
 	<script type="application/javascript" src="chrome://windmill/content/modules/cbridge/showgames/js/gamenotifier.js"></script>
 
 <div id="wrapper">
-	<div id="ressavemode-btn" class="icon-resource-saviour icon-32"></div>
-	<div id="information-bar"></div>
-
 	<div id="ports-tooltip">$TooltipPortsNotOpen$</div>
 	<div id="reference-container">
 		<div id="toolbar">
@@ -35,7 +32,21 @@
 				</div>
 			</div>
 		</div>
-		<div id="reference-list">
+		<div id="reference-list-wrapper">
+			<div class="alt-info no-games-found">
+				<p><span><object type="image/svg+xml" data="resource://windmill/modules/cbridge/showgames/img/lone-island.svg"></object></span></p>
+				<p class="desc">$noGamesFoundDesc$ <span class="host-game">$hostGameSuggestion$</span></p>
+				<p><button id="alt-host-game" class="host-game">$hostGame$</button></p>
+			</div>
+			<div class="alt-info request-timeout">
+				<p class="desc">failed to connect</p>
+			</div>
+			<div class="alt-info unknown-error">
+				<p><span><object type="image/svg+xml" data="resource://windmill/modules/cbridge/showgames/img/failed-to-connect.svg"></object></span></p>
+				<p class="desc">unknown error</p>
+			</div>
+			<div id="reference-list">
+			</div>
 			<div class="reference reference-draft">
 				<div class="ref-flexwrapper">
 					<img class="ref-titleimage"></img>
@@ -64,6 +75,10 @@
 				</div>
 			</div>
 		</div>
+		<form id="join-input">
+			<input type="text" placeholder="$enterIPHere$"/>
+			<button type="button">$join$</button>
+		</form>
 	</div>
 	<div id="game-info">
 		<div id="game-info-wrapper">
@@ -74,8 +89,10 @@
 					<p id="game-hostname"></p>
 					<p id="game-time">In game for 00:00:00</p>
 				</div>
-				<h2>$comment$</h2>
-				<p id="game-comment"></p>
+				<div id="game-commentwrapper">
+					<h2>$comment$</h2>
+					<p id="game-comment"></p>
+				</div>
 				<h2 id="game-playerlabel">$players$</h2>
 				<!-- players, sorted by their teams -->
 				<div id="game-playerlist"></div>
