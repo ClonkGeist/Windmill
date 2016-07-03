@@ -443,22 +443,25 @@ html, body, #wrapper {
 		clear: left;
 		width: 100%;
 		outline: none;
+		border-right: 5px solid transparent;
+		border-left: 5px solid transparent;
+		box-sizing: border-box;
 	}
 	
 	&.ref-layout-classic .reference:hover {
 		outline: none;
 		box-shadow: 0 1px 0 0 rgb(230, 230, 230), 
-					0 1px 0 0 rgb(230, 230, 230) inset,
-					-5px 0 0 0 $clr-border,
-					5px 0 0 0 $clr-border;
+					0 1px 0 0 rgb(230, 230, 230) inset;
+		
+		border-color: $clr-border;
 	}
 	&.ref-layout-classic .reference.ref-selected {
 		outline: none;
 		
 		box-shadow: 0 1px 0 0 rgb(230, 230, 230), 
-					0 1px 0 0 rgb(230, 230, 230) inset,
-					-5px 0 0 0 $interact-orange,
-					5px 0 0 0 $interact-orange;
+					0 1px 0 0 rgb(230, 230, 230) inset;
+		
+		border-color: $interact-orange;
 	}
 }
 
