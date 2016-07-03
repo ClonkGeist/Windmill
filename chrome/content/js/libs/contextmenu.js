@@ -436,8 +436,8 @@ class _ContextMenu {
 			pscr.GetAvailRect(scx,scy,scwdt,schgt);
 			if(this.options.useWindowBoundings) {
 				let wsx = _mainwindow.screenX, wsy = _mainwindow.screenY, 
-					wwdt = parseInt(_mainwindow.getWindowWidth()),
-					whgt = parseInt(_mainwindow.getWindowHeight());
+					wwdt = $(_mainwindow).width(),
+					whgt = $(_mainwindow).height();
 				if(scx.value+scwdt.value > wsx+wwdt)
 					scwdt.value = wwdt;
 				if(scy.value+schgt.value > wsy+whgt)
