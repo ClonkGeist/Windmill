@@ -157,7 +157,7 @@ function createModule(name, obj, fClearParent, fHide, options = {}) {
 		return alert("Could not load module " + name + ": Module does not exist.");
 	}
 
-	if(getConfigData("Modules", name+"_State") == 2) {
+	if(!isModuleActive(name, true)) {
 		log("Module Creation Error: Module is deactivated.", "error");
 		return alert("Could not load module " + name + ": Module is deactivated.");
 	}
@@ -188,6 +188,13 @@ function createModule(name, obj, fClearParent, fHide, options = {}) {
 	 
 	// module id zurückgeben
 	return MODULE_CNT - 1;
+}
+
+function isModuleActive(modulename, forced) {
+	let state = getConfigData("Modules", modulename+"_State");
+	if((state == 1 && !forced) || state == 2)
+		return false;
+	return true;
 }
 
 function getModuleDefByPrefix(prefix) {
@@ -263,3 +270,4 @@ function getModule(id, fElement) {
 function getModuleDefs() { return MODULE_DEF_LIST; }
 
 registerInheritableObject("getModuleDefs");
+registerInheritableObject("isModuleActive");

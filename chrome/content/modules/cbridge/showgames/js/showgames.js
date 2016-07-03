@@ -142,15 +142,22 @@ function showMasterServerGames(info) {
 	let currentref = $(".reference.ref-selected").attr("id");
 	$(".reference:not(.reference-draft").remove();
 	$("#game-info-motd").html("");
-	if(obj["Clonk Rage"]) { // <--- Bei MS-Wechsel auf Open Clonk wechseln
-		$("#game-info-motd").html(obj["Clonk Rage"][0].MOTD + " <a href='"+obj["Clonk Rage"][0].MOTDURL+"'>" +
-								  obj["Clonk Rage"][0].MOTDURL + " </a>");
+	let msheader = obj["Clonk Rage"] || obj["OpenClonk"];
+	if(msheader && msheader[0].MOTD) {
+		let url = "";
+		if(msheader[0].MOTDURL)
+			url = `<a href="${msheader[0].MOTDURL}">${msheader[0].MOTDURL}</a>`;
+		$("#game-info-motd").html(`${msheader[0].MOTD} ${url}`); 
 	}
-	
+		
 	if(!obj || !obj["Reference"]) {
 		//Keine Spiele offen
 		$("#reference-list-wrapper").find(".shown").removeClass("shown");
 		$("#reference-list-wrapper").find(".no-games-found").addClass("shown");
+		if(isModuleActive("cbexplorer"))
+			$(".host-game").css("display", "");
+		else
+			$(".host-game").css("display", "none");
 		return;
 	}
 	else
@@ -205,7 +212,14 @@ function showMasterServerGames(info) {
 			else
 				clone.find(".ref-icons").append('<img src="chrome://windmill/content/img/showgames/showgames-lobby.png" />');
 
-			clone.find(".ref-titleimage").attr("src", "https://clonkspot.org/images/games/Title.png/"+ref.Scenario[0].Filename.replace(/\\/g, "/")+"?hash="+ref.Scenario[0].FileCRC);
+			clone.find(".ref-titleimage").attr("src", "https://clonkspot.org/images/games/Title.png/"+ref.Scenario[0].Filename.replace(/\\/g, "/")+"?hash="+ref.Scenario[0].FileCRC).on("error", function() {
+				//Don't execute when the image is loaded locally
+				if(/^(file|chrome|resource):\//.test($(this).attr("src")))
+					return;
+
+				//Fallback to no-title.png
+				$(this).attr("src", "chrome://windmill/content/img/showgames/no-title.png");
+			});
 			clone.find(".ref-title").html(ref.Title);
 			clone.find(".ref-hostname").text(ref.Client[0].Name.replace(/&amp;/, "&"));
 
@@ -662,6 +676,10 @@ hook("load", function() {
 		process.create(args);
 	});
 
+	$("#alt-host-game").click(function() {
+		getModuleByName("cbridge").contentWindow.showModule("cbexplorer");
+	});
+
 	setInterval(updateTimeDisplay, 1000);
 });
 
@@ -693,8 +711,7 @@ var mservcache, mservtime, deactivateRequests;
 function getMasterServerInformation(call) {
 	var ms_url = getConfigData("ShowGame", "MasterserverURL"); //Aus Config laden
 	if(!ms_url)
-		ms_url = "http://league.clonkspot.org/";
-	//var ms_url = "http://league.openclonk.org/league.php";
+		ms_url = "http://league.openclonk.org/league.php";
 	if((mservcache && (new Date()).getTime() < mservtime + 15000) || deactivateRequests)
 		return call(mservcache);
 

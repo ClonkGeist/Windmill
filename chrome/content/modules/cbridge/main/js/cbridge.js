@@ -16,6 +16,10 @@ function attachModule(module) {
 	createNavigation();
 }
 
+function showModule(module) {
+	$('.modules-nav-entry[data-name="'+module+'"]').click();
+}
+
 function createNavigation() {
 	//Iterate through modules
 	let cbridgemodules = [];
@@ -51,7 +55,7 @@ function createNavigation() {
 	//Create navigation items
 	for(let i = 0, first = true; i < cbridgemodules.length; i++) {
 		let module = cbridgemodules[i];
-		if(getConfigData("Modules", module.name+"_State"))
+		if(!isModuleActive(module.name))
 			continue;
 
 		let clone = $(".modules-nav-entry.draft").clone();

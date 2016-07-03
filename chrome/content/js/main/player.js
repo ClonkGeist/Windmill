@@ -229,7 +229,7 @@ function initPlayerselection() {
 					dlg.setContent("<description>"+sprintf(Locale("$DlgRemovePlayer$"), name)+"</description>");
 					dlg.show();
 				}, 0, { uicon: "icon-trashbin" }]
-			], MODULE_LPRE, {allowIcons: true}), {
+			], MODULE_LPRE, { allowIcons: true, useWindowBoundings: true }), {
 				type: "checklistitem", 
 				isSelected: (selected_plr.split(";").indexOf(filename) != -1),
 				classes: "ctx-playeritem",
@@ -317,7 +317,7 @@ function initPlayerselection() {
 				});
 			});
 		}, 0, {uicon: "icon-add-player", classes: "ctx-playerselect"});
-	}, [], MODULE_LPRE, {allowIcons: true, iconsize: 32, classes: "ctx-playerselect"});
+	}, [], MODULE_LPRE, {allowIcons: true, iconsize: 32, classes: "ctx-playerselect", useWindowBoundings: true });
 	playersel.bindToObj($("#showPlayerSelect"), {dropdown: true, classes: "ctx-mainnavigation"});
 }
 

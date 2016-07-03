@@ -37,7 +37,7 @@ function moveFileToTrash(path, options = {}) {
 		sfo.pFrom = PCZZTSTR.targetType.array(path.length+2)(path);
 		sfo.pTo = null;
 		let flags = 0x40; // FOF_ALLOWUNDO
-		if(options.not_silent)
+		if(!options.not_silent)
 			flags |= 0x414; // FOF_NOCONFIRMATION|FOF_NOERRORUI|FOF_SILENT
 
 		sfo.fFlags = flags;

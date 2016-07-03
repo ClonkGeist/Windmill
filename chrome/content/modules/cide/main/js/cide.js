@@ -672,7 +672,7 @@ function openFileInDeck(path, fSideDeck) {
 				if(!priority || isNaN(priority))
 					priority = 0;
 				//Use deactivated modules as reference for external programs. If an activated module is found (priority > -∞) then use it instead as usual.
-				if(getConfigData("Modules", module.name+"_State"))
+				if(!isModuleActive(module.name))
 					priority = -Infinity;
 				let pattern = new RegExp(group.filepattern, group.filepatternmodifier || "i");
 				if(!pattern.test(filename) || (matched_module && matched_module.priority > priority))
@@ -689,7 +689,7 @@ function openFileInDeck(path, fSideDeck) {
 		let extprgid = group.externalprogramid;
 
 		//Check for an external program if the module is deactivated
-		if(getConfigData("Modules", module.name+"_State")) {
+		if(!isModuleActive(module.name)) {
 			if(extprgid && getConfigData("CIDE", "ExtProg_"+extprgid))
 				return OpenFileWithProgram(path, getConfigData("CIDE", "ExtProg_"+extprgid));
 			return;

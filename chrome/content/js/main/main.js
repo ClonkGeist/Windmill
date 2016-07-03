@@ -362,7 +362,7 @@ hook("load", function() {
 							}
 						});
 					});
-				}, [], MODULE_LPRE, {}
+				}, [], MODULE_LPRE, { useWindowBoundings: true }
 			), { uicon: "icon-multisource", identifier: "showClonkDirs" }],
 			//Git log
 			["$NAVGitLog$", 0, function() {
@@ -399,7 +399,7 @@ hook("load", function() {
 			if(id == "showGitLog" && !getAppByID("git").isAvailable())
 				return 2;
 			return 0;
-		}, allowIcons: true });
+		}, allowIcons: true, useWindowBoundings: true });
 		dropdownMenu.bindToObj($("#showOptions"), {dropdown: true, classes: "ctx-mainnavigation"});
 		//Log
 		$("#showLog").click(function() {

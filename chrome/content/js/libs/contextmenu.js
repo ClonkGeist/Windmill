@@ -430,9 +430,24 @@ class _ContextMenu {
 					last_element_seperator = this.entries[entry].seperator;
 			}
 
+			//bound in screen
 			var pscr = _sc.screenmgr().screenForRect(screenX, screenY, 1, 1);
 			var scx = {}, scy = {}, scwdt = {}, schgt = {};
 			pscr.GetAvailRect(scx,scy,scwdt,schgt);
+			if(this.options.useWindowBoundings) {
+				let wsx = _mainwindow.screenX, wsy = _mainwindow.screenY, 
+					wwdt = parseInt(_mainwindow.getWindowWidth()),
+					whgt = parseInt(_mainwindow.getWindowHeight());
+				if(scx.value+scwdt.value > wsx+wwdt)
+					scwdt.value = wwdt;
+				if(scy.value+schgt.value > wsy+whgt)
+					schgt.value = whgt;
+				//set x and y values after width and height (because they are used above)
+				if(scx.value < wsx)
+					scx.value = wsx;
+				if(scy.value < wsy)
+					scy.value = wsy;
+			}
 			if(screenX+$(this.element).outerWidth()-scx.value > scwdt.value || (menuitemobj && menuitemobj.topMenu.direction == DIR_Left)) {
 				if(menuitem)
 					screenX = Math.max(0, screenX-($(menuitem).outerWidth()+5+$(this.element).outerWidth()));
