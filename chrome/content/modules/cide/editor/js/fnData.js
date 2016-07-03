@@ -117,6 +117,8 @@ function parseDocuXml(xml, id) {
 }
 
 var recentPositionCall = -1;
+var pl_PosX = 0,
+	pl_PosY = 0;
 
 function initOCEditorBehaviour(id) {
 	var session = editors[id].getSession();
@@ -126,7 +128,8 @@ function initOCEditorBehaviour(id) {
 		var pos = session.selection.getCursor();
 		
 		var coords = editors[id].renderer.textToScreenCoordinates(pos.row, pos.column);
-		setParamlistPosition(coords.pageX, coords.pageY);
+		pl_PosX = coords.pageX
+		pl_PosY = coords.pageY
 	};
 	
 	session.on("changeScrollLeft", fn);
@@ -169,6 +172,8 @@ function initParamlist() {
 	p.prepend(paramElements[i]);
 	
 	p.append(")");
+	
+	requestAnimationFrame(setParamlistPosition)
 }
 
 var paramListPositioned = false;
@@ -215,7 +220,11 @@ function updateParamlist(key, paramId) {
 	showParamlist();
 }
 
-function setParamlistPosition(x, y) {
+function setParamlistPosition() {
+	
+	var x = pl_PosX,
+		y = pl_PosY;
+	
 	if(lastParamId !== undefined) {
 		var dim = document.getElementById("paramList").getBoundingClientRect();
 		var offset = paramElements[lastParamId].getBoundingClientRect().width;
@@ -232,6 +241,8 @@ function setParamlistPosition(x, y) {
 		$("#paramList").css("left", x + "px");
 		$("#paramList").css("top", y + "px");
 	}
+	
+	requestAnimationFrame(setParamlistPosition)
 }
 
 var displayParamlist = false;
@@ -306,7 +317,8 @@ function getFunctionDetection(id, session) {
 							setTimeout(function() {
 								updateParamlist(token.value, parameterId);
 								var coords = a_E.renderer.textToScreenCoordinates(initialRow, initialCol);
-								setParamlistPosition(coords.pageX, coords.pageY);
+								pl_PosX = coords.pageX
+								pl_PosY = coords.pageY
 							}, 0);
 							fBreak = true;
 						}
