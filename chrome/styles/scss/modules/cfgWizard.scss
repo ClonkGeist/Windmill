@@ -1,7 +1,7 @@
 body
 {
 	background-color: rgb(250, 250, 250);
-	font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+	font-family: $font-stack;
 	color: rgb(40, 40, 40);
 }
 
@@ -43,7 +43,7 @@ body
 	height: 1.4em;
 	padding: 4px 0;
 	margin: 4px;
-	background-color: $chrome-clr;
+	background-color: $clr-chrome;
 	cursor: pointer;
 	transition: background-color 0.4s;
 	color: white;
@@ -72,7 +72,7 @@ body
 
 .filepath-button {
 	padding: 2px 5px;
-	background-color: $chrome-clr;
+	background-color: $clr-chrome;
 	cursor: pointer;
 	transition: background-color 0.4s;
 	color: white;

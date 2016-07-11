@@ -1,16 +1,9 @@
 
 $font-stack: "Segoe UI", "Trebuchet MS", sans-serif;
 
-/*$chrome-clr: rgb(45, 45, 45);*/
-
-$chrome-clr: rgb(35, 40, 45);
-$chrome-clr-sub: rgb(25, 30, 35);
-$chrome-ui-active: rgb(36, 120, 204);
-
-/* deprecated */
-$interact_red: rgb(220, 70, 50);
-$interact_blue: rgb(0, 165, 210);
-$interact_orange: rgba(250,169, 0, 0.7);
+$clr-chrome: rgb(35, 40, 45);
+$clr-chrome-sub: rgb(25, 30, 35);
+$clr-chrome-active: rgb(36, 120, 204);
 
 $interact-red: rgb(220, 70, 50);
 $interact-red-dark: rgb(200, 50, 30);
@@ -29,6 +22,7 @@ $clr-border-grey: rgb(180, 180, 180);
 $clr-module-bg: rgb(245, 245, 245);
 
 $text-clr: rgb(40, 40, 40);
+$clr-text: rgb(40, 40, 40);
 $ui-text-clr: rgb(80, 80, 80);
 $ui-light-clr: rgb(180, 180, 180);
 
