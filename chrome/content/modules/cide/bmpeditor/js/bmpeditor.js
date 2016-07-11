@@ -876,17 +876,17 @@ function openScalingDialog() {
 			}}, "cancel"]});
 	/**
 		data-align-pos:
-		first value is align on x-axis:
+		first value represents align on x-axis:
 			0: left
 			1: center
 			2: right
 		
-		second value is align on y-axis:
+		second value represents align on y-axis:
 			0: top
 			1: center
 			2: bottom
 		
-		so 11 aligns the image at the canvases center. 02 at its left bottom corner
+		so 11 aligns the image at the center of the canvas. 02 to the left bottom corner
 	*/
 	dlg.setContent('<hbox><description style="width: 400px;">$DlgScaleImageDesc$</description></hbox>' +
 				   '<hbox><grid><columns><column flex="1" /><column flex="2" /><column/></columns>'+
@@ -896,17 +896,17 @@ function openScalingDialog() {
 				   '<row><checkbox id="dbmp_scalecanvas" label="$DlgScaleCanvas$" checked="'+getConfigData("BMPEditor", "ScaleCanvas")+'" /></row>' +
 				   '<row>$DlgAlignImg$: '+
 				   '<hbox class="dbmp_imgAlign dlg-sel-icons">'+
-						'<vbox><box data-align-pos="01" class="icon-save icon-24"></box>'+
-							'<box data-align-pos="01" class="icon-save icon-24"></box>'+
-							'<box data-align-pos="02" class="icon-save icon-24"></box>'+
+						'<vbox><box data-align-pos="00" class="icon-a-nw icon-24"></box>'+
+							'<box data-align-pos="01" class="icon-a-w icon-24"></box>'+
+							'<box data-align-pos="02" class="icon-a-sw icon-24"></box>'+
 						'</vbox>' +
-						'<vbox><box data-align-pos="10" class="icon-save icon-24"></box>'+
-							'<box data-align-pos="11" class="icon-save icon-24 dlg-selected-icon"></box>'+
-							'<box data-align-pos="12" class="icon-save icon-24"></box>'+
+						'<vbox><box data-align-pos="10" class="icon-a-n icon-24"></box>'+
+							'<box data-align-pos="11" class="icon-a-c icon-24 dlg-selected-icon"></box>'+
+							'<box data-align-pos="12" class="icon-a-s icon-24"></box>'+
 						'</vbox>' +
-						'<vbox><box data-align-pos="20" class="icon-save icon-24"></box>'+
-							'<box data-align-pos="21" class="icon-save icon-24"></box>'+
-							'<box data-align-pos="22" class="icon-save icon-24"></box>'+
+						'<vbox><box data-align-pos="20" class="icon-a-ne icon-24"></box>'+
+							'<box data-align-pos="21" class="icon-a-e icon-24"></box>'+
+							'<box data-align-pos="22" class="icon-a-se icon-24"></box>'+
 						'</vbox>' +
 					'</hbox>'+
 				   '</row>' +

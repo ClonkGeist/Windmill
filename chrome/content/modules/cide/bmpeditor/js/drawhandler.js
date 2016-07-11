@@ -1,4 +1,10 @@
+/**
 
+	TODO:
+	render*() nicht mehr auf this.shaderType zurückgreifen, ausschließlich mit render*(shaderType) arbeiten
+	gegebenenfalls um render*(shaderType1, shaderType2) erweitern
+
+*/
 hook("load", () => {	
 	initGl("draw-canvas")
 })
@@ -30,7 +36,7 @@ function initGl(id) {
 		})
 	}
 	catch(e) {
-		log("WebGL doesn't work..., for reasons...");
+		log("WebGL doesn't work..., for reasons...", false, "error");
 	}
 	
 	if(!gl)
@@ -168,7 +174,7 @@ class BMPScene {
 		
 		this.updateRotMat()
 		
-		this.render()
+		this.render(this.shaderType)
 	}
 	
 	updateRotMat() {
@@ -238,7 +244,15 @@ class BMPScene {
 				
 				this.initialized = true
 				
-				this.render()
+				this.render(this.shaderType)
+				
+				var ts = this.getTextureStack()
+		
+				var state = ts.saveState()
+				
+				this.manifestUndoStep(new Action(() => {log("recovered initial state")
+					ts.drawState(state, this)
+				}))
 				
 				resolve()
 			}
@@ -331,8 +345,8 @@ class BMPScene {
 		]
 	}
 	
-	render() {
-		this.useShaderOfType(this.shaderType)
+	render(shaderType) {
+		this.useShaderOfType(shaderType)
 		this.bindAttribBuffer()
 		this.setUniforms()
 		this.gl.drawArrays(this.gl.TRIANGLES, 0, 6)
@@ -426,6 +440,47 @@ class BMPScene {
 		this.gl.copyTexImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGB, 0, 0, this.width, this.height, 0)
 	}
 	
+	renderBrushLine(shaderType, x1, y1, x2, y2, shape) {
+		this.useShaderOfType(shaderType)
+		this.setUniforms()
+		
+		// sort points by x
+		if(x1 > x2) {
+			let temp = x1
+			x1 = x2
+			x2 = temp
+			
+			temp = y1
+			y1 = y2
+			y2 = temp
+		}
+		
+		var slope = (y2 - y1 + 1) / (x2 - x1 + 1)
+		
+		if(y1 <= y2)
+			for(let x = x1; x <= x2; x++) {
+				for(let y = 0; y < slope; y++) {
+					shape.setCenterAt(x, y + parseInt(y1))
+					this.setInputRect(shape.rect)
+					
+					this.updateInputRectUniform()
+					this.gl.drawArrays(this.gl.TRIANGLES, 0, 6)
+				}
+				y1 += slope
+			}
+		else
+			for(let x = x1; x <= x2; x++) {
+				for(let y = 0; y > slope; y--) {
+					shape.setCenterAt(x, parseInt(y1) - y)
+					this.setInputRect(shape.rect)
+					
+					this.updateInputRectUniform()
+					this.gl.drawArrays(this.gl.TRIANGLES, 0, 6)
+				}
+				y1 += slope
+			}
+	}
+	
 	combineInputIntoSource(shaderTypeForInput) {
 		this.useShaderOfType(this.shaderType)
 		this.setUniforms()
@@ -468,6 +523,12 @@ class BMPScene {
 			gl.activeTexture(gl.TEXTURE2)
 			gl.bindTexture(gl.TEXTURE_2D, this.texture_Brush)
 			gl.uniform1i(shader.unifImgBrush, 2)
+		}
+		
+		if(shader.unifImgInput !== null) {
+			gl.activeTexture(gl.TEXTURE3)
+			gl.bindTexture(gl.TEXTURE_2D, this.texture_Input)
+			gl.uniform1i(shader.unifImgInput, 3)
 		}
 		
 		if(shader.unifWorkerColor && shader.unifWorkerColor !== null) {
@@ -551,6 +612,7 @@ class BMPScene {
 			unifImgSource: this.gl.getUniformLocation(prog, "img_source"),
 			unifImgWorker: this.gl.getUniformLocation(prog, "img_worker"),
 			unifImgBrush: this.gl.getUniformLocation(prog, "img_brush"),
+			unifImgInput: this.gl.getUniformLocation(prog, "img_input"),
 			unifWorkerColor: this.gl.getUniformLocation(prog, "worker_color"),
 			unifRect: this.gl.getUniformLocation(prog, "rect")
 		}
@@ -576,12 +638,11 @@ class BMPScene {
 		this.gl.viewport(0, 0, this.width, this.height)
 		
 		this.bindAttribBuffer()
-		this.render()
+		this.render(this.shaderType)
 	}
 	
 	setInputTex(tex) {
-		this.gl.activeTexture(this.gl.TEXTURE2)
-		this.gl.bindTexture(this.gl.TEXTURE_2D, tex)
+		this.texture_Input = tex
 	}
 	
 	setInputRect(rect) {
@@ -603,7 +664,7 @@ class BMPScene {
 		this.gl.texSubImage2D(this.gl.TEXTURE_2D, 0, rect.x, rect.y, rect.w, rect.h, this.gl.ALPHA, this.gl.UNSIGNED_BYTE, new Uint8Array([255]))
 		
 		this.shaderType = SHADER_TYPE_COMBINED_BACKBUFFER
-		this.render()
+		this.render(this.shaderType)
 	}
 	
 	uploadBrush() {
@@ -642,7 +703,7 @@ class BMPScene {
 		
 		this.currentActionId
 		
-		this._undoStack[this.currentActionId--].perform()
+		this._undoStack[--this.currentActionId].perform()
 		
 		this.dirtyCounter--
 		
@@ -654,7 +715,7 @@ class BMPScene {
 	}
 	
 	hasUndoStep() {
-		if(this.currentActionId < 0)
+		if(this.currentActionId <= 0)
 			return false
 		
 		return true
@@ -756,7 +817,7 @@ class TextureStack {
 		this.id = w + "x" + h
 		
 		this.userCount = 0
-		this.current = false
+		this.hasFocus = false
 		this.tex = tex
 		
 		this.offset = 0
@@ -767,7 +828,7 @@ class TextureStack {
 	
 	saveState() {
 		this.gl.bindTexture(this.gl.TEXTURE_2D, this.tex)
-		this.gl.texSubImage2D(this.gl.TEXTURE_2D, 0, 0, this.offset * this.h, this.w, this.h, this.gl.RGB, this.gl.UNSIGNED_BYTE, this.c)
+		this.gl.copyTexSubImage2D(this.gl.TEXTURE_2D, 0, 0, this.offset * this.h, 0, this.h, this.w, this.h)
 		
 		let i = this.offset
 		
@@ -776,13 +837,13 @@ class TextureStack {
 		return i
 	}
 	
-	drawState(i, scene) {log("h: " + this.h)	
+	drawState(i, scene) {
 		this._r.y = i * this.h
-		
+		//this._r.h = this.h * 20
 		scene.setInputTex(this.tex)
 		scene.renderInput(this._r)
 		log("draw state init")
-		log(i)
+		log("h: " + this.h + "; " + i)
 	}
 	
 	registerUser() {

@@ -64,11 +64,11 @@ void main(void) {\n\
 ,
 "precision mediump float;\n\
 \
-uniform sampler2D img_brush;\n\
+uniform sampler2D img_input;\n\
 \
 varying vec2 uv;\n\
 void main(void) {\n\
-	gl_FragColor = texture2D(img_brush, uv);\n\
+	gl_FragColor = texture2D(img_input, uv);\n\
 }"
 		]
 	}

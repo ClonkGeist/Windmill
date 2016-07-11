@@ -255,12 +255,11 @@ class Mode_Draw_Shape extends DefaultMode {
 		this.scene.shaderType = SHADER_TYPE_BACKBUFFER
 		
 		this.scene.renderInputLineIntoWorker(SHADER_TYPE_COLORED_SHAPE, this.lastX, this.lastY, x, y, this.shape)
-		
-		this.scene.shaderType = SHADER_TYPE_COMBINED_BACKBUFFER
-		this.scene.render()
+		this.scene.render(SHADER_TYPE_COMBINED_BACKBUFFER)
 		
 		this.lastX = x
 		this.lastY = y
+		
 		// drawTimeout = true
 		drawTimeout = setTimeout(function() { drawTimeout = false; }, 10)
 	}
@@ -269,12 +268,12 @@ class Mode_Draw_Shape extends DefaultMode {
 		this.onMousemove(x, y, scene, 0)
 		this.scene.combineIntoSource()
 		
-		let ts = scene.getTextureStack()
+		var ts = scene.getTextureStack()
 		
 		var state = ts.saveState()
-		
+		log("draw step state: " + state)
 		let a = new Action(() => {log("state: " + state)
-			state = ts.drawState(state, this.scene)
+			ts.drawState(state, this.scene)
 		})
 		
 		scene.manifestUndoStep(a)
