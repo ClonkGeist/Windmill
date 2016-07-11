@@ -1,4 +1,5 @@
 /chrome/logs/*
 *.log
 *.css
+!/chrome/styles/overrides/checkbox/checkbox.css
 /chrome/content/modules/cide/meshviewer/*.css
