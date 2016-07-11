@@ -7,7 +7,7 @@ caption {
 	margin: 0.7em 0;
 	background-color: inherit;
 	font-size: 1em;
-	color: $ui-text-clr;
+	color: $clr-text-ui;
 }
 
 caption.big {
@@ -37,7 +37,7 @@ listitem {
 	transition: background-color 0.3s;
 	margin: 0;
 	padding-left: 5px;
-	color: $text-clr;
+	color: $clr-text;
 	-moz-appearance: none;
 }
 
@@ -63,13 +63,13 @@ listitem:focus {
 
 .infotooltip {
 	width: 16px;
-	color: $ui-text-clr;
+	color: $clr-text-ui;
 	
 	.icon-info {
 		height: 16px;
 		margin-left: 8px;
 		&:hover {
-			color: $text-clr;
+			color: $clr-text;
 		}
 	}
 }

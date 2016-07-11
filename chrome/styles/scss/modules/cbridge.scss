@@ -6,7 +6,7 @@ window {
 .draft { display: none; }
 
 #modules-fallback {
-	color: $ui-text-clr;
+	color: $clr-text-ui;
 	font-size: 1.6em;
 }
 
@@ -21,11 +21,11 @@ window {
 
 .modules-nav-entry {
 	&:hover {
-		color: $ui-text-clr;
+		color: $clr-text-ui;
 	}
 	
 	&.selected {
-		color: $ui-text-clr;
+		color: $clr-text-ui;
 		background: $clr-base;
 		border-top: 1px solid $clr-paper;
 		border-bottom: 1px solid $clr-border;
@@ -39,7 +39,7 @@ window {
 }
 
 .modules-nav-info {
-	background: $interact-blue;
+	background: $clr-blue;
 	width: 16px;
 	height: 16px;
 	border-radius: 8px;

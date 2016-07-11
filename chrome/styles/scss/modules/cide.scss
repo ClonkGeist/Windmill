@@ -49,17 +49,17 @@ toolbox {
 	transition: background-color 0.15s, color 0.6s;
 	cursor: pointer;
 	box-sizing: border-box;
-	color: $ui-text-clr;
+	color: $clr-text-ui;
 }
 
 .deck-nav-elm.active,
 .deck-nav-elm.active:hover {
-	color: $ui-text-clr;
+	color: $clr-text-ui;
 	background-color: $clr-base;
 }
 
 .deck-nav-elm.state-unsaved {
-	color: $interact-red;
+	color: $clr-red;
 }
 
 .deck-nav-elm:hover {
@@ -82,8 +82,8 @@ toolbox {
 	
 	&:hover {
 		color: $clr-paper;
-		background-color: $interact-red;
-		outline: 2px solid $interact-red;
+		background-color: $clr-red;
+		outline: 2px solid $clr-red;
 		outline-offset: -1;
 		-moz-outline-radius: 14px;
 	}
@@ -158,7 +158,7 @@ toolbarbutton:focus  *{
 
 .deckbtn-scrollLeft:hover ,
 .deckbtn-scrollRight:hover {
-	color: $ui-text-clr;
+	color: $clr-text-ui;
 }
 
 .deckbtn-scrollLeft.deckbtn-scrollDisabled,
@@ -177,7 +177,7 @@ toolbarbutton:focus  *{
 	box-shadow: none;
 	-moz-appearance: none;
 	
-	color: $ui-text-clr;
+	color: $clr-text-ui;
 	border: none;
 }
 
@@ -199,23 +199,23 @@ toolbarbutton:focus  *{
 }*/
  
 .dragover-sidedeck-right {
-    box-shadow: inset 5px 0 0 0 $interact-orange;
+    box-shadow: inset 5px 0 0 0 $clr-orange;
 }
  
 .dragover-sidedeck-bottom {
-	box-shadow: inset 0 5px 0 0 $interact-orange;
+	box-shadow: inset 0 5px 0 0 $clr-orange;
 }
 
 .dragover-sidedeck-left {
-	box-shadow: inset 5px 0 0 0 $interact-orange;
+	box-shadow: inset 5px 0 0 0 $clr-orange;
 }
 
 .dragover-sidedeck-top {
-	box-shadow: inset 0 -5px 0 0 $interact-orange;
+	box-shadow: inset 0 -5px 0 0 $clr-orange;
 }
 
 .dragover-deck {
-	outline: 5px solid $interact-orange;
+	outline: 5px solid $clr-orange;
 	outline-offset: -5px;
 }
 

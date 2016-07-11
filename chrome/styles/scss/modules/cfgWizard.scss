@@ -48,7 +48,7 @@ body
 	transition: background-color 0.4s;
 	color: white;
 	&:hover {
-		background-color: $interact-red;
+		background-color: $clr-red;
 	}
 	text-align: center;
 }
@@ -77,7 +77,7 @@ body
 	transition: background-color 0.4s;
 	color: white;
 	&:hover {
-		background-color: $interact-red;
+		background-color: $clr-red;
 	}
 	text-align: center;
 }

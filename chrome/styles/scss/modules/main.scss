@@ -71,7 +71,7 @@ window.maximized .restore-window {
 
 .window-button.icon-x-small {
 	&:hover {
-		background-color: $interact-red;
+		background-color: $clr-red;
 		color: $clr-base;
 	}
 }
@@ -338,7 +338,7 @@ toolbarbutton:focus  *{
 		transition: background-color 0.3s;
 
 		.ctx-submenuindicator:before {
-			color: $ui-light-clr;
+			color: $clr-ui-light;
 		}
 	}
 }
@@ -346,7 +346,7 @@ toolbarbutton:focus  *{
 .dlg-aplabelwrapper {
 	font-size: 1.2em;
 	padding: 2px 4px;
-	color: $ui-text-clr;
+	color: $clr-text-ui;
 }
 
 /* sidebar */
@@ -368,7 +368,7 @@ toolbarbutton:focus  *{
 }
 
 .sidebar-h {
-	background: $interact-red;
+	background: $clr-red;
 	color: white;
 	margin: 0;
 	line-height: 1.6em;
@@ -478,7 +478,7 @@ toolbarbutton:focus  *{
 	opacity: 1;
 }
 .togglemode-img.activated {
-	background-color: $interact-red;
+	background-color: $clr-red;
 }
 .togglemode-img.invisible {
 	margin-left: 18px;

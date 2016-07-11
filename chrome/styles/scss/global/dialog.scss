@@ -22,7 +22,7 @@
 	background-color: $clr-paper;
 	min-height: 60px;
 	min-width: 100px;
-	color: $text-clr;
+	color: $clr-text;
 	box-shadow: 0 0 10px -5px rgba(0, 0, 0, 0.3);
 	pointer-events: initial;
 	border-top: 1px solid $clr-paper;
@@ -35,7 +35,7 @@
 			flex: 1;
 			-moz-appearance: none;
 			&[selected="true"] {
-				background-color: $interact-red;
+				background-color: $clr-red;
 				color: white;
 			}
 			transition: background-color 0.1s, color 0.1s;
@@ -51,7 +51,7 @@
 	border-bottom: 1px solid $clr-border;
 	background-color: $clr-base;
 	min-height: 30px;
-	color: $ui-text-clr;
+	color: $clr-text-ui;
 	padding: 0.5em 1em;
 	cursor: default;
 }
@@ -67,7 +67,7 @@
 
 .main-wdialog-button {
 	border: 1px solid $clr-border;
-	color: $ui-text-clr;
+	color: $clr-text-ui;
 	background: $clr-base;
 	
 	&:hover {

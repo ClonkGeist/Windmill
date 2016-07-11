@@ -5,11 +5,11 @@ $clr-chrome: rgb(35, 40, 45);
 $clr-chrome-sub: rgb(25, 30, 35);
 $clr-chrome-active: rgb(36, 120, 204);
 
-$interact-red: rgb(220, 70, 50);
-$interact-red-dark: rgb(200, 50, 30);
-$interact-red-darker: rgb(140, 20, 10);
-$interact-blue: rgb(0, 165, 210);
-$interact-orange: rgba(250,169, 0, 0.7);
+$clr-red: rgb(220, 70, 50);
+$clr-red-dark: rgb(200, 50, 30);
+$clr-red-darker: rgb(140, 20, 10);
+$clr-blue: rgb(0, 165, 210);
+$clr-orange: rgba(250,169, 0, 0.7);
 
 $clr-on-state: rgb(200, 255, 200);
 
@@ -21,18 +21,12 @@ $clr-border-grey: rgb(180, 180, 180);
 
 $clr-module-bg: rgb(245, 245, 245);
 
-$text-clr: rgb(40, 40, 40);
 $clr-text: rgb(40, 40, 40);
-$ui-text-clr: rgb(80, 80, 80);
-$ui-light-clr: rgb(180, 180, 180);
-
+$clr-text-ui: rgb(80, 80, 80);
+$clr-ui-light: rgb(180, 180, 180);
+ 
 $hover-blue-bg: rgba(0, 165, 207, 0.15);
 
-@mixin hover_blue() {
-	background-color: rgba(0, 165, 207, 0.15);
-	outline: 1px solid rgba(0, 165, 207, 0.3);
-	outline-offset: -1px;
-}
 
 @mixin hover-blue() {
 	background-color: rgba(0, 165, 207, 0.15);
@@ -52,7 +46,7 @@ $hover-blue-bg: rgba(0, 165, 207, 0.15);
 	outline: 1px solid rgba(0, 165, 207, 0.5);
 }
 
-@mixin absolute_fill() {
+@mixin absolute-fill() {
 	position: absolute !important;
 	top: 0;
 	right: 0;
@@ -79,7 +73,7 @@ $hover-blue-bg: rgba(0, 165, 207, 0.15);
 	background-color: $clr-base;
 	background: -moz-linear-gradient(top, $clr-paper 0%, $clr-empty 100%);
 	border: 1px solid $clr-border;
-	color: $ui-text-clr;
+	color: $clr-text-ui;
 	
 	&:hover {
 		border: 1px solid $clr-border-grey;
