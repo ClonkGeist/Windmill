@@ -414,3 +414,6 @@
 .icon-a-se:before {
 	@include -a-se();
 }
+.icon-center-view:before {
+    @include -center-view();
+}
