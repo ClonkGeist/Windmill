@@ -103,7 +103,7 @@ function composeShaderString(flags) {
 			str += "gl_Position = mWorld * pos;\n";
 		}
 		else
-			str += "gl_Position = mWorld* vec4(aVertexPosition, 1.0);\n";
+			str += "gl_Position = mWorld * vec4(aVertexPosition, 1.0);\n";
 		
 		str += "}"; // </MAIN>
 		
@@ -1741,7 +1741,7 @@ function Meshviewer() {
 						var newFilePath = _sc.profd+"/tmp/meshviewer" + tmpFileIndex + ".xml";
 						tmpFileIndex++;
 						runXmlParser(skelpath, newFilePath, function() {
-							parseSkeletonXml(newFilePath).then(function(skeleton) {
+							MVSkeleton.createFromXml(newFilePath).then(function(skeleton) {
 								targetScene.setSkeleton(skeleton);
 							});
 						});
@@ -1760,227 +1760,19 @@ function Meshviewer() {
 	this.DOMParser = new DOMParser();
 }
 
-function parseSkeletonXml(path) {
-	return Task.spawn(function*() {
-		let xml = yield OS.File.read(path, {encoding: "utf-8"});
-		
-		var sk = new MV_Skeleton();
-		
-		var dom = (new DOMParser()).parseFromString(xml, "text/xml");
-		
-		// parse bone-hierarchy
-		var domBoneParents = dom.getElementsByTagName("bonehierarchy")[0],
-			hierarchyRefs = {};
-		
-		if(domBoneParents) {
-			domBoneParents = domBoneParents.getElementsByTagName("boneparent");
-			
-			for(let i = 0; i < domBoneParents.length; i++)
-				hierarchyRefs[domBoneParents[i].getAttribute("bone")] = domBoneParents[i].getAttribute("parent");
-		}
-		
-		// parse single bones
-		var bones = [],
-			boneCount = 0,
-			boneNameToIdReference = [],
-			aBoneInserted = [],
-			sortedBones = [],
-			sortedBoneCount = 0;
-		
-		var domBones = dom.getElementsByTagName("bone"),
-			l = domBones.length;
-		
-		for(let i = 0; i < l; i++) {
-			var name = domBones[i].getAttribute("name");
-			boneNameToIdReference[name] = domBones[i].getAttribute("id");
-			bones[i] = {
-				"name": name,
-				"origId": i,
-			};
-		}
-		for(var i = 0; i < l; i++) {
-			
-			var domRot = domBones[i].getElementsByTagName("rotation")[0],
-				domRotAxis = domRot.getElementsByTagName("axis")[0],
-				domPos = domBones[i].getElementsByTagName("position")[0];
-			
-			// bone position
-			var pos = vec3.clone([
-				parseFloat(domPos.getAttribute("x")) * CLIPSACE_CONVERSION,
-				parseFloat(domPos.getAttribute("y")) * CLIPSACE_CONVERSION,
-				parseFloat(domPos.getAttribute("z")) * CLIPSACE_CONVERSION
-			]);
-			
-			// bone orientation
-			var q = quat.create();
-			quat.setAxisAngle(q, [
-				rx = parseFloat(domRotAxis.getAttribute("x")),
-				ry = parseFloat(domRotAxis.getAttribute("y")),
-				rz = parseFloat(domRotAxis.getAttribute("z"))
-			], domRot.getAttribute("angle"));
-			
-			var mBone = mat4.create();
-			mat4.fromQuat(mBone, mBone, q);
-			mat4.fromRotationTranslation(mBone, q, pos)
-			
-			var boneName = domBones[i].getAttribute("name");
-			
-			// save bone id by name
-			var id = domBones[i].getAttribute("id");
-			boneNameToIdReference[boneName] = id;
-			
-			var parent = boneNameToIdReference[hierarchyRefs[boneName]];
-			
-			// apply parent bind pose and parent inverse
-			if(parent == undefined) {
-				sortedBones[sortedBones.length] = i;
-				aBoneInserted[id] = true;
-				sortedBoneCount++;
-			}
-			
-			// save bone
-			bones[id].bind = mBone;
-			bones[id].local = mat4.clone(mBone);
-			bones[id].inverse = mat4.create();
-			mat4.invert(bones[id].inverse, mBone)
-			bones[id].parent = parent;
-		}
-		
-		// reorganize bone structure // from root to tail
-		while(l > sortedBoneCount)
-			for(let i = 0; i < l; i++)
-				// if parent already in list, insert this bone too
-				if(aBoneInserted[bones[i].parent] && !aBoneInserted[i]) {
-					sortedBones[sortedBones.length] = i;
-					aBoneInserted[i] = true;
-					
-					// apply parent inverse
-					mat4.multiply(bones[i].bind, bones[bones[i].parent].bind, bones[i].bind);
-					mat4.invert(bones[i].inverse, bones[i].bind);
-					
-					// loop ctrl
-					sortedBoneCount++;
-				}
-				// else wait until parent gets listed
-		
-		// apply bone structure
-		sk.setBones(bones, sortedBones);
-		
-		// parse animations
-		var animNodes = dom.getElementsByTagName("animation"),
-			l = animNodes.length,
-			tracks,
-			anim, iTrack, trackNodes, arTrack, 
-			iKeyf, keyfNodes, keyfPos, keyfRot, keyfAxis;
-		
-		for(i = 0; i < l; i++) {
-			anim = sk.addAnimation(
-				animNodes[i].getAttribute("name"),
-				animNodes[i].getAttribute("length")
-			);
-			
-			trackNodes = animNodes[i].getElementsByTagName("track");
-			tracks = {};
-			
-			for(iTrack = 0; iTrack < trackNodes.length; iTrack++) {
-				
-				// track data storage
-				// add basic transformation (which is none) for keyframe at 0 time
-				arKeyframes = [-1]; // -1: time of the first, extrapolated transformation
-				
-				// iterate through the keyframes of the track
-				keyfNodes = trackNodes[iTrack].getElementsByTagName("keyframe");
-				
-				// extrapolate to left, to secure animation track for time of 0
-				keyfPos = keyfNodes[0].getElementsByTagName("translate")[0];
-				keyfRot = keyfNodes[0].getElementsByTagName("rotate")[0];
-				keyfAxis = keyfRot.getElementsByTagName("axis")[0];
-				
-				angle = parseFloat(keyfRot.getAttribute("angle"));
-				// translation as vec3
-				arKeyframes.push(vec3.fromValues(
-					keyfPos.getAttribute("x"),
-					keyfPos.getAttribute("y"),
-					keyfPos.getAttribute("z")
-				));
-				/**
-					qx = ax * sin(angle/2)
-					qy = ay * sin(angle/2)
-					qz = az * sin(angle/2)
-					qw = cos(angle/2)
-				*/
-				
-				angle *= 0.5;
-				var sin =  Math.sin(angle);
-				
-				arKeyframes.push(quat.fromValues(
-					parseFloat(keyfAxis.getAttribute("x")) * sin,
-					parseFloat(keyfAxis.getAttribute("y")) * sin,
-					parseFloat(keyfAxis.getAttribute("z")) * sin,
-					Math.cos(angle)
-				));
-				
-				
-				/** keyframe structure within track array:
-				 * [0]: time (keyframe position in the timeline of the animation)
-				 * [1]: vec3 translation
-				 * [2]: quat4 rotation
-				 **/
-				for(iKeyf = 0; iKeyf < keyfNodes.length; iKeyf++) {
-					
-					keyfPos = keyfNodes[iKeyf].getElementsByTagName("translate")[0];
-					keyfRot = keyfNodes[iKeyf].getElementsByTagName("rotate")[0];
-					keyfAxis = keyfRot.getElementsByTagName("axis")[0];
-					
-					angle = parseFloat(keyfRot.getAttribute("angle"));
-					
-					// time
-					arKeyframes.push(keyfNodes[iKeyf].getAttribute("time"));
-					
-					// translation as vec3
-					arKeyframes.push(vec3.fromValues(
-						keyfPos.getAttribute("x"),
-						keyfPos.getAttribute("y"),
-						keyfPos.getAttribute("z")
-					));
-					/**
-						qx = ax * sin(angle/2)
-						qy = ay * sin(angle/2)
-						qz = az * sin(angle/2)
-						qw = cos(angle/2)
-					*/
-					
-					angle *= 0.5;
-					var sin =  Math.sin(angle);
-					
-					arKeyframes.push(quat.fromValues(
-						parseFloat(keyfAxis.getAttribute("x")) * sin,
-						parseFloat(keyfAxis.getAttribute("y")) * sin,
-						parseFloat(keyfAxis.getAttribute("z")) * sin,
-						Math.cos(angle)
-					));
-				}
-				
-				tracks[parseInt(boneNameToIdReference[trackNodes[iTrack].getAttribute("bone")])] = arKeyframes;
-			}
-			anim.setTracks(tracks);
-		}
-		
-		return sk;
-	});
-}
-
-function MV_Skeleton() {
+class MVSkeleton {
 	
-	this.bones = [];
+	constructor() {
+		this.bones = [];
+		
+		this.isSkeleton = true;
+		this.boneAmount = 0;
+		
+		this.animations = [];
+		this._a = -1;
+	}
 	
-	this.isSkeleton = true;
-	this.boneAmount = 0;
-	
-	this.animations = [];
-	this._a = -1;
-	
-	this.setAnimation = function(id = 0) {
+	setAnimation(id = 0) {
 	
 		if(id === -1)
 			this._a = -1;
@@ -1989,7 +1781,7 @@ function MV_Skeleton() {
 		return this._a;
 	}
 	
-	this.getBoneTransformations = function(time) {
+	getBoneTransformations(time) {
 		
 		if(this._a === -1) {
 			var r = [];
@@ -2007,7 +1799,7 @@ function MV_Skeleton() {
 		if(time > this._a.length)
 			time = this._a.length;
 				
-		// iterate through bones
+		// iterate through all bones
 		for(var iList = 0; iList < this.boneAmount; iList++) {
 			
 			var iBone = this.sortedBones[iList],
@@ -2020,13 +1812,15 @@ function MV_Skeleton() {
 			
 			// if track for this bone exists
 			// TODO: Make much more progressive (don't iterate through all keyframes each render step, smarten it
+			// 		ECMA 6 INCOMING!!
+			
 			if(trackData) {
 				var l = trackData.length,
 					last = -1;
 				
 				// calculate current keyframe transformation, if any
 				for(let i = 0; i < l; i += 3) {
-					// iterate to the right anim set/keyframeset
+					// iterate to the right anim keyframeset
 					if(trackData[i] >= time) {
 						
 						// calculate animation weight depending on the given time value
@@ -2053,17 +1847,16 @@ function MV_Skeleton() {
 			
 			parentBindNTrans[iBone] = mat4.clone(mTransformation);
 			
-			var inv = mat4.clone(bone.inverse);
-			mat4.multiply(mTransformation, mTransformation, inv);
+			mat4.multiply(mTransformation, mTransformation, bone.inverse);
 			
 			result[bone.origId] = mTransformation;
 			
 		} // <<end of bone iteration
-		
+		sdf--;
 		return result;
 	}
 	
-	this.setBones = function(mBones, aSortedBonesIds) {
+	setBones(mBones, aSortedBonesIds) {
 		if(mBones && mBones.length) {
 			this.bones = mBones;
 			this.boneAmount = mBones.length;
@@ -2072,33 +1865,246 @@ function MV_Skeleton() {
 		}
 	}
 	
-	this.addAnimation = function(name, length) {
+	addAnimation(name, length) {
 		var id = this.animations.length;
 		
-		this.animations[id] = new this.MV_Animation(name, length, id);
+		this.animations[id] = new MVAnimation(name, length, id);
 		
 		return this.animations[id];
 	}
 	
-	this.MV_Animation = function(name, length, id) {
-		
-		this.name = name;
-		this.length = length;
-		this.id = id;
-		
-		this.setTracks = function(tracks) {
-			for(var i in tracks)
-				return this.tracks = tracks;
+	static createFromXml(path) {
+		return Task.spawn(function*() {
+			let xml = yield OS.File.read(path, {encoding: "utf-8"});
 			
-			return false;
-		}
-		
-		this.getTracks = function() {
-			return this.tracks;
-		}
+			var sk = new MVSkeleton();
+			
+			var dom = (new DOMParser()).parseFromString(xml, "text/xml");
+			
+			// parse bone-hierarchy
+			var domBoneParents = dom.getElementsByTagName("bonehierarchy")[0],
+				hierarchyRefs = {};
+			
+			if(domBoneParents) {
+				domBoneParents = domBoneParents.getElementsByTagName("boneparent");
+				
+				for(let i = 0; i < domBoneParents.length; i++)
+					hierarchyRefs[domBoneParents[i].getAttribute("bone")] = domBoneParents[i].getAttribute("parent");
+			}
+			
+			// parse single bones
+			var bones = [],
+				boneCount = 0,
+				boneNameToIdReference = [],
+				aBoneInserted = [],
+				sortedBones = [],
+				sortedBoneCount = 0;
+			
+			var domBones = dom.getElementsByTagName("bone"),
+				l = domBones.length;
+			
+			for(let i = 0; i < l; i++) {
+				var name = domBones[i].getAttribute("name");
+				boneNameToIdReference[name] = domBones[i].getAttribute("id");
+				bones[i] = {
+					"name": name,
+					"origId": i,
+				};
+			}
+			for(var i = 0; i < l; i++) {
+				
+				var domRot = domBones[i].getElementsByTagName("rotation")[0],
+					domRotAxis = domRot.getElementsByTagName("axis")[0],
+					domPos = domBones[i].getElementsByTagName("position")[0];
+				
+				// bone position
+				var pos = vec3.clone([
+					parseFloat(domPos.getAttribute("x")) * CLIPSACE_CONVERSION,
+					parseFloat(domPos.getAttribute("y")) * CLIPSACE_CONVERSION,
+					parseFloat(domPos.getAttribute("z")) * CLIPSACE_CONVERSION
+				]);
+				
+				// bone orientation
+				var q = quat.create();
+				quat.setAxisAngle(q, [
+					rx = parseFloat(domRotAxis.getAttribute("x")),
+					ry = parseFloat(domRotAxis.getAttribute("y")),
+					rz = parseFloat(domRotAxis.getAttribute("z"))
+				], domRot.getAttribute("angle"));
+				
+				var mBone = mat4.create();
+				mat4.fromQuat(mBone, mBone, q);
+				mat4.fromRotationTranslation(mBone, q, pos)
+				
+				var boneName = domBones[i].getAttribute("name");
+				
+				// save bone id by name
+				var id = domBones[i].getAttribute("id");
+				boneNameToIdReference[boneName] = id;
+				
+				var parent = boneNameToIdReference[hierarchyRefs[boneName]];
+				
+				// apply parent bind pose and parent inverse
+				if(parent == undefined) {
+					sortedBones[sortedBones.length] = i;
+					aBoneInserted[id] = true;
+					sortedBoneCount++;
+				}
+				
+				// save bone
+				bones[id].bind = mBone;
+				bones[id].local = mat4.clone(mBone);
+				bones[id].inverse = mat4.create();
+				mat4.invert(bones[id].inverse, mBone)
+				bones[id].parent = parent;
+			}
+			
+			// reorganize bone structure // from root to tail
+			while(l > sortedBoneCount)
+				for(let i = 0; i < l; i++)
+					// if parent already in list, insert this bone too
+					if(aBoneInserted[bones[i].parent] && !aBoneInserted[i]) {
+						sortedBones[sortedBones.length] = i;
+						aBoneInserted[i] = true;
+						
+						// apply parent inverse
+						mat4.multiply(bones[i].bind, bones[bones[i].parent].bind, bones[i].bind);
+						mat4.invert(bones[i].inverse, bones[i].bind);
+						
+						// loop ctrl
+						sortedBoneCount++;
+					}
+					// else wait until parent gets listed
+			
+			// apply bone structure
+			sk.setBones(bones, sortedBones);
+			
+			// parse animations
+			var animNodes = dom.getElementsByTagName("animation"),
+				l = animNodes.length,
+				tracks,
+				anim, iTrack, trackNodes, arTrack, 
+				iKeyf, keyfNodes, keyfPos, keyfRot, keyfAxis;
+			
+			for(i = 0; i < l; i++) {
+				anim = sk.addAnimation(
+					animNodes[i].getAttribute("name"),
+					animNodes[i].getAttribute("length")
+				);
+				
+				trackNodes = animNodes[i].getElementsByTagName("track");
+				tracks = {};
+				
+				for(iTrack = 0; iTrack < trackNodes.length; iTrack++) {
+					
+					// track data storage
+					// add basic transformation (which is none) for keyframe at 0 time
+					arKeyframes = [-1]; // -1: time of the first, extrapolated transformation
+					
+					// iterate through the keyframes of the track
+					keyfNodes = trackNodes[iTrack].getElementsByTagName("keyframe");
+					
+					// extrapolate to left, to secure animation track for time of 0
+					keyfPos = keyfNodes[0].getElementsByTagName("translate")[0];
+					keyfRot = keyfNodes[0].getElementsByTagName("rotate")[0];
+					keyfAxis = keyfRot.getElementsByTagName("axis")[0];
+					
+					angle = parseFloat(keyfRot.getAttribute("angle"));
+					// translation as vec3
+					arKeyframes.push(vec3.fromValues(
+						keyfPos.getAttribute("x"),
+						keyfPos.getAttribute("y"),
+						keyfPos.getAttribute("z")
+					));
+					/**
+						qx = ax * sin(angle/2)
+						qy = ay * sin(angle/2)
+						qz = az * sin(angle/2)
+						qw = cos(angle/2)
+					*/
+					
+					angle *= 0.5;
+					var sin =  Math.sin(angle);
+					
+					arKeyframes.push(quat.fromValues(
+						parseFloat(keyfAxis.getAttribute("x")) * sin,
+						parseFloat(keyfAxis.getAttribute("y")) * sin,
+						parseFloat(keyfAxis.getAttribute("z")) * sin,
+						Math.cos(angle)
+					));
+					
+					
+					/** keyframe structure within track array:
+					 * [0]: time (keyframe position in the timeline of the animation)
+					 * [1]: vec3 translation
+					 * [2]: quat4 rotation
+					 **/
+					for(iKeyf = 0; iKeyf < keyfNodes.length; iKeyf++) {
+						
+						keyfPos = keyfNodes[iKeyf].getElementsByTagName("translate")[0];
+						keyfRot = keyfNodes[iKeyf].getElementsByTagName("rotate")[0];
+						keyfAxis = keyfRot.getElementsByTagName("axis")[0];
+						
+						angle = parseFloat(keyfRot.getAttribute("angle"));
+						
+						// time
+						arKeyframes.push(keyfNodes[iKeyf].getAttribute("time"));
+						
+						// translation as vec3
+						arKeyframes.push(vec3.fromValues(
+							keyfPos.getAttribute("x"),
+							keyfPos.getAttribute("y"),
+							keyfPos.getAttribute("z")
+						));
+						/**
+							qx = ax * sin(angle/2)
+							qy = ay * sin(angle/2)
+							qz = az * sin(angle/2)
+							qw = cos(angle/2)
+						*/
+						
+						angle *= 0.5;
+						var sin =  Math.sin(angle);
+						
+						arKeyframes.push(quat.fromValues(
+							parseFloat(keyfAxis.getAttribute("x")) * sin,
+							parseFloat(keyfAxis.getAttribute("y")) * sin,
+							parseFloat(keyfAxis.getAttribute("z")) * sin,
+							Math.cos(angle)
+						));
+					}
+					
+					tracks[parseInt(boneNameToIdReference[trackNodes[iTrack].getAttribute("bone")])] = arKeyframes;
+				}
+				anim.setTracks(tracks);
+			}
+			
+			return sk;
+		});
 	}
 }
 
+
+class MVAnimation {
+	constructor(name, length, id) {
+		this.name = name;
+		this.length = length;
+		this.id = id;
+	}
+	
+	setTracks(tracks) {
+		for(var i in tracks)
+			return this.tracks = tracks;
+		
+		return false;
+	}
+	
+	getTracks() {
+		return this.tracks;
+	}
+}
+
+sdf = 10
 var tmpFileIndex = 0;
 
 function runXmlParser(filePath, targetFilePath, fnOnFinish) {

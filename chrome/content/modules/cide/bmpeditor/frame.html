@@ -80,9 +80,10 @@
 			<div style="align: space-around">
 				<canvas id="bp-preview-gen" height="32" width="32"></canvas>
 				<div id="bp-preview-main"></div>
-				<input id="rounded-brush" type="checkbox" checked="true"></input>
-				<label for="rounded-brush">$rounded$</label>
+				<input id="rounded-brush" type="checkbox" checked="true" class="custom"></input>
+				<label for="rounded-brush" class="cbox-button">$rounded$</label>
 			</div>
+			<!--
 			<div>
 				<input type="text" id="bp-gen-seed" value="3" maxlength="3"/>
 				<input type="range" id="fg" min="1" max="50" value="3"/>
@@ -91,6 +92,7 @@
 				<input type="text" id="bp-gen-dist" value="3" maxlength="3"/>
 				<input type="range" id="fgh" min="1" max="50" value="3"/>
 			</div>
+			-->
 		</div>
 	</div>
 	
@@ -120,6 +122,17 @@
 			<div class="canvas-wrapper">
 				<div class="canvas-dimension">
 					<canvas id="draw-canvas" class="draw-canvas" height="20" width="20" tabindex="0"></canvas>
+					<svg id="ui-sel" viewBox="0 0 20 20" height="20" data-no-localization="true">
+						<g class="sel-g">
+							<path class="sel-p"></path>
+							<path class="sel-p sel-scnd"></path>
+							<rect class="sel-r" x="0" y="0" width="0" height="0"></rect>
+							<rect class="sel-r sel-scnd" x="0" y="0" width="0" height="0"></rect>
+							
+							<ellipse class="sel-c" cx="10" cy="10" rx="0" ry="0"></ellipse>
+							<ellipse class="sel-c sel-scnd" cx="10" cy="0" rx="0" ry="0"></ellipse>
+						</g>
+					</svg>
 					<div class="ui-rect invisible">
 						<div class="ui-rect-container">
 							<div class="ui-thumb top-left"></div>
@@ -157,7 +170,7 @@
 
 			<div id="mds_thickness" class="toolbarbutton toolsettings">
 				<img id="bp-preview" height="16" width="16" />
-				<input type="text" id="mds_thickness_nr" value="3" maxlength="3"/>px
+				<input type="text" id="mds_thickness_nr" value="3" maxlength="3"/>
 				<input type="range" id="mds_thickness_range" min="1" max="50" value="3"/>
 			</div>
 			
@@ -170,8 +183,10 @@
 		</div>
 	</div>
 	<div class="brush-indicator"></div>
+	<canvas id="2d-rt" height="1" width="1" style="display: none"></canvas>
 	
 <script type="text/javascript" src="chrome://windmill/content/js/default_module.js" charset="utf-8"></script>
+<script type="text/javascript" src="chrome://windmill/content/js/default_cidemodule.js" charset="utf-8"></script>
 <script type="text/javascript" src="chrome://windmill/content/js/external/webgl-debug.js"></script>
 <script type="text/javascript" src="chrome://windmill/content/modules/cide/bmpeditor/js/bmpeditor.js" charset="utf-8"></script>
 <script type="text/javascript" src="chrome://windmill/content/modules/cide/bmpeditor/js/shaders2d.js"></script>

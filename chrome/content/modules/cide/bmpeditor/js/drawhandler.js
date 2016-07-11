@@ -1,5 +1,11 @@
+/**
 
-hook("load", () => {
+	TODO:
+	render*() nicht mehr auf this.shaderType zurückgreifen, ausschließlich mit render*(shaderType) arbeiten
+	gegebenenfalls um render*(shaderType1, shaderType2) erweitern
+
+*/
+hook("load", () => {	
 	initGl("draw-canvas")
 })
 
@@ -22,14 +28,15 @@ function initGl(id) {
 	var gl
 	
 	try {
-		gl = c.getContext("experimental-webgl", {
-			antialias: false, 
-			depth: false, 
+		gl = c.getContext("webgl", {
+			antialias: false,
+			depth: false,
 			stencil: false,
+			preserveDrawingBuffer: true
 		})
 	}
 	catch(e) {
-		log("WebGL doesn't work..., for reasons...");
+		log("WebGL doesn't work..., for reasons...", false, "error");
 	}
 	
 	if(!gl)
@@ -130,14 +137,15 @@ class BMPScene {
 		this.texture_Worker = this.createTexture()
 		this.texture_Brush = this.createTexture()
 		
-		this._undoStacks = []
-		this.dirtyCounter = 0
-		this.actionCounter = 0
-		
 		this.selClrIndex = 0
 		this.selShape = Shape_Circle
 		
 		this.currentColorRGB = new Float32Array(3)
+		
+		this._undoStack = []
+		this._tStacks = []
+		this.dirtyCounter = 0
+		this.currentActionId = -1
 	}
 	
 	set ptexture_Source (tex) {
@@ -166,7 +174,7 @@ class BMPScene {
 		
 		this.updateRotMat()
 		
-		this.render()
+		this.render(this.shaderType)
 	}
 	
 	updateRotMat() {
@@ -206,73 +214,55 @@ class BMPScene {
 	}
 	
 	initWithTexture(src) {
-		var img = new Image()
 		
-		img.onload = () => {
-			let gl = this.gl
+		return new Promise((resolve, reject) => {
+			var img = new Image()
 			
-			this.texture_Combined = this.createTexture()
-			gl.activeTexture(gl.TEXTURE0)
-			gl.bindTexture(gl.TEXTURE_2D, this.texture_Combined)
-			this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true)
-			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, img)
-			this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, false)
-			gl.bindTexture(gl.TEXTURE_2D, null)
-						
-			this.setDimensions(img.width, img.height)
-			
-			this.texture_Worker = this.createTexture()
-			gl.activeTexture(gl.TEXTURE1)
-			gl.bindTexture(gl.TEXTURE_2D, this.texture_Worker)
-			gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1)
-			gl.texImage2D(gl.TEXTURE_2D, 0, gl.ALPHA, this.width, this.height, 0, gl.ALPHA, gl.UNSIGNED_BYTE, null)
-			gl.bindTexture(gl.TEXTURE_2D, null)
-			
-			
-			this.ptexture_Source = this.texture_Combined
-			this.ptexture_Worker = this.texture_Worker
-			
-			this.initialized = true
-			
-			this.render()
-			
-			centerCanvas()
-		}
-		
-		img.onerror = function(e) {
-		}
-		
-		img.src = "file:" + src
-	}
-	
-	initWithData(data, width, height) {
-		let gl = this.gl
-		
-		this.texture_Combined = this.createTexture()
-		gl.activeTexture(gl.TEXTURE0)
-		gl.bindTexture(gl.TEXTURE_2D, this.texture_Combined)
-		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true)
-		gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1)
-		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, data)
-		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false)
-		gl.bindTexture(gl.TEXTURE_2D, null)
+			img.onload = () => {
+				let gl = this.gl
 				
-		this.setDimensions(width, height)
+				this.texture_Combined = this.createTexture()
+				gl.activeTexture(gl.TEXTURE0)
+				gl.bindTexture(gl.TEXTURE_2D, this.texture_Combined)
+				this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true)
+				gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, img)
+				this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, false)
+				gl.bindTexture(gl.TEXTURE_2D, null)
+							
+				this.setDimensions(img.width, img.height)
+				
+				this.texture_Worker = this.createTexture()
+				gl.activeTexture(gl.TEXTURE1)
+				gl.bindTexture(gl.TEXTURE_2D, this.texture_Worker)
+				gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1)
+				gl.texImage2D(gl.TEXTURE_2D, 0, gl.ALPHA, this.width, this.height, 0, gl.ALPHA, gl.UNSIGNED_BYTE, null)
+				gl.bindTexture(gl.TEXTURE_2D, null)
+				
+				
+				this.ptexture_Source = this.texture_Combined
+				this.ptexture_Worker = this.texture_Worker
+				
+				this.initialized = true
+				
+				this.render(this.shaderType)
+				
+				var ts = this.getTextureStack()
 		
-		this.texture_Worker = this.createTexture()
-		gl.activeTexture(gl.TEXTURE1)
-		gl.bindTexture(gl.TEXTURE_2D, this.texture_Worker)
-		gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1)
-		gl.texImage2D(gl.TEXTURE_2D, 0, gl.ALPHA, width, height, 0, gl.ALPHA, gl.UNSIGNED_BYTE, null)
-		gl.bindTexture(gl.TEXTURE_2D, null)
+				var state = ts.saveState()
+				
+				this.manifestUndoStep(new Action(() => {log("recovered initial state")
+					ts.drawState(state, this)
+				}))
+				
+				resolve()
+			}
+			
+			img.onerror = function(e) {
+				reject(e, src)
+			}
 		
-		
-		this.ptexture_Source = this.texture_Combined
-		this.ptexture_Worker = this.texture_Worker
-		
-		this.initialized = true
-		
-		this.render()
+			img.src = "file:" + src
+		})
 	}
 	
 	createTexture() {
@@ -295,15 +285,22 @@ class BMPScene {
 		return this.initialized
 	}
 		
-	setDimensions(w = 0, h = 0) {
+	setDimensions(w = 1, h = 1, align = -1) {
 		this.width = w
 		this.height = h
-		
+		log("image align: " + align)
 		this.canvas.width = w
 		this.canvas.height = h
 		
 		this.updateZoom()
 		this.gl.viewport(0, 0, w, h)
+		
+		// work with additional margin of 1 at each side
+		this.selMask = new Uint8Array((w+2)*(h+2))
+		this._selPointMask = new Uint8Array((w+2)*(h+2))
+		
+		document.getElementById("ui-sel").setAttribute("viewBox", "0 0 "+ w + " " + h)
+		document.getElementById("ui-sel").setAttribute("height", this.height*this.zoomFactor)
 	}
 	
 	// flip y coords	
@@ -319,6 +316,8 @@ class BMPScene {
 	updateZoom() {
 		$(this.canvas).css("width", (this.width*this.zoomFactor) + "px")
 		$(this.canvas).css("height", (this.height*this.zoomFactor) + "px")
+		
+		document.getElementById("ui-sel").setAttribute("height", this.height*this.zoomFactor)
 		
 		if(this.currentRect)
 			this.updateUiRectPos()
@@ -346,9 +345,19 @@ class BMPScene {
 		]
 	}
 	
-	render() {
-		this.useShaderOfType(this.shaderType)
+	render(shaderType) {
+		this.useShaderOfType(shaderType)
 		this.bindAttribBuffer()
+		this.setUniforms()
+		this.gl.drawArrays(this.gl.TRIANGLES, 0, 6)
+	}
+	
+	renderInput(r) {log(r)
+		this.useShaderOfType(SHADER_TYPE_INPUT)
+		this.setInputRect(r)
+					
+		this.updateInputRectUniform()
+		
 		this.setUniforms()
 		this.gl.drawArrays(this.gl.TRIANGLES, 0, 6)
 	}
@@ -431,6 +440,47 @@ class BMPScene {
 		this.gl.copyTexImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGB, 0, 0, this.width, this.height, 0)
 	}
 	
+	renderBrushLine(shaderType, x1, y1, x2, y2, shape) {
+		this.useShaderOfType(shaderType)
+		this.setUniforms()
+		
+		// sort points by x
+		if(x1 > x2) {
+			let temp = x1
+			x1 = x2
+			x2 = temp
+			
+			temp = y1
+			y1 = y2
+			y2 = temp
+		}
+		
+		var slope = (y2 - y1 + 1) / (x2 - x1 + 1)
+		
+		if(y1 <= y2)
+			for(let x = x1; x <= x2; x++) {
+				for(let y = 0; y < slope; y++) {
+					shape.setCenterAt(x, y + parseInt(y1))
+					this.setInputRect(shape.rect)
+					
+					this.updateInputRectUniform()
+					this.gl.drawArrays(this.gl.TRIANGLES, 0, 6)
+				}
+				y1 += slope
+			}
+		else
+			for(let x = x1; x <= x2; x++) {
+				for(let y = 0; y > slope; y--) {
+					shape.setCenterAt(x, parseInt(y1) - y)
+					this.setInputRect(shape.rect)
+					
+					this.updateInputRectUniform()
+					this.gl.drawArrays(this.gl.TRIANGLES, 0, 6)
+				}
+				y1 += slope
+			}
+	}
+	
 	combineInputIntoSource(shaderTypeForInput) {
 		this.useShaderOfType(this.shaderType)
 		this.setUniforms()
@@ -473,6 +523,12 @@ class BMPScene {
 			gl.activeTexture(gl.TEXTURE2)
 			gl.bindTexture(gl.TEXTURE_2D, this.texture_Brush)
 			gl.uniform1i(shader.unifImgBrush, 2)
+		}
+		
+		if(shader.unifImgInput !== null) {
+			gl.activeTexture(gl.TEXTURE3)
+			gl.bindTexture(gl.TEXTURE_2D, this.texture_Input)
+			gl.uniform1i(shader.unifImgInput, 3)
 		}
 		
 		if(shader.unifWorkerColor && shader.unifWorkerColor !== null) {
@@ -556,6 +612,7 @@ class BMPScene {
 			unifImgSource: this.gl.getUniformLocation(prog, "img_source"),
 			unifImgWorker: this.gl.getUniformLocation(prog, "img_worker"),
 			unifImgBrush: this.gl.getUniformLocation(prog, "img_brush"),
+			unifImgInput: this.gl.getUniformLocation(prog, "img_input"),
 			unifWorkerColor: this.gl.getUniformLocation(prog, "worker_color"),
 			unifRect: this.gl.getUniformLocation(prog, "rect")
 		}
@@ -572,14 +629,20 @@ class BMPScene {
 		return false
 	}
 
-	onShow() {		
+	onShow() {
 		this.canvas.width = this.width
 		this.canvas.height = this.height
 		
+		document.getElementById("ui-sel").setAttribute("viewBox", "0 0 "+ this.width + " " + this.height)
+		document.getElementById("ui-sel").setAttribute("height", this.height*this.zoomFactor)
 		this.gl.viewport(0, 0, this.width, this.height)
 		
 		this.bindAttribBuffer()
-		this.render()
+		this.render(this.shaderType)
+	}
+	
+	setInputTex(tex) {
+		this.texture_Input = tex
 	}
 	
 	setInputRect(rect) {
@@ -601,11 +664,11 @@ class BMPScene {
 		this.gl.texSubImage2D(this.gl.TEXTURE_2D, 0, rect.x, rect.y, rect.w, rect.h, this.gl.ALPHA, this.gl.UNSIGNED_BYTE, new Uint8Array([255]))
 		
 		this.shaderType = SHADER_TYPE_COMBINED_BACKBUFFER
-		this.render()
+		this.render(this.shaderType)
 	}
 	
 	uploadBrush() {
-		let size = sceneMeta[activeId].brushData.size
+		let size = sceneMeta[CM_ACTIVEID].brushData.size
 		
 		this.gl.activeTexture(this.gl.TEXTURE2)
 		this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture_Brush)
@@ -627,34 +690,75 @@ class BMPScene {
 		Undo-Manager
 	*/
 	
-	isDirty() {
-		if(dirtyCounter !== 0)
+	isClean() {
+		if(this.dirtyCounter === 0)
 			return true
 		
 		return false
 	}
 	
 	undo() {
-		dirtyCounter--
+		if(!this.hasUndoStep())
+			return false
+		
+		this.currentActionId
+		
+		this._undoStack[--this.currentActionId].perform()
+		
+		this.dirtyCounter--
+		
+		return true
 	}
 	
 	redo() {
-		dirtyCounter++
+		this.dirtyCounter++
 	}
 	
 	hasUndoStep() {
+		if(this.currentActionId <= 0)
+			return false
 		
+		return true
 	}
 	
 	hasRedoStep() {
+		if(this.currentActionId === this._undoStack.length - 1)
+			return false
 		
+		return true
 	}
 	
-	addUndoStep() {
+	manifestUndoStep(action) {
+		if(this._undoStack.length < MAX_UNDO_STACKSIZE) {
+			this.currentActionId++
+			this._undoStack.push(action)
+		}
+		else {
+			this._undoStack.shift()
+			this,_undoStack.push(action)
+		}
+		
+		this.dirtyCounter++
 	}
 	
 	onSave() {
-		dirtyCounter = 0
+		this.dirtyCounter = 0
+	}
+	
+	getTextureStack() {
+		
+		let id = this.width + "x" + this.height
+		
+		if(!this._tStacks[id])
+			this._tStacks[id] = new TextureStack(
+				this.width,
+				this.height,
+				this.gl,
+				this.c,
+				this.createTexture()
+			)
+		
+		return this._tStacks[id]
 	}
 	
 	/** 
@@ -688,12 +792,79 @@ class BMPScene {
 		Special functionalities
 	*/
 	
-	getPixelColor(x, y) {
-		let target = new Uint8Array(3)
+	// this output is flipped by its y-axis
+	readPixels(x, y, w, h) {
+		// flip y
+		y = this.height - y - h
 		
-		this.gl.readPixels(x, y, 1, 1, this.gl.UNSIGNED_BYTE, target)
+		let target = new Uint8Array(w*h*4)
+		
+		this.gl.readPixels(x, y, w, h, this.gl.RGBA, this.gl.UNSIGNED_BYTE, target)
 		
 		return target
+	}
+}
+
+class TextureStack {
+	constructor(w, h, gl, c, tex) {
+		this.gl = gl
+		this.c = c
+		this.w = w
+		this.h = h
+		
+		this._r = new Rect(0, 0, w, h)
+		
+		this.id = w + "x" + h
+		
+		this.userCount = 0
+		this.hasFocus = false
+		this.tex = tex
+		
+		this.offset = 0
+		
+		gl.bindTexture(gl.TEXTURE_2D, tex)
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, w, h*MAX_UNDO_STACKSIZE, 0, gl.RGB, gl.UNSIGNED_BYTE, null)
+	}
+	
+	saveState() {
+		this.gl.bindTexture(this.gl.TEXTURE_2D, this.tex)
+		this.gl.copyTexSubImage2D(this.gl.TEXTURE_2D, 0, 0, this.offset * this.h, 0, this.h, this.w, this.h)
+		
+		let i = this.offset
+		
+		this.offset = (this.offset + 1) % MAX_UNDO_STACKSIZE
+		
+		return i
+	}
+	
+	drawState(i, scene) {
+		this._r.y = i * this.h
+		//this._r.h = this.h * 20
+		scene.setInputTex(this.tex)
+		scene.renderInput(this._r)
+		log("draw state init")
+		log("h: " + this.h + "; " + i)
+	}
+	
+	registerUser() {
+		this.userCount++
+	}
+	
+	// returning true marks as unused and is allowed to get deleted
+	unregisterUser() {
+		this.userCount--
+		
+		if(this.userCount < 1 && !this.current) {
+			this.die()
+			return true
+		}
+		
+		return false
+	}
+	
+	die() {
+		this.gl.deleteTexture(this.tex)
+		this.gl = null
 	}
 }
 

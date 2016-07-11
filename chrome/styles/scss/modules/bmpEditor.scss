@@ -1,3 +1,6 @@
+$clr-sel-dark: rgb(40, 40, 40);
+$clr-sel-light: rgb(220, 220, 220);
+
 html, body {
 	padding: 0;
 	margin: 0;
@@ -21,7 +24,10 @@ canvas {
 .canvas-dimension {
 	position: relative;
 	flex: 1;
-	cursor: none;
+	
+	&.brush-mode {
+		cursor: none;
+	}
 }
 
 .visible {
@@ -30,8 +36,8 @@ canvas {
 
 .brush-indicator {
 	position: fixed;
-	outline: 1px solid white;
-	border: 1px solid black;
+	outline: 1px solid $clr-sel-light;
+	border: 1px solid $clr-sel-dark;
 	pointer-events: none;
 }
 
@@ -295,11 +301,12 @@ input[type=range]::-moz-range-track {
 .toolbar-collapse {
 	float: right;
 	padding-right: 5px;
+	color: rgb(180, 180, 180);
 	
 	box-sizing: border-box;
 	
 	&:hover {
-		color: green;
+		color: #777;
 	}
 }
 
@@ -593,6 +600,9 @@ select {
 	width: 130px;
 }
 
+
+/* in-canvas ui stuff */
+
 /* ui rect */
 
 .ui-rect {
@@ -685,6 +695,49 @@ select {
 	cursor: se-resize;
 }
 
-.ui-sel {
+#ui-sel {
+	pointer-events: none;
+	z-index: 3;
+	position: absolute;
+}
+
+.sel-p {
+	pointer-events: auto;
+	cursor: move;
+}
+
+.sel-g {
+	stroke-width: 1;
+	stroke-linecap: square;
+	stroke: $clr-sel-dark;
+	fill: none;
+	vector-effect: non-scaling-stroke;
 	
+	* {
+		vector-effect: non-scaling-stroke;
+		shape-rendering: crispEdges;
+	}
+}
+
+.sel-scnd {
+	stroke: $clr-sel-light;
+	stroke-dasharray: 5;
+	animation: dash 0.5s linear infinite;
+}
+
+.sel-c {
+	shape-rendering: crispEdges;
+}
+
+/*
+@keyframes dash {
+  to {
+	stroke-dashoffset: 10px;
+  }
+}*/
+
+@keyframes dash {
+  to {
+	stroke-dashoffset: 10px;
+  }
 }

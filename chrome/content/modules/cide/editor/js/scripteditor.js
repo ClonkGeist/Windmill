@@ -241,7 +241,6 @@ function initEditorContextMenu(x, y, editorId, fOnSelectionClicked) {
 }
 
 
-// !Review:: functionality
 function checkIfTabIsUnsaved(id) { return !editors[id].getSession().getUndoManager().isClean(); }
 
 function createCideToolbar(startup) {

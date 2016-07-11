@@ -1,9 +1,10 @@
 const
-	SHADER_TYPE_BACKBUFFER = 0,
+	SHADER_TYPE_BACKBUFFER = 0, // obsolet?
 	SHADER_TYPE_INPUT = 1,
-	SHADER_TYPE_COMBINED_BACKBUFFER = 2,
+	SHADER_TYPE_COMBINED_BACKBUFFER = 2, // obsolet?
 	SHADER_TYPE_CIRCLE = 3,
-	SHADER_TYPE_RECTANGLE = 4
+	SHADER_TYPE_RECTANGLE = 4,
+	SHADER_TYPE_COLORED_SHAPE = 5
 
 function composeShaderProgram(gl, type) {
 	
@@ -19,7 +20,7 @@ function composeShaderProgram(gl, type) {
 	
 	// If creating the shader program failed, alert
 	if (!gl.getProgramParameter(prog, gl.LINK_STATUS))
-		err("Unable to initialize the shader program.")
+		log("Unable to initialize the shader program.", false, "error")
 	
 	return prog
 }
@@ -47,6 +48,31 @@ void main(void) {\n\
 		]
 	}
 	else if(type === SHADER_TYPE_INPUT) {
+		return [
+"attribute vec2 pos;\n\
+varying vec2 uv;\n\
+attribute vec2 uUV;\n\
+uniform vec4 rect;\n\
+\
+void main(void) {\n\
+	uv = uUV;\n\
+	gl_Position = vec4(\
+			(pos[0] - 1.0) * rect[0] + (pos[0] + 1.0) * rect[2],\
+			(pos[1] - 1.0) * rect[1] + (pos[1] + 1.0) * rect[3],\
+			 0.0, 1.0);\n\
+}\n"
+,
+"precision mediump float;\n\
+\
+uniform sampler2D img_input;\n\
+\
+varying vec2 uv;\n\
+void main(void) {\n\
+	gl_FragColor = texture2D(img_input, uv);\n\
+}"
+		]
+	}
+	else if(type === SHADER_TYPE_COLORED_SHAPE) {
 		return [
 "attribute vec2 pos;\n\
 varying vec2 uv;\n\
@@ -173,7 +199,7 @@ function parseShader(gl, string, type, shaderInteralType) {
 	gl.compileShader(shader)
 	
 	if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-		log("An error occurred compiling the shaders ("+shaderInteralType+"): \n" + gl.getShaderInfoLog(shader))
+		log("An error occurred compiling the shaders ("+shaderInteralType+"): \n" + gl.getShaderInfoLog(shader), false, "error")
 		return false
 	}
 	return shader
