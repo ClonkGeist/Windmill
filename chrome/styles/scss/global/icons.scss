@@ -182,7 +182,6 @@
 .icon-backwards:before {
     @include -backwards();
 }
-.icon-backwards_sharp:before,
 .icon-backwards-sharp:before {
     @include -backwards-sharp();
 }
