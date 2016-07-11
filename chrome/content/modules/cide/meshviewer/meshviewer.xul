@@ -100,7 +100,7 @@
 					<hbox pack="center">
 						<box id="getTrans-button" class="icon-16 icon-brackets vo-button"></box>
 						<box id="toggle-wireframe-button" class="icon-16 icon-wireframe2 vo-button enabled"></box>
-						<box id="reset-view-button" class="icon-16 icon-wireframe2 vo-button"></box>
+						<box id="reset-view-button" class="icon-16 icon-center-view vo-button"></box>
 					</hbox>
 				</vbox>
 			</vbox>

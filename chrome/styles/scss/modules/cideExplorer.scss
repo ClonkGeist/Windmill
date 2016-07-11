@@ -2,7 +2,7 @@
 	height: 24px;
 	background-color: $clr-base;
 	border-bottom: 1px solid $clr-empty;
-	color: $ui-text-clr;
+	color: $clr-text-ui;
 	padding-left: 10px;
 } 
 
@@ -61,7 +61,7 @@
 	}
 	
 	&.checked:before {
-		color: $interact-blue;
+		color: $clr-blue;
 	}
 }
 
@@ -74,7 +74,7 @@
 	color: grey;
 	
 	&:hover {
-		color: $ui-text-clr;
+		color: $clr-text-ui;
 	}
 }
 

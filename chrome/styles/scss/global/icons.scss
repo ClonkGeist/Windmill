@@ -182,7 +182,6 @@
 .icon-backwards:before {
     @include -backwards();
 }
-.icon-backwards_sharp:before,
 .icon-backwards-sharp:before {
     @include -backwards-sharp();
 }
@@ -386,4 +385,34 @@
 }
 .icon-minus:before {
 	@include -minus();
+}
+.icon-a-nw:before {
+	@include -a-nw();
+}
+.icon-a-n:before {
+	@include -a-n();
+}
+.icon-a-ne:before {
+	@include -a-ne();
+}
+.icon-a-w:before {
+	@include -a-w();
+}
+.icon-a-c:before {
+	@include -save2();
+}
+.icon-a-e:before {
+	@include -a-e();
+}
+.icon-a-sw:before {
+	@include -a-sw();
+}
+.icon-a-s:before {
+	@include -a-s();
+}
+.icon-a-se:before {
+	@include -a-se();
+}
+.icon-center-view:before {
+    @include -center-view();
 }

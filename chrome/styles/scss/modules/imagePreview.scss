@@ -97,7 +97,7 @@ img {
 }
 
 .icon-16 {
-	color: $ui-light-clr;
+	color: $clr-ui-light;
 }
 
 .icon-16:hover {
@@ -146,11 +146,11 @@ img {
 	cursor: default;
 	font-size: 8px;
 	align-items: center;
-	color: $ui-light-clr;
+	color: $clr-ui-light;
 }
 
 #expand-grid-options:hover {
-	color: $ui-text-clr;
+	color: $clr-text-ui;
 }
 
 #hide-grid-options {
@@ -159,7 +159,7 @@ img {
 	cursor: default;
 	padding: 2px;
 	margin: 2px;
-	color: $ui-light-clr;
+	color: $clr-ui-light;
 }
 
 #hide-grid-options:hover {
@@ -184,7 +184,7 @@ img {
 	cursor: default;
 	font-size: 8px;
 	
-	color: $ui-light-clr;
+	color: $clr-ui-light;
 	
 	flex-grow: 1;
 	vertical-align: middle;
@@ -200,12 +200,12 @@ img {
 }
 
 .number-input .arrow:hover {
-	color: $ui-text-clr;
+	color: $clr-text-ui;
 }
 
 #snap-to-grid {
 	cursor: default;
-	color: $ui-light-clr;
+	color: $clr-ui-light;
 	padding-left: 5px;
 	padding-right: 5px;
 	background-color: $clr-base;
@@ -217,7 +217,7 @@ img {
 }
 
 #snap-to-grid.enabled {
-	color: $ui-text-clr;
+	color: $clr-text-ui;
 }
 
 /* background selection */
@@ -233,7 +233,7 @@ img {
 
 #bg-dark,
 #bg-transparent {
-	color: $text-clr;
+	color: $clr-text;
 }
 
 #bg-light,
@@ -249,5 +249,5 @@ img {
 #bg-light.bg-selected,
 #bg-dark.bg-selected,
 #bg-transparent.bg-selected {
-	outline-color: $interact_blue;
+	outline-color: $clr-blue;
 }

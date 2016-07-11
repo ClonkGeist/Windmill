@@ -13,7 +13,7 @@ $svg-url-no-games-found: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.
 html, body {
 	background-color: rgb(245, 245, 245);
 	font-family: $font-stack;
-	color: $text-clr;
+	color: $clr-text;
 	padding: 0;
 	margin: 0;
 }
@@ -110,7 +110,7 @@ html, body, #wrapper {
 	border-radius: 18px;
 	
 	&.enabled {
-		background-color: $interact-blue;
+		background-color: $clr-blue;
 	}
 	
 	&.enabled .rt-left {
@@ -163,7 +163,7 @@ html, body, #wrapper {
 	}
 
 	.input-error {
-		color: $interact-red;
+		color: $clr-red;
 	}
 	
 	button {
@@ -301,7 +301,7 @@ html, body, #wrapper {
 	}
 	
 	&.ref-selected {
-		outline: 3px solid $interact-orange;
+		outline: 3px solid $clr-orange;
 		outline-offset: -3px;
 	}
 	
@@ -461,7 +461,7 @@ html, body, #wrapper {
 		box-shadow: 0 1px 0 0 rgb(230, 230, 230), 
 					0 1px 0 0 rgb(230, 230, 230) inset;
 		
-		border-color: $interact-orange;
+		border-color: $clr-orange;
 	}
 }
 

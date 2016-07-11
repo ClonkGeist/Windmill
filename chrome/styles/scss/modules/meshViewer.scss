@@ -173,7 +173,7 @@ canvas {
 /* resource manager */
 
 .fade-in {
-	background-color: $interact-blue;
+	background-color: $clr-blue;
 	transition: background-color .3s, opacity .2s;
 	opacity: 0;
 }

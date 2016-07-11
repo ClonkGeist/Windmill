@@ -3,7 +3,7 @@ html, body {
 	width: 100%;
 	margin: 0;
 	padding: 0;
-	color: $ui-text-clr;
+	color: $clr-text-ui;
 }
 
 body {
@@ -30,7 +30,7 @@ body {
 }
 
 #progressneedle {
-	background-color: $interact-red;
+	background-color: $clr-red;
 	height: 100%;
 	width: 0%;
 	transition: width 1s;
@@ -81,10 +81,10 @@ body {
 }
 
 .button.active {
-	color: $interact-red;
+	color: $clr-red;
 	
 	&:hover {
-		color: $interact-red;
+		color: $clr-red;
 	}
 }
 
@@ -125,7 +125,7 @@ body {
 
 #currentvolume {
 	height: 5px;
-	background-color: $interact-red;
+	background-color: $clr-red;
 }
 
 #currentvolume-filler {

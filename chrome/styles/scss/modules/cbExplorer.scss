@@ -22,7 +22,7 @@ splitter[state=dragged] {
 caption {
 	background-color: inherit;
 	-moz-appearance: none;
-	font-family: "Segoe UI", Verdana, sans-serif;
+	font-family: $font-stack;
 
 	font-size: 1em;
 	color: grey;
@@ -109,20 +109,20 @@ textbox.deactivated {
 		}
 	}
 	&.active {
-		color: $interact-red;
+		color: $clr-red;
 		.hostgame-nav-label {
-			color: $interact-red;
+			color: $clr-red;
 		}
 		&:hover {
 			.hostgame-nav-label {
-				color: $interact-red-darker;
+				color: $clr-red-darker;
 			}
 		}
 	}
 	&#btn-startgame {
 		cursor: pointer;
 		color: white;
-		background-color: $interact-red;
+		background-color: $clr-red;
 		.hostgame-nav-label {
 			color: white;
 		}

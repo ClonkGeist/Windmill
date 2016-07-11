@@ -36,7 +36,7 @@ caption {
 	margin: 0.7em 0;
 	background-color: inherit;
 	font-size: 1em;
-	color: $ui-text-clr;
+	color: $clr-text-ui;
 }
 
 caption.big {
@@ -51,7 +51,6 @@ caption.big {
 
 /*		preferences		*/
 
-
 button.navigation {
 	-moz-appearance: none;
 	border: none;
@@ -62,7 +61,7 @@ button.navigation {
 	padding: 0.5em 1.5em;
 	padding: 0.5em 0;
 	
-	color: $ui-text-clr;
+	color: $clr-text-ui;
 	outline: none !important;
 	
 	background-color: $clr-empty;
@@ -101,7 +100,7 @@ button:focus * {
 	}
 
 	.active {
-		border-left: 5px solid $ui-text-clr;
+		border-left: 5px solid $clr-text-ui;
 	}
 }
 
@@ -150,8 +149,7 @@ listbox {
 }
 
 #restartBarButton:hover {
-	/*background-color: gainsboro;*/
-	color: $interact-red;
+	color: $clr-red;
 }
 
 /*-- Listbox --*/
@@ -172,7 +170,7 @@ listitem {
 	transition: background-color 0.3s;
 	margin: 0;
 	padding-left: 5px;
-	color: $text-clr;
+	color: $clr-text;
 	-moz-appearance: none;
 }
 
@@ -251,7 +249,7 @@ listitem:focus {
 	color: grey;
 		
 	&:hover {
-		color: $ui-text-clr;
+		color: $clr-text-ui;
 	}
 }
 
@@ -281,14 +279,14 @@ listitem:focus {
 
 .infotooltip {
 	width: 16px;
-	color: $ui-text-clr;
+	color: $clr-text-ui;
 	
 	.icon-info {
 		margin-left: 8px;
-		color: $ui-text-clr;
+		color: $clr-text-ui;
 		
 		&:hover {
-			color: $text-clr;
+			color: $clr-text;
 		}
 	}
 }
@@ -321,7 +319,7 @@ listitem:focus {
 	}
 	
 	.icon-warning {
-		color: $interact-red;
+		color: $clr-red;
 		margin-left: 5px;
 		margin-top: 5px;
 		line-height: 16px;
@@ -380,7 +378,7 @@ listitem:focus {
 	.moduleinfo {
 		background: $clr-base;
 		border-top: 1px solid $clr-border;
-		color: $ui-text-clr;
+		color: $clr-text-ui;
 		
 		font-size: 1.2em;
 		line-height: 1.8em;
@@ -394,7 +392,7 @@ listitem:focus {
 .module-state-toggle {
 	background-color: $clr-base;
 	border: 1px solid $clr-border;
-	color: $ui-text-clr;
+	color: $clr-text-ui;
 	
 	&:hover {
 		border: 1px solid $clr-border-grey;

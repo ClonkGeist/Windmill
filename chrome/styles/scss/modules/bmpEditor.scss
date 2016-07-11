@@ -63,14 +63,14 @@ canvas {
 }
 
 .rulerdisplay {
-	background-color: $interact-red;
+	background-color: $clr-red;
 	position: fixed;
 	top: 0px;
 	left: 0px;
 	z-index: 6;
 	
 	&.mirror-marker {
-		background-color: $interact-blue;
+		background-color: $clr-blue;
 	}
 }
 
@@ -108,7 +108,7 @@ canvas {
 	min-height: 16px;
 	padding-right: 4px;
 	background-color: rgb(220, 220, 220);
-	color: $text-clr;
+	color: $clr-text;
 	box-sizing: border-box;
 	cursor: default;
 	z-index: 5;
@@ -129,7 +129,7 @@ canvas {
 
 .toolbarbutton.active:hover,
 .toolbarbutton.active {
-	background-color: $interact-red;
+	background-color: $clr-red;
 	color: white;
 }
 .toolbarbutton.deactivated {
@@ -195,13 +195,13 @@ canvas {
 	#toolbar input[type=text]::selection,
 	*/
 #toolbar input[type=text]::-moz-selection {
-	background-color: $interact-red;
+	background-color: $clr-red;
 	color: whitesmoke;
 }
 
 #toolbar input[type=text] {
 	background-color: rgb(220, 220, 220);
-	color: $text-clr;
+	color: $clr-text;
 	outline: 1px solid rgb(180, 180,180);
 	border: none;
 	margin: 0;
@@ -218,7 +218,7 @@ input[type=range] {
 }
 
 input[type=range]::-moz-range-thumb {
-	background-color: $ui-text-clr;
+	background-color: $clr-text-ui;
 	border: none;
 	margin-bottom: 0;
 }
@@ -250,7 +250,7 @@ input[type=range]::-moz-range-track {
 }
 
 .spalette-elm.active {
-	border: 2px solid $interact-blue;
+	border: 2px solid $clr-blue;
 }
 
 #spalette-b {
@@ -327,7 +327,7 @@ input[type=range]::-moz-range-track {
 	height: 22px;
 	line-height: 22px;
 	font-family: $font-stack;
-	color: $text-clr;
+	color: $clr-text;
 }
 
 #current-material-name > input {
@@ -370,7 +370,7 @@ select {
 	min-height: 100%;
 	position: absolute;
 	background-color: $clr-base;
-	color: $text-clr;
+	color: $clr-text;
 	font-family: $font-stack;
 	
 	padding: 20px 40px;
@@ -477,7 +477,7 @@ select {
 }
 
 .cmw-unassigned-clr {
-	border: 2px solid $interact-red;
+	border: 2px solid $clr-red;
 }
 
 .cmw-selected-clr {

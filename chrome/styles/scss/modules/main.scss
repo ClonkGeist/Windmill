@@ -12,7 +12,7 @@ $svg-url-the-mill: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/20
 }
 
 window {
-	background-color: $chrome-clr;
+	background-color: $clr-chrome;
 	
 	font-family: $font-stack;
 	outline: 1px solid black;
@@ -71,7 +71,7 @@ window.maximized .restore-window {
 
 .window-button.icon-x-small {
 	&:hover {
-		background-color: $interact-red;
+		background-color: $clr-red;
 		color: $clr-base;
 	}
 }
@@ -107,7 +107,7 @@ toolbox, toolbarbutton, toolbar, button, #header {
 	border: none;
 	font-size: 14px;
 	
-	background-color: $chrome-clr;
+	background-color: $clr-chrome;
 	color: rgb(200, 200, 200);
 }
 
@@ -152,21 +152,21 @@ caption {
 /* main nav dropdown menu */
 
 .ctx-mainnavigation {
-	border: 1px solid $chrome-clr-sub;
+	border: 1px solid $clr-chrome-sub;
 	
 	&:hover {
-		border-color: $chrome-clr-sub;
+		border-color: $clr-chrome-sub;
 	}
 	
 	.ctx-wrapper {
-		background: $chrome-clr;
+		background: $clr-chrome;
 		color: white;
 	}
 	
 	.ctx-menuitem {
 		&:hover, &.selected  {
 			outline: 0;
-			background-color: $chrome-ui-active;
+			background-color: $clr-chrome-active;
 		}
 		
 		&:hover .icon-has-ctx-sub:before {
@@ -174,7 +174,7 @@ caption {
 		}
 		
 		&:hover .icon-small-settings:before {
-			color: $chrome-clr;
+			color: $clr-chrome;
 		}
 		
 		&:hover .icon-small-settings:hover:before {
@@ -211,11 +211,11 @@ caption {
 	}
 	
 	&.cBridge .mm-play-wrapper {
-		background: $chrome-ui-active;
+		background: $clr-chrome-active;
 	}
 	
 	&:not(.cBridge) .mm-dev-wrapper {
-		background: $chrome-ui-active;
+		background: $clr-chrome-active;
 	}
 	
 	&.cBridge .icon-brackets:before {
@@ -235,7 +235,7 @@ caption {
 .mm-dev-wrapper,
 .mm-play-wrapper {
 
-	background-color: $chrome-clr-sub;
+	background-color: $clr-chrome-sub;
 	pointer-events: auto;
 	
 	&:hover {
@@ -261,7 +261,7 @@ caption {
 
 .mm-icon-wrapper {
 	transform: rotate(45deg);
-	background-color: $chrome-clr-sub;
+	background-color: $clr-chrome-sub;
 }
 
 .mm-icon-wrapper-sub {
@@ -297,7 +297,7 @@ caption {
 
 
 .nav-image:hover  {
-	background: $chrome-ui-active;
+	background: $clr-chrome-active;
 }
 
 .nav-image {
@@ -338,7 +338,7 @@ toolbarbutton:focus  *{
 		transition: background-color 0.3s;
 
 		.ctx-submenuindicator:before {
-			color: $ui-light-clr;
+			color: $clr-ui-light;
 		}
 	}
 }
@@ -346,7 +346,7 @@ toolbarbutton:focus  *{
 .dlg-aplabelwrapper {
 	font-size: 1.2em;
 	padding: 2px 4px;
-	color: $ui-text-clr;
+	color: $clr-text-ui;
 }
 
 /* sidebar */
@@ -368,7 +368,7 @@ toolbarbutton:focus  *{
 }
 
 .sidebar-h {
-	background: $interact-red;
+	background: $clr-red;
 	color: white;
 	margin: 0;
 	line-height: 1.6em;
@@ -478,7 +478,7 @@ toolbarbutton:focus  *{
 	opacity: 1;
 }
 .togglemode-img.activated {
-	background-color: $interact-red;
+	background-color: $clr-red;
 }
 .togglemode-img.invisible {
 	margin-left: 18px;
@@ -497,7 +497,7 @@ toolbarbutton:focus  *{
 #developerlog, #gitlog {
 	-moz-user-focus: normal;
 }
-#developerlog .sidebar-h, #gitlog .sidebar-h {background-color: $chrome-clr;}
+#developerlog .sidebar-h, #gitlog .sidebar-h {background-color: $clr-chrome;}
 /*#gitlog .ps-h {background-color: rgb(241, 72, 33);}*/
 
 #log-entrylist { overflow-y: scroll; }
@@ -561,7 +561,7 @@ toolbarbutton:focus  *{
 	justify-content: center;
 	flex-direction: column;
 
-	background-color: $chrome-clr;
+	background-color: $clr-chrome;
 	font-size: 2.5em;
 	color: white;
 	

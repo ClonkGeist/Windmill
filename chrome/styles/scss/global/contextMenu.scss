@@ -41,13 +41,13 @@
 		}
 
 		&.ctx-menutype-selected .ctx-prepend:before {
-			color: $interact-blue;
+			color: $clr-blue;
 		}
 	}
 	.ctx-submenuindicator:before {
 		width: 16px;
 		height: 16px;
-		color: $ui-text-clr;
+		color: $clr-text-ui;
 	}
 	.ctx-submenuindicator:not(.has-submenu):before {
 		display: block;
@@ -67,7 +67,7 @@
 	}
 	
 	&:hover > .ctx-keybinding{
-		color: $ui-text-clr;
+		color: $clr-text-ui;
 	}
 	
 	/*-- HTML only --*/

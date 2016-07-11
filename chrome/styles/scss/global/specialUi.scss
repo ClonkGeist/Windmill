@@ -63,14 +63,14 @@
 	}
 	
 	input:checked + label {
-		background-color: $interact-red;
-		border-bottom-color: $interact-red-dark;
+		background-color: $clr-red;
+		border-bottom-color: $clr-red-dark;
 		color: whitesmoke;
 	}
 	
 	input:checked + label:hover {
-		background-color: $interact-red-dark;
-		border-bottom-color: $interact-red-dark;
+		background-color: $clr-red-dark;
+		border-bottom-color: $clr-red-dark;
 	}
 	
 	input {
@@ -96,14 +96,14 @@
 	}
 	
 	input:checked + .cblabel {
-		background-color: $interact-red;
-		border-bottom-color: $interact-red-dark;
+		background-color: $clr-red;
+		border-bottom-color: $clr-red-dark;
 		color: whitesmoke;
 	}
 	
 	input:checked + .cblabel:hover {
-		background-color: $interact-red-dark;
-		border-bottom-color: $interact-red-dark;
+		background-color: $clr-red-dark;
+		border-bottom-color: $clr-red-dark;
 	}
 	
 	input {
