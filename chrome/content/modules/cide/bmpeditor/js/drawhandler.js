@@ -352,10 +352,9 @@ class BMPScene {
 		this.gl.drawArrays(this.gl.TRIANGLES, 0, 6)
 	}
 	
-	renderInput(r) {log(r)
+	renderInput(r) {log(this.inputRect);
 		this.useShaderOfType(SHADER_TYPE_INPUT)
-		this.setInputRect(r)
-					
+		log(this.shader.unifRect + "");
 		this.updateInputRectUniform()
 		
 		this.setUniforms()
@@ -682,10 +681,6 @@ class BMPScene {
 		this.currentColorRGB[2] = b
 	}
 	
-	assignColorPalette(reference) {
-		this.colorPalette = reference
-	}
-	
 	/** 
 		Undo-Manager
 	*/
@@ -765,7 +760,7 @@ class BMPScene {
 		UI-Rect
 	*/
 	
-	useAsRect(el) {
+	setRectElement(el) {
 		this.uiRect = el
 	}
 	
@@ -812,6 +807,9 @@ class TextureStack {
 		this.w = w
 		this.h = h
 		
+		//this.totalH = h*MAX_UNDO_STACKSIZE
+		this.totalH = h
+		
 		this._r = new Rect(0, 0, w, h)
 		
 		this.id = w + "x" + h
@@ -823,23 +821,44 @@ class TextureStack {
 		this.offset = 0
 		
 		gl.bindTexture(gl.TEXTURE_2D, tex)
-		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, w, h*MAX_UNDO_STACKSIZE, 0, gl.RGB, gl.UNSIGNED_BYTE, null)
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, w, this.totalH, 0, gl.RGB, gl.UNSIGNED_BYTE, null)
 	}
 	
 	saveState() {
 		this.gl.bindTexture(this.gl.TEXTURE_2D, this.tex)
-		this.gl.copyTexSubImage2D(this.gl.TEXTURE_2D, 0, 0, this.offset * this.h, 0, this.h, this.w, this.h)
+		this.gl.copyTexSubImage2D(this.gl.TEXTURE_2D, 0, 0, this.offset * this.h, 0, 0, this.w, this.h)
 		
 		let i = this.offset
 		
 		this.offset = (this.offset + 1) % MAX_UNDO_STACKSIZE
-		
+		this.offset = 0
 		return i
 	}
 	
 	drawState(i, scene) {
 		this._r.y = i * this.h
-		//this._r.h = this.h * 20
+		
+		let y = i * this.h
+		
+		/*
+		scene.inputRect[0] = -0.5
+		scene.inputRect[1] = -(this.totalH/2 - y)/this.totalH
+		scene.inputRect[2] = 0.5
+		scene.inputRect[3] = -(y + this.h - this.totalH/2)/this.totalH
+		*/
+		
+		scene.inputRect[0] = -0.5
+		scene.inputRect[1] = 1/MAX_UNDO_STACKSIZE*i - 0.5
+		scene.inputRect[2] = 0.5
+		scene.inputRect[3] = -1/MAX_UNDO_STACKSIZE*(i+1) + 0.5
+		
+		scene.inputRect[0] = -0.5
+		scene.inputRect[1] = -0.5
+		scene.inputRect[2] = 0.5
+		scene.inputRect[3] = 0.5
+		
+		log(scene.inputRect)
+		scene.rectToClipspaceFormat(0, 0, this.w, this.h)
 		scene.setInputTex(this.tex)
 		scene.renderInput(this._r)
 		log("draw state init")

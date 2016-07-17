@@ -50,7 +50,7 @@ const
 function initCtrls() {
 	
 	$(".canvas-wrapper").mousedown(function(e) {
-		if(e.which !== 1 || CM_ACTIVEID === -1 || !Mode.selected || $(".color-matching-wizard.visible2").get(0))
+		if(e.which !== 1 || CM_ACTIVEID === -1 || !Mode.selected || cmw)
 			return
 		
 		let rect = this.getBoundingClientRect()
@@ -67,8 +67,7 @@ function initCtrls() {
 	})
 
 	$("body").mousemove(function(e) {
-		
-		if(!Mode.busy || $(".color-matching-wizard.visible2").get(0))
+		if(cmw || !Mode.busy)
 			return
 		
 		let rect = $(".canvas-wrapper").get(0).getBoundingClientRect()
@@ -81,7 +80,7 @@ function initCtrls() {
 	})
 
 	$("body").mouseup(function(e) {
-		if(!Mode.busy || e.which !== 1 ||  $(".color-matching-wizard.visible2").get(0))
+		if(cmw || !Mode.busy || e.which !== 1)
 			return
 		
 		let rect = $(".canvas-wrapper").get(0).getBoundingClientRect()

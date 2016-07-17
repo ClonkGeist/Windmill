@@ -1383,9 +1383,9 @@ function saveTexMap(id) {
 }
 
 function getBitmapInfoHeader(data) {
-	var headersize = data.splice(0, 4).byte2num();
+	var headersize = data.splice(0, 4).byte2num();log(headersize)
 	if(headersize != 40) //Nur BITMAPINFOHEADER wird supportet
-		return false;
+		return headersize;
 	
 	return [{
 		size: headersize,
@@ -1412,40 +1412,44 @@ function getBitmapHeader(data) {
 }
 
 function loadImageFileData(file, id) {
-	var fs = _sc.ifstream(file, 1, 0, false),
-		bs = _sc.bistream(),
-		result = {};
 	
-	bs.setInputStream(fs);
-	
-	var data = bs.readByteArray(file.fileSize);
-	
-	bs.close();
-	fs.close();
+	return new Promise((resolve, reject) => {
+		var fs = _sc.ifstream(file, 1, 0, false),
+			bs = _sc.bistream(),
+			result = {};
 
-	//BMP- und DIB-Header auslesen
-	var r = getBitmapHeader(data);
-	var bitmap_header = r[0];
-	data = r[1];
+		bs.setInputStream(fs);
 
-	if(bitmap_header.type != "BM")
-		return -1;
-	
-	r = getBitmapInfoHeader(data);
-	var clr_index = [];
-	if(!r)
-		return -1;
-	else {
+		var data = bs.readByteArray(file.fileSize);
+
+		bs.close();
+		fs.close();
+
+		//BMP- und DIB-Header auslesen
+		var r = getBitmapHeader(data);
+		var bitmap_header = r[0];
+		data = r[1];
+
+		if(bitmap_header.type != "BM")
+			return reject("bitmap header type != BM", file, id)
+
+		r = getBitmapInfoHeader(data);
+		
+		if(typeof r === "number")
+			return reject("Unsupported header size of bitmap info header ("+r+")", file, id)
+		
+		var clr_index = [];
+		
 		var infoheader = r[0];
 		data = r[1];
 		
 		//Keine Kompression
 		if(infoheader.compression)
-			return -1;
-	
+			return reject("no compression", file, id)
+
 		//Farbtiefe ab mind. 8-Bit
 		if(infoheader.bpp < 8)
-			return -1;
+			return reject("not enough color depth", file, id)
 		
 		if(!infoheader.clrcnt)
 			infoheader.clrcnt = Math.pow(2, infoheader.bpp);
@@ -1453,9 +1457,10 @@ function loadImageFileData(file, id) {
 		//Farbindizes auslesen und speichern
 		for(var i = 0; i < infoheader.clrcnt; i++)
 			clr_index[i] = data.splice(0, 4).byte2num();
-	}
-	
-	return [infoheader, clr_index, data, bitmap_header];
+		
+		
+		resolve(infoheader, clr_index, data, bitmap_header)
+	})
 }
 
 function addCideFile(path, id, fShow) {
@@ -1464,64 +1469,62 @@ function addCideFile(path, id, fShow) {
 	//Da am BMPEditor noch gearbeitet wird, fuers erste die nsIFile-Variante verwenden. Spaeter dann auf OS.File umsteigen.
 	if(!(path instanceof Ci.nsIFile))
 		file = _sc.file(path);
-	var r = loadImageFileData(file, id);
 	
-	if(r === -1)
-		return loadUnsupportedImage(file, id, fShow);
+	loadImageFileData(file, id).then((infoheader, clr_index, data, bitmap_header) => {
+		let gl = getGl()
 
-	var [infoheader, clr_index, data, bitmap_header] = r;
-	
-	let gl = getGl()
-	
-	if(!gl) {
-		log("Bmpeditor: Gl hasn't been found", false, "error")
-		return
-	}
-	
-	var scene = addScene(gl, document.getElementById("draw-canvas"))
-	scene.useAsRect($(".ui-rect").get(0))
-	scene.assignColorPalette(clr_index)
-	
-	sceneMeta[id] = {
-		scene, 
-		f: file,
-		path: file.path,
-		header: infoheader,
-		coloridx: clr_index,
-		rtdata: {},
-		z: 1, // of depcrecated use
-		brushData: {
-			size: 1,
-			rounded: true,
-			// seed and distribution factors go here
-		},
-		_selectedMode: Mode_Draw_Shape,
-		_operandIndex: 0
-	};
-	
-	var num2byte = function(num, size) {
-		var ar = [];
-		for(var i = 0; i < size; i++) {
-			ar.push(num & 0xFF);
-			num >>= 8;
+		if(!gl) {
+			log("Bmpeditor: Gl hasn't been found", false, "error")
+			return
 		}
-		
-		return ar;
-	};
-	
-	scene.initWithTexture(file.path).then(() => {
-		//Materialien und Texturen laden
-		loadMaterials(id);
 
-		//Canvas zentrieren
-		centerCanvas(id)
+		var scene = addScene(gl, document.getElementById("draw-canvas"))
+		scene.setRectElement($(".ui-rect").get(0))
 		
-		//Canvas ggf. anzeigen
-		if(fShow || a_S === undefined)
-			showDeckItem(id);
-	},
-	(e, src) => {
-		log("an error occured while trying to init with bmp image (" + src + ")")
+		sceneMeta[id] = {
+			scene, 
+			f: file,
+			path: file.path,
+			header: infoheader,
+			coloridx: clr_index,
+			rtdata: {},
+			z: 1, ///  @deprecated
+			brushData: {
+				size: 1,
+				rounded: true,
+				// seed and distribution factors go here
+			},
+			_selectedMode: Mode_Draw_Shape,
+			_operandIndex: 0
+		};
+
+		var num2byte = function(num, size) {
+			var ar = [];
+			for(var i = 0; i < size; i++) {
+				ar.push(num & 0xFF);
+				num >>= 8;
+			}
+			
+			return ar;
+		};
+
+		scene.initWithTexture(file.path).then(() => {
+			//Materialien und Texturen laden
+			loadMaterials(id);
+			
+			//Canvas ggf. anzeigen
+			if(fShow || a_S === undefined)
+				showDeckItem(id)
+			
+			//Canvas zentrieren
+			centerCanvas(id)
+		},
+		(e, src) => {
+			log("an error occured while trying to init with bmp image (" + src + ")")
+		})
+
+	}, (msg) => {
+		initCMW(msg, file, id)
 	})
 
 	return true;
@@ -1630,35 +1633,53 @@ function loadMaterialData(file) {
 
 /* Bildreperatur */
 
-function loadUnsupportedImage(file, id, fShow, clridxtbl) {
-	log("Unsupported image has been detected")
-	//Canvas erstellen und Bild anzeigen
-	$("body").append("<canvas id='bmpCanvas-"+id+"' class='image-canvas'></canvas>");
-	var canvas = document.getElementById("bmpCanvas-"+id);
+function initCMW(msg, file, id, fShow, clridxtbl) {	
+	hideCideToolbar()
 	
-	hideCideToolbar();
-	
-	if(!canvas)
-		return;
-	
-	//Farbtabelle mit 256 leeren Eintragen (nicht undefined!) erzeugen
+	//Farbtabelle mit 256 leeren Eintragen (nicht undefined!) erzeugen (alternativ TypedArray benutzen)
 	var cidxt = [];
 	for(var i = 0; i < 256; i++)
 		cidxt[i] = 0;
 	
 	if(clridxtbl)
-		cidxt = clridxtbl;
-
-	sceneMeta[id] = { c: canvas, f: file, header: 0, coloridx: cidxt, rtdata: {}, z: 1 };
-		
+		cidxt = clridxtbl
+	
+	var scene = addScene(getGl(), document.getElementById("draw-canvas"))
+	scene.setRectElement($(".ui-rect").get(0))
+	
+	sceneMeta[id] = {
+		scene: scene,
+		f: file,
+		path: file.path,
+		header: 0,
+		coloridx: cidxt,
+		rtdata: {},
+		z: 1, /// @deprecated
+		brushData: {
+			size: 1,
+			rounded: true,
+			// seed and distribution factors go here
+		},
+		_selectedMode: Mode_Draw_Shape,
+		_operandIndex: 0
+	}
+	
+	scene.initWithTexture(file.path).then(null,
+	(e, src) => {
+		log("an error occured while trying to init bmp image (" + src + ")", false, "error")
+	})
+	
+	
 	var clone = $(".color-matching-wizard.draft").clone();
 	clone.attr("id", "cmw-wrapper-"+id);
+	cmw = clone
 	
-	//TODO: Ladeanzeige einfügen
-	
+	//TODO: Ladeanzeige einfügen (für?)
 	$("body").append(clone);
 	clone.removeClass("draft");
-	clone.addClass("visible2");
+	clone.addClass("visible");
+	
+	tooltip(clone.find(".cmw-error-info")[0], msg, "html", 150);
 	
 	var context = canvas.getContext('2d');
 	var imageObj = new Image();
@@ -1667,7 +1688,7 @@ function loadUnsupportedImage(file, id, fShow, clridxtbl) {
 		sceneMeta[id].wdt = canvas.width = this.naturalWidth;
 		sceneMeta[id].hgt = canvas.height = this.naturalHeight;
 		context.drawImage(imageObj, 0, 0, this.naturalWidth, this.naturalHeight);
-		
+		log("33")
 		//Header erstellen
 		var bmpiheader = getBitmapInfoHeader([40,0,0,0]);
 		bmpiheader.width = this.naturalWidth;
@@ -1680,9 +1701,6 @@ function loadUnsupportedImage(file, id, fShow, clridxtbl) {
 		//Canvas durchgehen und Farben sammeln
 		var imgdata = context.getImageData(0, 0, this.naturalWidth, this.naturalHeight);
 		var colors = [], data = imgdata.data;
-		
-		//Startdaten in Undostack speichern
-		stockUndoStack(imgdata, id, true);
 		
 		//Ggf. Farben aus importierter Palette laden
 		if(clridxtbl) {
@@ -1912,24 +1930,22 @@ function loadUnsupportedImage(file, id, fShow, clridxtbl) {
 			
 			//Bilddatei gefunden
 			if(rv == Ci.nsIFilePicker.returnOK) {
-				var r = loadImageFileData(fp.file, id);
-				if(r == -1)
-					warn("$ImportUnsucessful$");
-				else {
+				loadImageFileData(fp.file, id).then((infoheader, clr_index, data, bitmap_header) => {
 					//Bereits zugewiesene Farben uebernehmen
 					for(var i = 0; i < sceneMeta[id].coloridx.length; i++)
 						if(sceneMeta[id].coloridx[i]) {
 							//Doppelte Farbzuweisungen vermeiden
-							if(r[1].indexOf(sceneMeta[id].coloridx[i]) != -1)
-								r[1][r[1].indexOf(sceneMeta[id].coloridx[i])] = 0;
-							r[1][i] = sceneMeta[id].coloridx[i];
+							if(clr_index.indexOf(sceneMeta[id].coloridx[i]) != -1)
+								clr_index[clr_index.indexOf(sceneMeta[id].coloridx[i])] = 0;
+							clr_index[i] = sceneMeta[id].coloridx[i];
 						}
 
 					$("#cmw-wrapper-"+id).remove();
 					sceneMeta[id] = undefined;
 
-					loadUnsupportedImage(file, id, fShow, r[1]);
-				}
+					initCMW("alt call", file, id, fShow, clr_index);
+				},
+				() => { warn("$ImportUnsucessful$") })
 			}
 		};
 		
@@ -2115,6 +2131,7 @@ function drawMaterialPalette(id) {
 }
 
 /* Deck functionalities */
+cmw = false
 
 function showDeckItem(id) {
 	
@@ -2131,7 +2148,8 @@ function showDeckItem(id) {
 	CM_ACTIVEID = id
 	
 	//Fuer Color-Matching-Wizard die Toolbar deaktivieren
-	if($("#cmw-wrapper-"+id).get(0))
+	cmw = $("#cmw-wrapper-"+id).get(0)
+	if(cmw)
 		hideCideToolbar();
 	else
 		showCideToolbar();
