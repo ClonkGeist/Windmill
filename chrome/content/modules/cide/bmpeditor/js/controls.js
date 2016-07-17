@@ -36,6 +36,7 @@ class ModeHandler {
 	
 	create(scene, x, y) {
 		this.active = new this.selected(sceneMeta[CM_ACTIVEID]._operandIndex, scene, x, y)
+		log(this.active)
 		sceneMeta[CM_ACTIVEID]._operandIndex++
 	}
 }

@@ -1063,9 +1063,8 @@ function selectIndexByPixel(id, x, y) {
 }
 
 function switchMaterialMode() {
-	var id = CM_ACTIVEID;
-	sceneMeta[id].rtdata.matmode_underground = !sceneMeta[id].rtdata.matmode_underground;
-	drawMaterialPalette(id);
+	sceneMeta[CM_ACTIVEID].rtdata.matmode_underground = !sceneMeta[CM_ACTIVEID].rtdata.matmode_underground;
+	drawMaterialPalette(CM_ACTIVEID);
 }
 
 function pointInPolygon(px, py, poly) {
@@ -1431,12 +1430,12 @@ function loadImageFileData(file, id) {
 		data = r[1];
 
 		if(bitmap_header.type != "BM")
-			return reject("bitmap header type != BM", file, id)
+			return reject("bitmap header type != BM")
 
 		r = getBitmapInfoHeader(data);
 		
 		if(typeof r === "number")
-			return reject("Unsupported header size of bitmap info header ("+r+")", file, id)
+			return reject("Unsupported header size of bitmap info header (size: "+r+")")
 		
 		var clr_index = [];
 		
@@ -1445,11 +1444,11 @@ function loadImageFileData(file, id) {
 		
 		//Keine Kompression
 		if(infoheader.compression)
-			return reject("no compression", file, id)
+			return reject("no compression")
 
 		//Farbtiefe ab mind. 8-Bit
 		if(infoheader.bpp < 8)
-			return reject("not enough color depth", file, id)
+			return reject("not enough color depth")
 		
 		if(!infoheader.clrcnt)
 			infoheader.clrcnt = Math.pow(2, infoheader.bpp);
@@ -1459,7 +1458,7 @@ function loadImageFileData(file, id) {
 			clr_index[i] = data.splice(0, 4).byte2num();
 		
 		
-		resolve(infoheader, clr_index, data, bitmap_header)
+	resolve({infoheader, clr_index, data, bitmap_header})
 	})
 }
 
@@ -1470,7 +1469,7 @@ function addCideFile(path, id, fShow) {
 	if(!(path instanceof Ci.nsIFile))
 		file = _sc.file(path);
 	
-	loadImageFileData(file, id).then((infoheader, clr_index, data, bitmap_header) => {
+	loadImageFileData(file, id).then(({infoheader, clr_index, data, bitmap_header}) => {
 		let gl = getGl()
 
 		if(!gl) {
@@ -2139,10 +2138,6 @@ function showDeckItem(id) {
 	// save check to prevent from crashing (silently...)
 	if(!sceneMeta[id])
 		return
-	
-	//Auswahl deaktivieren bei Tabwechsel
-	if(id !== CM_ACTIVEID)
-		$("#movinglayer").removeClass("active");
 	
 	a_S = sceneMeta[id].scene
 	CM_ACTIVEID = id

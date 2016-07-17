@@ -525,9 +525,9 @@ class BMPScene {
 		}
 		
 		if(shader.unifImgInput !== null) {
-			gl.activeTexture(gl.TEXTURE3)
+			gl.activeTexture(gl.TEXTURE2)
 			gl.bindTexture(gl.TEXTURE_2D, this.texture_Input)
-			gl.uniform1i(shader.unifImgInput, 3)
+			gl.uniform1i(shader.unifImgInput, 2)
 		}
 		
 		if(shader.unifWorkerColor && shader.unifWorkerColor !== null) {
@@ -615,7 +615,7 @@ class BMPScene {
 			unifWorkerColor: this.gl.getUniformLocation(prog, "worker_color"),
 			unifRect: this.gl.getUniformLocation(prog, "rect")
 		}
-		
+		log("asd + " + s.unifImgInput)
 		_shaders[_shaders.length] = s
 		return s
 	}
