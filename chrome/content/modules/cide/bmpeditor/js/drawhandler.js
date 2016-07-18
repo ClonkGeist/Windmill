@@ -771,7 +771,7 @@ class TextureStack {
 		return i
 	}
 	
-	drawState(i, scene) {		
+	drawState(i, scene, doNotTrack) {		
 		let y = i * this.h
 		
 		scene.inputRect[0] = 0.5
@@ -781,6 +781,9 @@ class TextureStack {
 		
 		scene.setInputTex(this.tex)
 		scene.render(SHADER_TYPE_INPUT)
+		
+		if(!doNotTrack)
+			this.offset = (i + 1) % this.maxSize
 	}
 	
 	registerUser() {
