@@ -36,7 +36,6 @@ class ModeHandler {
 	
 	create(scene, x, y) {
 		this.active = new this.selected(sceneMeta[CM_ACTIVEID]._operandIndex, scene, x, y)
-		log(this.active)
 		sceneMeta[CM_ACTIVEID]._operandIndex++
 	}
 }
@@ -238,7 +237,6 @@ class Mode_Draw_Shape extends DefaultMode {
 	}
 	
 	onSceneFocus(scene) {
-		scene.shaderType = SHADER_TYPE_COMBINED_BACKBUFFER
 		scene.setColorRGB(this.color)
 	}
 	
@@ -250,12 +248,7 @@ class Mode_Draw_Shape extends DefaultMode {
 		if(modifier & MODIFIER_SHIFT)
 			return
 		
-		let t = this.worker
-				
-		this.scene.shaderType = SHADER_TYPE_BACKBUFFER
-		
-		this.scene.renderInputLineIntoWorker(SHADER_TYPE_COLORED_SHAPE, this.lastX, this.lastY, x, y, this.shape)
-		this.scene.render(SHADER_TYPE_COMBINED_BACKBUFFER)
+		this.scene.renderBrushLine(SHADER_TYPE_COLORED_SHAPE, this.lastX, this.lastY, x, y, this.shape)
 		
 		this.lastX = x
 		this.lastY = y
@@ -266,7 +259,6 @@ class Mode_Draw_Shape extends DefaultMode {
 	
 	onMouseup(x = 0, y = 0, scene, modifier) {
 		this.onMousemove(x, y, scene, 0)
-		this.scene.combineIntoSource()
 		
 		var ts = scene.getTextureStack()
 		
@@ -689,7 +681,7 @@ class Profiler {
 	}
 	
 	static pop(key) {
-		return console.log((new Date()).getTime() - _profilerIds[key])
+		return log((new Date()).getTime() - _profilerIds[key])
 	}
 }
 

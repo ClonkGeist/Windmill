@@ -352,15 +352,6 @@ class BMPScene {
 		this.gl.drawArrays(this.gl.TRIANGLES, 0, 6)
 	}
 	
-	renderInput(r) {log(this.inputRect);
-		this.useShaderOfType(SHADER_TYPE_INPUT)
-		log(this.shader.unifRect + "");
-		this.updateInputRectUniform()
-		
-		this.setUniforms()
-		this.gl.drawArrays(this.gl.TRIANGLES, 0, 6)
-	}
-	
 	renderWithInput(shaderTypeForInput) {
 		this.useShaderOfType(this.shaderType)
 		this.setUniforms()
@@ -383,58 +374,6 @@ class BMPScene {
 		this.gl.drawArrays(this.gl.TRIANGLES, 0, 6)
 		
 		// TODO: use copySubTexImage
-		this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture_Combined)
-		this.gl.copyTexImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGB, 0, 0, this.width, this.height, 0)
-	}
-	
-	renderInputLineIntoWorker(shaderType, x1, y1, x2, y2, shape) {
-		// draw old
-		this.useShaderOfType(this.shaderType)
-		this.setUniforms()
-		this.gl.drawArrays(this.gl.TRIANGLES, 0, 6)
-		
-		// draw new
-		this.useShaderOfType(shaderType)
-		this.setUniforms()
-		
-		// sort points by x
-		if(x1 > x2) {
-			let temp = x1
-			x1 = x2
-			x2 = temp
-			
-			temp = y1
-			y1 = y2
-			y2 = temp
-		}
-		
-		var slope = (y2 - y1 + 1) / (x2 - x1 + 1)
-		
-		if(y1 <= y2)
-			for(let x = x1; x <= x2; x++) {
-				for(let y = 0; y < slope; y++) {
-					shape.setCenterAt(x, y + parseInt(y1))
-					this.setInputRect(shape.rect)
-					
-					this.updateInputRectUniform()
-					this.gl.drawArrays(this.gl.TRIANGLES, 0, 6)
-				}
-				y1 += slope
-			}
-		else
-			for(let x = x1; x <= x2; x++) {
-				for(let y = 0; y > slope; y--) {
-					shape.setCenterAt(x, parseInt(y1) - y)
-					this.setInputRect(shape.rect)
-					
-					this.updateInputRectUniform()
-					this.gl.drawArrays(this.gl.TRIANGLES, 0, 6)
-				}
-				y1 += slope
-			}
-		
-		// TODO: use copySubTexImage (which requires bounding box of line and shape ends)
-		this.gl.activeTexture(this.gl.TEXTURE0)
 		this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture_Combined)
 		this.gl.copyTexImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGB, 0, 0, this.width, this.height, 0)
 	}
@@ -615,7 +554,7 @@ class BMPScene {
 			unifWorkerColor: this.gl.getUniformLocation(prog, "worker_color"),
 			unifRect: this.gl.getUniformLocation(prog, "rect")
 		}
-		log("asd + " + s.unifImgInput)
+		
 		_shaders[_shaders.length] = s
 		return s
 	}
@@ -695,9 +634,7 @@ class BMPScene {
 	undo() {
 		if(!this.hasUndoStep())
 			return false
-		
-		this.currentActionId
-		
+		log(this.currentActionId)
 		this._undoStack[--this.currentActionId].perform()
 		
 		this.dirtyCounter--
@@ -730,7 +667,7 @@ class BMPScene {
 		}
 		else {
 			this._undoStack.shift()
-			this,_undoStack.push(action)
+			this._undoStack.push(action)
 		}
 		
 		this.dirtyCounter++
@@ -807,10 +744,9 @@ class TextureStack {
 		this.w = w
 		this.h = h
 		
-		//this.totalH = h*MAX_UNDO_STACKSIZE
-		this.totalH = h
+		this.totalH = h*MAX_UNDO_STACKSIZE
 		
-		this._r = new Rect(0, 0, w, h)
+		this.maxSize = MAX_UNDO_STACKSIZE
 		
 		this.id = w + "x" + h
 		
@@ -821,7 +757,7 @@ class TextureStack {
 		this.offset = 0
 		
 		gl.bindTexture(gl.TEXTURE_2D, tex)
-		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, w, this.totalH, 0, gl.RGB, gl.UNSIGNED_BYTE, null)
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, w, this.totalH, 0, gl.RGBA, gl.UNSIGNED_BYTE, null)
 	}
 	
 	saveState() {
@@ -830,39 +766,21 @@ class TextureStack {
 		
 		let i = this.offset
 		
-		this.offset = (this.offset + 1) % MAX_UNDO_STACKSIZE
-		this.offset = 0
+		this.offset = (this.offset + 1) % this.maxSize
+		
 		return i
 	}
 	
-	drawState(i, scene) {
-		this._r.y = i * this.h
-		
+	drawState(i, scene) {		
 		let y = i * this.h
 		
-		/*
-		scene.inputRect[0] = -0.5
-		scene.inputRect[1] = -(this.totalH/2 - y)/this.totalH
+		scene.inputRect[0] = 0.5
+		scene.inputRect[1] = (i * 2 + 1)/2
 		scene.inputRect[2] = 0.5
-		scene.inputRect[3] = -(y + this.h - this.totalH/2)/this.totalH
-		*/
+		scene.inputRect[3] = ((this.maxSize - i) * 2 - 1)/2
 		
-		scene.inputRect[0] = -0.5
-		scene.inputRect[1] = 1/MAX_UNDO_STACKSIZE*i - 0.5
-		scene.inputRect[2] = 0.5
-		scene.inputRect[3] = -1/MAX_UNDO_STACKSIZE*(i+1) + 0.5
-		
-		scene.inputRect[0] = -0.5
-		scene.inputRect[1] = -0.5
-		scene.inputRect[2] = 0.5
-		scene.inputRect[3] = 0.5
-		
-		log(scene.inputRect)
-		scene.rectToClipspaceFormat(0, 0, this.w, this.h)
 		scene.setInputTex(this.tex)
-		scene.renderInput(this._r)
-		log("draw state init")
-		log("h: " + this.h + "; " + i)
+		scene.render(SHADER_TYPE_INPUT)
 	}
 	
 	registerUser() {
