@@ -164,9 +164,11 @@ hook("load", function() {
 					$(".main-mode-ui").removeClass("cBridge");
 					_mmToDevelopIcon();
 					togglePage(mainDeck.id, mainDeck.getModuleId("cide"));
+					$(".sidebar").addClass("invisible");
 				}
-				else
-					return;
+				else {
+					$(".sidebar").addClass("invisible");
+				}
 			}
 			// show play mode
 			else if($(this).hasClass("mm-play-wrapper")) {
@@ -174,9 +176,11 @@ hook("load", function() {
 					$(".main-mode-ui").addClass("cBridge");
 					_mmToPlayIcon();
 					togglePage(mainDeck.id, mainDeck.getModuleId("cbridge"));
+					$(".sidebar").addClass("invisible");
 				}
-				else
-					return;
+				else {
+					$(".sidebar").addClass("invisible");
+				}
 			}
 			else
 				return;
