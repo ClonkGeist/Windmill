@@ -146,6 +146,11 @@ class BMPScene {
 		this._tStacks = []
 		this.dirtyCounter = 0
 		this.currentActionId = -1
+		
+		// precompile common shaders
+		this.addShader(SHADER_TYPE_BACKBUFFER)
+		this.addShader(SHADER_TYPE_INPUT)
+		this.addShader(SHADER_TYPE_COLORED_SHAPE)
 	}
 	
 	set ptexture_Source (tex) {
@@ -250,7 +255,7 @@ class BMPScene {
 		
 				var state = ts.saveState()
 				
-				this.manifestUndoStep(new Action(() => {log("recovered initial state")
+				this.manifestUndoStep(new Action(() => {
 					ts.drawState(state, this)
 				}))
 				
@@ -352,12 +357,12 @@ class BMPScene {
 		this.gl.drawArrays(this.gl.TRIANGLES, 0, 6)
 	}
 	
-	renderWithInput(shaderTypeForInput) {
-		this.useShaderOfType(this.shaderType)
+	renderWithBackup(backupShaderType, inputShaderType) {
+		this.useShaderOfType(backupShaderType)
 		this.setUniforms()
 		this.gl.drawArrays(this.gl.TRIANGLES, 0, 6)
 		
-		this.useShaderOfType(shaderTypeForInput)
+		this.useShaderOfType(inputShaderType)
 		this.setUniforms()
 		this.gl.drawArrays(this.gl.TRIANGLES, 0, 6)
 	}
@@ -437,6 +442,11 @@ class BMPScene {
 		this.setUniforms()
 		this.gl.drawArrays(this.gl.TRIANGLES, 0, 6)
 		
+		this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture_Combined)
+		this.gl.copyTexImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGB, 0, 0, this.width, this.height, 0)
+	}
+	
+	backupSource() {
 		this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture_Combined)
 		this.gl.copyTexImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGB, 0, 0, this.width, this.height, 0)
 	}
@@ -576,7 +586,8 @@ class BMPScene {
 		this.gl.viewport(0, 0, this.width, this.height)
 		
 		this.bindAttribBuffer()
-		this.render(this.shaderType)
+		//this.render(this.shaderType)
+		this._undoStack[this.currentActionId].perform()
 	}
 	
 	setInputTex(tex) {
@@ -634,7 +645,7 @@ class BMPScene {
 	undo() {
 		if(!this.hasUndoStep())
 			return false
-		log(this.currentActionId)
+		
 		this._undoStack[--this.currentActionId].perform()
 		
 		this.dirtyCounter--
@@ -706,13 +717,19 @@ class BMPScene {
 		this.currentRect = rect
 		
 		this.uiRect.style.display = "flex"
+		
+		this.fallbackRect = rect
 	}
 	
-	updateUiRectPos(rect) {
+	updateUiRectPos(rect = this.fallbackRect) {
 		this.uiRect.style.width = rect.w*this.zoomFactor + "px"
 		this.uiRect.style.height = rect.h*this.zoomFactor + "px"
 		this.uiRect.style.top = rect.y*this.zoomFactor + "px"
 		this.uiRect.style.left = rect.x*this.zoomFactor + "px"
+	}
+	
+	hideUiRect() {
+		this.uiRect.style.display = "none"
 	}
 	
 	stopUiRectUse() {

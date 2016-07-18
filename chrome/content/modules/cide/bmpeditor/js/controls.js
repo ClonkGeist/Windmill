@@ -198,6 +198,10 @@ class DefaultMode {
 			this.rect.y = this.startY
 		}
 	}
+	
+	static prePerform() {
+		return false
+	}
 }
 
 class Mode_Eyedropper extends DefaultMode {
@@ -253,7 +257,6 @@ class Mode_Draw_Shape extends DefaultMode {
 		this.lastX = x
 		this.lastY = y
 		
-		// drawTimeout = true
 		drawTimeout = setTimeout(function() { drawTimeout = false; }, 10)
 	}
 	
@@ -263,8 +266,8 @@ class Mode_Draw_Shape extends DefaultMode {
 		var ts = scene.getTextureStack()
 		
 		var state = ts.saveState()
-		log("draw step state: " + state)
-		let a = new Action(() => {log("state: " + state)
+		
+		let a = new Action(() => {
 			ts.drawState(state, this.scene)
 		})
 		
@@ -281,7 +284,13 @@ class Mode_Draw_Rect extends DefaultMode {
 		
 		this.rect = new Rect(x, y, 0, 0)
 		
+		this.scene.hideUiRect()
+		
 		this.unstopped = false
+		
+		this.shader = SHADER_TYPE_RECTANGLE
+		
+		scene.backupSource()
 	}
 	
 	onSceneFocus(scene) {
@@ -293,9 +302,8 @@ class Mode_Draw_Rect extends DefaultMode {
 			
 			this.checkForAlternateRect()
 			
-			this.scene.shaderType = SHADER_TYPE_BACKBUFFER
 			this.scene.setInputRect(this.rect)
-			this.scene.renderWithInput(SHADER_TYPE_RECTANGLE)
+			this.scene.renderWithBackup(SHADER_TYPE_BACKBUFFER, this.shader)
 			
 			requestAnimationFrame(fn)
 		}
@@ -313,67 +321,31 @@ class Mode_Draw_Rect extends DefaultMode {
 		this.unstopped = false
 		
 		this.rect.ensureFormat()
-		showObj2(this.rect)
+		
+		let f = this.rect.w * this.rect.h
+		if(!f || isNaN(f))
+			return
+		
 		this.scene.initUiRectUse(this, this.rect)
 		this.onUiRectFinish()
 	}
 	
-	onUiRectFinish() {
-		this.scene.shaderType = SHADER_TYPE_BACKBUFFER
+	onUiRectFinish() {		
 		this.scene.setInputRect(this.rect)
-		this.scene.combineInputIntoSource(SHADER_TYPE_RECTANGLE)
+		this.scene.render(this.shader)
+	}
+	
+	static prePerform(scene) {
+		scene.backupSource()
 	}
 }
 
-class Mode_Draw_Circle extends DefaultMode {
+
+class Mode_Draw_Circle extends Mode_Draw_Rect {
 	constructor(op_id, scene, x = 0, y = 0) {
-		super(op_id, scene)
-		
-		this.startX = x
-		this.startY = y
-		
-		this.rect = new Rect(x, y, 0, 0)
-		
-		this.unstopped = false
-	}
-	
-	onSceneFocus(scene) {
-		this.unstopped = true
-		
-		let fn = () => {
-			if(!this.unstopped)
-				return
+			super(op_id, scene, x, y)
 			
-			this.checkForAlternateRect()
-			
-			this.scene.shaderType = SHADER_TYPE_BACKBUFFER
-			this.scene.setInputRect(this.rect)
-			this.scene.renderWithInput(SHADER_TYPE_CIRCLE)
-			
-			requestAnimationFrame(fn)
-		}
-		
-		requestAnimationFrame(fn)
-	}
-	
-	onMousemove(x = 0, y = 0, scene, modifiers) {
-		this.newX = x
-		this.newY = y
-		this.modifiers = modifiers
-	}
-	
-	onMouseup(x = 0, y = 0, scene, modifiers) {
-		this.unstopped = false
-		
-		this.rect.ensureFormat()
-		this.scene.initUiRectUse(this, this.rect)
-		this.onUiRectFinish()
-	}
-	
-	onUiRectFinish() {
-		this.scene.shaderType = SHADER_TYPE_BACKBUFFER
-		this.scene.setInputRect(this.rect)
-		this.scene.combineInputIntoSource(SHADER_TYPE_CIRCLE)
+			this.shader = SHADER_TYPE_CIRCLE
 	}
 }
 
@@ -519,7 +491,7 @@ class Action {
 */
 
 class Rect {
-	constructor(v1, v2, w = 0, h = 0) {
+	constructor(v1, v2, w, h) {
 		// if rect is given
 		if(v1 instanceof Rect) {
 			// create intersection rectangle
@@ -537,8 +509,8 @@ class Rect {
 		else {
 			this.x = v1
 			this.y = v2
-			this.w = w
-			this.h = h
+			this.w = w || 0
+			this.h = h || 0
 		}
 	}
 	

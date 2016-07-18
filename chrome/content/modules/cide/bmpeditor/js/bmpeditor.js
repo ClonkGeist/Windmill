@@ -145,7 +145,6 @@ hook("load", function() {
 		var mx = e.clientX - rect.left, my = e.clientY - rect.top;
 		var index = Math.floor(my/10)*16+Math.floor(mx/10);
 		
-		var id = CM_ACTIVEID;
 		var indices = sceneMeta[CM_ACTIVEID].matindices;
 		var bg_mode = sceneMeta[CM_ACTIVEID].rtdata.matmode_underground;
 		if(bg_mode)
