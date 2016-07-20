@@ -402,7 +402,7 @@ class BMPScene {
 		
 		if(y1 <= y2)
 			for(let x = x1; x <= x2; x++) {
-				for(let y = 0; y < slope; y++) {
+				for(let y = 0; y <= slope; y++) {
 					shape.setCenterAt(x, y + parseInt(y1))
 					this.setInputRect(shape.rect)
 					
@@ -413,7 +413,7 @@ class BMPScene {
 			}
 		else
 			for(let x = x1; x <= x2; x++) {
-				for(let y = 0; y > slope; y--) {
+				for(let y = 0; y >= slope; y--) {
 					shape.setCenterAt(x, parseInt(y1) - y)
 					this.setInputRect(shape.rect)
 					
