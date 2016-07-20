@@ -7,6 +7,7 @@ html, body {
 	height: 100%;
 	width: 100%;
 	font-family: $font-stack;
+	display: flex;
 }
 
 canvas {
@@ -91,11 +92,7 @@ canvas {
 .page {
 	display: flex;
 	flex-direction: column;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	position: absolute;
+	flex: 1;
 }
 
 .page-content {
@@ -155,16 +152,15 @@ canvas {
 	margin-left: 4px;
 }
 
+.sidebar {
+	background-color: rgb(235, 235, 235);
+	border-left: 1px solid rgb(200, 200, 200);
+	width: 170px;
+	max-width: 170px;
+}
+
 /* brush panel */
 #brush-panel {
-	
-	position: fixed;
-	top: 360px;
-	right: 0px;
-	width: 170px;
-	background-color: rgb(235, 235, 235);
-	z-index: 8;
-	outline: 1px solid rgb(200, 200, 200);
 }
 
 #bp-b > * {
@@ -185,8 +181,8 @@ canvas {
 	background-position: center;
 }
 
-#bp-preview {
-	image-rendering: -moz-crisp-edges;
+#brush_thickness_nr {
+	width: 30px;
 }
 
 
@@ -232,13 +228,6 @@ input[type=range]::-moz-range-track {
 }
 
 #side-palette {
-	position: fixed;
-	top: 240px;
-	right: 0px;
-	width: 170px;
-	background-color: rgb(235, 235, 235);
-	z-index: 8;
-	outline: 1px solid rgb(200, 200, 200);
 }
 
 .spalette-elm {
@@ -261,13 +250,6 @@ input[type=range]::-moz-range-track {
 }
 
 #material-toolbar {
-	position: fixed;
-	top: 50px;
-	right: 0px;
-	width: 170px;
-	background-color: rgb(235, 235, 235);
-	z-index: 8;
-	outline: 1px solid rgb(200, 200, 200);
 }
 
 #material-button-wrapper button{

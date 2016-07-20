@@ -22,15 +22,15 @@ hook("load", function() {
 	}
 	
 	//Modesettings
-	$("#mds_thickness_range").mousemove(function(e) {
-		$("#mds_thickness_nr").val($(this).val());
+	$("#brush_thickness_range").mousemove(function(e) {
+		$("#brush_thickness_nr").val($(this).val());
 	});
-	$("#mds_thickness_nr").keydown(function(e) {
+	$("#brush_thickness_nr").keydown(function(e) {
 		if((e.which < 48 || e.which > 57) && (e.which < 96 || e.which > 105) && e.which != 8)
 			e.stopPropagation();
 	}).keyup(function(e) {
 		updateBrushGenerator(CM_ACTIVEID);
-		$("#mds_thickness_range").val($(this).val());
+		$("#brush_thickness_range").val($(this).val());
 	});
 	$("#mds_linethickness_range").mousemove(function(e) {
 		$("#mds_linethickness_nr").val($(this).val());
@@ -506,7 +506,7 @@ hook("load", function() {
 	$("#md_point").trigger('click');
 	
 	// palette verschiebbar machen
-	setDraggable($("#material-h").get(0), $("#material-b").get(0), $("#material-toolbar").get(0));
+	//setDraggable($("#material-h").get(0), $("#material-b").get(0), $("#material-toolbar").get(0));
 	
 	$(".toolbar-collapse").click(function() {
 		$(this).toggleClass("active");
@@ -522,7 +522,7 @@ hook("load", function() {
 	});
 	
 	//Seitenpalette
-	setDraggable($("#spalette-h").get(0), $("#spalette-b").get(0), $("#side-palette").get(0));
+	//setDraggable($("#spalette-h").get(0), $("#spalette-b").get(0), $("#side-palette").get(0));
 	$(".spalette-elm").click(function(e) {
 		if(e.ctrlKey) {
 			$(this).removeClass("active");
@@ -543,18 +543,14 @@ hook("load", function() {
 	});
 	
 	// brush panel
-	setDraggable($("#bp-h").get(0), $("#bp-b").get(0), $("#brush-panel").get(0));
-	
-	$("#bp-preview").click(function() {
-		$("#brush-panel").removeClass("collapsed");
-	});
+	//setDraggable($("#bp-h").get(0), $("#bp-b").get(0), $("#brush-panel").get(0));
 	
 	$("#rounded-brush").change(function(e) {
 		sceneMeta[CM_ACTIVEID].brushData.rounded = this.checked;
 		updateBrushGenerator(CM_ACTIVEID);
 	});
 	
-	$("#mds_thickness_range").on("input", function() {
+	$("#brush_thickness_range").on("input", function() {
 		updateBrushGenerator(CM_ACTIVEID);
 	});
 	
@@ -625,7 +621,7 @@ function createCideToolbar(startup) {
 
 function updateBrushGenerator(id) {
 	var seed = $("#bp-gen-seed").val();
-	var size = parseInt($("#mds_thickness_nr").val());
+	var size = parseInt($("#brush_thickness_nr").val());
 	
 	sceneMeta[id].brushData.size = size;
 	
@@ -683,8 +679,6 @@ function updateBrushGenerator(id) {
 	ctx.putImageData(imgData, 0, 0);
 	
 	var dataURL = c.toDataURL("image/png", 1.0);
-	
-	document.getElementById("bp-preview").src = dataURL;
 	
 	$("#bp-preview-main").css("background-image", "url(" + dataURL + ")");
 	

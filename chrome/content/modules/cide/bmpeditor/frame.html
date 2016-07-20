@@ -49,61 +49,6 @@
 		</div>
 	</div>
 	
-	<!-- sick palette -->
-	<div id="material-toolbar">
-		<div id="material-h" class="toolbar-header">$MaterialPalette$ <div id="material-collapse" class="toolbar-collapse">▼</div></div>
-		<div id="material-b" class="toolbar-body">
-			<div id="current-material">
-				<div id="current-material-clr" class="materialclr-preview"></div>
-				<div id="current-material-name"><input type="text"/></div>
-			</div>
-			<canvas id="material-palette" tabindex="0"></canvas>
-			<div id="material-button-wrapper">
-				<button id="switch-material-mode">$underground$</button>
-			</div>
-		</div>
-	</div>
-	
-	<div id="side-palette">
-		<div id="spalette-h" class="toolbar-header">$SidePalette$ <div id="spalette-collapse" class="toolbar-collapse">▼</div></div>
-		<div id="spalette-b" class="toolbar-body">
-			<div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div>
-			<div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div>
-			<div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div>
-			<div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div>
-		</div>
-	</div>
-	
-	<div id="brush-panel">
-		<div id="bp-h" class="toolbar-header">$brushPanel$ <div id="bp-collapse" class="toolbar-collapse">▼</div></div>
-		<div id="bp-b" class="toolbar-body">
-			<div style="align: space-around">
-				<canvas id="bp-preview-gen" height="32" width="32"></canvas>
-				<div id="bp-preview-main"></div>
-				<input id="rounded-brush" type="checkbox" checked="true" class="custom"></input>
-				<label for="rounded-brush" class="cbox-button">$rounded$</label>
-			</div>
-			<!--
-			<div>
-				<input type="text" id="bp-gen-seed" value="3" maxlength="3"/>
-				<input type="range" id="fg" min="1" max="50" value="3"/>
-			</div>
-			<div>
-				<input type="text" id="bp-gen-dist" value="3" maxlength="3"/>
-				<input type="range" id="fgh" min="1" max="50" value="3"/>
-			</div>
-			-->
-		</div>
-	</div>
-	
-	<!-- Suggestionbox -->
-	<div id="material-suggestion-box" class="suggestion-box">
-		<div class="suggestion-box-entry draft">
-			<div class="suggestion-box-matchedclr"></div>
-			<div class="suggestion-box-name"></div>
-		</div>
-	</div>
-
 	<!-- page -->
 	<div class="page">
 		
@@ -167,12 +112,6 @@
 			<div class="toolbarsplitter"></div>
 			
 			<div id="mds_filled" class="toolbarbutton toolsettings active">$fill$</div>
-
-			<div id="mds_thickness" class="toolbarbutton toolsettings">
-				<img id="bp-preview" height="16" width="16" />
-				<input type="text" id="mds_thickness_nr" value="3" maxlength="3"/>
-				<input type="range" id="mds_thickness_range" min="1" max="50" value="3"/>
-			</div>
 			
 			<div class="toolbarsplitter"></div>
 			<div id="infotoolbar">
@@ -182,6 +121,59 @@
 			</div>
 		</div>
 	</div>
+	
+	<div class="sidebar">
+		<!-- sick palette -->
+		<div id="material-toolbar">
+			<div id="material-h" class="toolbar-header">$MaterialPalette$ <div id="material-collapse" class="toolbar-collapse">▼</div></div>
+			<div id="material-b" class="toolbar-body">
+				<div id="current-material">
+					<div id="current-material-clr" class="materialclr-preview"></div>
+					<div id="current-material-name"><input type="text"/></div>
+				</div>
+				<canvas id="material-palette" tabindex="0"></canvas>
+				<div id="material-button-wrapper">
+					<button id="switch-material-mode">$underground$</button>
+				</div>
+			</div>
+		</div>
+		
+		<div id="side-palette">
+			<div id="spalette-h" class="toolbar-header">$SidePalette$ <div id="spalette-collapse" class="toolbar-collapse">▼</div></div>
+			<div id="spalette-b" class="toolbar-body">
+				<div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div>
+				<div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div>
+				<div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div>
+				<div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div><div class="spalette-elm"></div>
+			</div>
+		</div>
+		
+		<div id="brush-panel">
+			<div id="bp-h" class="toolbar-header">$brushPanel$ <div id="bp-collapse" class="toolbar-collapse">▼</div></div>
+			<div id="bp-b" class="toolbar-body">
+				<div style="align: space-around">
+					<canvas id="bp-preview-gen" height="32" width="32"></canvas>
+					<div id="bp-preview-main"></div>
+					<input id="rounded-brush" type="checkbox" checked="true" class="custom"></input>
+					<label for="rounded-brush" class="cbox-button">$rounded$</label>
+				</div>
+				<div id="mds_thickness">
+					<input type="number" id="brush_thickness_nr" value="3" maxlength="3"/>
+					<input type="range" id="brush_thickness_range" min="1" max="50" value="3"/>
+				</div>
+			</div>
+		</div>
+		
+		<!-- Suggestionbox -->
+		<div id="material-suggestion-box" class="suggestion-box">
+			<div class="suggestion-box-entry draft">
+				<div class="suggestion-box-matchedclr"></div>
+				<div class="suggestion-box-name"></div>
+			</div>
+		</div>
+	
+	</div>
+	
 	<div class="brush-indicator"></div>
 	<canvas id="2d-rt" height="1" width="1" style="display: none"></canvas>
 	
