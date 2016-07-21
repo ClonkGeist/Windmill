@@ -421,7 +421,7 @@ hook("load", function() {
 		$("#ruler-top").css("top", $(this).scrollTop()+"px");
 	});
 	
-	var brushX = 0, brushY = 0;
+	var rulerX = 0, rulerY = 0;
 	
 	document.addEventListener("mousemove", function(e) {
 		if($(".color-matching-wizard.visible2").get(0))
@@ -436,22 +436,18 @@ hook("load", function() {
 		
 		$(".rulerdisplay.hidden").removeClass("hidden");
 		
-		brushX = e.clientX
-		brushY = e.clientY
+		rulerX = e.clientX
+		rulerY = e.clientY
 	});
 	
-	let brushFn = () => {
-		let $el = $(".brush-indicator")
-		$el.css("left", brushX+"px")
-		$el.css("top", brushY+"px")
+	let rulerFn = () => {
+		rulerData.top.css("left", rulerX+"px")
+		rulerData.left.css("top", rulerY+"px")
 		
-		rulerData.top.css("left", brushX+"px")
-		rulerData.left.css("top", brushY+"px")
-		
-		requestAnimationFrame(brushFn)
+		requestAnimationFrame(rulerFn)
 	}
 	
-	requestAnimationFrame(brushFn)
+	requestAnimationFrame(rulerFn)
 	
 	$(window).resize(function() {
 		updateRulers();
@@ -606,28 +602,28 @@ function createCideToolbar(startup) {
 /*-- Brush panel and generator --*/
 
 function updateBrushGenerator(id) {
-	var seed = $("#bp-gen-seed").val();
-	var size = parseInt($("#brush_thickness_nr").val());
+	var seed = $("#bp-gen-seed").val()
+	var size = parseInt($("#brush_thickness_nr").val())
 	
-	sceneMeta[id].brushData.size = size;
+	sceneMeta[id].brushData.size = size
 	
-	var c = $("#bp-preview-gen").get(0);	
-	var ctx = c.getContext("2d");
-	c.width = size;
-	c.height = size;
+	var c = $("#bp-preview-gen").get(0);
+	var ctx = c.getContext("2d")
+	c.width = size
+	c.height = size
 	
-	ctx.clearRect(0, 0, size, size);
+	ctx.clearRect(0, 0, size, size)
 	
 	var imgData = ctx.getImageData(0, 0, size, size),
-		data = imgData.data;
+		data = imgData.data
 	
 	var m = size/2
 	let offset = 0
 	
 	if(size % 2 === 0)
-		offset = 0.5;
+		offset = 0.5
 	
-	sceneMeta[id].brushData.offset = offset;
+	sceneMeta[id].brushData.offset = offset
 	
 	var inDist = (x, y) => {
 		let xm = m - x
@@ -643,50 +639,48 @@ function updateBrushGenerator(id) {
 				if(!inDist(x + 0.5, y + 0.5))
 					continue;
 				
-				let index = (x + y*size)*4;
+				let index = (x + y*size)*4
 				
-				data[index  ] = 0;
-				data[index+1] = 0;
-				data[index+2] = 0;
-				data[index+3] = 255;
+				data[index  ] = 0
+				data[index+1] = 0
+				data[index+2] = 0
+				data[index+3] = 255
 			}
 	}
 	else {
 		for(let x = 0; x < size; x++)
 			for(let y = 0; y < size; y++) {
-				let index = (x + y*size)*4;
-				data[index  ] = 0;
-				data[index+1] = 0;
-				data[index+2] = 0;
-				data[index+3] = 255;
+				let index = (x + y*size)*4
+				data[index  ] = 0
+				data[index+1] = 0
+				data[index+2] = 0
+				data[index+3] = 255
 			}
 	}
 	
-	ctx.putImageData(imgData, 0, 0);
+	ctx.putImageData(imgData, 0, 0)
 	
-	var dataURL = c.toDataURL("image/png", 1.0);
+	var c2 = document.getElementById("bp-cursor-gen")
 	
-	$("#bp-preview-main").css("background-image", "url(" + dataURL + ")");
+	var scaledSize = size*sceneMeta[id].scene.zoomFactor
 	
-	updateCursor(id, dataURL);
+	c2.width = scaledSize
+	c2.height = scaledSize
+	
+	var ctx2 = c2.getContext("2d")
+	ctx2.scale(scaledSize, scaledSize)
+	ctx2.drawImage(c, 0, 0)
+	
+	var dataURL = c.toDataURL("image/png", 1.0)
+	
+	$("#bp-preview-main").css("background-image", "url(" + dataURL + ")")
+	
+	updateCursor(id, c2.toDataURL("image/png", 1.0), scaledSize)
 }
 
-function updateCursor(id, dataURL) {
-	
-	if(Mode.selected === Mode_Draw_Shape) {
-		
-		var size = sceneMeta[id].brushData.size*sceneMeta[id].scene.zoomFactor;
-		var radius = sceneMeta[id].brushData.rounded?size:0;
-		
-		$(".brush-indicator").css({
-			marginLeft: -size/2 + "px",
-			marginTop: -size/2 + "px",
-			height: size + "px",
-			width: size + "px",
-			borderRadius: radius + "px",
-			MozOutlineRadius: radius + "px",
-		})
-	}
+function updateCursor(id, dataURL, diameter) {
+	$(".page-content").css("cursor", "url("+ dataURL +") "+diameter/2+" " +diameter/2+", auto")
+	sceneMeta[id].cursorImage = dataURL
 }
 
 

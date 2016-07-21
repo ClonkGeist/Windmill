@@ -40,6 +40,8 @@ canvas {
 	outline: 1px solid $clr-sel-light;
 	border: 1px solid $clr-sel-dark;
 	pointer-events: none;
+	left: 0;
+	top: 0;
 }
 
 /* ruler */
@@ -206,10 +208,10 @@ canvas {
 		display: flex;
 		flex-direction: row;
 	}
-}
-
-#bp-preview-gen {
-	display: none;
+	
+	canvas {
+		display: none;
+	}
 }
 
 #bp-preview-main {
