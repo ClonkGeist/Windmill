@@ -107,12 +107,12 @@ function addScene(gl, c) {
 var _SCENES = []
 
 class BMPScene {
-	constructor(gl, c) {
+	constructor(gl, c, csel) {
 		this.height = 0
 		this.width = 0
 		this.gl = gl
 		this.canvas = c
-		this.initialized = false
+		this.csel = csel
 		
 		this.mirrorType = MIRROR_NONE
 		
@@ -136,6 +136,7 @@ class BMPScene {
 		this.texture_Combined = this.createTexture()
 		this.texture_Worker = this.createTexture()
 		this.texture_Brush = this.createTexture()
+		this.texture_Selection = this.createTexture()
 		
 		this.selClrIndex = 0
 		this.selShape = Shape_Circle
@@ -147,10 +148,11 @@ class BMPScene {
 		this.dirtyCounter = 0
 		this.currentActionId = -1
 		
-		// precompile common shaders
+		// precompile most common shaders
 		this.addShader(SHADER_TYPE_BACKBUFFER)
 		this.addShader(SHADER_TYPE_INPUT)
 		this.addShader(SHADER_TYPE_COLORED_SHAPE)
+		this.addShader(SHADER_TYPE_SELECTION)
 	}
 	
 	set ptexture_Source (tex) {
@@ -247,8 +249,6 @@ class BMPScene {
 				this.ptexture_Source = this.texture_Combined
 				this.ptexture_Worker = this.texture_Worker
 				
-				this.initialized = true
-				
 				this.render(this.shaderType)
 				
 				var ts = this.getTextureStack()
@@ -285,11 +285,7 @@ class BMPScene {
 		
 		return tex
 	}
-		
-	isInitialized() {
-		return this.initialized
-	}
-		
+	
 	setDimensions(w = 1, h = 1, align = -1) {
 		this.width = w
 		this.height = h
@@ -371,6 +367,13 @@ class BMPScene {
 		this.bindAttribBuffer()
 		this.setUniforms()
 		this.gl.drawArrays(this.gl.TRIANGLES, 0, 6)
+	}
+	
+	focusCanvas(fSelection) {
+		if(fSelection)
+			log("asd")
+		else
+			log("sdf")
 	}
 	
 	renderWithBackup(backupShaderType, inputShaderType) {
@@ -495,6 +498,12 @@ class BMPScene {
 			gl.uniform1i(shader.unifImgInput, 2)
 		}
 		
+		if(shader.unifImgSel !== null) {
+			gl.activeTexture(gl.TEXTURE0)
+			gl.bindTexture(gl.TEXTURE_2D, this.texture_Selection)
+			gl.uniform1i(shader.unifImgSel, 0)
+		}
+		
 		if(shader.unifWorkerColor && shader.unifWorkerColor !== null) {
 			gl.uniform3fv(shader.unifWorkerColor, this.getCurrentWorkerColor())
 		}
@@ -577,6 +586,7 @@ class BMPScene {
 			unifImgWorker: this.gl.getUniformLocation(prog, "img_worker"),
 			unifImgBrush: this.gl.getUniformLocation(prog, "img_brush"),
 			unifImgInput: this.gl.getUniformLocation(prog, "img_input"),
+			unifImgSel: this.gl.getUniformLocation(prog, "img_sel"),
 			unifWorkerColor: this.gl.getUniformLocation(prog, "worker_color"),
 			unifRect: this.gl.getUniformLocation(prog, "rect")
 		}

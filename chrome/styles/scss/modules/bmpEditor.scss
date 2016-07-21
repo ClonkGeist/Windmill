@@ -25,23 +25,14 @@ canvas {
 .canvas-dimension {
 	position: relative;
 	flex: 1;
-	
-	&.brush-mode {
-		cursor: none;
-	}
+}
+
+#sel-canvas {
+	pointer-events: none;
 }
 
 .visible {
 	display: block !important;
-}
-
-.brush-indicator {
-	position: fixed;
-	outline: 1px solid $clr-sel-light;
-	border: 1px solid $clr-sel-dark;
-	pointer-events: none;
-	left: 0;
-	top: 0;
 }
 
 /* ruler */
@@ -102,6 +93,8 @@ canvas {
 	position: relative;
 	overflow: scroll;
 }
+
+/* toolbar and sidebar stuff */
 
 #toolbar {
 	min-height: 16px;

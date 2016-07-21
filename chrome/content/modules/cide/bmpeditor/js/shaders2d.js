@@ -178,6 +178,35 @@ void main(void) {\n\
 }"
 		]
 	}
+else if(type === SHADER_TYPE_SELECTION) {
+		return [
+"attribute vec2 pos;\n\
+varying vec2 uv;\n\
+attribute vec2 uUV;\n\
+\
+void main(void) {\n\
+uv = uUV;\n\
+	gl_Position = vec4(pos.x, pos.y, 0.0, 1.0);\n\
+}\n"
+,
+"precision mediump float;\n\
+\
+uniform sampler2D img_sel;\n\
+uniform vec2 textureSize;\n\
+\
+varying vec2 uv;\n\
+void main(void) {\n\
+	vec2 pixelUnit = vec2(1.0, 1.0) / textureSize;\n\
+	vec4 sum = 	texture2D(img_sel, uv * vec2(0, -1) *  1.0)+\n\
+				texture2D(img_sel, uv * vec2(0,  1) *  1.0)+\n\
+				texture2D(img_sel, uv * vec2(-1, 0) *  1.0)+\n\
+				texture2D(img_sel, uv * vec2( 1, 0) *  1.0)+\n\
+				texture2D(img_sel, uv              r * -4.0);\n\
+\n\
+	gl_FragColor = vec4(sum.rgb, 0.75);\n\
+}"
+		]
+	}
 	else
 		return ["", ""]
 }
