@@ -128,6 +128,10 @@ function initCtrls() {
 	$("#md_selrect").click(function() {
 		Mode.selected = Mode_Sel_Rect
 	})
+	
+	$("#md_selmagic").click(function() {
+		Mode.selected = Mode_Sel_Magic
+	})
 }
 
 
@@ -403,6 +407,55 @@ class Mode_Sel_Rect extends DefaultMode {
 	}
 }
 
+class Mode_Sel_Magic extends DefaultMode {
+	onMouseup(startx = 0, starty = 0, scene, modifier) {
+		
+		var w = scene.width,
+			h = scene.height
+		
+		var data = scene.readPixels(0, 0, w, h)
+		let pos = startx*4 + (h-starty)*h*4;
+		var r = data[pos  ],
+			g = data[pos+1],
+			b = data[pos+2],
+			a = data[pos+3]
+		
+		if((!modifier & MODIFIER_SHIFT) && (!modifier & MODIFIER_ALT))
+			scene.clearSelMask()
+	
+		var sel = scene.getSelMask()
+		
+		var mask = []
+		
+		function fn(x, y) {
+			let pos = x*4 + (h-y)*w*4
+			if(mask[x + y*w] || data[pos] !== r || data[pos+1] !== g || data[pos+2] !== b || data[pos+3] !== a)
+				return
+			
+			mask[x + y*w] = true
+			sel[x + y*w] = true
+			
+			// right
+			if(x + 1 < w)
+				fn(x + 1, y)
+			// left
+			if(x - 1 >= 0)
+				fn(x - 1, y)
+			// bottom
+			if(y + 1 < h)
+				fn(x, y + 1)
+			// top
+			if(y - 1 >= 0)
+				fn(x, y - 1)
+		}
+		
+		fn(startx, starty)
+		
+		scene.showSelMask()
+		sceneMeta[CM_ACTIVEID].showSel = true
+	}
+}
+
 /* Shapes */
 
 
@@ -545,15 +598,15 @@ class Rect {
 	}
 }
 
+const
+	DIR_DOWN = 1,
+	DIR_RIGHT = 2,
+	DIR_BOTH = 3
 
-
-function svgPathFromMask(mask, w, h) {
+function svgPathFromMask(mask, pointMask, w, h) {
 	
 	let h2 = h  -1
 	let w2 = w  -1
-	
-	//let pointMask = new Uint8Array(w2*h2)
-	let pointMask = mask
 	
 	let maskIndex, curr, below, right, pointIndex
 	
@@ -635,8 +688,7 @@ function svgPathFromMask(mask, w, h) {
 		
 	}
 	
-	document.getElementById("sel-p1").setAttribute("d", str)
-	document.getElementById("sel-p2").setAttribute("d", str)
+	$(".sel-p").attr("d", str)
 	
 	return pointMask
 }

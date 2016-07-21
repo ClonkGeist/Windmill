@@ -308,6 +308,22 @@ class BMPScene {
 		document.getElementById("ui-sel").setAttribute("height", this.height*this.zoomFactor)
 	}
 	
+	getSelMask() {
+		return this.selMask
+	}
+	
+	showSelMask() {
+		let l = this._selPointMask.length
+		for(var i = 0; i < l; i++)
+			this._selPointMask[i] = 0
+		
+		svgPathFromMask(this.selMask, this._selPointMask, this.width, this.height)
+	}
+	
+	clearSelMask() {
+		this.selMask = new Uint8Array((this.width+2)*(this.height+2))
+	}
+	
 	// flip y coords	
 	rectToClipspaceFormat(x = 0, y = 0, w = 1, h = 1) {
 		return [
