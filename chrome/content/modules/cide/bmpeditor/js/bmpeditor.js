@@ -505,24 +505,11 @@ hook("load", function() {
 	//Stift als erstes auswählen
 	$("#md_point").trigger('click');
 	
-	// palette verschiebbar machen
-	//setDraggable($("#material-h").get(0), $("#material-b").get(0), $("#material-toolbar").get(0));
-	
-	$(".toolbar-collapse").click(function() {
-		$(this).toggleClass("active");
-		
-		if($(this).hasClass("active")) {
-			$(this).text("◀");
-			$(this).parent().parent().find(".toolbar-body").css("display", "none");
-		}
-		else {
-			$(this).text("▼");
-			$(this).parent().parent().find(".toolbar-body").css("display", "");
-		}
+	$(".toolbar-header").click(function() {
+		$(this).toggleClass("collapsed");
 	});
 	
 	//Seitenpalette
-	//setDraggable($("#spalette-h").get(0), $("#spalette-b").get(0), $("#side-palette").get(0));
 	$(".spalette-elm").click(function(e) {
 		if(e.ctrlKey) {
 			$(this).removeClass("active");
@@ -543,7 +530,6 @@ hook("load", function() {
 	});
 	
 	// brush panel
-	//setDraggable($("#bp-h").get(0), $("#bp-b").get(0), $("#brush-panel").get(0));
 	
 	$("#rounded-brush").change(function(e) {
 		sceneMeta[CM_ACTIVEID].brushData.rounded = this.checked;

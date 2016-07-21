@@ -159,13 +159,53 @@ canvas {
 	max-width: 170px;
 }
 
-/* brush panel */
-#brush-panel {
+.toolbar-collapse:before {
+	@include -arrow-down;
+	font-family: 'icomoon';
+	color: rgb(180, 180, 180);
 }
 
-#bp-b > * {
+.toolbar-header {
 	display: flex;
-	flex-direction: row;
+	height: 14px;
+	font-size: 12px;
+	-moz-user-select: none;
+	cursor: default;
+	padding: 3px 5px;
+	border-top: $clr-border;
+	color: #777;
+	
+	background-color: rgb(220, 220, 220);
+	
+	&.collapsed {
+		.toolbar-collapse:before {
+			@include -arrow-left;
+		}
+		
+		.toolbar-body {
+			display: none;
+		}
+	}
+	
+	&:hover {
+		background-color: $clr-base;
+	}
+}
+
+.toolbar-title {
+	flex: 1;
+}
+
+.toolbar-body {
+	padding: 0 5px;
+}
+
+/* brush panel */
+#brush-panel {
+	.toolbar-body > * {
+		display: flex;
+		flex-direction: row;
+	}
 }
 
 #bp-preview-gen {
@@ -228,6 +268,12 @@ input[type=range]::-moz-range-track {
 }
 
 #side-palette {
+	.toolbar-body {
+		display: flex;
+		align-content: flex-start;
+		flex-wrap: wrap;
+		flex-direction: row;
+	}
 }
 
 .spalette-elm {
@@ -240,13 +286,6 @@ input[type=range]::-moz-range-track {
 
 .spalette-elm.active {
 	border: 2px solid $clr-blue;
-}
-
-#spalette-b {
-	display: flex;
-	align-content: flex-start;
-	flex-wrap: wrap;
-	flex-direction: row;
 }
 
 #material-toolbar {
@@ -267,34 +306,6 @@ input[type=range]::-moz-range-track {
 
 #material-button-wrapper {
 	text-align: center;
-}
-
-.toolbar-header {
-	height: 14px;
-	background-color: rgb(220, 220, 220);
-	border-bottom: 1px solid rgb(210, 210, 210);
-	font-size: 10px;
-	color: #777;
-	-moz-user-select: none;
-	cursor: default;
-	padding-left: 3px;
-}
-
-.toolbar-collapse {
-	float: right;
-	padding-right: 5px;
-	color: rgb(180, 180, 180);
-	
-	box-sizing: border-box;
-	
-	&:hover {
-		color: #777;
-	}
-}
-
-#material-b,
-#bp-b {
-	padding: 5px;
 }
 
 #current-material {
