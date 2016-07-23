@@ -47,7 +47,12 @@ const
 	MODIFIER_SHIFT = 2,
 	MODIFIER_ALT = 4
 
+var ctrls = false
+
 function initCtrls() {
+	
+	if(ctrls)
+		return
 	
 	$(".canvas-wrapper").mousedown(function(e) {
 		if(e.which !== 1 || CM_ACTIVEID === -1 || !Mode.selected || cmw)
@@ -132,6 +137,8 @@ function initCtrls() {
 	$("#md_selmagic").click(function() {
 		Mode.selected = Mode_Sel_Magic
 	})
+	
+	ctrls = true
 }
 
 
@@ -225,7 +232,7 @@ class Mode_Draw_Shape extends DefaultMode {
 		super(op_id, scene)
 		
 		scene.uploadBrush()
-		this.shape = new Shape(sceneMeta[CM_ACTIVEID].brushData.size)
+		this.shape = new Shape(sceneMeta[CM_ACTIVEID].brushSize)
 		
 		this.lastX = x
 		this.lastY = y
@@ -423,7 +430,7 @@ class Mode_Sel_Magic extends DefaultMode {
 		if((!modifier & MODIFIER_SHIFT) && (!modifier & MODIFIER_ALT))
 			scene.clearSelMask()
 	
-		var sel = scene.getSelMask()
+		var sel = scene.selection.mask
 		
 		var mask = []
 		

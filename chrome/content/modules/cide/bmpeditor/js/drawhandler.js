@@ -4,13 +4,10 @@
 	render*() nicht mehr auf this.shaderType zurückgreifen, ausschließlich mit render*(shaderType) arbeiten
 	gegebenenfalls um render*(shaderType1, shaderType2) erweitern
 
+	source/combined + getter/setter Gekräusel aufräumen
 */
-hook("load", () => {	
-	initGl("draw-canvas")
-})
 
-var _gl
-var _shaders = []
+"use strict";
 
 const
 	MIRROR_NONE = 0,
@@ -20,99 +17,55 @@ const
 
 var buffer = []
 
-var DEBUG_WEBGL = false
-var _o
-function initGl(id) {
-	var c = document.getElementById(id)
+var glMain, glSel
+
+function initGl() {
 	
-	var gl
+	glMain = new GLInstance("draw-canvas", {
+		antialias: false,
+		depth: false,
+		stencil: false,
+		preserveDrawingBuffer: true
+	})
 	
-	try {
-		gl = c.getContext("webgl", {
-			antialias: false,
-			depth: false,
-			stencil: false,
-			preserveDrawingBuffer: true
-		})
-	}
-	catch(e) {
-		log("WebGL doesn't work..., for reasons...", false, "error");
-	}
-	
-	if(!gl)
+	glSel = new GLInstance("sel-canvas", {
+		antialias: false,
+		depth: false,
+		stencil: false
+	})
+
+	if(glMain.failed || glSel.failed)
 		return
-	
-	if(DEBUG_WEBGL) {
-		var o = {
-			id
-		}
-		
-		let onGlError = (e, funcName, args) => {
-			log(WebGLDebugUtils.glEnumToString(e) + " was caused by calling '" + funcName + "'\n" +
-				"\n" + o.excertCallStack()
-			)
-		}
-		
-		var callstackLength = 0
-		
-		o._callStack = new Array(callstackLength)
-		o._currentCallStackIndex = 0
-		let glTraceCallstack = (functionName, args) => {
-			let str = ""
-			
-			args = new Map(Object.entries(args))
-			args.forEach((v) => {
-				str += v + ", "
-			})
-			
-			o._callStack[o._currentCallStackIndex] = functionName + ": " + str + "\n"
-			o._currentCallStackIndex = (o._currentCallStackIndex + 1) % callstackLength
-		}
-		
-		o.excertCallStack = () => {
-			let s = "WebGlInstance ("+o.id+") CallStack:\n"
-			
-			for(let i = 0; i < callstackLength; i++)
-				s += o._callStack[(o._currentCallStackIndex + i) % callstackLength]
-			
-			return s + "-\tend\t-"
-		}
-		
-		_o = o
-		
-		gl = WebGLDebugUtils.makeDebugContext(gl, onGlError, glTraceCallstack)
-	}
-	
-	_gl = gl
-	
-	initCtrls()
 }
 
-function getGl() {
-	if(!_gl)
-		initGl("draw-canvas")
+function getGlInstance(fSel) {
+	if(!glMain)
+		initGl()
 	
-	return _gl
+	if(fSel)
+		return glSel
+	else
+		return glMain
 }
 
 var a_S
 
-function addScene(gl, c) {
-	var scene = new BMPScene(gl, c)
-	_SCENES[_SCENES.length] = scene
-	
+function addScene(glInstance) {
+	var scene = new BMPScene(glInstance)
+	_SCENES.push(scene)
 	return scene
 }
 
 var _SCENES = []
 
 class BMPScene {
-	constructor(gl, c, csel) {
+	constructor(glInstance) {
 		this.height = 0
 		this.width = 0
-		this.gl = gl
-		this.canvas = c
-		this.csel = csel
+		
+		this.gl = glInstance.gl
+		this.canvas = glInstance.c
+		this.glInstance = glInstance
 		
 		this.mirrorType = MIRROR_NONE
 		
@@ -124,15 +77,15 @@ class BMPScene {
 		this.zoomFactor = 1
 		
 		this.shader
-		this.vBuffer = gl.createBuffer()
-		this.uvBuffer = gl.createBuffer()
+		this.vBuffer = glInstance.gl.createBuffer()
+		this.uvBuffer = glInstance.gl.createBuffer()
 		
 		this.shaderType = SHADER_TYPE_BACKBUFFER
-		
 		this.useShaderOfType(SHADER_TYPE_BACKBUFFER)
 		
 		this.bindAttribBuffer()
 		
+		// combined or worker is obsolete since preserveDrawingBuffer
 		this.texture_Combined = this.createTexture()
 		this.texture_Worker = this.createTexture()
 		this.texture_Brush = this.createTexture()
@@ -149,10 +102,13 @@ class BMPScene {
 		this.currentActionId = -1
 		
 		// precompile most common shaders
-		this.addShader(SHADER_TYPE_BACKBUFFER)
-		this.addShader(SHADER_TYPE_INPUT)
-		this.addShader(SHADER_TYPE_COLORED_SHAPE)
-		this.addShader(SHADER_TYPE_SELECTION)
+		glInstance.getShaderOfType(SHADER_TYPE_BACKBUFFER)
+		glInstance.getShaderOfType(SHADER_TYPE_INPUT)
+		glInstance.getShaderOfType(SHADER_TYPE_COLORED_SHAPE)
+		
+		this.selection = new SelectionScene(getGlInstance(true))
+		
+		this.uiRect = document.getElementById("trans-rect")
 	}
 	
 	set ptexture_Source (tex) {
@@ -296,28 +252,10 @@ class BMPScene {
 		this.updateZoom()
 		this.gl.viewport(0, 0, w, h)
 		
-		// work with additional margin of 1 at each side
-		this.selMask = new Uint8Array((w+2)*(h+2))
-		this._selPointMask = new Uint8Array((w+2)*(h+2))
+		//this.selection.setDimensions(w, h)
 		
 		document.getElementById("ui-sel").setAttribute("viewBox", "0 0 "+ w + " " + h)
 		document.getElementById("ui-sel").setAttribute("height", this.height*this.zoomFactor)
-	}
-	
-	getSelMask() {
-		return this.selMask
-	}
-	
-	showSelMask() {
-		let l = this._selPointMask.length
-		for(var i = 0; i < l; i++)
-			this._selPointMask[i] = 0
-		
-		svgPathFromMask(this.selMask, this._selPointMask, this.width, this.height)
-	}
-	
-	clearSelMask() {
-		this.selMask = new Uint8Array((this.width+2)*(this.height+2))
 	}
 	
 	// flip y coords	
@@ -367,13 +305,6 @@ class BMPScene {
 		this.bindAttribBuffer()
 		this.setUniforms()
 		this.gl.drawArrays(this.gl.TRIANGLES, 0, 6)
-	}
-	
-	focusCanvas(fSelection) {
-		if(fSelection)
-			log("asd")
-		else
-			log("sdf")
 	}
 	
 	renderWithBackup(backupShaderType, inputShaderType) {
@@ -517,29 +448,8 @@ class BMPScene {
 		this.gl.uniform4fv(this.shader.unifRect, this.getInputRect())
 	}
 	
-	useShaderOfType(type) {
-		if(!this.shader || this.shader.type !== type) {
-			var s = this.getShaderOfType(type)
-			if(!s)
-				return false
-			this.shader = s
-		}
-		
-		this.gl.useProgram(this.shader.prog)
-		return true
-	}
-	
-	useShaderByFlags(flags) {
-		
-		if(!this.shader || this.shader.flags !== flags) {
-			var s = this.getShaderByFlags(flags)
-			if(!s)
-				return false
-			this.shader = s
-		}
-		
-		this.gl.useProgram(this.shader.prog)
-		return true
+	useShaderOfType(type = 0) {
+		this.shader = this.glInstance.useShaderOfType(type)
 	}
 		
 	bindAttribBuffer() {
@@ -557,50 +467,8 @@ class BMPScene {
 	getCurrentWorkerColor() {
 		return this.currentColorRGB
 	}
-	
-	getShaderByFlags(flags) {
-		var s = this.shaderAvailable(flags)
-		
-		if(!s)
-			s = this.addShader(flags)
-		
-		return s
-	}
-	
-	getShaderOfType(type) {
-		return this.shaderAvailable(type) || this.addShader(type)
-	}
-	
-	addShader(flags) {
-		var prog = composeShaderProgram(this.gl, flags)
-		if(!prog)
-			return false
-		
-		var s = {
-			flags: flags, /// @deprecated
-			type: flags,
-			prog: prog,
-			attrPos: this.gl.getAttribLocation(prog, "pos"),
-			attrUv: this.gl.getAttribLocation(prog, "uUV"),
-			unifImgSource: this.gl.getUniformLocation(prog, "img_source"),
-			unifImgWorker: this.gl.getUniformLocation(prog, "img_worker"),
-			unifImgBrush: this.gl.getUniformLocation(prog, "img_brush"),
-			unifImgInput: this.gl.getUniformLocation(prog, "img_input"),
-			unifImgSel: this.gl.getUniformLocation(prog, "img_sel"),
-			unifWorkerColor: this.gl.getUniformLocation(prog, "worker_color"),
-			unifRect: this.gl.getUniformLocation(prog, "rect")
-		}
-		
-		_shaders[_shaders.length] = s
-		return s
-	}
-	
-	shaderAvailable(flags) {
-		for(var i = 0; i < _shaders.length; i++)
-			if(flags === _shaders[i].flags || flags === _shaders[i].type)
-				return _shaders[i]
-		
-		return false
+	getShaderOfType(shaderType) {
+		return this.glInstance.getShader(shaderType)
 	}
 
 	onShow() {
@@ -643,7 +511,7 @@ class BMPScene {
 	}
 	
 	uploadBrush() {
-		let size = sceneMeta[CM_ACTIVEID].brushData.size
+		let size = sceneMeta[CM_ACTIVEID].brushSize
 		
 		this.gl.activeTexture(this.gl.TEXTURE2)
 		this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture_Brush)
@@ -734,10 +602,6 @@ class BMPScene {
 		UI-Rect
 	*/
 	
-	setRectElement(el) {
-		this.uiRect = el
-	}
-	
 	initUiRectUse(mode, rect) {
 		this.updateUiRectPos(rect)
 		this.currentRect = rect
@@ -748,6 +612,9 @@ class BMPScene {
 	}
 	
 	updateUiRectPos(rect = this.fallbackRect) {
+		if(!rect)
+			this.uiRect.style.display = "none"
+		
 		this.uiRect.style.width = rect.w*this.zoomFactor + "px"
 		this.uiRect.style.height = rect.h*this.zoomFactor + "px"
 		this.uiRect.style.top = rect.y*this.zoomFactor + "px"
@@ -867,7 +734,6 @@ function createBuffer(gl, mirrorType) {
 	if(mirrorType === 0) {
 		gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer)
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-			// first rect
 			 -1, -1,
 			 1, -1,
 			 -1, 1,
@@ -894,3 +760,222 @@ function createBuffer(gl, mirrorType) {
 	
 	return buffer[mirrorType]
 }
+
+function selGlSetup(glInstance) {
+	
+	var gl = glInstance.gl
+	
+	var vBuffer = gl.createBuffer(), uvBuffer = gl.createBuffer()
+	
+	gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer)
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+		 -1, -1,
+		 1, -1,
+		 -1, 1,
+		 
+		 -1, 1,
+		 1, -1,
+		 1, 1,
+		 
+	]), gl.STATIC_DRAW)
+	
+	gl.bindBuffer(gl.ARRAY_BUFFER, uvBuffer)
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+		0, 0,
+		1, 0,
+		0, 1,
+		
+		0, 1,
+		1, 0,
+		1, 1
+	]), gl.STATIC_DRAW)
+	
+	var prog = composeShaderProgram(gl, flags)
+	
+	if(!prog)
+		return false
+	
+	var s = {
+		type: flags,
+		prog: prog,
+		attrPos: this.gl.getAttribLocation(prog, "pos"),
+		attrUv: this.gl.getAttribLocation(prog, "uUV"),
+		unifImgSel: this.gl.getUniformLocation(prog, "img_sel"),
+	}
+	
+	this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vBuffer)
+	this.gl.enableVertexAttribArray(s.attrPos)
+	this.gl.vertexAttribPointer(s.attrPos, 2, this.gl.FLOAT, false, 0, 0)
+	
+	this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.uvBuffer)
+	this.gl.enableVertexAttribArray(s.attrUv)
+	this.gl.vertexAttribPointer(s.attrUv, 2, this.gl.FLOAT, false, 0, 0)
+}
+
+class GLInstance {
+	constructor(canvasId, opts) {
+		let el = document.getElementById(canvasId)
+		
+		this.c = el
+		
+		try {
+			this.gl = el.getContext("webgl", opts)
+			
+			if(!this.gl)
+				throw "WebGlContext creation returns "+this.gl
+		}
+		catch(e) {
+			log("WebGL initiation failed.", false, "error");
+			log(e, false, "error")
+			
+			this.failed = true
+		}
+		
+		this.shaders = []
+		this.currentShader = -1
+	}
+	
+	addShader(shaderType) {
+		let gl = this.gl
+		
+		let prog = composeShaderProgram(gl, shaderType)
+		if(!prog)
+			return false
+		
+		var shader = {
+			type: shaderType,
+			prog: prog,
+			attrPos: gl.getAttribLocation(prog, "pos"),
+			attrUv: gl.getAttribLocation(prog, "uUV"),
+			unifImgSource: gl.getUniformLocation(prog, "img_source"),
+			unifImgWorker: gl.getUniformLocation(prog, "img_worker"), /// deprecated
+			unifImgBrush: gl.getUniformLocation(prog, "img_brush"),
+			unifImgInput: gl.getUniformLocation(prog, "img_input"),
+			unifImgSel: gl.getUniformLocation(prog, "img_sel"),
+			unifWorkerColor: gl.getUniformLocation(prog, "worker_color"),
+			unifRect: gl.getUniformLocation(prog, "rect"),
+			unifTSize: gl.getUniformLocation(prog, "textureSize")
+		}
+		
+		this.shaders.push(shader)
+		return shader
+	}
+	
+	getShaderOfType(shaderType) {log("searching: " + shaderType)
+		for(var i = 0; i < this.shaders.length; i++) {
+			log(this.shaders[i].type)
+			if(this.shaders[i].type === shaderType)
+				return this.shaders[i]
+		}
+		return this.addShader(shaderType)
+	}
+	
+	useShaderOfType(shaderType) {
+		if(!this.currentShader || this.currentShader.type !== shaderType) {
+			this.currentShader = this.getShaderOfType(shaderType)
+			
+			if(!this.currentShader)
+				return false
+		}
+		
+		this.gl.useProgram(this.currentShader.prog)
+		
+		return this.currentShader
+	}
+}
+
+class SelectionScene {
+	constructor(glInstance) {
+		this.glInstance = glInstance
+		this.c = glInstance.c
+		this.gl = glInstance.gl
+		
+		this.isShown = false
+		
+		this.setSelMask(1, 1)
+		
+		this.tex = this.createTexture()
+	}
+	
+	setDimensions(w, h) {
+		this.w = w
+		this.h = h
+		
+		if(this.isShown) {
+			this.c.width = w
+			this.c.height = h
+		}
+		
+		this.setSelMask(w, h)
+	}
+	
+	setSelMask(w, h) {
+		this.mask = new Uint8Array(w*h)
+	}
+	
+	createTexture() {
+		let tex = gl.createTexture()
+		gl.bindTexture(gl.TEXTURE_2D, tex)
+		// disable interpolation
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
+		// disable wrap (to work with NPOT textures)
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+		// delete alignment
+		gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1)
+	}
+	
+	updateTexture() {
+		let gl = this.gl
+		
+		gl.bindTexture(gl.TEXTURE_2D, this.tex)
+	}
+	
+	render() {
+		// bind texture set uniform render
+	}
+}
+
+
+/* code snippet to copy from if enhanced callStacks should be made re-implemented
+	if(DEBUG_WEBGL) {
+		var o = {
+			id
+		}
+		
+		let onGlError = (e, funcName, args) => {
+			log(WebGLDebugUtils.glEnumToString(e) + " was caused by calling '" + funcName + "'\n" +
+				"\n" + o.excertCallStack()
+			)
+		}
+		
+		var callstackLength = 0
+		
+		o._callStack = new Array(callstackLength)
+		o._currentCallStackIndex = 0
+		let glTraceCallstack = (functionName, args) => {
+			let str = ""
+			
+			args = new Map(Object.entries(args))
+			args.forEach((v) => {
+				str += v + ", "
+			})
+			
+			o._callStack[o._currentCallStackIndex] = functionName + ": " + str + "\n"
+			o._currentCallStackIndex = (o._currentCallStackIndex + 1) % callstackLength
+		}
+		
+		o.excertCallStack = () => {
+			let s = "WebGlInstance ("+o.id+") CallStack:\n"
+			
+			for(let i = 0; i < callstackLength; i++)
+				s += o._callStack[(o._currentCallStackIndex + i) % callstackLength]
+			
+			return s + "-\tend\t-"
+		}
+		
+		_o = o
+		
+		gl = WebGLDebugUtils.makeDebugContext(gl, onGlError, glTraceCallstack)
+	}*/

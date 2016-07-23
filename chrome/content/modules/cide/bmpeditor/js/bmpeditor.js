@@ -1,5 +1,11 @@
-
-var editObj = { mode: 0 }, rulerData = {};
+/**
+	TODO:
+	remove editObj
+	rename toolbar classes
+	rename css classes with _ to -
+	remove scnd tickness ui element
+*/
+var editObj = { mode: 0 }, ruler = {};
 
 var sceneMeta = new Array();
 
@@ -374,13 +380,13 @@ hook("load", function() {
 			$("#material-suggestion-box").removeClass("active");
 	});
 	
-	rulerData = {
-		left: $("#ruler-left-display"),
-		top: $("#ruler-top-display"),
+	ruler = {
+		leftStyle: document.getElementById("ruler-left-display").style,
+		topStyle: document.getElementById("ruler-top-display").style,
 		mirrorLeft: $("#ruler-left-display"),
-		mirrorTop: $("#ruler-left-display"),
-		fq: 0 
-	};
+		mirrorTop: $("#ruler-left-display")
+	}
+	
 	/* TODO: nach deprecated stuff durchsuchen */
 	//Maussteuerung
 	$(document).mousedown(function(e) {
@@ -421,33 +427,25 @@ hook("load", function() {
 		$("#ruler-top").css("top", $(this).scrollTop()+"px");
 	});
 	
-	var rulerX = 0, rulerY = 0;
+	var mouseX = 0, mouseY = 0, brushStyle = document.getElementById("brush-indicator").style
 	
+	// track mouseposition
 	document.addEventListener("mousemove", function(e) {
-		if($(".color-matching-wizard.visible2").get(0))
-			return;
-
-		/* Lineal */
-		rulerData.fq = (rulerData.fq + 1)%3;
-		if(rulerData.fq)
-			return;
-		if(CM_ACTIVEID === null)
-			return;
-		
-		$(".rulerdisplay.hidden").removeClass("hidden");
-		
-		rulerX = e.clientX
-		rulerY = e.clientY
+		mouseX = e.clientX
+		mouseY = e.clientY
 	});
 	
-	let rulerFn = () => {
-		rulerData.top.css("left", rulerX+"px")
-		rulerData.left.css("top", rulerY+"px")
+	let mouseFn = () => {
+		ruler.leftStyle.top = mouseY+"px"
+		ruler.topStyle.left = mouseX+"px"
 		
-		requestAnimationFrame(rulerFn)
+		
+		brushStyle.transform = "translate(" + mouseX + "px, " + mouseY + "px)"
+		
+		requestAnimationFrame(mouseFn)
 	}
 	
-	requestAnimationFrame(rulerFn)
+	requestAnimationFrame(mouseFn)
 	
 	$(window).resize(function() {
 		updateRulers();
@@ -528,7 +526,7 @@ hook("load", function() {
 	// brush panel
 	
 	$("#rounded-brush").change(function(e) {
-		sceneMeta[CM_ACTIVEID].brushData.rounded = this.checked;
+		sceneMeta[CM_ACTIVEID].roundedBrush = this.checked;
 		updateBrushGenerator(CM_ACTIVEID);
 	});
 	
@@ -605,7 +603,7 @@ function updateBrushGenerator(id) {
 	var seed = $("#bp-gen-seed").val()
 	var size = parseInt($("#brush_thickness_nr").val())
 	
-	sceneMeta[id].brushData.size = size
+	sceneMeta[id].brushSize = size
 	
 	var c = $("#bp-preview-gen").get(0);
 	var ctx = c.getContext("2d")
@@ -623,7 +621,7 @@ function updateBrushGenerator(id) {
 	if(size % 2 === 0)
 		offset = 0.5
 	
-	sceneMeta[id].brushData.offset = offset
+	sceneMeta[id].brushOffset = offset
 	
 	var inDist = (x, y) => {
 		let xm = m - x
@@ -632,7 +630,7 @@ function updateBrushGenerator(id) {
 		return Math.sqrt(xm*xm + ym*ym) < m
 	}
 	
-	if(sceneMeta[id].brushData.rounded) {
+	if(sceneMeta[id].roundedBrush) {
 		for(let x = 0; x < size; x++)
 			for(let y = 0; y < size; y++) {
 				
@@ -660,27 +658,40 @@ function updateBrushGenerator(id) {
 	
 	ctx.putImageData(imgData, 0, 0)
 	
-	var c2 = document.getElementById("bp-cursor-gen")
-	
-	var scaledSize = size*sceneMeta[id].scene.zoomFactor
-	
-	c2.width = scaledSize
-	c2.height = scaledSize
-	
-	var ctx2 = c2.getContext("2d")
-	ctx2.scale(scaledSize, scaledSize)
-	ctx2.drawImage(c, 0, 0)
-	
 	var dataURL = c.toDataURL("image/png", 1.0)
 	
 	$("#bp-preview-main").css("background-image", "url(" + dataURL + ")")
 	
-	updateCursor(id, c2.toDataURL("image/png", 1.0), scaledSize)
+	updateBrushIndicator(id)
 }
 
-function updateCursor(id, dataURL, diameter) {
+function updateCursor(id, dataURL, diameter) {log(diameter)
 	$(".page-content").css("cursor", "url("+ dataURL +") "+diameter/2+" " +diameter/2+", auto")
 	sceneMeta[id].cursorImage = dataURL
+}
+
+function updateBrushIndicator(id) {
+	let meta = sceneMeta[id]
+	let totalSize = meta.zoom * meta.brushSize
+	let radius = meta.roundedBrush?totalSize:0
+	
+	$("#brush-indicator").css({
+		marginLeft: -totalSize/2 + "px",
+		marginTop: -totalSize/2 + "px",
+		height: totalSize + "px",
+		width: totalSize + "px",
+		borderRadius: radius + "px",
+		MozOutlineRadius: radius + "px",
+	})
+	
+	log({
+		marginLeft: -totalSize/2 + "px",
+		marginTop: -totalSize/2 + "px",
+		height: totalSize + "px",
+		width: totalSize + "px",
+		borderRadius: radius + "px",
+		MozOutlineRadius: radius + "px",
+	})
 }
 
 
@@ -710,117 +721,15 @@ function updateSidePalette(id) {
 	return true;
 }
 
-/*-- Rotation --*/
-/** @deprecated */
-//Rotation in 90°-Schritten
 function rotateImage(angle) {
-	angle = (angle - (angle % 90)) % 360;
-	if(!angle)
-		return;
-	
-	var id = CM_ACTIVEID;
-	var cnv = sceneMeta[id].c, ctx = cnv.getContext("2d");
-	var idata = ctx.getImageData(0, 0, cnv.width, cnv.height), nidata;
-	if(angle && angle != 180)
-		nidata = ctx.createImageData(cnv.height, cnv.width);
-	else
-		nidata = ctx.createImageData(cnv.width, cnv.height);
-
-	for(var y = 0; y < cnv.height; y++)
-		for(var x = 0; x < cnv.width; x++) {
-			var off = (y*(idata.width*4)) + (x*4);
-			switch(angle) {
-				case 90:
-				case -270:
-					no = (x*(nidata.width*4)) + ((cnv.height-y-1)*4);
-					break;
-				
-				case 180:
-				case -180:
-					no = ((cnv.height-y-1)*(nidata.width*4)) + ((cnv.width-x-1)*4);
-					break;
-				
-				case 270:
-				case -90:
-					no = ((cnv.width-x-1)*(nidata.width*4)) + (y*4);
-					break;
-				
-				default:
-					no = off;
-					break;
-			}
-
-			nidata.data[no] = idata.data[off];
-			nidata.data[no+1] = idata.data[off+1];
-			nidata.data[no+2] = idata.data[off+2];
-			nidata.data[no+3] = 255;
-		}
-	
-	if(angle && angle != 180) {
-		var twdt = cnv.width;
-		cnv.width = cnv.height;
-		cnv.height = twdt;
-		$(cnv).css("width", cnv.width);
-		$(cnv).css("height", cnv.height);
-	}
-	
-	ctx.putImageData(nidata, 0, 0);
-	stockUndoStack();
-	
-	return true;
 }
 
 /*-- Spiegelung --*/
-/** @deprecated */
-function mirrorImage(fVertically) {
-	var id = CM_ACTIVEID, cnv = sceneMeta[id].c;
-	if($("#movinglayer.active").get(0))
-		cnv = $("#movinglayer.active").get(0);
+const
+	DIR_V = 0,
+	DIR_H = 1
 
-	var ctx = cnv.getContext("2d");
-	var idata = ctx.getImageData(0, 0, cnv.width, cnv.height);
-	var bdata = jQuery.extend({}, idata.data);
-	
-	if(!fVertically) {
-		for(var y = 0; y < idata.height; y++)
-			for(var x = 0; x < Math.floor(idata.width/2); x++) {
-				var x2 = idata.width-x;
-				var off1 = (y*(idata.width*4)) + (x*4),
-					off2 = (y*(idata.width*4)) + (x2*4);
-				
-				idata.data[off2] = idata.data[off1];
-				idata.data[off2+1] = idata.data[off1+1];
-				idata.data[off2+2] = idata.data[off1+2];
-				idata.data[off2+3] = 255;
-				
-				idata.data[off1] = bdata[off2];
-				idata.data[off1+1] = bdata[off2+1];
-				idata.data[off1+2] = bdata[off2+2];
-				idata.data[off1+3] = 255;
-			}
-	}
-	else {
-		for(var y = 0; y < Math.floor(idata.height/2); y++)
-			for(var x = 0; x < idata.width; x++) {
-				var y2 = idata.height-y;
-				var off1 = (y*(idata.width*4)) + (x*4),
-					off2 = (y2*(idata.width*4)) + (x*4);
-				
-				idata.data[off2] = idata.data[off1];
-				idata.data[off2+1] = idata.data[off1+1];
-				idata.data[off2+2] = idata.data[off1+2];
-				idata.data[off2+3] = 255;
-				
-				idata.data[off1] = bdata[off2];
-				idata.data[off1+1] = bdata[off2+1];
-				idata.data[off1+2] = bdata[off2+2];
-				idata.data[off1+3] = 255;
-			}
-	}
-	
-	ctx.putImageData(idata, 0, 0);
-	if(!$("#movinglayer.active").get(0))
-		stockUndoStack();
+function mirrorImage(dir) {
 }
 
 /*-- Skalierung --*/
@@ -932,7 +841,7 @@ function openScalingDialog() {
 
 function updateInfotoolbar(x, y) {
 	var id = CM_ACTIVEID,
-		zoom = sceneMeta[id].scene.zoomFactor;
+		zoom = sceneMeta[id].zoom;
 	
 	if(x != undefined && y != undefined) {
 		x = Math.floor(x); y = Math.floor(y);
@@ -960,16 +869,16 @@ function updateInfotoolbar(x, y) {
 }
 
 function changeZoom(id, fZoomOut) {
-	if(!fZoomOut && sceneMeta[id].z < 32)
-		sceneMeta[id].z *= 2;
-	else if(fZoomOut && sceneMeta[id].z > 1)
-		sceneMeta[id].z /= 2;
+	if(!fZoomOut && sceneMeta[id].zoom < 32)
+		sceneMeta[id].zoom *= 2;
+	else if(fZoomOut && sceneMeta[id].zoom > 1)
+		sceneMeta[id].zoom /= 2;
 	else
 		return;
 
-	sceneMeta[id].z = Math.max(1, Math.min(32, sceneMeta[id].z));
+	sceneMeta[id].zoom = Math.max(1, Math.min(32, sceneMeta[id].zoom));
 	
-	a_S.zoomFactor = sceneMeta[id].z;
+	a_S.zoomFactor = sceneMeta[id].zoom
 	
 	onUpdateZoom(id);
 	return true;
@@ -1090,7 +999,7 @@ function updateRulers() {
 	setRulerMarker(rulert, true, xoff);
 	
 	//Einzelne Striche einzeichnen
-	var zoom = sceneMeta[CM_ACTIVEID].z;
+	var zoom = sceneMeta[CM_ACTIVEID].zoom
 	var step = Math.max(1, Math.floor(10/zoom)), pxsize = zoom;
 
 	for(var i = step, j = 1; i*zoom < rulerl.height; i+=step) {
@@ -1443,44 +1352,21 @@ function addCideFile(path, id, fShow) {
 		file = _sc.file(path);
 	
 	loadImageFileData(file, id).then(({infoheader, clr_index, data, bitmap_header}) => {
-		let gl = getGl()
+		let glInstance = getGlInstance()
 
-		if(!gl) {
-			log("Bmpeditor: Gl hasn't been found", false, "error")
+		if(glInstance.failed) 
 			return
-		}
-
-		var scene = addScene(gl, document.getElementById("draw-canvas"))
-		scene.setRectElement($(".ui-rect").get(0))
 		
-		sceneMeta[id] = {
-			scene, 
-			f: file,
-			path: file.path,
-			header: infoheader,
-			coloridx: clr_index,
-			rtdata: {},
-			z: 1, ///  @deprecated
-			brushData: {
-				size: 1,
-				rounded: true,
-				// seed and distribution factors go here
-			},
-			_selectedMode: Mode_Draw_Shape,
-			_operandIndex: 0
-		};
-
-		var num2byte = function(num, size) {
-			var ar = [];
-			for(var i = 0; i < size; i++) {
-				ar.push(num & 0xFF);
-				num >>= 8;
-			}
-			
-			return ar;
-		};
-
-		scene.initWithTexture(file.path).then(() => {
+		var scene = addScene(glInstance)
+		
+		initRawSceneMeta(file, id)
+		sceneMeta[id].header = infoheader
+		sceneMeta[id].coloridx = clr_index
+		sceneMeta[id].scene = scene
+		
+		initCtrls()
+		
+		scene.initWithTexture(file.path).then(() => {log(3)
 			//Materialien und Texturen laden
 			loadMaterials(id);
 			
@@ -1492,7 +1378,7 @@ function addCideFile(path, id, fShow) {
 			centerCanvas(id)
 		},
 		(e, src) => {
-			log("an error occured while trying to init with bmp image (" + src + ")")
+			log("An error occured while trying to init with ready bmp image (" + src + ")", false, "error")
 		})
 
 	}, (msg) => {
@@ -1500,6 +1386,19 @@ function addCideFile(path, id, fShow) {
 	})
 
 	return true;
+}
+
+function initRawSceneMeta(file, id) {
+	sceneMeta[id] = {
+		zoom: 1,
+		f: file,
+		path: file.path,
+		rtdata: {},
+		roundedBrush: true,
+		brushSize: 1,
+		_selectedMode: Mode_Draw_Shape,
+		_operandIndex: 0
+	}
 }
 
 function loadMaterials(id) {
@@ -1616,25 +1515,12 @@ function initCMW(msg, file, id, fShow, clridxtbl) {
 	if(clridxtbl)
 		cidxt = clridxtbl
 	
-	var scene = addScene(getGl(), document.getElementById("draw-canvas"))
+	var scene = addScene(getGlInstance(), document.getElementById("draw-canvas"))
 	scene.setRectElement($(".ui-rect").get(0))
 	
-	sceneMeta[id] = {
-		scene: scene,
-		f: file,
-		path: file.path,
-		header: 0,
-		coloridx: cidxt,
-		rtdata: {},
-		z: 1, /// @deprecated
-		brushData: {
-			size: 1,
-			rounded: true,
-			// seed and distribution factors go here
-		},
-		_selectedMode: Mode_Draw_Shape,
-		_operandIndex: 0
-	}
+	initRawSceneMeta(file, id)
+	sceneMeta[id].scene = scene
+	sceneMeta[id].coloridx = cidxt
 	
 	scene.initWithTexture(file.path).then(null,
 	(e, src) => {
@@ -2191,48 +2077,4 @@ function dropTabData(data, tabid) {
 	cnv.c.getContext('2d').putImageData(data.imgdata, 0, 0);
 	
 	return true;
-}
-
-var mouse_x,
-	mouse_y,
-	dragged,
-	offset_x = 0,
-	offset_y = 0;
-
-document.addEventListener("mousemove", function(e) {
-	mouse_x = e.screenX;
-	mouse_y = e.screenY;
-});
-
-document.addEventListener("mouseup", function(e) {
-	dragged = false;
-});
-
-function setDraggable(el, exclude, target) {
-	if(!el)
-		return false;
-	
-	$(el).mousedown(function(e) {
-		if($(this).is(exclude))
-			return;
-		
-		var tEl = target || this;
-		
-		if($(tEl).hasClass("immovable"))
-			return;
-		
-		offset_x = mouse_x - $(tEl)[0].offsetLeft;
-		offset_y = mouse_y - $(tEl)[0].offsetTop;
-		dragged = tEl;
-		
-		var fn = () => {
-			if(!dragged)
-				return
-			
-			$(dragged).offset({ top: mouse_y - offset_y, left: mouse_x - offset_x})
-			requestAnimationFrame(fn)
-		}
-		
-		requestAnimationFrame(fn)
-	});
 }

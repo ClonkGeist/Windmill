@@ -79,7 +79,7 @@
 							<ellipse class="sel-c sel-scnd" cx="10" cy="0" rx="0" ry="0"></ellipse>
 						</g>
 					</svg>
-					<div class="ui-rect invisible">
+					<div id="trans-rect" class="ui-rect invisible">
 						<div class="ui-rect-container">
 							<div class="ui-thumb top-left"></div>
 							<div class="ui-thumb top"></div>
@@ -96,6 +96,8 @@
 					</div>
 				</div>
 			</div>
+			
+			<div id="brush-indicator"></div>
 		</div>
 	
 		<!-- toolbar -->
@@ -166,7 +168,6 @@
 			<div class="toolbar-body">
 				<div style="align: space-around">
 					<canvas id="bp-preview-gen" height="32" width="32"></canvas>
-					<canvas id="bp-cursor-gen" height="1" width="1"></canvas>
 					<div id="bp-preview-main"></div>
 					<input id="rounded-brush" type="checkbox" checked="true" class="custom"></input>
 					<label for="rounded-brush" class="cbox-button">$rounded$</label>
