@@ -421,15 +421,18 @@ class Mode_Sel_Magic extends DefaultMode {
 			h = scene.height
 		
 		var data = scene.readPixels(0, 0, w, h)
-		let pos = startx*4 + (h-starty)*h*4;
+		let pos = startx*4 + (h-starty)*w*4;
 		var r = data[pos  ],
 			g = data[pos+1],
 			b = data[pos+2],
 			a = data[pos+3]
 		
-		if((!modifier & MODIFIER_SHIFT) && (!modifier & MODIFIER_ALT))
-			scene.clearSelMask()
-	
+		var value = 255
+		if(modifier & MODIFIER_ALT)
+			value = 0
+		else if(!(modifier & MODIFIER_SHIFT))
+			scene.selection.resetMask()
+		
 		var sel = scene.selection.mask
 		
 		var mask = []
@@ -440,7 +443,7 @@ class Mode_Sel_Magic extends DefaultMode {
 				return
 			
 			mask[x + y*w] = true
-			sel[x + y*w] = true
+			sel[(x + (y-1)*w)] = value
 			
 			// right
 			if(x + 1 < w)
@@ -457,8 +460,9 @@ class Mode_Sel_Magic extends DefaultMode {
 		}
 		
 		fn(startx, starty)
-		
-		scene.showSelMask()
+		log(startx + ", " + starty)
+		scene.selection.uploadMask()
+		scene.selection.startRender()
 		sceneMeta[CM_ACTIVEID].showSel = true
 	}
 }
@@ -604,102 +608,6 @@ class Rect {
 		}
 	}
 }
-
-const
-	DIR_DOWN = 1,
-	DIR_RIGHT = 2,
-	DIR_BOTH = 3
-
-function svgPathFromMask(mask, pointMask, w, h) {
-	
-	let h2 = h  -1
-	let w2 = w  -1
-	
-	let maskIndex, curr, below, right, pointIndex
-	
-	var startPoints = []
-	
-	for(let y = 0; y < h2; y++)
-		for(let x = 0; x < w2; x++) {
-			maskIndex = x + y*w
-			
-			curr = mask[maskIndex]
-			below = mask[maskIndex + w]
-			right = mask[maskIndex + 1]
-									
-			if(curr ^ right) {
-				pointIndex = maskIndex - w
-				pointMask[pointIndex] += DIR_DOWN
-				
-				if(pointMask[pointIndex] === DIR_BOTH)
-					startPoints.push(pointIndex)
-			}
-			
-			if(curr ^ below) {
-				
-				pointIndex = maskIndex - 1
-				pointMask[pointIndex] += DIR_RIGHT
-			}
-			
-			mask[maskIndex] = 0
-		}
-	
-	var str = ""
-	
-	let start, x, y, max
-	
-	var getNext = function*(index) {
-		let data = pointMask[index]
-		while(data && data !== DIR_BOTH) {
-			
-			if(data === DIR_RIGHT) {
-				index += 1
-				yield "h 1 "
-			}
-			else {
-				index += w
-				yield "v 1 "
-			}
-			
-			data = pointMask[index]
-		}
-	}
-	
-	for(let f = 0; f < startPoints.length; f++) {
-		
-		start = startPoints[f]
-		
-		// get coords
-		y = Math.floor(start/w)
-		x = start % w
-
-		
-		// add starting point (move to)
-		str += "M" + x + " " + y + " "
-		
-		// follow outline to right
-		str += "h 1 "
-		for(let s of getNext(start + 1))
-			str += s
-		
-		
-				
-		// add starting point (move to)
-		str += "M" + x + " " + y + " "
-		
-		// follow outline to below
-		
-		str += "v 1 "
-		for(let s of getNext(start + w))
-			str += s
-		
-	}
-	
-	$(".sel-p").attr("d", str)
-	
-	return pointMask
-}
-
 
 var _profilerIds = {}
 class Profiler {

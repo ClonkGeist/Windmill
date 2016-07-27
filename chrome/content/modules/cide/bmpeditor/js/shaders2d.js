@@ -4,7 +4,8 @@ const
 	SHADER_TYPE_COMBINED_BACKBUFFER = 2, // obsolet?
 	SHADER_TYPE_CIRCLE = 3,
 	SHADER_TYPE_RECTANGLE = 4,
-	SHADER_TYPE_COLORED_SHAPE = 5
+	SHADER_TYPE_COLORED_SHAPE = 5,
+	SHADER_TYPE_SELECTION = 6
 
 function composeShaderProgram(gl, type) {
 	
@@ -185,7 +186,7 @@ varying vec2 uv;\n\
 attribute vec2 uUV;\n\
 \
 void main(void) {\n\
-uv = uUV;\n\
+	uv = uUV;\n\
 	gl_Position = vec4(pos.x, pos.y, 0.0, 1.0);\n\
 }\n"
 ,
@@ -193,23 +194,41 @@ uv = uUV;\n\
 \
 uniform sampler2D img_sel;\n\
 uniform vec2 textureSize;\n\
+uniform float offset;\n\
 \
 varying vec2 uv;\n\
 void main(void) {\n\
 	vec2 pixelUnit = vec2(1.0, 1.0) / textureSize;\n\
-	vec4 sum = 	texture2D(img_sel, uv * vec2(0, -1) *  1.0)+\n\
-				texture2D(img_sel, uv * vec2(0,  1) *  1.0)+\n\
-				texture2D(img_sel, uv * vec2(-1, 0) *  1.0)+\n\
-				texture2D(img_sel, uv * vec2( 1, 0) *  1.0)+\n\
-				texture2D(img_sel, uv              r * -4.0);\n\
+	vec4 sum = 	texture2D(img_sel, uv + vec2( 0.0, -1.0) * pixelUnit)+\n\
+				texture2D(img_sel, uv + vec2( 0.0,  1.0) * pixelUnit)+\n\
+				texture2D(img_sel, uv + vec2(-1.0,  0.0) * pixelUnit)+\n\
+				texture2D(img_sel, uv + vec2( 1.0,  0.0) * pixelUnit)+\n\
+				texture2D(img_sel, uv) * -4.0;\n\
 \n\
-	gl_FragColor = vec4(sum.rgb, 0.75);\n\
+\n\
+if(sum.a >= 0.0)\n\
+	discard;\n\
+\n\
+	if(mod(uv.s + uv.t + offset, 0.02) < 0.01)\n\
+		gl_FragColor = vec4(0.0, 0.0, 0.0, sum.a);\n\
+	else\n\
+		gl_FragColor = vec4(1.0, 1.0, 1.0, sum.a);\n\
 }"
 		]
 	}
 	else
 		return ["", ""]
 }
+
+/**
+
+	vec4 sum = 	texture2D(img_sel, uv * vec2(0, -1) * pixelUnit *  1.0)+\n\
+				texture2D(img_sel, uv * vec2(0,  1) * pixelUnit *  1.0)+\n\
+				texture2D(img_sel, uv * vec2(-1, 0) * pixelUnit *  1.0)+\n\
+				texture2D(img_sel, uv * vec2( 1, 0) * pixelUnit *  1.0)+\n\
+				texture2D(img_sel, uv               * -4.0);\n\
+
+*/
 
 function parseShader(gl, string, type, shaderInteralType) {
 	

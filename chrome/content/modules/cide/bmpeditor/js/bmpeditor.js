@@ -683,15 +683,6 @@ function updateBrushIndicator(id) {
 		borderRadius: radius + "px",
 		MozOutlineRadius: radius + "px",
 	})
-	
-	log({
-		marginLeft: -totalSize/2 + "px",
-		marginTop: -totalSize/2 + "px",
-		height: totalSize + "px",
-		width: totalSize + "px",
-		borderRadius: radius + "px",
-		MozOutlineRadius: radius + "px",
-	})
 }
 
 

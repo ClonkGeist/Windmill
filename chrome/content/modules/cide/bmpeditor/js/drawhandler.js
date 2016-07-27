@@ -36,6 +36,8 @@ function initGl() {
 
 	if(glMain.failed || glSel.failed)
 		return
+	
+	selGlSetup(glSel)
 }
 
 function getGlInstance(fSel) {
@@ -249,10 +251,10 @@ class BMPScene {
 		this.canvas.width = w
 		this.canvas.height = h
 		
+		this.selection.setDimensions(w, h)
+		
 		this.updateZoom()
 		this.gl.viewport(0, 0, w, h)
-		
-		//this.selection.setDimensions(w, h)
 		
 		document.getElementById("ui-sel").setAttribute("viewBox", "0 0 "+ w + " " + h)
 		document.getElementById("ui-sel").setAttribute("height", this.height*this.zoomFactor)
@@ -273,6 +275,8 @@ class BMPScene {
 		$(this.canvas).css("height", (this.height*this.zoomFactor) + "px")
 		
 		document.getElementById("ui-sel").setAttribute("height", this.height*this.zoomFactor)
+		
+		this.selection.updateZoom(this.zoomFactor)
 		
 		if(this.currentRect)
 			this.updateUiRectPos()
@@ -765,7 +769,8 @@ function selGlSetup(glInstance) {
 	
 	var gl = glInstance.gl
 	
-	var vBuffer = gl.createBuffer(), uvBuffer = gl.createBuffer()
+	var vBuffer = gl.createBuffer(),
+		uvBuffer = gl.createBuffer()
 	
 	gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer)
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
@@ -778,39 +783,35 @@ function selGlSetup(glInstance) {
 		 1, 1,
 		 
 	]), gl.STATIC_DRAW)
-	
+	// with flipped v coords
 	gl.bindBuffer(gl.ARRAY_BUFFER, uvBuffer)
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+		0, 1,
+		1, 1,
 		0, 0,
-		1, 0,
-		0, 1,
 		
-		0, 1,
-		1, 0,
-		1, 1
+		0, 0,
+		1, 1,
+		1, 0
 	]), gl.STATIC_DRAW)
 	
-	var prog = composeShaderProgram(gl, flags)
+	var shader = glInstance.useShaderOfType(SHADER_TYPE_SELECTION)
 	
-	if(!prog)
-		return false
+	if(!shader)
+		return
 	
-	var s = {
-		type: flags,
-		prog: prog,
-		attrPos: this.gl.getAttribLocation(prog, "pos"),
-		attrUv: this.gl.getAttribLocation(prog, "uUV"),
-		unifImgSel: this.gl.getUniformLocation(prog, "img_sel"),
-	}
+	gl.uniform1i(shader.unifImgSel, 0)
 	
-	this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vBuffer)
-	this.gl.enableVertexAttribArray(s.attrPos)
-	this.gl.vertexAttribPointer(s.attrPos, 2, this.gl.FLOAT, false, 0, 0)
+	gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer)
+	gl.enableVertexAttribArray(shader.attrPos)
+	gl.vertexAttribPointer(shader.attrPos, 2, gl.FLOAT, false, 0, 0)
 	
-	this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.uvBuffer)
-	this.gl.enableVertexAttribArray(s.attrUv)
-	this.gl.vertexAttribPointer(s.attrUv, 2, this.gl.FLOAT, false, 0, 0)
+	gl.bindBuffer(gl.ARRAY_BUFFER, uvBuffer)
+	gl.enableVertexAttribArray(shader.attrUv)
+	gl.vertexAttribPointer(shader.attrUv, 2, gl.FLOAT, false, 0, 0)
 }
+
+var DEBUG = true
 
 class GLInstance {
 	constructor(canvasId, opts) {
@@ -819,7 +820,18 @@ class GLInstance {
 		this.c = el
 		
 		try {
-			this.gl = el.getContext("webgl", opts)
+			
+			if(DEBUG) {
+				this.gl = el.getContext("webgl", opts)
+				
+				let onGlError = (e, funcName, args) => {
+					log(WebGLDebugUtils.glEnumToString(e) + " was caused by calling '" + funcName + "'\n")
+				}
+				
+				this.gl = WebGLDebugUtils.makeDebugContext(this.gl, onGlError)
+			}
+			else
+				this.gl = el.getContext("webgl", opts)
 			
 			if(!this.gl)
 				throw "WebGlContext creation returns "+this.gl
@@ -832,7 +844,7 @@ class GLInstance {
 		}
 		
 		this.shaders = []
-		this.currentShader = -1
+		this.currentShader = 0
 	}
 	
 	addShader(shaderType) {
@@ -854,19 +866,19 @@ class GLInstance {
 			unifImgSel: gl.getUniformLocation(prog, "img_sel"),
 			unifWorkerColor: gl.getUniformLocation(prog, "worker_color"),
 			unifRect: gl.getUniformLocation(prog, "rect"),
-			unifTSize: gl.getUniformLocation(prog, "textureSize")
+			unifTSizes: gl.getUniformLocation(prog, "textureSize"),
+			unifOffset: gl.getUniformLocation(prog, "offset")
 		}
 		
 		this.shaders.push(shader)
 		return shader
 	}
 	
-	getShaderOfType(shaderType) {log("searching: " + shaderType)
-		for(var i = 0; i < this.shaders.length; i++) {
-			log(this.shaders[i].type)
+	getShaderOfType(shaderType) {
+		for(var i = 0; i < this.shaders.length; i++)
 			if(this.shaders[i].type === shaderType)
 				return this.shaders[i]
-		}
+		
 		return this.addShader(shaderType)
 	}
 	
@@ -883,37 +895,62 @@ class GLInstance {
 		return this.currentShader
 	}
 }
-
+// make use of default values for activeTexture and bindTexture (which is 0, so neither needs to be set)
 class SelectionScene {
 	constructor(glInstance) {
 		this.glInstance = glInstance
 		this.c = glInstance.c
 		this.gl = glInstance.gl
 		
-		this.isShown = false
+		this.isShown = true
 		
-		this.setSelMask(1, 1)
+		this.resetMask(1, 1)
 		
+		this.canvasSize = new Float32Array([1, 1])
 		this.tex = this.createTexture()
+		
+		this.rendering = false
 	}
 	
 	setDimensions(w, h) {
 		this.w = w
 		this.h = h
 		
-		if(this.isShown) {
-			this.c.width = w
-			this.c.height = h
-		}
+		if(this.isShown)
+			this.adjustCanvas()
 		
-		this.setSelMask(w, h)
+		this.resetMask(w, h)
 	}
 	
-	setSelMask(w, h) {
-		this.mask = new Uint8Array(w*h)
+	adjustCanvas() {
+		this.c.width = this.canvasSize[0]
+		this.c.height = this.canvasSize[1]
+		
+		this.gl.viewport(0, 0, this.canvasSize[0], this.canvasSize[1])
+	}
+	
+	updateZoom(zoom) {
+		this.zoom = zoom
+		
+		this.canvasSize[0] = parseInt(this.w*zoom/2)
+		this.canvasSize[1] = parseInt(this.h*zoom/2)
+		
+		if(this.isShown) {
+			$(this.c).css("width", (this.w*this.zoom) + "px")
+			$(this.c).css("height", (this.h*this.zoom) + "px")
+			
+			this.adjustCanvas()
+			
+			this.render()
+		}
+	}
+	
+	resetMask(w = this.w, h = this.h) {
+		this.mask = new Uint8Array((w+2)*(h+2))
 	}
 	
 	createTexture() {
+		let gl = this.gl
 		let tex = gl.createTexture()
 		gl.bindTexture(gl.TEXTURE_2D, tex)
 		// disable interpolation
@@ -922,18 +959,58 @@ class SelectionScene {
 		// disable wrap (to work with NPOT textures)
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
-		// delete alignment
+		// unset alignment
 		gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1)
+		
+		return tex
 	}
 	
-	updateTexture() {
+	uploadMask() {
 		let gl = this.gl
-		
+		gl.activeTexture(gl.TEXTURE0)
 		gl.bindTexture(gl.TEXTURE_2D, this.tex)
+		gl.texImage2D(this.gl.TEXTURE_2D, 0, gl.ALPHA, this.w, this.h, 0, gl.ALPHA, gl.UNSIGNED_BYTE, this.mask)
+	}
+	
+	startRender() {
+		
+		if(this.rendering)
+			return this.render()
+		
+		this.interval = setInterval(() => {
+			
+			if(!this.offset) {
+				this.offset = 0.01
+				this.gl.uniform1f(this.glInstance.currentShader.unifOffset, this.offset)
+			}
+			else {
+				this.offset = 0.0
+				this.gl.uniform1f(this.glInstance.currentShader.unifOffset, this.offset)
+			}
+			
+			this.render()
+		}, 500)
+		
+		this.offset = 0.0
+		this.gl.uniform1f(this.glInstance.currentShader.unifOffset, this.offset)
+		this.render()
+		
+		this.rendering = true
 	}
 	
 	render() {
-		// bind texture set uniform render
+		let gl = this.gl
+		gl.activeTexture(gl.TEXTURE0)
+		gl.bindTexture(gl.TEXTURE_2D, this.tex)
+		gl.uniform1i(this.glInstance.currentShader.unifImgSel, 0)
+		gl.uniform2fv(this.glInstance.currentShader.unifTSizes, this.canvasSize)
+		
+		gl.drawArrays(gl.TRIANGLES, 0, 6)
+	}
+	
+	stopRender() {
+		clearInterval(this.interval)
+		this.rendering = false
 	}
 }
 
