@@ -421,7 +421,7 @@ class Mode_Sel_Magic extends DefaultMode {
 			h = scene.height
 		
 		var data = scene.readPixels(0, 0, w, h)
-		let pos = startx*4 + (h-starty)*w*4;
+		let pos = startx*4 + (h-starty)*w*4
 		var r = data[pos  ],
 			g = data[pos+1],
 			b = data[pos+2],
@@ -460,7 +460,7 @@ class Mode_Sel_Magic extends DefaultMode {
 		}
 		
 		fn(startx, starty)
-		log(startx + ", " + starty)
+		
 		scene.selection.uploadMask()
 		scene.selection.startRender()
 		sceneMeta[CM_ACTIVEID].showSel = true
@@ -496,7 +496,7 @@ class Shape_Circle extends Shape {
 		
 		for(let x = 0; x < diameter; x++)
 			for(let y = 0; y < diameter; y++)
-				this.data[x + y*diameter] = (Math.sqrt(x*x + y*y)) <= diameter? 255:0;
+				this.data[x + y*diameter] = (Math.sqrt(x*x + y*y)) <= diameter? 255:0
 	}
 }
 
@@ -534,7 +534,7 @@ class GenShape extends Shape {
 		
 		for(let x = 0; x < diameter; x++)
 			for(let y = 0; y < diameter; y++)
-				this.data[x + y*diameter] = (Math.sqrt(x*x + y*y)) <= diameter? 255:0;
+				this.data[x + y*diameter] = (Math.sqrt(x*x + y*y)) <= diameter? 255:0
 	}
 }
 

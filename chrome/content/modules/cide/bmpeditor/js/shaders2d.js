@@ -210,9 +210,9 @@ if(sum.a >= 0.0)\n\
 	discard;\n\
 \n\
 	if(mod(uv.s + uv.t + offset, 0.02) < 0.01)\n\
-		gl_FragColor = vec4(0.0, 0.0, 0.0, sum.a);\n\
+		gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n\
 	else\n\
-		gl_FragColor = vec4(1.0, 1.0, 1.0, sum.a);\n\
+		gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n\
 }"
 		]
 	}
