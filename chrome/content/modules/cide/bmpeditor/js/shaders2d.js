@@ -184,9 +184,14 @@ else if(type === SHADER_TYPE_SELECTION) {
 "attribute vec2 pos;\n\
 varying vec2 uv;\n\
 attribute vec2 uUV;\n\
+uniform vec2 uvAdjust;\n\
 \
 void main(void) {\n\
-	uv = uUV;\n\
+	uv = vec2(\n\
+		uUV.s + uvAdjust.s - uUV.s*uvAdjust.s * 2.0,\n\
+		uUV.t + uvAdjust.t - uUV.t*uvAdjust.t * 2.0\n\
+	);\n\
+\n\
 	gl_Position = vec4(pos.x, pos.y, 0.0, 1.0);\n\
 }\n"
 ,

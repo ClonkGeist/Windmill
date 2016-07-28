@@ -10,11 +10,13 @@ class ModeHandler {
 		if(this.active)
 			this.active.finish()
 	
-		if(mode == Mode_Draw_Shape)
-			$(".canvas-dimension").addClass("brush-mode")
+		if(mode.showsBrushIndicator)
+			$("#brush-indicator").show()
 		else
-			$(".canvas-dimension").removeClass("brush-mode")
-	
+			$("#brush-indicator").hide()
+		
+		$(".canvas-wrapper").css("cursor", mode.getCursorStyle(0))
+		
 		sceneMeta[CM_ACTIVEID]._selectedMode = mode
 	}
 	
@@ -78,10 +80,14 @@ function initCtrls() {
 		let rect = $(".canvas-wrapper").get(0).getBoundingClientRect()
 		
 		var x = e.clientX - rect.left,
-			y = e.clientY - rect.top;
-		
-		[x, y] = a_S.screenToTexture(x, y)
-		Mode.active.onMousemove(x, y, a_S, getEventModifiers(e))
+			y = e.clientY - rect.top
+			
+		Mode.active.onMousemove(
+			a_S.screenToTextureX(x),
+			a_S.screenToTextureY(y),
+			a_S,
+			getEventModifiers(e)
+		)
 	})
 
 	$("body").mouseup(function(e) {
@@ -136,6 +142,14 @@ function initCtrls() {
 	
 	$("#md_selmagic").click(function() {
 		Mode.selected = Mode_Sel_Magic
+	})
+	
+	$(document.body).keydown((e) => {
+		$(".canvas-wrapper").css("cursor", Mode.selected.getCursorStyle(getEventModifiers(e)))
+	})
+	
+	$(document.body).keyup((e) => {
+		$(".canvas-wrapper").css("cursor", Mode.selected.getCursorStyle(getEventModifiers(e)))
 	})
 	
 	ctrls = true
@@ -213,6 +227,14 @@ class DefaultMode {
 	static prePerform() {
 		return false
 	}
+	
+	static getCursorStyle(mods) {
+		return "default"
+	}
+	
+	static showsBrushIndicator() {
+		return false
+	}
 }
 
 class Mode_Eyedropper extends DefaultMode {
@@ -283,6 +305,14 @@ class Mode_Draw_Shape extends DefaultMode {
 		})
 		
 		scene.manifestUndoStep(a)
+	}
+	
+	static showsBrushIndicator() {
+		return true
+	}
+	
+	static getCursorStyle() {
+		return "none"
 	}
 }
 
@@ -406,8 +436,6 @@ class Mode_Sel_Rect extends DefaultMode {
 		this.unstopped = false
 		
 		this.rect.ensureFormat()
-		
-		// this.scene.selMask
 	}
 	
 	finish() {
@@ -464,6 +492,16 @@ class Mode_Sel_Magic extends DefaultMode {
 		scene.selection.uploadMask()
 		scene.selection.startRender()
 		sceneMeta[CM_ACTIVEID].showSel = true
+	}
+	
+	static getCursorStyle(modifier) {
+		
+		if(modifier & MODIFIER_ALT)
+			return "url(chrome://windmill/content/img/bmpeditor/magic-wand-sub.png) 5 5, auto"
+		else if(modifier & MODIFIER_SHIFT)
+			return "url(chrome://windmill/content/img/bmpeditor/magic-wand-add.png) 5 5, auto"
+		
+		return "url(chrome://windmill/content/img/bmpeditor/magic-wand.png) 5 5, auto"
 	}
 }
 

@@ -1979,6 +1979,8 @@ function drawMaterialPalette(id) {
 	return true;
 }
 
+
+
 /* Deck functionalities */
 cmw = false
 

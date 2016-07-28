@@ -283,18 +283,18 @@ class BMPScene {
 	}
 	
 	screenToTexture(x, y) {
-		
-		x /= this.zoomFactor
-		y /= this.zoomFactor
-		
-		if(x > this.w)
-			x = this.w
-		
-		if(y > this.h)
-			y = this.h
-		
-		// flip y
-		return [Math.round(x), Math.round(y)]
+		return [
+			Math.round(Math.min(x/this.zoomFactor, this.width)),
+			Math.round(Math.min(y/this.zoomFactor, this.height))
+		]
+	}
+	
+	screenToTextureX(x) {
+		return Math.round(Math.min(x/this.zoomFactor, this.width))
+	}
+	
+	screenToTextureY(y) {
+		return Math.round(Math.min(y/this.zoomFactor, this.height))
 	}
 	
 	getNeededDimensions() {
@@ -867,7 +867,8 @@ class GLInstance {
 			unifWorkerColor: gl.getUniformLocation(prog, "worker_color"),
 			unifRect: gl.getUniformLocation(prog, "rect"),
 			unifTSizes: gl.getUniformLocation(prog, "textureSize"),
-			unifOffset: gl.getUniformLocation(prog, "offset")
+			unifOffset: gl.getUniformLocation(prog, "offset"),
+			unifUvAdjust: gl.getUniformLocation(prog, "uvAdjust")
 		}
 		
 		this.shaders.push(shader)
@@ -907,6 +908,7 @@ class SelectionScene {
 		this.resetMask(1, 1)
 		
 		this.canvasSize = new Float32Array([1, 1])
+		this.uvAdjust = new Float32Array([0,0])
 		this.tex = this.createTexture()
 		
 		this.rendering = false
@@ -934,6 +936,9 @@ class SelectionScene {
 		
 		this.canvasSize[0] = parseInt(this.w*zoom/2)
 		this.canvasSize[1] = parseInt(this.h*zoom/2)
+		
+		this.uvAdjust[0] = 1/(this.canvasSize[0] + 2)
+		this.uvAdjust[1] = 1/(this.canvasSize[1] + 2)
 		
 		if(this.isShown) {
 			$(this.c).css("width", (this.w*this.zoom) + "px")
@@ -1004,6 +1009,7 @@ class SelectionScene {
 		gl.bindTexture(gl.TEXTURE_2D, this.tex)
 		gl.uniform1i(this.glInstance.currentShader.unifImgSel, 0)
 		gl.uniform2fv(this.glInstance.currentShader.unifTSizes, this.canvasSize)
+		gl.uniform2fv(this.glInstance.currentShader.unifUvAdjust, this.uvAdjust)
 		
 		gl.drawArrays(gl.TRIANGLES, 0, 6)
 	}
