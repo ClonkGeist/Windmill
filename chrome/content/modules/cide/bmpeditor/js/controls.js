@@ -10,7 +10,7 @@ class ModeHandler {
 		if(this.active)
 			this.active.finish()
 	
-		if(mode.showsBrushIndicator)
+		if(mode.showsBrushIndicator())
 			$("#brush-indicator").show()
 		else
 			$("#brush-indicator").hide()
