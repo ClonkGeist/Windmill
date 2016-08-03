@@ -182,7 +182,8 @@ function getEventModifiers(e) {
 	onMouseup(x, y, scene)
 	finish()
 	checkForAlternateRect()
-
+	getCursorStyle()
+	showsBrushIndicator()
 */
 class DefaultMode {
 	constructor(op_id, scene) {
