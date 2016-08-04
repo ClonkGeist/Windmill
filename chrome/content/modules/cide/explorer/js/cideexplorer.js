@@ -5,7 +5,7 @@ function initializeDirectory() {
 	explorerLoadWorkEnvironments();
 }
 
-function createWorkEnvironmentEntry(workenv, first, container = MAINTREE_OBJ) {
+function createWorkEnvironmentEntry(workenv, first, container = MAINTREE_OBJ) {log(1)
 	var {type, path, title} = workenv;
 	var typeclass = " we-workspace", img = workenv.icon;
 	if(type == _mainwindow.WORKENV_TYPE_ClonkPath)
@@ -34,7 +34,7 @@ function createWorkEnvironmentEntry(workenv, first, container = MAINTREE_OBJ) {
 					}
 		});
 	}
-
+log(2)
 	return id;
 }
 
@@ -1282,6 +1282,7 @@ var specialData = {
 	4: {ext: "ocm", img: "chrome://windmill/content/img/explorer/icon-fileext-ocm.png"},
 
 	10: {ext: "txt", img: "chrome://windmill/content/img/explorer/icon-fileext-txt.png"},
+	11: {ext: "glsl", img: "chrome://windmill/content/img/explorer/icon-fileext-txt.png"},
 
 	20: {ext: "png", img: "chrome://windmill/content/img/explorer/icon-fileext-png.png"},
 	21: {ext: "bmp", img: "chrome://windmill/content/img/explorer/icon-fileext-bmp.png"},
