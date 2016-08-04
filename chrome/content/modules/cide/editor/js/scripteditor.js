@@ -19,6 +19,9 @@ function addCideFile(path, id, fShow) {
 		case "c":
 			highlightMode = "ocscript";
 			break;
+		case "glsl":
+			highlightMode = "glsl";
+			break;
 		case "txt":
 		case "material":
 			switch(filename) {
@@ -66,6 +69,7 @@ function addCideFile(path, id, fShow) {
 		
 		if(highlightMode)
 			editors[id].getSession().setMode("ace/mode/" + highlightMode);
+		
 		editors[id].getSession().on("change", function(e) {
 			//setTimeout, da der UndoManager erst nach dem Event geupdatet wird
 			setTimeout(function() {
