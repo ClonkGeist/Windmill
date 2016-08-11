@@ -225,16 +225,6 @@ if(sum.a >= 0.0)\n\
 		return ["", ""]
 }
 
-/**
-
-	vec4 sum = 	texture2D(img_sel, uv * vec2(0, -1) * pixelUnit *  1.0)+\n\
-				texture2D(img_sel, uv * vec2(0,  1) * pixelUnit *  1.0)+\n\
-				texture2D(img_sel, uv * vec2(-1, 0) * pixelUnit *  1.0)+\n\
-				texture2D(img_sel, uv * vec2( 1, 0) * pixelUnit *  1.0)+\n\
-				texture2D(img_sel, uv               * -4.0);\n\
-
-*/
-
 function parseShader(gl, string, type, shaderInteralType) {
 	
 	var shader
