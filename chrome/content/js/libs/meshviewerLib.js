@@ -709,11 +709,10 @@ function Meshviewer() {
 							_session.useShaderByFlags(combinedMask)
 							currentShaderFlags = m.flags
 						}
-						log(_session.currentShader)
-						log(combinedMask)
+						
 						_scene.setMatrixUniforms()
 						m.onRenderTarget(combinedMask, _session.currentShader)
-						log(m.faceCount)
+						
 						gl.drawArrays(gl.TRIANGLES, 0, m.faceCount*3)
 					}
 				}
@@ -1435,13 +1434,12 @@ function Meshviewer() {
 					let boneAssignCount = 8
 					
 					// pos, normals, uvs, barycentric, boneindices, boneweight
-					var stride = 3 + 3 + 2 + 3 + boneAssignCount + boneAssignCount
+					var stride = 3 + 3 + 2 + 1 + boneAssignCount + boneAssignCount
 					
 					subm.stride = stride*4
 					subm.boneAssignCount = boneAssignCount
 					
-					subm.bufferBarySubOffset = offset + 3 + 3 + 2
-					subm.bufferBarySubOffset *= 4
+					subm.bufferBarySubOffset = (offset + 3 + 3 + 2)*4
 					
 					let facecount = faces.length
 					
@@ -1454,7 +1452,7 @@ function Meshviewer() {
 							buffer.push(vertex["pos"][0], vertex["pos"][1], vertex["pos"][2])
 							buffer.push(vertex["normal"][0], vertex["normal"][1], vertex["normal"][2])
 							buffer.push(vertex["texcoord"][0], vertex["texcoord"][1])
-							buffer.push(0, 1, 2) // barycentric indicators for different vec3s
+							buffer.push(vi) // barycentric indicators for different vec3s
 							
 							for(let bi = 0; bi < boneAssignCount; bi++)
 								buffer.push(vertex["bone-indices"][bi] || -1)
@@ -1899,11 +1897,11 @@ class MVSubMesh {
 		var gl = this.gl
 		
 		gl.enableVertexAttribArray(shader.attrPos)
-		gl.vertexAttribPointer(shader.attrPos, 3, gl.FLOAT, false, this.stride - 12, this.bufferVertexListOffset)
+		gl.vertexAttribPointer(shader.attrPos, 3, gl.FLOAT, false, this.stride, this.bufferVertexListOffset)
 		
 		if(combinedFlags & SHADER_OPTION_WIREFRAME) {
 			gl.enableVertexAttribArray(shader.attrBary)
-			gl.vertexAttribPointer(shader.attrBary, 1, gl.FLOAT, false, this.stride - 12, this.bufferBarySubOffset)
+			gl.vertexAttribPointer(shader.attrBary, 1, gl.FLOAT, false, this.stride, this.bufferBarySubOffset)
 		}
 		
 		/*
