@@ -912,6 +912,8 @@ class SelectionScene {
 		this.tex = this.createTexture()
 		
 		this.rendering = false
+		
+		this.maskBorder = 1
 	}
 	
 	setDimensions(w, h) {
@@ -937,8 +939,11 @@ class SelectionScene {
 		this.canvasSize[0] = parseInt(this.w*zoom/2)
 		this.canvasSize[1] = parseInt(this.h*zoom/2)
 		
-		this.uvAdjust[0] = 1/(this.canvasSize[0] + 2)
-		this.uvAdjust[1] = 1/(this.canvasSize[1] + 2)
+		this.uvAdjust[0] = 1/(this.w + 2)
+		this.uvAdjust[1] = 1/(this.h + 2)
+		
+		log(this.uvAdjust)
+		log(this.canvasSize)
 		
 		if(this.isShown) {
 			$(this.c).css("width", (this.w*this.zoom) + "px")
@@ -951,7 +956,7 @@ class SelectionScene {
 	}
 	
 	resetMask(w = this.w, h = this.h) {
-		this.mask = new Uint8Array((w+2)*(h+2))
+		this.mask = new Uint8Array((w+this.maskBorder*2)*(h+this.maskBorder*2))
 	}
 	
 	createTexture() {
@@ -1000,6 +1005,11 @@ class SelectionScene {
 		this.gl.uniform1f(this.glInstance.currentShader.unifOffset, this.offset)
 		this.render()
 		
+		if(sdf) {
+			log(selMaskToString(this.mask, this.w, this.h))
+			sdf--
+		}
+		
 		this.rendering = true
 	}
 	
@@ -1020,6 +1030,23 @@ class SelectionScene {
 	}
 }
 
+var sdf = 5
+
+function selMaskToString(mask, w, h) {
+	
+	let str = ""
+	
+	let border = 1
+	
+	for(var y = 0; y < h+border*2; y++) {
+		for(var x = 0; x < w+border*2; x++)
+			str += mask[x + y*w]?"1":"0"
+		
+		str += "\n"
+	}
+	
+	return str
+}
 
 /* code snippet to copy from if enhanced callStacks should be made re-implemented
 	if(DEBUG_WEBGL) {

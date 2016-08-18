@@ -462,17 +462,22 @@ class Mode_Sel_Magic extends DefaultMode {
 		else if(!(modifier & MODIFIER_SHIFT))
 			scene.selection.resetMask()
 		
-		var sel = scene.selection.mask
+		var selmask = scene.selection.mask
 		
-		var mask = []
+		var border = scene.selection.maskBorder
+		
+		var borderedW = w+(border*2)
+		
+		var hitmask = []
 		
 		function fn(x, y) {
-			let pos = x*4 + (h-y)*w*4
-			if(mask[x + y*w] || data[pos] !== r || data[pos+1] !== g || data[pos+2] !== b || data[pos+3] !== a)
+			let pos = (x + (h-y)*w)*4
+			if(hitmask[x + y*w] || data[pos] !== r || data[pos+1] !== g || data[pos+2] !== b || data[pos+3] !== a)
 				return
 			
-			mask[x + y*w] = true
-			sel[(x + (y-1)*w)] = value
+			hitmask[x + y*w] = true
+			
+			selmask[border + x + (y + border)*borderedW] = value
 			
 			// right
 			if(x + 1 < w)
