@@ -698,22 +698,23 @@ function Meshviewer() {
 				// draw each mesh
 				for(var i in this._meshes) {
 					
+					gl.bindBuffer(gl.ARRAY_BUFFER, this._meshes[i].buffer)
+					
 					for(var submeshIndex = 0; submeshIndex < this._meshes[i].submeshes.length; submeshIndex++) {
 						
 						var m = this._meshes[i].submeshes[submeshIndex];
 						let combinedMask = ((m.flags | this.flags) & ~combinationMask) | (m.flags & this.flags);
 						
-						if(combinedMask !== currentShaderFlags) {this.currentRenderFlags = combinedMask;
-							_session.useShaderByFlags(combinedMask);
+						if(combinedMask !== currentShaderFlags) {
+							_session.useShaderByFlags(combinedMask)
 							currentShaderFlags = m.flags
-							
-							// only for debugging, gets obsolete in stable
-							this.currentRenderFlags = currentShaderFlags;
 						}
-						
-						_scene.setMatrixUniforms();
-						m.setUpForRenderProcess(combinedMask, _session.currentShader);
-						gl.drawArrays(gl.TRIANGLES, 0, m.faceCount*3);
+						log(_session.currentShader)
+						log(combinedMask)
+						_scene.setMatrixUniforms()
+						m.onRenderTarget(combinedMask, _session.currentShader)
+						log(m.faceCount)
+						gl.drawArrays(gl.TRIANGLES, 0, m.faceCount*3)
 					}
 				}
 			}
@@ -1049,6 +1050,14 @@ function Meshviewer() {
 			}
 			
 			this.addMesh = function(path) {
+				
+				var path = _sc.chpath + "/content/modules/cide/meshviewer/js/" + "clonk.format.json"
+				this.fpath = formatPath(path)
+				
+				return _session.createMeshFromJSON(path, this)
+				
+				/* obsolete since dll is about to be implemented
+				
 				this.fpath = formatPath(path);
 				var origDirPath = path.slice(0, -this.fpath.split("/").pop().length - 1);
 				
@@ -1058,7 +1067,7 @@ function Meshviewer() {
 					runXmlParser(path, targetFilePath, function() {
 						_session.createMesh(_scene, targetFilePath, origDirPath).then(resolve, reject);
 					});
-				});
+				});*/
 			}
 			
 			this.s_Cond = {};
@@ -1390,6 +1399,86 @@ function Meshviewer() {
 			}
 			
 		} // end of mesh object-declaration
+		
+		this.createMeshFromJSON = function(path, targetScene) {
+			
+			var _session = this
+			
+			return Task.spawn(function*() {
+				// insert execution of dll here
+				let str = yield OS.File.read(path, {encoding: "utf-8"})
+				
+				if(!str)
+					return log("failed to load json from path(" + path + ")", false, "error")
+				
+				let json = JSON.parse(str)
+				var gl = _session.gl
+				
+				mesh = new MVMesh(targetScene, gl)
+				
+				let buffer = []
+				
+				mesh.boundingRadius = json["bounding-radius"]
+				
+				for(let i in json["submeshes"]) {
+					let json_sub = json["submeshes"][i]
+					
+					let subm = new MVSubMesh(gl),
+						vertices = json_sub["vertices"],
+						faces = json_sub["faces"]
+					
+					let offset = buffer.length
+					let count = vertices.length
+					
+					subm.bufferVertexListOffset = offset*4
+
+					let boneAssignCount = 8
+					
+					// pos, normals, uvs, barycentric, boneindices, boneweight
+					var stride = 3 + 3 + 2 + 3 + boneAssignCount + boneAssignCount
+					
+					subm.stride = stride*4
+					subm.boneAssignCount = boneAssignCount
+					
+					subm.bufferBarySubOffset = offset + 3 + 3 + 2
+					subm.bufferBarySubOffset *= 4
+					
+					let facecount = faces.length
+					
+					subm.faceCount = facecount
+					
+					for(let fi = 0; fi < facecount; fi++) {
+						for(let vi = 0; vi < 3; vi++) {
+							let vertex = vertices[faces[fi][vi]]
+							
+							buffer.push(vertex["pos"][0], vertex["pos"][1], vertex["pos"][2])
+							buffer.push(vertex["normal"][0], vertex["normal"][1], vertex["normal"][2])
+							buffer.push(vertex["texcoord"][0], vertex["texcoord"][1])
+							buffer.push(0, 1, 2) // barycentric indicators for different vec3s
+							
+							for(let bi = 0; bi < boneAssignCount; bi++)
+								buffer.push(vertex["bone-indices"][bi] || -1)
+							
+							for(let bi = 0; bi < boneAssignCount; bi++)
+								buffer.push(vertex["bone-weights"][bi] || 0)
+						}
+					}
+					
+					mesh.addSub(subm)
+					
+					// set material
+					// TODO:
+					// mesh.queueMaterialFile(origDirPath, submeshNodes[submeshIndex].getAttribute("material"), _sub)
+					
+					
+				}
+				
+				mesh.setBufferData(buffer)
+				
+				targetScene._meshes.push(mesh)
+				targetScene.initRenderLoop(RENDER_CAUSE_RENDER_ONCE)
+			})
+		}
 		
 		this.createMesh = function(targetScene, path, origDirPath) {
 			let _this = this;
@@ -1760,6 +1849,97 @@ function Meshviewer() {
 	this.DOMParser = new DOMParser();
 }
 
+class MVMesh {
+	constructor(scene, gl) {
+		this.gl = gl
+		this.scene = scene
+		
+		this.buffer = gl.createBuffer()
+		
+		this.submeshes = []
+	}
+	
+	setBufferData(ar) {
+		if(!(ar instanceof Float32Array))
+			ar = new Float32Array(ar)
+		
+		let gl = this.gl
+		
+		gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer)
+		gl.bufferData(gl.ARRAY_BUFFER, ar, gl.STATIC_DRAW)
+	}
+	
+	addSub(submesh) {
+		var index = this.submeshes.length
+		
+		this.submeshes[index] = submesh
+		
+		submesh.index = index
+	}
+	
+	die() {
+	}
+}
+
+class MVSubMesh {
+	constructor(gl) {
+		this.gl = gl
+		
+		this.stride = 0		
+		this.boneAssignCount = 0
+		this.bufferVertexListOffset = 0
+		
+		this.bufferBarySubOffset = 0
+		
+		this.flags = SHADER_OPTION_WIREFRAME
+	}
+	
+	// buffer needs to be set a priori
+	onRenderTarget(combinedFlags, shader) {
+		var gl = this.gl
+		
+		gl.enableVertexAttribArray(shader.attrPos)
+		gl.vertexAttribPointer(shader.attrPos, 3, gl.FLOAT, false, this.stride - 12, this.bufferVertexListOffset)
+		
+		if(combinedFlags & SHADER_OPTION_WIREFRAME) {
+			gl.enableVertexAttribArray(shader.attrBary)
+			gl.vertexAttribPointer(shader.attrBary, 1, gl.FLOAT, false, this.stride - 12, this.bufferBarySubOffset)
+		}
+		
+		/*
+		if(combinedFlags & SHADER_OPTION_SKELETON) {
+			var assignmentsCount = getMaxAssignmentsOfFlag(this.flags);
+			if(assignmentsCount > 4) {
+				var secondaryAssignments = assignmentsCount - 4;
+				assignmentsCount = 4;
+			}
+			else
+				var secondaryAssignments = 0;
+			
+			var stride = 4 * secondaryAssignments + 4 * assignmentsCount;
+			
+			gl.bindBuffer(gl.ARRAY_BUFFER, this.bWeightsBuffer);
+			gl.enableVertexAttribArray(shader.attrBWeights0);
+			gl.vertexAttribPointer(shader.attrBWeights0, assignmentsCount, gl.FLOAT, false, stride, 0);
+			
+			gl.bindBuffer(gl.ARRAY_BUFFER, this.bIndicesBuffer);
+			gl.enableVertexAttribArray(shader.attrBIndices0);
+			gl.vertexAttribPointer(shader.attrBIndices0, assignmentsCount, gl.FLOAT, false, stride, 0);
+			
+			if(secondaryAssignments) {
+				gl.bindBuffer(gl.ARRAY_BUFFER, this.bWeightsBuffer);
+				gl.enableVertexAttribArray(shader.attrBWeights1);
+				gl.vertexAttribPointer(shader.attrBWeights1, secondaryAssignments, gl.FLOAT, false, stride, 0);
+				
+				gl.bindBuffer(gl.ARRAY_BUFFER, this.bIndicesBuffer);
+				gl.enableVertexAttribArray(shader.attrBIndices1);
+				gl.vertexAttribPointer(shader.attrBIndices1, secondaryAssignments, gl.FLOAT, false, stride, 0);
+			}
+		}
+		*/
+	}
+}
+
 class MVSkeleton {
 	
 	constructor() {
@@ -2081,6 +2261,12 @@ class MVSkeleton {
 			
 			return sk;
 		});
+	}
+	
+	static createFromJSON(path) {
+		return Task.spawn(function*() {
+			
+		})
 	}
 }
 

@@ -1,10 +1,10 @@
 
-var session;
+var session
 
-var scenes = {}; // arranged by deck id
-var sceneMeta = {}; // arranged by scene index
-var clrpckr;
-var CM_PATHALIAS = "fpath";
+var scenes = {}, // arranged by deck id
+	sceneMeta = {}, // arranged by scene indices
+	clrpckr,
+	CM_PATHALIAS = "fpath"
 
 function TabManager() { return scenes; }
 
