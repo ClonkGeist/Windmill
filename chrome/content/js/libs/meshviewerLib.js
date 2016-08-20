@@ -253,7 +253,7 @@ function Meshviewer() {
 			gl = canvas.getContext("experimental-webgl");
 		}
 		catch(e) {
-			log("WebGL doesn't work..., for reasons...");
+			log("WebGL doesn't work..., for reasons...", false, "error");
 		}
 		
 		if(!gl)
@@ -1481,7 +1481,7 @@ function Meshviewer() {
 		this.createMesh = function(targetScene, path, origDirPath) {
 			let _this = this;
 			return Task.spawn(function*() {
-				let xml = yield OS.File.read(path, {encoding: "utf-8"});
+				let xml = yield OS.File.read(path, {encoding: "utf-8"})
 				
 				if(!xml) 
 					return false;
@@ -2262,8 +2262,62 @@ class MVSkeleton {
 	}
 	
 	static createFromJSON(path) {
-		return Task.spawn(function*() {
+		return Task.spawn(function*(path) {
+			let str = yield OS.File.read(path, {encoding: "utf-8"})
 			
+			if(!str)
+				return log("failed to load json from path(" + path + ")", false, "error")
+			
+			let json = JSON.parse(str)
+			
+			let sk = new MVSkeleton()
+			
+			if(json["skeleton"])
+				json = json["skeleton"]
+			
+			let bones = sk.bones,
+				json_bones = json["bones"],
+				l = json_bones.length
+			
+			for(let i = 0; i < l; i++) {
+				let json_bone = json_bones[i]
+				
+				let data = {
+					parent: json_bone["parent-index"],
+					bind: mat4.create(),
+					inverse: mat4.create
+				}
+				
+				mat4.fromRotationTranslation(data.bind, json_bone["rot"], json_bone["pos"])
+				// scale
+				data.local = mat4.clone(data.bind)
+				
+				// apply parent bind to get full bind matrix
+				if(data.parent !== undefined && false)
+					mat4.multiply(data.bind, bones[data.parent].bind, data.bind)
+				
+				// create invert matrix
+				mat4.invert(data.inverse, data.bind)
+				
+				bones.push(data)
+			}
+			
+			
+			let json_anims = json["animations"]
+			l = json_anims.length
+			
+			for(let i = 0; i < l; i++) {
+				/** keyframe structure within track array:
+				 * [0]: time (keyframe position in the timeline of the animation)
+				 * [1]: vec3 translation
+				 * [2]: quat4 rotation
+				 **/
+				 
+				let json_anim = json_anims[i]
+				let anim = sk.addAnimation(json_anim["name"], json_anim["length"])
+				
+				
+			}
 		})
 	}
 }
@@ -2286,6 +2340,10 @@ class MVAnimation {
 	getTracks() {
 		return this.tracks;
 	}
+}
+
+function runBinaryReader() {
+	
 }
 
 sdf = 10
